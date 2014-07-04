@@ -21,7 +21,7 @@ node_modules
 
 # Editors
 .idea
-*.yml
+*.iml
 
 # Ruby
 Gemfile.lock
