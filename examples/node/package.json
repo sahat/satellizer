@@ -1,0 +1,35 @@
+{
+  "name": "ngAuth",
+  "version": "0.0.0",
+  "description": "Node.js example for ngAuth",
+  "main": "app.js",
+  "dependencies": {
+    "body-parser": "^1.4.3",
+    "bcryptjs": "^0.7.12",
+    "connect-redis": "^2.0.0",
+    "cookie-parser": "^1.3.2",
+    "express": "^4.4.5",
+    "jwt-simple": "^0.2.0",
+    "lodash": "^2.4.1",
+    "method-override": "^1.0.2",
+    "moment": "^2.7.0",
+    "mongoose": "^3.8.12",
+    "morgan": "^1.1.1",
+    "passport": "^0.2.0",
+    "passport-local": "^1.0.0",
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sahat/ngAuth"
+  },
+  "author": "Sahat Yalkabov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sahat/ngAuth/issues"
+  },
+  "homepage": "https://sahat.github.com/ngAuth"
+}
