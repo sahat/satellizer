@@ -6,7 +6,6 @@
 var _ = require('lodash');
 var bcrypt = require('bcryptjs');
 var bodyParser = require('body-parser');
-var cookieParser = require('cookie-parser');
 var express = require('express');
 var logger = require('morgan');
 var jwt = require('jwt-simple');
@@ -56,7 +55,8 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, function(email, passw
   });
 }));
 
-function ensureAuthenticated(req, res, next) {var token = req.body.accessToken || req.query.accessToken || req.headers['x-access-token'];
+function ensureAuthenticated(req, res, next) {
+  var token = req.body.accessToken || req.query.accessToken || req.headers['x-access-token'];
   if (token) {
     try {
       var decoded = jwt.decode(token, app.get('tokenSecret'));
@@ -86,11 +86,10 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(methodOverride());
-app.use(cookieParser());
 app.use(passport.initialize());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '../../client')));
 
-app.post('/auth/token', passport.authenticate('local', { session: false }), function(req, res) {
+app.post('/api/login', passport.authenticate('local', { session: false }), function(req, res) {
   var payload = {
     prn: req.user,
     exp: moment().add('days', 7).valueOf()
@@ -99,7 +98,7 @@ app.post('/auth/token', passport.authenticate('local', { session: false }), func
   res.send({ token: token });
 });
 
-app.post('/auth/signup', function(req, res, next) {
+app.post('/api/signup', function(req, res, next) {
   var user = new User({
     email: req.body.email,
     password: req.body.password
