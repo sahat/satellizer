@@ -12,6 +12,9 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'mgcrea.ngStrap'
         templateUrl: 'views/signup.html',
         controller: 'SignupCtrl'
       })
+      .when('/logout', {
+        controller: 'LogoutCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });

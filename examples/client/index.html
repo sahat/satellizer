@@ -22,7 +22,7 @@
   </ul>
   <ul class="nav navbar-nav pull-right" ng-if="currentUser">
     <li class="navbar-text" ng-bind="currentUser.email"></li>
-    <li><a href="javascript:void(0)" ng-click="logout()">Logout</a></li>
+    <li><a href="/#/logout">Logout</a></li>
   </ul>
 </div>
 
@@ -34,12 +34,9 @@
 <script src="vendor/angular-messages.js"></script>
 <script src="vendor/angular-resource.js"></script>
 <script src="vendor/angular-route.js"></script>
-<script src="vendor/angular-cookies.js"></script>
-<script src="vendor/moment.min.js"></script>
 
 <script src="app.js"></script>
 <script src="directives/repeatPassword.js"></script>
-<script src="controllers/detail.js"></script>
 <script src="controllers/login.js"></script>
 <script src="controllers/signup.js"></script>
 <script src="services/auth.js"></script>
