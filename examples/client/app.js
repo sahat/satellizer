@@ -14,7 +14,12 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'mgcrea.ngStrap'
         controller: 'SignupCtrl'
       })
       .when('/logout', {
+        template: null,
         controller: 'LogoutCtrl'
+      })
+      .when('/protected', {
+        templateUrl: 'views/protected.html',
+        controller: 'ProtectedCtrl'
       })
       .otherwise({
         redirectTo: '/'

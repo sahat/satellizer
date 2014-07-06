@@ -15,13 +15,13 @@
   </div>
   <ul class="nav navbar-nav">
     <li data-match-route="/$"><a href="/">Home</a></li>
+    <li data-match-route="/protected" ng-if="currentUser"><a href="/#/protected">Protected</a></li>
   </ul>
   <ul class="nav navbar-nav pull-right" ng-if="!currentUser">
     <li data-match-route="/login"><a href="/#/login">Login</a></li>
     <li data-match-route="/signup"><a href="/#/signup">Sign up</a></li>
   </ul>
   <ul class="nav navbar-nav pull-right" ng-if="currentUser">
-    <li class="navbar-text" ng-bind="currentUser.email"></li>
     <li><a href="/#/logout">Logout</a></li>
   </ul>
 </div>
@@ -37,8 +37,12 @@
 
 <script src="app.js"></script>
 <script src="directives/repeatPassword.js"></script>
+<script src="controllers/home.js"></script>
 <script src="controllers/login.js"></script>
 <script src="controllers/signup.js"></script>
+<script src="controllers/logout.js"></script>
+<script src="controllers/protected.js"></script>
 <script src="services/auth.js"></script>
+<script src="services/account.js"></script>
 </body>
 </html>
