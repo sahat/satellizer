@@ -63,7 +63,7 @@ function ensureAuthenticated(req, res, next) {
       if (decoded.exp <= Date.now()) {
         res.send(400, 'Access token has expired');
       } else {
-        User.findById(decoded.prn, function(err, user) {
+        User.findById(decoded.prn, '-password', function(err, user) {
           console.log(user);
           req.user = user;
           return next();
