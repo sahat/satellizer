@@ -64,7 +64,6 @@ function ensureAuthenticated(req, res, next) {
         res.send(400, 'Access token has expired');
       } else {
         User.findById(decoded.prn, '-password', function(err, user) {
-          console.log(user);
           req.user = user;
           return next();
         });
@@ -111,7 +110,6 @@ app.post('/api/signup', function(req, res, next) {
 });
 
 app.get('/api/me', ensureAuthenticated, function(req, res) {
-  console.log(req.user);
   res.send(req.user);
 });
 
