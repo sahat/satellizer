@@ -1,6 +1,10 @@
 body {
   background: #e4e7ec;
-  font-family: 'Roboto', sans-serif;;
+  font-family: 'Roboto', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Montserrat', sans-serif;
 }
 
 .navbar-default {
@@ -24,7 +28,6 @@ body {
   border-color: #cfd9D7;
   border-radius: 2px;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
-  -webkit-box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
 }
 
 .panel-default > .panel-heading {
@@ -36,8 +39,12 @@ body {
   background-color: #f6f6f6;
 }
 
-.btn {
-  border-radius: 0;
+.btn-primary {
+  background-color: #1d7cf4;
+}
+
+.btn-success {
+  background-color: #22ae5f;
 }
 
 .form-control {
