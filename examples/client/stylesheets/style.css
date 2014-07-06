@@ -3,14 +3,6 @@ body {
   font-family: 'Roboto', sans-serif;;
 }
 
-a {
-  color: #000;
-}
-
-.text-muted {
-  color: #90939a;
-}
-
 .navbar-default {
   box-shadow: 0 3px 2px -3px rgba(0, 0, 0, 0.1);
   background-color: #fff;
@@ -28,24 +20,6 @@ a {
   background-color: #f7f7f7;
 }
 
-.btn {
-  border-radius: 0;
-}
-
-
-.form-control {
-  border-radius: 0;
-}
-
-body {
-  padding-bottom: 20px;
-}
-
-.center-form {
-  width: 330px;
-  margin: 12% auto;
-}
-
 .panel {
   border-color: #cfd9D7;
   border-radius: 2px;
@@ -60,4 +34,17 @@ body {
   font-size: 85%;
   text-transform: uppercase;
   background-color: #f6f6f6;
+}
+
+.btn {
+  border-radius: 0;
+}
+
+.form-control {
+  border-radius: 0;
+}
+
+.center-form {
+  width: 330px;
+  margin: 12% auto;
 }
