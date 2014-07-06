@@ -92,7 +92,7 @@ app.use(express.static(path.join(__dirname, '../../client')));
 
 app.post('/api/login', passport.authenticate('local', { session: false }), function(req, res) {
   var payload = {
-    prn: req.user,
+    prn: req.user.id,
     exp: moment().add('days', 7).valueOf()
   };
   var token = jwt.encode(payload, app.get('tokenSecret'));
