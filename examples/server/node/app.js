@@ -56,14 +56,15 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, function(email, passw
 }));
 
 function ensureAuthenticated(req, res, next) {
-  var token = req.body.accessToken || req.query.accessToken || req.headers['x-access-token'];
+  var token = req.body.token || req.query.token || req.headers['x-token'];
   if (token) {
     try {
       var decoded = jwt.decode(token, app.get('tokenSecret'));
       if (decoded.exp <= Date.now()) {
         res.send(400, 'Access token has expired');
       } else {
-        User.findOne({ _id: decoded.prn.id }, function(err, user) {
+        User.findById(decoded.prn, function(err, user) {
+          console.log(user);
           req.user = user;
           return next();
         });
@@ -72,7 +73,7 @@ function ensureAuthenticated(req, res, next) {
       return next();
     }
   } else {
-    next();
+    return res.send(401);
   }
 }
 
@@ -110,6 +111,7 @@ app.post('/api/signup', function(req, res, next) {
 });
 
 app.get('/api/me', ensureAuthenticated, function(req, res) {
+  console.log(req.user);
   res.send(req.user);
 });
 
