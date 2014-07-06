@@ -29,13 +29,9 @@ angular.module('MyApp')
           });
         },
         logout: function() {
-          console.log('logging out')
           delete $window.localStorage.token;
           $rootScope.currentUser = null;
           $location.path('/');
         }
       };
     }]);
-
-// fix logout redirect
-// fix not logged in on home page
