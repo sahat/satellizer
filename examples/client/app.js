@@ -3,6 +3,7 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'mgcrea.ngStrap'
     $routeProvider
       .when('/', {
         templateUrl: 'views/home.html',
+        controller: 'HomeCtrl'
       })
       .when('/login', {
         templateUrl: 'views/login.html',
