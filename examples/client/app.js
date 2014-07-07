@@ -1,5 +1,8 @@
+// TODO: remove querystring from $http.get since i use interceptors to modify headers
+// TODO: redirect to /login before loading the protected
+
 angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'mgcrea.ngStrap'])
-  .config(['$routeProvider', function ($routeProvider) {
+  .config(['$routeProvider', function($routeProvider) {
     $routeProvider
       .when('/', {
         templateUrl: 'views/home.html',
@@ -25,21 +28,20 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'mgcrea.ngStrap'
         redirectTo: '/'
       });
   }])
-  .config(function ($httpProvider) {
-    $httpProvider.interceptors.push(function ($rootScope, $q, $window, $location) {
+  .config(function($httpProvider) {
+    $httpProvider.interceptors.push(function($rootScope, $q, $window, $location) {
       return {
-        request: function (config) {
-          console.log(config);
+        request: function(config) {
           if ($window.localStorage.token) {
             config.headers.Authorization = 'Bearer ' + $window.localStorage.token;
           }
           return config;
         },
-        response: function (response) {
+        responseError: function(response) {
           if (response.status === 401) {
             $location.path('/login');
           }
-          return response || $q.when(response);
+          return $q.reject(response);
         }
       };
     });
