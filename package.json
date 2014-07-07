@@ -1,0 +1,10 @@
+{
+  "name": "ngAuth",
+  "version": "0.0.0",
+  "devDependencies": {
+    "karma": "~0.10"
+  },
+  "scripts": {
+    "test": "karma start test/karma.conf.js"
+  }
+}
