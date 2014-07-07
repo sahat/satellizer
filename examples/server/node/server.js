@@ -88,6 +88,7 @@ app.use(bodyParser.urlencoded());
 app.use(methodOverride());
 app.use(passport.initialize());
 app.use(express.static(path.join(__dirname, '../../client')));
+app.use(express.static(path.join(__dirname, '../../..')));
 
 app.post('/api/login', passport.authenticate('local', { session: false }), function(req, res) {
   var payload = {
