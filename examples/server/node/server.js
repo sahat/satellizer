@@ -56,8 +56,8 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, function(email, passw
 }));
 
 function ensureAuthenticated(req, res, next) {
-  var token = req.body.token || req.query.token || req.headers['x-token'];
-  if (token) {
+  if (req.headers.authorization) {
+    var token = req.headers.authorization.split(' ')[1];
     try {
       var decoded = jwt.decode(token, app.get('tokenSecret'));
       if (decoded.exp <= Date.now()) {
