@@ -4,31 +4,44 @@
  * License: MIT
  */
 
-(function(window, angular, undefined) {
-  angular.module('ngAuth', [])
-    .provider('ngAuth', function() {
-      var config = {
-        apiUrl: '/api',
-        signOutUrl: '/auth/sign_out',
-        emailSignInPath: '/auth/sign_in',
-        emailRegistrationPath: '/auth',
-        confirmationSuccessUrl: window.location.href,
-        tokenValidationPath: '/auth/validate_token',
-        proxyIf: function() {
-          return false;
+angular.module('ngAuth', [])
+  .provider('ngAuth', function() {
+    var config = {
+      apiUrl: '/api',
+      signOutUrl: '/auth/sign_out',
+      emailSignInPath: '/auth/sign_in',
+      emailRegistrationPath: '/auth',
+      confirmationSuccessUrl: window.location.href,
+      tokenValidationPath: '/auth/validate_token',
+      proxyIf: function() {
+        return false;
+      },
+      proxyUrl: '/proxy',
+      authProviderPaths: {
+        github: '/auth/github',
+        facebook: '/auth/facebook',
+        google: '/auth/google_oauth2'
+      }
+    };
+    this.$get = ['$http', function($http) {
+      return {};
+    }];
+  })
+  .config(['$httpProvider', function($httpProvider) {
+    $httpProvider.interceptors.push(function($rootScope, $q, $window, $location) {
+      return {
+        request: function(config) {
+          if ($window.localStorage.token) {
+            config.headers.Authorization = 'Bearer ' + $window.localStorage.token;
+          }
+          return config;
         },
-        proxyUrl: '/proxy',
-        authProviderPaths: {
-          github: '/auth/github',
-          facebook: '/auth/facebook',
-          google: '/auth/google_oauth2'
+        responseError: function(response) {
+          if (response.status === 401) {
+            $location.path('/login');
+          }
+          return $q.reject(response);
         }
-      };
-
-      this.$get = ['$http', function($http) {
-
-        return {};
-      }];
-
+      }
     });
-})(window, window.angular);
+  }]);
