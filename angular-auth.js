@@ -5,34 +5,9 @@
  */
 
 angular.module('ngAuth', [])
-  .provider('ngAuth', function() {
-//    var config = {
-//      apiUrl: '/api',
-//      signOutUrl: '/auth/sign_out',
-//      emailSignInPath: '/auth/sign_in',
-//      emailRegistrationPath: '/auth',
-//      confirmationSuccessUrl: window.location.href,
-//      tokenValidationPath: '/auth/validate_token',
-//      proxyIf: function() {
-//        return false;
-//      },
-//      proxyUrl: '/proxy',
-//      authProviderPaths: {
-//        github: '/auth/github',
-//        facebook: '/auth/facebook',
-//        google: '/auth/google_oauth2'
-//      }
-//    };
-    this.$get = ['$http', function($http) {
-      return {
-        hello: function() {
-          console.log('Hello world');
-        }
-      };
-    }];
-  })
-  .factory('Local', ['$http', '$location', '$rootScope', '$alert', '$window',
-    function($http, $location, $rootScope, $alert, $window) {
+  .provider('Auth', function() {
+
+    this.$get = ['$http', '$location', '$rootScope', '$alert', '$window', function($http, $location, $rootScope, $alert, $window) {
       var token = $window.localStorage.token;
 
       if (token) {
@@ -45,28 +20,35 @@ angular.module('ngAuth', [])
         }
       }
 
-      return {
-        login: function(user) {
-          return $http.post('/api/login', user).success(function(data) {
-            $window.localStorage.token = data.token;
-            var token = $window.localStorage.token;
-            var payload = JSON.parse($window.atob(token.split('.')[1]));
-            $rootScope.currentUser = payload.prn;
-            $location.path('/');
-          });
-        },
-        signup: function(user) {
-          return $http.post('/api/signup', user).success(function() {
-            $location.path('/login');
-          });
-        },
-        logout: function() {
-          delete $window.localStorage.token;
-          $rootScope.currentUser = null;
+      function login(user) {
+        return $http.post('/api/login', user).success(function(data) {
+          $window.localStorage.token = data.token;
+          var token = $window.localStorage.token;
+          var payload = JSON.parse($window.atob(token.split('.')[1]));
+          $rootScope.currentUser = payload.prn;
           $location.path('/');
-        }
+        });
+      }
+
+      function signup(user) {
+        return $http.post('/api/signup', user).success(function() {
+          $location.path('/login');
+        });
+      }
+
+      function logout() {
+        delete $window.localStorage.token;
+        $rootScope.currentUser = null;
+        $location.path('/');
+      }
+
+      return {
+        login: login,
+        signup: signup,
+        logout: logout
       };
-    }])
+    }];
+  })
   .factory('authInterceptor', function($q, $window, $location) {
     return {
       request: function(config) {
