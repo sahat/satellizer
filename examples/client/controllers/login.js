@@ -1,7 +1,7 @@
 angular.module('MyApp')
-  .controller('LoginCtrl', ['$scope', 'Auth', function($scope, Auth) {
+  .controller('LoginCtrl', ['$scope', 'Local', function($scope, Local) {
     $scope.login = function() {
-      Auth.login({
+      Local.login({
         email: $scope.email,
         password: $scope.password
       });

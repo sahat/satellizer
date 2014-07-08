@@ -1,4 +1,4 @@
 angular.module('MyApp')
-  .controller('LogoutCtrl', ['Auth', function(Auth) {
-    Auth.logout();
+  .controller('LogoutCtrl', ['Local', function(Local) {
+    Local.logout();
   }]);
