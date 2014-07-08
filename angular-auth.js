@@ -13,7 +13,6 @@ angular.module('ngAuth', [])
 
     var config = {
       apiUrl: '/api',
-      logoutUrl: '/logout',
       logoutRedirect: '/',
       loginUrl: '/login',
       loginRedirect: '/',
@@ -25,7 +24,6 @@ angular.module('ngAuth', [])
     this.$get = ['$http', '$location', '$rootScope', '$alert', '$window', function($http, $location, $rootScope, $alert, $window) {
 
       var apiUrl = this.apiUrl;
-      var logoutUrl = this.logoutUrl;
       var logoutRedirect = this.logoutRedirect;
       var loginUrl = this.loginUrl;
       var loginRedirect = this.loginRedirect;
