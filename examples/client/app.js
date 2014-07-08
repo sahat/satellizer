@@ -24,4 +24,7 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'ngAuth', 'mgcre
       .otherwise({
         redirectTo: '/'
       });
+  }])
+  .config(['AuthProvider', function(AuthProvider) {
+    AuthProvider.apiUrl = '/api';
   }]);
