@@ -6,29 +6,13 @@
 
 angular.module('ngAuth', [])
   .provider('Auth', function() {
-    this.apiUrl = '/api';
-    this.logoutUrl = '/logout';
-    this.loginUrl = '/login';
-    this.signupUrl = '/signup';
-
-    var config = {
-      apiUrl: '/api',
-      logoutRedirect: '/',
-      loginUrl: '/login',
-      loginRedirect: '/',
-      signupUrl: '/signup'
-    };
-
-    angular.extend(this, config);
+    var apiUrl = '/api';
+    var logoutRedirect = '/';
+    var loginRedirect = '/';
+    var loginUrl = '/login';
+    var signupUrl = '/signup';
 
     this.$get = ['$http', '$location', '$rootScope', '$alert', '$window', function($http, $location, $rootScope, $alert, $window) {
-
-      var apiUrl = this.apiUrl;
-      var logoutRedirect = this.logoutRedirect;
-      var loginUrl = this.loginUrl;
-      var loginRedirect = this.loginRedirect;
-      var signupUrl = this.signupUrl;
-
       var token = $window.localStorage.token;
 
       if (token) {
@@ -69,6 +53,21 @@ angular.module('ngAuth', [])
         logout: logout
       };
     }];
+    this.setApiUrl = function(value) {
+      apiUrl = value;
+    };
+    this.setLogoutRedirect = function(value) {
+      logoutRedirect = value;
+    };
+    this.setLoginRedirect = function(value) {
+      loginRedirect = value;
+    };
+    this.loginUrl = function(value) {
+      loginUrl = value;
+    };
+    this.signupUrl = function(value) {
+      signupUrl = value;
+    };
   })
   .factory('authInterceptor', function($q, $window, $location) {
     return {
