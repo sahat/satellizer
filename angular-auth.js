@@ -11,14 +11,22 @@ angular.module('ngAuth', [])
       logoutRedirect: '/',
       loginRedirect: '/',
       loginUrl: '/login',
-      signupUrl: '/signup'
+      signupUrl: '/signup',
+      oauth2: {
+        clientId: '',
+        redirectUri: '',
+        authorizationEndpoint: '',
+        verifyFunc: '',
+        localStorageName: 'accessToken',
+        scopes: []
+      }
     };
 
     return {
       configure: function(params) {
         angular.extend(options, params)
       },
-      $get: ['$http', '$location', '$rootScope', '$alert', '$window', function($http, $location, $rootScope, $alert, $window) {
+      $get: function($http, $location, $rootScope, $alert, $window) {
         var token = $window.localStorage.token;
 
         if (token) {
@@ -58,7 +66,7 @@ angular.module('ngAuth', [])
           signup: signup,
           logout: logout
         };
-      }]
+      }
     };
   })
   .factory('authInterceptor', function($q, $window, $location) {
@@ -77,6 +85,6 @@ angular.module('ngAuth', [])
       }
     }
   })
-  .config(['$httpProvider', function($httpProvider) {
+  .config(function($httpProvider) {
     $httpProvider.interceptors.push('authInterceptor');
-  }]);
+  });

@@ -1,4 +1,4 @@
 angular.module('MyApp')
-  .controller('HomeCtrl', ['$scope', 'Auth', function($scope, Auth) {
+  .controller('HomeCtrl', function($scope, Auth) {
 
-  }]);
+  });
