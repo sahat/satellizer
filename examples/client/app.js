@@ -1,5 +1,5 @@
 angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'ngAuth', 'mgcrea.ngStrap'])
-  .config(['$routeProvider', function($routeProvider) {
+  .config(['$routeProvider', 'AuthProvider', function($routeProvider, AuthProvider) {
     $routeProvider
       .when('/', {
         templateUrl: 'views/home.html',
@@ -24,8 +24,7 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'ngAuth', 'mgcre
       .otherwise({
         redirectTo: '/'
       });
-  }])
-  .config(['AuthProvider', function(AuthProvider) {
+
     AuthProvider.configure({
       apiUrl: '/api'
     });
