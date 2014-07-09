@@ -26,5 +26,7 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'ngAuth', 'mgcre
       });
   }])
   .config(['AuthProvider', function(AuthProvider) {
-    AuthProvider.setApiUrl('/api');
+    AuthProvider.configure({
+      apiUrl: '/api'
+    });
   }]);
