@@ -26,6 +26,18 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'ngAuth', 'mgcre
       });
 
     AuthProvider.configure({
-      apiUrl: '/api'
+      apiUrl: '/api',
+      facebook: {
+        clientId: '',
+        redirectUri: '',
+        scopes: []
+      },
+      hackerSchool: {
+        clientId: '',
+        redirectUri: '',
+        scopes: [],
+        verificationEndpoint: '',
+        authorizationEndpoint: ''
+      }
     });
   });
