@@ -15,6 +15,13 @@
 
             <button type="submit" ng-disabled="loginForm.$invalid" class="btn btn-lg btn-block btn-success">Sign In</button>
           </form>
+
+          <hr/>
+
+          <div class="btn-group">
+            <button class="btn btn-primary" ng-click="authenticate('facebook')">Login with Facebook</button>
+            <button class="btn btn-danger" ng-click="authenticate('google')">Login with Google</button>
+          </div>
         </div>
     </div>
   </div>
