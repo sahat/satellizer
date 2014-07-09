@@ -90,7 +90,7 @@ app.use(passport.initialize());
 app.use(express.static(path.join(__dirname, '../../client')));
 app.use(express.static(path.join(__dirname, '../../..')));
 
-app.post('/api/login', passport.authenticate('local', { session: false }), function(req, res) {
+app.post('/auth/login', passport.authenticate('local', { session: false }), function(req, res) {
   var payload = {
     prn: req.user.id,
     exp: moment().add('days', 7).valueOf()
@@ -99,7 +99,7 @@ app.post('/api/login', passport.authenticate('local', { session: false }), funct
   res.send({ token: token });
 });
 
-app.post('/api/signup', function(req, res, next) {
+app.post('/auth/signup', function(req, res, next) {
   var user = new User({
     email: req.body.email,
     password: req.body.password

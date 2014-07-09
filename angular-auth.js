@@ -7,18 +7,19 @@
 angular.module('ngAuth', [])
   .provider('Auth', function() {
     var options = {
-      apiUrl: '/api',
       logoutRedirect: '/',
       loginRedirect: '/',
-      loginUrl: '/login',
-      signupUrl: '/signup',
-      oauth2: {
-        clientId: '',
-        redirectUri: '',
-        authorizationEndpoint: '',
-        verifyFunc: '',
-        localStorageName: 'accessToken',
-        scopes: []
+      loginUrl: '/auth/login',
+      signupUrl: '/auth/signup',
+      providers: {
+        facebook: {
+          appId: '',
+          redirectUri: ''
+        },
+        google: {
+          clientId: '',
+          redirectUri: ''
+        }
       }
     };
 
@@ -40,7 +41,7 @@ angular.module('ngAuth', [])
         }
 
         function login(user) {
-          return $http.post(options.apiUrl + options.loginUrl, user).success(function(data) {
+          return $http.post(options.loginUrl, user).success(function(data) {
             $window.localStorage.token = data.token;
             var token = $window.localStorage.token;
             var payload = JSON.parse($window.atob(token.split('.')[1]));
@@ -50,8 +51,8 @@ angular.module('ngAuth', [])
         }
 
         function signup(user) {
-          return $http.post(options.apiUrl + options.signupUrl, user).success(function() {
-            $location.path(loginUrl);
+          return $http.post(options.signupUrl, user).success(function() {
+            $location.path(options.loginUrl);
           });
         }
 
