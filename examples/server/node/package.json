@@ -14,9 +14,7 @@
     "method-override": "^1.0.2",
     "moment": "^2.7.0",
     "mongoose": "^3.8.12",
-    "morgan": "^1.1.1",
-    "passport": "^0.2.0",
-    "passport-local": "^1.0.0",
+    "morgan": "^1.1.1"
   },
   "devDependencies": {},
   "scripts": {
