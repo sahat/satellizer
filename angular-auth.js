@@ -1,34 +1,31 @@
 /**
  * ngAuth 0.0.1
- * (c) 2014 Sahat Yalkabov <sahat@me.com>
- * License: MIT
+   * (c) 2014 Sahat Yalkabov <sahat@me.com>
+   * License: MIT
  */
 
 angular.module('ngAuth', [])
   .provider('Auth', function() {
-    var options = {
+    var config = {
       logoutRedirect: '/',
       loginRedirect: '/',
       loginUrl: '/auth/login',
       signupUrl: '/auth/signup',
       providers: {
         facebook: {
-          appId: '12345678',
-          redirectUri: '/auth/callback.html',
-          authorizationEndpoint: 'https://www.hackerschool.com/oauth/authorize',
-          verificationEndpoint: 'https://www.hackerschool.com/oauth/token'
-        },
-        google: {
-          clientId: '',
-          redirectUri: '',
-          authorizationEndpoint: '',
-          verificationEndpoint: ''
+          authorizationUrl: 'test1',
+          verificationUrl: 'test2'
         }
       }
     };
     return {
-      configure: function(params) {
-        angular.extend(options, params)
+      provider: function(name, options) {
+        console.log(name, config.providers);
+
+        config.providers[name] =  config.providers[name] || {};
+
+        angular.extend(config.providers[name], options);
+        console.log(config);
       },
       $get: function($http, $location, $rootScope, $alert, $q, $window) {
 
@@ -61,7 +58,7 @@ angular.module('ngAuth', [])
             }
           };
           var deferred = $q.defer();
-          var url = options.providers[provider].authorizationEndpoint;
+          var url = config.providers[provider].authorizationEndpoint;
           var resolved = false;
 
           var formatPopupOptions = function(options) {
@@ -74,8 +71,6 @@ angular.module('ngAuth', [])
             });
             return pairs.join(',');
           };
-
-          console.log(options.providers[provider])
 
           var popup = window.open(url, popupOptions.name, formatPopupOptions(popupOptions.openParams));
 
@@ -113,25 +108,25 @@ angular.module('ngAuth', [])
         }
 
         function login(user) {
-          return $http.post(options.loginUrl, user).success(function(data) {
+          return $http.post(config.loginUrl, user).success(function(data) {
             $window.localStorage.token = data.token;
             var token = $window.localStorage.token;
             var payload = JSON.parse($window.atob(token.split('.')[1]));
             $rootScope.currentUser = payload.prn;
-            $location.path(options.loginRedirect);
+            $location.path(config.loginRedirect);
           });
         }
 
         function signup(user) {
-          return $http.post(options.signupUrl, user).success(function() {
-            $location.path(options.loginUrl);
+          return $http.post(config.signupUrl, user).success(function() {
+            $location.path(config.loginUrl);
           });
         }
 
         function logout() {
           delete $window.localStorage.token;
           $rootScope.currentUser = null;
-          $location.path(options.logoutRedirect);
+          $location.path(config.logoutRedirect);
         }
 
         return {
