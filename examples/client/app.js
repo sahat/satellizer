@@ -25,5 +25,8 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'ngAuth', 'mgcre
         redirectTo: '/'
       });
 
-    AuthProvider.configure();
+    AuthProvider.configure('facebook', {
+      appId: '621491837925521',
+      scope: 'email'
+    });
   });

@@ -1,7 +1,7 @@
 /**
  * ngAuth 0.0.1
-   * (c) 2014 Sahat Yalkabov <sahat@me.com>
-   * License: MIT
+ * (c) 2014 Sahat Yalkabov <sahat@me.com>
+ * License: MIT
  */
 
 angular.module('ngAuth', [])
@@ -13,13 +13,15 @@ angular.module('ngAuth', [])
       signupUrl: '/auth/signup',
       providers: {
         facebook: {
-          authorizationUrl: 'test1',
-          verificationUrl: 'test2'
+          appId: null,
+          scope: null,
+          authorizationUrl: 'https://www.facebook.com/dialog/oauth',
+          verificationUrl: 'https://graph.facebook.com/oauth/access_token'
         }
       }
     };
     return {
-      provider: function(name, options) {
+      configure: function(name, options) {
         console.log(name, config.providers);
 
         config.providers[name] =  config.providers[name] || {};
@@ -28,7 +30,6 @@ angular.module('ngAuth', [])
         console.log(config);
       },
       $get: function($http, $location, $rootScope, $alert, $q, $window) {
-
         function authenticate(provider) {
           getTokenByPopup(provider).then(function(params) {
             Token.verifyAsync(params.access_token).then(function(data) {
@@ -58,9 +59,10 @@ angular.module('ngAuth', [])
             }
           };
           var deferred = $q.defer();
-          var url = config.providers[provider].authorizationEndpoint;
+          var url = config.providers[provider].authorizationUrl;
           var resolved = false;
 
+          console.log(url);
           var formatPopupOptions = function(options) {
             var pairs = [];
             angular.forEach(options, function(value, key) {
@@ -72,7 +74,7 @@ angular.module('ngAuth', [])
             return pairs.join(',');
           };
 
-          var popup = window.open(url, popupOptions.name, formatPopupOptions(popupOptions.openParams));
+          var popup = window.open(url + '?appId=' + config.providers.facebook.appId, popupOptions.name, formatPopupOptions(popupOptions.openParams));
 
           // TODO: binding occurs for each reauthentication, leading to leaks for long-running apps.
 
