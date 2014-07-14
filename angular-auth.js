@@ -26,6 +26,19 @@ angular.module('ngAuth', [])
         }
       }
     };
+
+    var objectToQueryString = function(obj) {
+      var str = [];
+      angular.forEach(obj, function(value, key) {
+        str.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+      });
+      return str.join('&');
+    };
+
+    var oauth = function() {
+
+    };
+
     return {
       setLogoutRedirect: function(value) {
         config.logoutRedirect = value;
@@ -46,16 +59,9 @@ angular.module('ngAuth', [])
         angular.extend(config.providers.google, opts);
       },
       oauth2: function(name, opts) {
-
+        config.providers[name] = config.providers[name] || {};
+        angular.extend(config.providers[name], opts);
       },
-//      configure: function(name, options) {
-//        console.log(name, config.providers);
-//
-//        config.providers[name] = config.providers[name] || {};
-//
-//        angular.extend(config.providers[name], options);
-//        console.log(config);
-//      },
       $get: function($http, $location, $rootScope, $alert, $q, $window) {
         var token = $window.localStorage.token;
 
@@ -70,14 +76,8 @@ angular.module('ngAuth', [])
         }
 
         return {
-          oauth: function(provider, options) {
-            var objectToQueryString = function(obj) {
-              var str = [];
-              angular.forEach(obj, function(value, key) {
-                str.push(encodeURIComponent(key) + "=" + encodeURIComponent(value));
-              });
-              return str.join("&");
-            };
+          authenticate: function(provider) {
+            // TODO: Not yet implemented
           },
           login: function(user) {
             return $http.post(config.loginUrl, user).success(function(data) {
