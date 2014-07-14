@@ -13,14 +13,18 @@ angular.module('ngAuth', [])
       signupUrl: '/signup',
       providers: {
         facebook: {
-          appId: null,
+          clientId: null,
           scope: null,
+          redirectUri: null,
+          responseType: 'token',
           authorizationUrl: 'https://www.facebook.com/dialog/oauth',
           verificationUrl: 'https://graph.facebook.com/oauth/access_token'
         },
         google: {
           clientId: null,
           scope: null,
+          redirectUri: null,
+          responseType: 'token',
           authorizationUrl: 'https://accounts.google.com/o/oauth2/auth',
           verificationUrl: 'https://accounts.google.com/o/oauth2/token'
         }
@@ -35,9 +39,21 @@ angular.module('ngAuth', [])
       return str.join('&');
     };
 
+
+    var getParams = function(provider) {
+      return {
+        response_type: config.providers[provider].responseType,
+        client_id: config.providers[provider].clientId,
+        redirect_uri: config.providers[provider].redirectUri,
+        scope: config.providers[provider].scope
+      }
+    };
+
     var oauth = function() {
 
     };
+
+
 
     this.setLogoutRedirect = function(value) {
       config.logoutRedirect = value;
@@ -83,7 +99,24 @@ angular.module('ngAuth', [])
 
       return {
         authenticate: function(provider) {
-          // TODO: Not yet implemented
+          var popupOptions = {
+            name: 'AuthPopup',
+            openParams: {
+              width: 650,
+              height: 300,
+              resizable: true,
+              scrollbars: true,
+              status: true
+            }
+          };
+
+          var deferred = $q.defer();
+          var resolved = false;
+          var params = getParams(provider);
+          var url = config.providers[provider].authorizationUrl + '?' + objectToQueryString(params);
+          console.log(url);
+
+
         },
         login: function(user) {
           return $http.post(config.loginUrl, user).success(function(data) {
