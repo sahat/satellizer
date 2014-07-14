@@ -25,8 +25,21 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'ngAuth', 'mgcre
         redirectTo: '/'
       });
 
-    AuthProvider.configure('facebook', {
+    AuthProvider.facebook({
       appId: '621491837925521',
       scope: 'email'
     });
+
+    AuthProvider.google({
+      appId: '621491837925521',
+      scope: 'email'
+    });
+
+    AuthProvider.oauth2('hackerSchool', {
+      appId: '621491837925521',
+      scope: 'email'
+    });
+
+    AuthProvider.setLoginUrl('/login');
+    AuthProvider.setSignupUrl('/signup');
   });
