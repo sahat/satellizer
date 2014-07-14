@@ -17,6 +17,12 @@ angular.module('ngAuth', [])
           scope: null,
           authorizationUrl: 'https://www.facebook.com/dialog/oauth',
           verificationUrl: 'https://graph.facebook.com/oauth/access_token'
+        },
+        google: {
+          clientId: null,
+          scope: null,
+          authorizationUrl: 'https://accounts.google.com/o/oauth2/auth',
+          verificationUrl: 'https://accounts.google.com/o/oauth2/token'
         }
       }
     };
@@ -37,6 +43,7 @@ angular.module('ngAuth', [])
         angular.extend(config.providers.facebook, opts);
       },
       google: function(opts) {
+        angular.extend(config.providers.google, opts);
       },
       oauth2: function(name, opts) {
 
