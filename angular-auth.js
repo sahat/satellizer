@@ -9,8 +9,8 @@ angular.module('ngAuth', [])
     var config = {
       logoutRedirect: '/',
       loginRedirect: '/',
-      loginUrl: '/auth/login',
-      signupUrl: '/auth/signup',
+      loginUrl: '/login',
+      signupUrl: '/signup',
       providers: {
         facebook: {
           appId: null,
@@ -34,10 +34,9 @@ angular.module('ngAuth', [])
         config.signupUrl = value;
       },
       facebook: function(opts) {
-
+        angular.extend(config.providers.facebook, opts);
       },
       google: function(opts) {
-
       },
       oauth2: function(name, opts) {
 
