@@ -39,67 +39,72 @@ angular.module('ngAuth', [])
 
     };
 
-    return {
-      setLogoutRedirect: function(value) {
-        config.logoutRedirect = value;
-      },
-      setLoginRedirect: function(value) {
-        config.loginRedirect = value;
-      },
-      setLoginUrl: function(value) {
-        config.loginUrl = value;
-      },
-      setSignupUrl: function(value) {
-        config.signupUrl = value;
-      },
-      facebook: function(opts) {
-        angular.extend(config.providers.facebook, opts);
-      },
-      google: function(opts) {
-        angular.extend(config.providers.google, opts);
-      },
-      oauth2: function(name, opts) {
-        config.providers[name] = config.providers[name] || {};
-        angular.extend(config.providers[name], opts);
-      },
-      $get: function($http, $location, $rootScope, $alert, $q, $window) {
-        var token = $window.localStorage.token;
+    this.setLogoutRedirect = function(value) {
+      config.logoutRedirect = value;
+    };
 
-        if (token) {
-          var payload = JSON.parse($window.atob(token.split('.')[1]));
-          if (Date.now() > payload.exp) {
-            $window.alert('Token has expired');
-            delete $window.localStorage.token;
-          } else {
-            $rootScope.currentUser = payload.prn;
-          }
+    this.setLoginRedirect = function(value) {
+      config.loginRedirect = value;
+    };
+
+    this.setLoginUrl = function(value) {
+      config.loginUrl = value;
+    };
+
+    this.setSignupUrl = function(value) {
+      config.signupUrl = value;
+    };
+
+    this.facebook = function(opts) {
+      angular.extend(config.providers.facebook, opts);
+    };
+
+    this.google = function(opts) {
+      angular.extend(config.providers.google, opts);
+    };
+
+    this.oauth2 = function(name, opts) {
+      config.providers[name] = config.providers[name] || {};
+      angular.extend(config.providers[name], opts);
+    };
+
+    this.$get = function($http, $location, $rootScope, $alert, $q, $window) {
+      var token = $window.localStorage.token;
+
+      if (token) {
+        var payload = JSON.parse($window.atob(token.split('.')[1]));
+        if (Date.now() > payload.exp) {
+          $window.alert('Token has expired');
+          delete $window.localStorage.token;
+        } else {
+          $rootScope.currentUser = payload.prn;
         }
-
-        return {
-          authenticate: function(provider) {
-            // TODO: Not yet implemented
-          },
-          login: function(user) {
-            return $http.post(config.loginUrl, user).success(function(data) {
-              $window.localStorage.token = data.token;
-              var token = $window.localStorage.token;
-              var payload = JSON.parse($window.atob(token.split('.')[1]));
-              $rootScope.currentUser = payload.prn;
-              $location.path(config.loginRedirect);
-            });
-          },
-          signup: function(user) {
-            return $http.post(config.signupUrl, user).success(function() {
-              $location.path(config.loginUrl);
-            });
-          },
-          logout: function() {
-            delete $window.localStorage.token;
-            $rootScope.currentUser = null;
-            $location.path(config.logoutRedirect);
-          }
-        };
       }
+
+      return {
+        authenticate: function(provider) {
+          // TODO: Not yet implemented
+        },
+        login: function(user) {
+          return $http.post(config.loginUrl, user).success(function(data) {
+            $window.localStorage.token = data.token;
+            var token = $window.localStorage.token;
+            var payload = JSON.parse($window.atob(token.split('.')[1]));
+            $rootScope.currentUser = payload.prn;
+            $location.path(config.loginRedirect);
+          });
+        },
+        signup: function(user) {
+          return $http.post(config.signupUrl, user).success(function() {
+            $location.path(config.loginUrl);
+          });
+        },
+        logout: function() {
+          delete $window.localStorage.token;
+          $rootScope.currentUser = null;
+          $location.path(config.logoutRedirect);
+        }
+      };
     };
   })
   .factory('authInterceptor', function($q, $window, $location) {
