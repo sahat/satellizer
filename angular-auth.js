@@ -13,10 +13,12 @@ angular.module('ngAuth', [])
       signupUrl: '/signup',
       providers: {
         facebook: {
-          clientId: null,
+          appId: null,
           scope: null,
           redirectUri: null,
           responseType: 'token',
+          locale: 'en_US',
+          version: 'v2.0',
           authorizationUrl: 'https://www.facebook.com/dialog/oauth',
           verificationUrl: 'https://graph.facebook.com/oauth/access_token'
         },
@@ -45,14 +47,25 @@ angular.module('ngAuth', [])
         response_type: config.providers[provider].responseType,
         client_id: config.providers[provider].clientId,
         redirect_uri: config.providers[provider].redirectUri,
-        scope: config.providers[provider].scope
+        scope: config.providers[provider].scope,
+        display: 'popup'
       }
+    };
+
+    var formatPopupOptions = function(options) {
+      var pairs = [];
+      angular.forEach(options, function(value, key) {
+        if (value || value === 0) {
+          value = value === true ? 'yes' : value;
+          pairs.push(key + '=' + value);
+        }
+      });
+      return pairs.join(',');
     };
 
     var oauth = function() {
 
     };
-
 
 
     this.setLogoutRedirect = function(value) {
@@ -84,7 +97,20 @@ angular.module('ngAuth', [])
       angular.extend(config.providers[name], opts);
     };
 
-    this.$get = function($http, $location, $rootScope, $alert, $q, $window) {
+    this.$get = function($http, $location, $rootScope, $alert, $q, $window, $document) {
+
+      // Facebook enabled
+      if (config.providers.facebook.appId) {
+        loadSDKFunction
+      }
+
+      var _ezfb = {
+        $$ready: false,
+        init: function(params) {
+          _paramsReady.resolve();
+        }
+      };
+
       var token = $window.localStorage.token;
 
       if (token) {
@@ -97,26 +123,44 @@ angular.module('ngAuth', [])
         }
       }
 
+      var facebook = {
+        asyncInit: function() {
+          _paramsReady.promise.then(function() {
+            // Run init function
+            $injector.invoke(_initFunction, null, {'ezfbInitParams': _initParams});
+
+            _ezfb.$$ready = true;
+            _initReady.resolve();
+          });
+        },
+        loadSDK: function() {
+          (function(d) {
+            var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+            if (d.getElementById(id)) {
+              return;
+            }
+            js = d.createElement('script');
+            js.id = id;
+            js.async = true;
+            js.src = '//connect.facebook.net/' + config.providers.facebook.locale + '/sdk.js';
+            ref.parentNode.insertBefore(js, ref);
+          }($document[0]));
+
+          $window.fbAsyncInit = this.asyncInit;
+        }
+      };
+
       return {
         authenticate: function(provider) {
-          var popupOptions = {
-            name: 'AuthPopup',
-            openParams: {
-              width: 650,
-              height: 300,
-              resizable: true,
-              scrollbars: true,
-              status: true
-            }
-          };
+          provider = provider.trim().toLowerCase();
 
-          var deferred = $q.defer();
-          var resolved = false;
-          var params = getParams(provider);
-          var url = config.providers[provider].authorizationUrl + '?' + objectToQueryString(params);
-          console.log(url);
-
-
+         switch (provider) {
+           case 'facebook':
+             console.log('loading facebook');
+             break;
+           default:
+             break;
+         }
         },
         login: function(user) {
           return $http.post(config.loginUrl, user).success(function(data) {
