@@ -20,16 +20,16 @@ angular.module('ngAuth', [])
           locale: 'en_US',
           version: 'v2.0',
           xfbml: true,
-          authorizationUrl: 'https://www.facebook.com/dialog/oauth',
-          verificationUrl: 'https://graph.facebook.com/oauth/access_token'
+          authorizationEndpoint: 'https://www.facebook.com/dialog/oauth',
+          verificationEndpoint: 'https://graph.facebook.com/oauth/access_token'
         },
         google: {
           clientId: null,
           scope: null,
           redirectUri: null,
           responseType: 'token',
-          authorizationUrl: 'https://accounts.google.com/o/oauth2/auth',
-          verificationUrl: 'https://accounts.google.com/o/oauth2/token'
+          authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
+          verificationEndpoint: 'https://accounts.google.com/o/oauth2/token'
         }
       }
     };
