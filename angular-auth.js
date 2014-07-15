@@ -121,6 +121,7 @@ angular.module('ngAuth', [])
                 $window.localStorage.accessToken = FB.getAccessToken();
                 $rootScope.currentUser = FB.getUserID();
                 $location.path(config.loginRedirect);
+                $rootScope.$apply();
               }, { scope: config.providers.facebook.scope });
               break;
             case 'google':
