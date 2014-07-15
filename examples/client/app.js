@@ -25,18 +25,19 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'ngAuth', 'mgcre
         redirectTo: '/'
       });
 
-    AuthProvider.facebook({
-      appId: '621491837925521',
+    AuthProvider.setFacebook({
+      appId: '624059410963642',
+      redirectUri: 'callback.html',
+      scope: 'email,public_profile,user_friends'
+    });
+
+    AuthProvider.setGoogle({
+      clientId: '621491837925521',
       scope: 'email'
     });
 
-    AuthProvider.google({
-      appId: '621491837925521',
-      scope: 'email'
-    });
-
-    AuthProvider.oauth2('hackerSchool', {
-      appId: '621491837925521',
+    AuthProvider.setOauth2('hackerSchool', {
+      clientId: '621491837925521',
       scope: 'email'
     });
 
