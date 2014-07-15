@@ -19,6 +19,7 @@ angular.module('ngAuth', [])
           responseType: 'token',
           locale: 'en_US',
           version: 'v2.0',
+          status: true,
           xfbml: true,
           authorizationEndpoint: 'https://www.facebook.com/dialog/oauth',
           verificationEndpoint: 'https://graph.facebook.com/oauth/access_token'
@@ -32,36 +33,6 @@ angular.module('ngAuth', [])
           verificationEndpoint: 'https://accounts.google.com/o/oauth2/token'
         }
       }
-    };
-
-    var objectToQueryString = function(obj) {
-      var str = [];
-      angular.forEach(obj, function(value, key) {
-        str.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
-      });
-      return str.join('&');
-    };
-
-
-    var getParams = function(provider) {
-      return {
-        response_type: config.providers[provider].responseType,
-        client_id: config.providers[provider].clientId,
-        redirect_uri: config.providers[provider].redirectUri,
-        scope: config.providers[provider].scope,
-        display: 'popup'
-      }
-    };
-
-    var formatPopupOptions = function(options) {
-      var pairs = [];
-      angular.forEach(options, function(value, key) {
-        if (value || value === 0) {
-          value = value === true ? 'yes' : value;
-          pairs.push(key + '=' + value);
-        }
-      });
-      return pairs.join(',');
     };
 
     this.setLogoutRedirect = function(value) {
@@ -80,42 +51,50 @@ angular.module('ngAuth', [])
       config.signupUrl = value;
     };
 
-    this.facebook = function(opts) {
+    this.setFacebook = function(opts) {
       angular.extend(config.providers.facebook, opts);
     };
 
-    this.google = function(opts) {
+    this.setGoogle = function(opts) {
       angular.extend(config.providers.google, opts);
     };
 
-    this.oauth2 = function(name, opts) {
+    this.setOauth2 = function(name, opts) {
       config.providers[name] = config.providers[name] || {};
       angular.extend(config.providers[name], opts);
     };
 
     this.$get = function($http, $location, $rootScope, $alert, $q, $injector, $window, $document) {
 
+      // Facebook
       if (config.providers.facebook.appId) {
         $window.fbAsyncInit = function() {
-          FB.init(config.providers.facebook);
+          FB.init({
+            appId: config.providers.facebook.appId,
+            status: config.providers.facebook.status,
+            xfbml: config.providers.facebook.xfbml,
+            version: config.providers.facebook.version
+          });
         };
 
-        (function(d, s, id){
+        (function(d, s, id) {
           var js, fjs = d.getElementsByTagName(s)[0];
-          if (d.getElementById(id)) {return;}
-          js = d.createElement(s); js.id = id;
+          if (d.getElementById(id)) {
+            return;
+          }
+          js = d.createElement(s);
+          js.id = id;
           js.src = "//connect.facebook.net/" + config.providers.facebook.locale + "/sdk.js";
           fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'facebook-jssdk'));
       }
 
-      var _ezfb = {
-        $$ready: false,
-        init: function(params) {
-          _paramsReady.resolve();
-        }
-      };
+      // Google
+      if (config.providers.google.clientId) {
 
+      }
+
+      // Local
       var token = $window.localStorage.token;
 
       if (token) {
@@ -128,19 +107,20 @@ angular.module('ngAuth', [])
         }
       }
 
-
-
       return {
         authenticate: function(provider) {
           provider = provider.trim().toLowerCase();
 
-         switch (provider) {
-           case 'facebook':
-             console.log('loading facebook');
-             break;
-           default:
-             break;
-         }
+          switch (provider) {
+            case 'facebook':
+              FB.login();
+              break;
+            case 'google':
+              console.log('google signin');
+              break;
+            default:
+              break;
+          }
         },
         login: function(user) {
           return $http.post(config.loginUrl, user).success(function(data) {
