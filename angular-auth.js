@@ -9,8 +9,8 @@ angular.module('ngAuth', [])
     var config = {
       logoutRedirect: '/',
       loginRedirect: '/',
-      loginUrl: '/login',
-      signupUrl: '/signup',
+      loginUrl: '/auth/login',
+      signupUrl: '/auth/signup',
       providers: {
         facebook: {
           appId: null,
@@ -113,7 +113,12 @@ angular.module('ngAuth', [])
 
           switch (provider) {
             case 'facebook':
-              FB.login(function(){}, { scope: config.providers.facebook.scope });
+              FB.login(function(){
+                $window.localStorage.accessToken = FB.getAccessToken();
+                $rootScope.currentUser = FB.getUserID();
+                console.log($rootScope.currentUser);
+                $location.path(config.loginRedirect);
+              }, { scope: config.providers.facebook.scope });
               break;
             case 'google':
               console.log('google signin');
