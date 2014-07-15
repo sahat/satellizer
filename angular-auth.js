@@ -113,7 +113,7 @@ angular.module('ngAuth', [])
 
           switch (provider) {
             case 'facebook':
-              FB.login();
+              FB.login(function(){}, { scope: config.providers.facebook.scope });
               break;
             case 'google':
               console.log('google signin');
