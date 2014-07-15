@@ -96,6 +96,7 @@ angular.module('ngAuth', [])
 
       // Local
       var token = $window.localStorage.token;
+      var accessToken = $window.localStorage.accessToken;
 
       if (token) {
         var payload = JSON.parse($window.atob(token.split('.')[1]));
@@ -105,6 +106,9 @@ angular.module('ngAuth', [])
         } else {
           $rootScope.currentUser = payload.prn;
         }
+      } else if (accessToken) {
+        $rootScope.currentUser = accessToken;
+
       }
 
       return {
@@ -113,10 +117,9 @@ angular.module('ngAuth', [])
 
           switch (provider) {
             case 'facebook':
-              FB.login(function(){
+              FB.login(function() {
                 $window.localStorage.accessToken = FB.getAccessToken();
                 $rootScope.currentUser = FB.getUserID();
-                console.log($rootScope.currentUser);
                 $location.path(config.loginRedirect);
               }, { scope: config.providers.facebook.scope });
               break;
@@ -143,6 +146,7 @@ angular.module('ngAuth', [])
         },
         logout: function() {
           delete $window.localStorage.token;
+          delete $window.localStorage.accessToken;
           $rootScope.currentUser = null;
           $location.path(config.logoutRedirect);
         }
