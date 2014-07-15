@@ -19,6 +19,7 @@ angular.module('ngAuth', [])
           responseType: 'token',
           locale: 'en_US',
           version: 'v2.0',
+          xfbml: true,
           authorizationUrl: 'https://www.facebook.com/dialog/oauth',
           verificationUrl: 'https://graph.facebook.com/oauth/access_token'
         },
@@ -63,11 +64,6 @@ angular.module('ngAuth', [])
       return pairs.join(',');
     };
 
-    var oauth = function() {
-
-    };
-
-
     this.setLogoutRedirect = function(value) {
       config.logoutRedirect = value;
     };
@@ -97,11 +93,20 @@ angular.module('ngAuth', [])
       angular.extend(config.providers[name], opts);
     };
 
-    this.$get = function($http, $location, $rootScope, $alert, $q, $window, $document) {
+    this.$get = function($http, $location, $rootScope, $alert, $q, $injector, $window, $document) {
 
-      // Facebook enabled
       if (config.providers.facebook.appId) {
-        loadSDKFunction
+        $window.fbAsyncInit = function() {
+          FB.init(config.providers.facebook);
+        };
+
+        (function(d, s, id){
+          var js, fjs = d.getElementsByTagName(s)[0];
+          if (d.getElementById(id)) {return;}
+          js = d.createElement(s); js.id = id;
+          js.src = "//connect.facebook.net/" + config.providers.facebook.locale + "/sdk.js";
+          fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
       }
 
       var _ezfb = {
@@ -123,32 +128,7 @@ angular.module('ngAuth', [])
         }
       }
 
-      var facebook = {
-        asyncInit: function() {
-          _paramsReady.promise.then(function() {
-            // Run init function
-            $injector.invoke(_initFunction, null, {'ezfbInitParams': _initParams});
 
-            _ezfb.$$ready = true;
-            _initReady.resolve();
-          });
-        },
-        loadSDK: function() {
-          (function(d) {
-            var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
-            if (d.getElementById(id)) {
-              return;
-            }
-            js = d.createElement('script');
-            js.id = id;
-            js.async = true;
-            js.src = '//connect.facebook.net/' + config.providers.facebook.locale + '/sdk.js';
-            ref.parentNode.insertBefore(js, ref);
-          }($document[0]));
-
-          $window.fbAsyncInit = this.asyncInit;
-        }
-      };
 
       return {
         authenticate: function(provider) {
