@@ -6,6 +6,7 @@
 var _ = require('lodash');
 var bcrypt = require('bcryptjs');
 var bodyParser = require('body-parser');
+var crypto = require('crypto');
 var express = require('express');
 var logger = require('morgan');
 var jwt = require('jwt-simple');
@@ -91,6 +92,7 @@ app.post('/auth/login', function(req, res, next) {
     if (!user) return res.send(401, 'User does not exist');
     user.comparePassword(req.body.password, function(err, isMatch) {
       if (!isMatch) return res.send(401, 'Invalid email and/or password');
+      // todo refactor into a function
       var payload = {
         prn: user._id,
         exp: moment().add('days', 7).valueOf()
@@ -114,6 +116,26 @@ app.post('/auth/signup', function(req, res, next) {
 
 app.post('/auth/facebook', function(req, res, next) {
   var profile = req.body.profile;
+  var signedRequest = req.body.signedRequest;
+
+  var encodedSignature = signedRequest.split('.');
+  var payload = signedRequest.split('.');
+  var appSecret = '298fb6c080fda239b809ae418bf49700';
+
+  // Decode data
+  var b = new Buffer(encodedSignature, 'base64');
+  var signature = b.toString();
+
+  var c = new Buffer(payload, 'base64');
+  var data = JSON.parse(c.toString());
+
+  // Confirm signature
+  var expectedSignature = crypto.createHmac('sha256', appSecret).update(payload).digest('hex');
+  if (signature !== expectedSignature) {
+    return res.send(400, 'Bad signature');
+  }
+
+
   User.findOne({ 'facebook.id': profile.id }, function(err, existingUser) {
     if (existingUser) return res.send(existingUser);
     var user = new User();
