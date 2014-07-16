@@ -4,6 +4,8 @@
  * License: MIT
  */
 
+// TODO: Enable CORS, separate server from client, Gulp server runner
+
 angular.module('ngAuth', [])
   .provider('Auth', function() {
     var config = {
@@ -15,14 +17,11 @@ angular.module('ngAuth', [])
         facebook: {
           appId: null,
           scope: null,
-          redirectUri: null,
           responseType: 'token',
           locale: 'en_US',
           version: 'v2.0',
           status: true,
-          xfbml: true,
-          authorizationEndpoint: 'https://www.facebook.com/dialog/oauth',
-          verificationEndpoint: 'https://graph.facebook.com/oauth/access_token'
+          xfbml: true
         },
         google: {
           clientId: null,
@@ -118,10 +117,13 @@ angular.module('ngAuth', [])
           switch (provider) {
             case 'facebook':
               FB.login(function() {
-                $window.localStorage.accessToken = FB.getAccessToken();
-                $rootScope.currentUser = FB.getUserID();
-                $location.path(config.loginRedirect);
-                $rootScope.$apply();
+                FB.api('/me', function(profile) {
+                  $http.post('/auth/facebook', { profile: profile }).then(function(user) {
+                    $window.localStorage.accessToken = FB.getAccessToken();
+                    $rootScope.currentUser = user;
+                    $location.path(config.loginRedirect);
+                  })
+                });
               }, { scope: config.providers.facebook.scope });
               break;
             case 'google':
