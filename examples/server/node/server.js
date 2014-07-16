@@ -134,7 +134,10 @@ app.post('/auth/facebook', function(req, res, next) {
 
 
   User.findOne({ 'facebook.id': profile.id }, function(err, existingUser) {
-    if (existingUser) return res.send(existingUser);
+    if (existingUser) {
+      var token = getJwtToken(existingUser);
+      return res.send(token);
+    }
     var user = new User();
     user.facebook.id = profile.id;
     user.facebook.email = profile.email;
