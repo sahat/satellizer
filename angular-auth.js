@@ -15,6 +15,7 @@ angular.module('ngAuth', [])
       signupUrl: '/auth/signup',
       providers: {
         facebook: {
+          url: '/auth/facebook',
           appId: null,
           scope: null,
           responseType: 'token',
@@ -118,7 +119,7 @@ angular.module('ngAuth', [])
             case 'facebook':
               FB.login(function() {
                 FB.api('/me', function(profile) {
-                  $http.post('/auth/facebook', { profile: profile }).then(function(user) {
+                  $http.post(config.providers.facebook.url, { profile: profile }).then(function(user) {
                     $window.localStorage.accessToken = FB.getAccessToken();
                     $rootScope.currentUser = user;
                     $location.path(config.loginRedirect);

@@ -26,8 +26,8 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'ngAuth', 'mgcre
       });
 
     AuthProvider.setFacebook({
+      url: '/auth/facebook',
       appId: '624059410963642',
-      redirectUri: 'callback.html',
       scope: 'email,public_profile,user_friends'
     });
 
@@ -41,6 +41,4 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'ngAuth', 'mgcre
       scope: 'email'
     });
 
-    AuthProvider.setLoginUrl('/login');
-    AuthProvider.setSignupUrl('/signup');
   });
