@@ -17,7 +17,16 @@ var path = require('path');
 var userSchema = new mongoose.Schema({
   email: { type: String, unique: true, lowercase: true },
   password: String,
-  facebook: String,
+  facebook: {
+    id: Number,
+    email: String,
+    firstName: String,
+    lastName: String,
+    displayName: String,
+    link: String,
+    gender: String,
+    locale: String
+  },
   google: String,
   twitter: String
 });
@@ -108,13 +117,15 @@ app.post('/auth/facebook', function(req, res, next) {
   var profile = req.body.profile;
   User.findOne({ facebook: profile.id }, function(err, existingUser) {
     if (existingUser) return res.send(existingUser);
-    var user = new User({
-      facebook: profile.id,
-      email: profile.email,
-      name: profile.name,
-      gender: profile.gender,
-      picture: 'https://graph.facebook.com/' + profile.id + '/picture?type=large'
-    });
+    var user = new User();
+    user.facebook.id = profile.id;
+    user.facebook.email = profile.email;
+    user.facebook.firstName = profile.first_name;
+    user.facebook.lastName = profile.last_name;
+    user.facebook.displayName = profile.name;
+    user.facebook.link = profile.link;
+    user.facebook.gender = profile.gender;
+    user.facebook.locale = profile.locale;
     user.save(function(err) {
       if (err) return next(err);
       res.send(user);
