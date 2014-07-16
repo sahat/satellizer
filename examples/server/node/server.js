@@ -74,6 +74,14 @@ function ensureAuthenticated(req, res, next) {
   }
 }
 
+function getJwtToken(user) {
+  var payload = {
+    prn: user._id,
+    exp: moment().add('days', 7).valueOf()
+  };
+  return jwt.encode(payload, app.get('tokenSecret'));
+}
+
 mongoose.connect('localhost');
 
 var app = express();
@@ -92,12 +100,7 @@ app.post('/auth/login', function(req, res, next) {
     if (!user) return res.send(401, 'User does not exist');
     user.comparePassword(req.body.password, function(err, isMatch) {
       if (!isMatch) return res.send(401, 'Invalid email and/or password');
-      // todo refactor into a function
-      var payload = {
-        prn: user._id,
-        exp: moment().add('days', 7).valueOf()
-      };
-      var token = jwt.encode(payload, app.get('tokenSecret'));
+      var token = getJwtToken(user);
       res.send({ token: token });
     });
   });
@@ -128,7 +131,6 @@ app.post('/auth/facebook', function(req, res, next) {
   if (encodedSignature !== expectedSignature) {
     return res.send(400, 'Bad signature');
   }
-
 
   User.findOne({ 'facebook.id': profile.id }, function(err, existingUser) {
     if (existingUser) return res.send(existingUser);
