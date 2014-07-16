@@ -132,6 +132,7 @@ app.post('/auth/facebook', function(req, res, next) {
     return res.send(400, 'Bad signature');
   }
 
+
   User.findOne({ 'facebook.id': profile.id }, function(err, existingUser) {
     if (existingUser) return res.send(existingUser);
     var user = new User();
@@ -144,7 +145,8 @@ app.post('/auth/facebook', function(req, res, next) {
     user.facebook.locale = profile.locale;
     user.save(function(err) {
       if (err) return next(err);
-      res.send(user);
+      var token = getJwtToken(user);
+      res.send(token);
     });
   });
 });
