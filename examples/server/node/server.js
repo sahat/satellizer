@@ -18,15 +18,9 @@ var path = require('path');
 var userSchema = new mongoose.Schema({
   email: { type: String, unique: true, lowercase: true },
   password: String,
-  facebook: {
-    id: Number,
-    email: String,
-    firstName: String,
-    lastName: String,
-    displayName: String,
-    link: String,
-    locale: String
-  },
+  firstName: String,
+  lastName: String,
+  facebook: String,
   google: String,
   twitter: String
 });
@@ -74,7 +68,7 @@ function ensureAuthenticated(req, res, next) {
   }
 }
 
-function getJwtToken(user) {
+function createJwtToken(user) {
   var payload = {
     prn: user._id,
     exp: moment().add('days', 7).valueOf()
@@ -100,7 +94,7 @@ app.post('/auth/login', function(req, res, next) {
     if (!user) return res.send(401, 'User does not exist');
     user.comparePassword(req.body.password, function(err, isMatch) {
       if (!isMatch) return res.send(401, 'Invalid email and/or password');
-      var token = getJwtToken(user);
+      var token = createJwtToken(user);
       res.send({ token: token });
     });
   });
@@ -132,23 +126,19 @@ app.post('/auth/facebook', function(req, res, next) {
     return res.send(400, 'Bad signature');
   }
 
-
-  User.findOne({ 'facebook.id': profile.id }, function(err, existingUser) {
+  User.findOne({ facebook: profile.id }, function(err, existingUser) {
     if (existingUser) {
-      var token = getJwtToken(existingUser);
+      var token = createJwtToken(existingUser);
       return res.send(token);
     }
-    var user = new User();
-    user.facebook.id = profile.id;
-    user.facebook.email = profile.email;
-    user.facebook.firstName = profile.first_name;
-    user.facebook.lastName = profile.last_name;
-    user.facebook.displayName = profile.name;
-    user.facebook.link = profile.link;
-    user.facebook.locale = profile.locale;
+    var user = new User({
+      facebook: profile.id,
+      firstName: profile.first_name,
+      lastName: profile.last_name
+    });
     user.save(function(err) {
       if (err) return next(err);
-      var token = getJwtToken(user);
+      var token = createJwtToken(user);
       res.send(token);
     });
   });
