@@ -16,7 +16,10 @@ var path = require('path');
 
 var userSchema = new mongoose.Schema({
   email: { type: String, unique: true, lowercase: true },
-  password: String
+  password: String,
+  facebook: String,
+  google: String,
+  twitter: String
 });
 
 userSchema.pre('save', function(next) {
@@ -98,6 +101,24 @@ app.post('/auth/signup', function(req, res, next) {
   user.save(function(err) {
     if (err) return next(err);
     res.send(200);
+  });
+});
+
+app.post('/auth/facebook', function(req, res, next) {
+  var profile = req.body.profile;
+  User.findOne({ facebook: profile.id }, function(err, existingUser) {
+    if (existingUser) return res.send(existingUser);
+    var user = new User({
+      facebook: profile.id,
+      email: profile.email,
+      name: profile.name,
+      gender: profile.gender,
+      picture: 'https://graph.facebook.com/' + profile.id + '/picture?type=large'
+    });
+    user.save(function(err) {
+      if (err) return next(err);
+      res.send(user);
+    });
   });
 });
 
