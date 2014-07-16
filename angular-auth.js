@@ -9,7 +9,8 @@
 
 angular.module('ngAuth', [])
   .provider('Auth', function() {
-    var config = {
+
+    var config = this.config = {
       logoutRedirect: '/',
       loginRedirect: '/',
       loginUrl: '/auth/login',
@@ -34,35 +35,6 @@ angular.module('ngAuth', [])
           verificationEndpoint: 'https://accounts.google.com/o/oauth2/token'
         }
       }
-    };
-
-    this.setLogoutRedirect = function(value) {
-      config.logoutRedirect = value;
-    };
-
-    this.setLoginRedirect = function(value) {
-      config.loginRedirect = value;
-    };
-
-    this.setLoginUrl = function(value) {
-      config.loginUrl = value;
-    };
-
-    this.setSignupUrl = function(value) {
-      config.signupUrl = value;
-    };
-
-    this.setFacebook = function(opts) {
-      angular.extend(config.providers.facebook, opts);
-    };
-
-    this.setGoogle = function(opts) {
-      angular.extend(config.providers.google, opts);
-    };
-
-    this.setOauth2 = function(name, opts) {
-      config.providers[name] = config.providers[name] || {};
-      angular.extend(config.providers[name], opts);
     };
 
     this.$get = function($http, $location, $rootScope, $alert, $q, $injector, $window, $document) {
