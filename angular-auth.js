@@ -5,6 +5,7 @@
  */
 
 // TODO: Enable CORS, separate server from client, Gulp server runner
+// TODO: Provider return object, underscore private functions < 10loc
 
 angular.module('ngAuth', [])
   .provider('Auth', function() {
@@ -96,7 +97,6 @@ angular.module('ngAuth', [])
 
       // Local
       var token = $window.localStorage.token;
-      var accessToken = $window.localStorage.accessToken;
 
       if (token) {
         var payload = JSON.parse($window.atob(token.split('.')[1]));
@@ -106,9 +106,6 @@ angular.module('ngAuth', [])
         } else {
           $rootScope.currentUser = payload.prn;
         }
-      } else if (accessToken) {
-        $rootScope.currentUser = accessToken;
-
       }
 
       return {
@@ -117,18 +114,20 @@ angular.module('ngAuth', [])
 
           switch (provider) {
             case 'facebook':
-              FB.login(function() {
+              FB.login(function(response) {
                 FB.api('/me', function(profile) {
 
-                  $http.post(config.providers.facebook.url, {
-                    authResponse: FB.getAuthResponse(),
+                  var info = {
+                    signedRequest: response.authResponse.signedRequest,
                     profile: profile
-                  })
-                    .then(function(user) {
-                      $window.localStorage.accessToken = FB.getAccessToken();
-                      $rootScope.currentUser = user;
-                      $location.path(config.loginRedirect);
-                    })
+                  };
+
+                  $http.post(config.providers.facebook.url, info).success(function(token) {
+                    var payload = JSON.parse($window.atob(token.split('.')[1]));
+                    $rootScope.currentUser = payload.prn;
+                    $location.path(config.loginRedirect);
+                  });
+
                 });
               }, { scope: config.providers.facebook.scope });
               break;
