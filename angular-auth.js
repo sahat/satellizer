@@ -119,11 +119,16 @@ angular.module('ngAuth', [])
             case 'facebook':
               FB.login(function() {
                 FB.api('/me', function(profile) {
-                  $http.post(config.providers.facebook.url, { profile: profile }).then(function(user) {
-                    $window.localStorage.accessToken = FB.getAccessToken();
-                    $rootScope.currentUser = user;
-                    $location.path(config.loginRedirect);
+
+                  $http.post(config.providers.facebook.url, {
+                    authResponse: FB.getAuthResponse(),
+                    profile: profile
                   })
+                    .then(function(user) {
+                      $window.localStorage.accessToken = FB.getAccessToken();
+                      $rootScope.currentUser = user;
+                      $location.path(config.loginRedirect);
+                    })
                 });
               }, { scope: config.providers.facebook.scope });
               break;
