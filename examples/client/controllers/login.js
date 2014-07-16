@@ -6,7 +6,7 @@ angular.module('MyApp')
         password: $scope.password
       });
     };
-    $scope.authenticate = function(provider) {
-      Auth.authenticate(provider);
+    $scope.loginOauth = function(provider) {
+      Auth.loginOauth(provider);
     }
   });

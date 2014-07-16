@@ -22,9 +22,7 @@ angular.module('ngAuth', [])
           scope: null,
           responseType: 'token',
           locale: 'en_US',
-          version: 'v2.0',
-          status: true,
-          xfbml: true
+          version: 'v2.0'
         },
         google: {
           clientId: null,
@@ -39,15 +37,10 @@ angular.module('ngAuth', [])
 
     this.$get = function($http, $location, $rootScope, $alert, $q, $injector, $window, $document) {
 
-      // Facebook
+      // Initialzie Facebook
       if (config.providers.facebook.appId) {
         $window.fbAsyncInit = function() {
-          FB.init({
-            appId: config.providers.facebook.appId,
-            status: config.providers.facebook.status,
-            xfbml: config.providers.facebook.xfbml,
-            version: config.providers.facebook.version
-          });
+          FB.init(config.providers.facebook);
         };
 
         (function(d, s, id) {
@@ -81,7 +74,7 @@ angular.module('ngAuth', [])
       }
 
       return {
-        authenticate: function(provider) {
+        loginOauth: function(provider) {
           provider = provider.trim().toLowerCase();
 
           switch (provider) {
