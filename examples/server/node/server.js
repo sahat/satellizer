@@ -122,18 +122,11 @@ app.post('/auth/facebook', function(req, res, next) {
 
   var appSecret = '298fb6c080fda239b809ae418bf49700';
 
-  // Decode data
-  var data = new Buffer(payload, 'base64').toString();
-  console.log(data);
-
-  // Confirm signature
   var expectedSignature = crypto.createHmac('sha256', appSecret).update(payload).digest('base64');
   expectedSignature = expectedSignature.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 
   if (encodedSignature !== expectedSignature) {
     return res.send(400, 'Bad signature');
-  } else {
-    console.log('Signature match')
   }
 
 
