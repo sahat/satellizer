@@ -24,7 +24,6 @@ var userSchema = new mongoose.Schema({
     lastName: String,
     displayName: String,
     link: String,
-    gender: String,
     locale: String
   },
   google: String,
@@ -115,7 +114,7 @@ app.post('/auth/signup', function(req, res, next) {
 
 app.post('/auth/facebook', function(req, res, next) {
   var profile = req.body.profile;
-  User.findOne({ facebook: profile.id }, function(err, existingUser) {
+  User.findOne({ 'facebook.id': profile.id }, function(err, existingUser) {
     if (existingUser) return res.send(existingUser);
     var user = new User();
     user.facebook.id = profile.id;
@@ -124,7 +123,6 @@ app.post('/auth/facebook', function(req, res, next) {
     user.facebook.lastName = profile.last_name;
     user.facebook.displayName = profile.name;
     user.facebook.link = profile.link;
-    user.facebook.gender = profile.gender;
     user.facebook.locale = profile.locale;
     user.save(function(err) {
       if (err) return next(err);
