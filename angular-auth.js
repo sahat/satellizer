@@ -124,6 +124,7 @@ angular.module('ngAuth', [])
 
                   $http.post(config.providers.facebook.url, info).success(function(token) {
                     var payload = JSON.parse($window.atob(token.split('.')[1]));
+                    $window.localStorage.token = token;
                     $rootScope.currentUser = payload.prn;
                     $location.path(config.loginRedirect);
                   });
