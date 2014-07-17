@@ -35,7 +35,35 @@ angular.module('ngAuth', [])
       }
     };
 
+    this.isAuthenticated = function($q, $location) {
+      var deferred = $q.defer();
+      if (!$rootScope.currentUser) {
+        $location.path('/login')
+      }
+      deferred.resolve();
+      return deferred.promise();
+    };
+
+    this.setProvider = function(provider, params) {
+      angular.extend(config.providers[provider], params);
+    };
+
     this.$get = function($http, $location, $rootScope, $alert, $q, $injector, $window, $document) {
+
+      // Local
+      var token = $window.localStorage.token;
+
+      if (token) {
+        var payload = JSON.parse($window.atob(token.split('.')[1]));
+        if (Date.now() > payload.exp) {
+          $window.alert('Token has expired');
+          delete $window.localStorage.token;
+        } else {
+          $rootScope.currentUser = payload.user;
+
+          console.log($rootScope.currentUser)
+        }
+      }
 
       // Initialzie Facebook
       if (config.providers.facebook.appId) {
@@ -60,18 +88,6 @@ angular.module('ngAuth', [])
 
       }
 
-      // Local
-      var token = $window.localStorage.token;
-
-      if (token) {
-        var payload = JSON.parse($window.atob(token.split('.')[1]));
-        if (Date.now() > payload.exp) {
-          $window.alert('Token has expired');
-          delete $window.localStorage.token;
-        } else {
-          $rootScope.currentUser = payload.prn;
-        }
-      }
 
       return {
         loginOauth: function(provider) {
@@ -90,7 +106,7 @@ angular.module('ngAuth', [])
                   $http.post(config.providers.facebook.url, info).success(function(token) {
                     var payload = JSON.parse($window.atob(token.split('.')[1]));
                     $window.localStorage.token = token;
-                    $rootScope.currentUser = payload.prn;
+                    $rootScope.currentUser = payload.user;
                     $location.path(config.loginRedirect);
                   });
 
@@ -109,7 +125,7 @@ angular.module('ngAuth', [])
             $window.localStorage.token = data.token;
             var token = $window.localStorage.token;
             var payload = JSON.parse($window.atob(token.split('.')[1]));
-            $rootScope.currentUser = payload.prn;
+            $rootScope.currentUser = payload.user;
             $location.path(config.loginRedirect);
           });
         },
@@ -120,7 +136,6 @@ angular.module('ngAuth', [])
         },
         logout: function() {
           delete $window.localStorage.token;
-          delete $window.localStorage.accessToken;
           $rootScope.currentUser = null;
           $location.path(config.logoutRedirect);
         }
@@ -145,4 +160,11 @@ angular.module('ngAuth', [])
   })
   .config(function($httpProvider) {
     $httpProvider.interceptors.push('authInterceptor');
+  })
+  .run(function($rootScope, $location) {
+    $rootScope.$on('$routeChangeStart', function(event, next, current) {
+      if (next.authenticated && !$rootScope.currentUser) {
+        $location.path('/login');
+      }
+    });
   });
