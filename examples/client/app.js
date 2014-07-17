@@ -19,9 +19,21 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'ngAuth', 'mgcre
       })
       .when('/protected', {
         templateUrl: 'views/protected.html',
-        controller: 'ProtectedCtrl'
+        controller: 'ProtectedCtrl',
+//        resolve: AuthProvider.isAuthenticated,
+        authenticated: true
+//        loginRequired: true
       })
       .otherwise({
         redirectTo: '/'
       });
+
+    AuthProvider.setProvider('facebook', {
+      url: '/auth/facebook',
+      appId: '624059410963642',
+//      scope: 'email,public_profile,user_friends'
+      scope: ['email', 'public_profile', 'user_friends']
+    });
+
+
   });

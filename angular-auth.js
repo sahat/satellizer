@@ -36,15 +36,6 @@ angular.module('ngAuth', [])
       }
     };
 
-    this.isAuthenticated = function($q, $location) {
-      var deferred = $q.defer();
-      if (!$rootScope.currentUser) {
-        $location.path('/login')
-      }
-      deferred.resolve();
-      return deferred.promise();
-    };
-
     this.setProvider = function(provider, params) {
       angular.extend(config.providers[provider], params);
     };
@@ -94,8 +85,21 @@ angular.module('ngAuth', [])
         loginOauth: function(provider) {
           provider = provider.trim().toLowerCase();
 
+//          if (provider === 'facebook') {
+//
+//          } else if (provider === 'google') {
+//
+//          } else if (provider === 'twitter') {
+//
+//          } else {
+//            throw Error('Invalid Provider')
+//          }
+//
           switch (provider) {
             case 'facebook':
+
+              var scope = config.providers.facebook.scope.join(',');
+
               FB.login(function(response) {
                 FB.api('/me', function(profile) {
 
@@ -112,7 +116,7 @@ angular.module('ngAuth', [])
                   });
 
                 });
-              }, { scope: config.providers.facebook.scope });
+              }, { scope: scope });
               break;
             case 'google':
               console.log('google signin');
