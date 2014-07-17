@@ -15,6 +15,7 @@ angular.module('ngAuth', [])
       loginRedirect: '/',
       loginUrl: '/auth/login',
       signupUrl: '/auth/signup',
+      signupRedirect: '/login',
       providers: {
         facebook: {
           url: '/auth/facebook',
@@ -131,7 +132,7 @@ angular.module('ngAuth', [])
         },
         signup: function(user) {
           return $http.post(config.signupUrl, user).success(function() {
-            $location.path(config.loginUrl);
+            $location.path(config.signupRedirect);
           });
         },
         logout: function() {
