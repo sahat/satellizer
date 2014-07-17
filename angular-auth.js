@@ -167,8 +167,12 @@ angular.module('ngAuth', [])
     $httpProvider.interceptors.push('authInterceptor');
   })
   .run(function($rootScope, $location) {
-    $rootScope.$on('$routeChangeStart', function(event, next, current) {
-      if (next.authenticated && !$rootScope.currentUser) {
+    $rootScope.$on('$routeChangeStart', function(event, current, previous) {
+      if($rootScope.currentUser &&
+        (current.originalPath === '/login' || current.originalPath === '/signup')) {
+        $location.path('/');
+      }
+      if (current.authenticated && !$rootScope.currentUser) {
         $location.path('/login');
       }
     });
