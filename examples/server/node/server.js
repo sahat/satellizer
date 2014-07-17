@@ -55,10 +55,7 @@ function ensureAuthenticated(req, res, next) {
       if (decoded.exp <= Date.now()) {
         res.send(400, 'Access token has expired');
       } else {
-        User.findById(decoded.prn, '-password', function(err, user) {
-          req.user = user;
-          return next();
-        });
+        return next();
       }
     } catch (err) {
       return next();
@@ -70,7 +67,8 @@ function ensureAuthenticated(req, res, next) {
 
 function createJwtToken(user) {
   var payload = {
-    prn: user._id,
+    user: user,
+    iat: new Date().getTime(),
     exp: moment().add('days', 7).valueOf()
   };
   return jwt.encode(payload, app.get('tokenSecret'));
@@ -126,7 +124,7 @@ app.post('/auth/facebook', function(req, res, next) {
     return res.send(400, 'Bad signature');
   }
 
-  User.findOne({ facebook: profile.id }, function(err, existingUser) {
+  User.findOne({ facebook: profile.id }, '-password', function(err, existingUser) {
     if (existingUser) {
       var token = createJwtToken(existingUser);
       return res.send(token);
