@@ -4,7 +4,8 @@
       Protected Route
     </div>
     <div class="panel-body">
-      Welcome, <span ng-bind="userInfo.email"></span>!
+      <h2>Welcome, {{currentUser.firstName || currentUser.email}}!</h2>
+      <pre ng-bind="currentUser | json"></pre>
     </div>
   </div>
 </div>
