@@ -40,4 +40,10 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'ngAuth', 'mgcre
       scope: ['https://www.googleapis.com/auth/plus.login']
     });
 
+    AuthProvider.setProvider('linkedin', {
+      url: '/auth/linkedin',
+      clientId: 'JMBFUZQ6fajbxt92xDW8pw '
+    });
+
+
   });
