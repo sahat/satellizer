@@ -31,9 +31,13 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'ngAuth', 'mgcre
     AuthProvider.setProvider('facebook', {
       url: '/auth/facebook',
       appId: '624059410963642',
-//      scope: 'email,public_profile,user_friends'
       scope: ['email', 'public_profile', 'user_friends']
     });
 
+    AuthProvider.setProvider('google', {
+      url: '/auth/google',
+      clientId: '828110519058.apps.googleusercontent.com',
+      scope: ['https://www.googleapis.com/auth/plus.login']
+    });
 
   });
