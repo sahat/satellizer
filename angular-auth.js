@@ -75,11 +75,14 @@ angular.module('ngAuth', [])
         }(document, 'script', 'facebook-jssdk'));
       }
 
-      // Google
+      // Initialize Google
       if (config.providers.google.clientId) {
-
+        (function() {
+          var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+          po.src = 'https://apis.google.com/js/client:plusone.js';
+          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+        })();
       }
-
 
       return {
         loginOauth: function(provider) {
@@ -97,28 +100,31 @@ angular.module('ngAuth', [])
 //
           switch (provider) {
             case 'facebook':
-
               var scope = config.providers.facebook.scope.join(',');
-
               FB.login(function(response) {
                 FB.api('/me', function(profile) {
-
-                  var info = {
+                  var data = {
                     signedRequest: response.authResponse.signedRequest,
                     profile: profile
                   };
-
-                  $http.post(config.providers.facebook.url, info).success(function(token) {
+                  $http.post(config.providers.facebook.url, data).success(function(token) {
                     var payload = JSON.parse($window.atob(token.split('.')[1]));
                     $window.localStorage.token = token;
                     $rootScope.currentUser = payload.user;
                     $location.path(config.loginRedirect);
                   });
-
                 });
               }, { scope: scope });
               break;
             case 'google':
+              gapi.auth.authorize({
+                client_id: config.providers.google.clientId,
+                scope: config.providers.google.scope,
+                immediate: false
+              }, function() {
+                console.log(gapi.auth.getToken());
+              });
+
               console.log('google signin');
               break;
             default:
