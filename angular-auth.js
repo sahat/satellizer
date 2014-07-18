@@ -147,6 +147,9 @@ angular.module('ngAuth', [])
             case 'linkedin':
               console.log('sign in with linkedin');
               IN.UI.Authorize().place();
+              IN.Event.on(IN, 'auth', function() {
+                console.log('Logged in...');
+              });
               break;
             default:
               break;
