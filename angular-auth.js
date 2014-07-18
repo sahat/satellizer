@@ -6,6 +6,7 @@
 
 // TODO: Enable CORS, separate server from client, Gulp server runner
 // TODO: Provider return object, underscore private functions < 10loc
+// TODO: Modular, enable/disable facebook or twitter or local auth
 
 angular.module('ngAuth', [])
   .provider('Auth', function() {
@@ -37,6 +38,7 @@ angular.module('ngAuth', [])
     };
 
     this.setProvider = function(provider, params) {
+      config.providers[provider] = config.providers[provider] || {};
       angular.extend(config.providers[provider], params);
     };
 
@@ -55,6 +57,17 @@ angular.module('ngAuth', [])
 
           console.log($rootScope.currentUser)
         }
+      }
+
+      // LinkedIn
+      if (config.providers.linkedin.clientId) {
+        (function() {
+          var e = document.createElement('script');
+          e.type = 'text/javascript';
+          e.src = 'http://platform.linkedin.com/in.js?async=true';
+          var s = document.getElementsByTagName('script')[0];
+          s.parentNode.insertBefore(e, s);
+        })();
       }
 
       // Initialzie Facebook
@@ -78,9 +91,12 @@ angular.module('ngAuth', [])
       // Initialize Google
       if (config.providers.google.clientId) {
         (function() {
-          var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+          var po = document.createElement('script');
+          po.type = 'text/javascript';
+          po.async = true;
           po.src = 'https://apis.google.com/js/client:plusone.js';
-          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+          var s = document.getElementsByTagName('script')[0];
+          s.parentNode.insertBefore(po, s);
         })();
       }
 
@@ -88,16 +104,6 @@ angular.module('ngAuth', [])
         loginOauth: function(provider) {
           provider = provider.trim().toLowerCase();
 
-//          if (provider === 'facebook') {
-//
-//          } else if (provider === 'google') {
-//
-//          } else if (provider === 'twitter') {
-//
-//          } else {
-//            throw Error('Invalid Provider')
-//          }
-//
           switch (provider) {
             case 'facebook':
               var scope = config.providers.facebook.scope.join(',');
@@ -124,8 +130,11 @@ angular.module('ngAuth', [])
               }, function() {
                 console.log(gapi.auth.getToken());
               });
-
               console.log('google signin');
+              break;
+            case 'linkedin':
+              console.log('sign in with linkedin');
+
               break;
             default:
               break;
@@ -174,7 +183,7 @@ angular.module('ngAuth', [])
   })
   .run(function($rootScope, $location) {
     $rootScope.$on('$routeChangeStart', function(event, current, previous) {
-      if($rootScope.currentUser &&
+      if ($rootScope.currentUser &&
         (current.originalPath === '/login' || current.originalPath === '/signup')) {
         $location.path('/');
       }
