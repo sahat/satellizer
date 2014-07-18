@@ -7,7 +7,9 @@
 // TODO: Enable CORS, separate server from client, Gulp server runner
 // TODO: Provider return object, underscore private functions < 10loc
 // TODO: Modular, enable/disable facebook or twitter or local auth
-
+function test(res) {
+  console.log('loaded');
+}
 angular.module('ngAuth', [])
   .provider('Auth', function() {
 
@@ -59,16 +61,26 @@ angular.module('ngAuth', [])
         }
       }
 
+
+
       // LinkedIn
       if (config.providers.linkedin.clientId) {
         (function() {
           var e = document.createElement('script');
           e.type = 'text/javascript';
           e.src = 'http://platform.linkedin.com/in.js?async=true';
+          e.onload = function() {
+            IN.init({
+              api_key: '75z17ew9n8c2pm',
+              authorize: true
+            });
+          };
           var s = document.getElementsByTagName('script')[0];
           s.parentNode.insertBefore(e, s);
         })();
       }
+
+
 
       // Initialzie Facebook
       if (config.providers.facebook.appId) {
@@ -134,7 +146,7 @@ angular.module('ngAuth', [])
               break;
             case 'linkedin':
               console.log('sign in with linkedin');
-
+              IN.UI.Authorize().place();
               break;
             default:
               break;
