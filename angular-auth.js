@@ -31,31 +31,16 @@ angular.module('ngAuth', [])
           clientId: null,
           scope: null,
           redirectUri: null,
-          responseType: 'token',
+          responseType: 'token'
         },
         linkedin: {
           clientId: null,
           scope: null,
           redirectUri: null,
-          responseType: 'token',
+          responseType: 'token'
         }
       }
     };
-
-
-    this.setProvider = function(provider, params) {
-      config.providers[provider] = config.providers[provider] || {};
-      angular.extend(config.providers[provider], params);
-    };
-
-    function getTokenFromLocalStorage() {
-      var token = $window.localStorage.token;
-
-      if (token) {
-        var payload = JSON.parse($window.atob(token.split('.')[1]));
-        $rootScope.currentUser = payload.user;
-      }
-    }
 
     function loadLinkedinSdk() {
       (function() {
@@ -73,7 +58,7 @@ angular.module('ngAuth', [])
       })();
     }
 
-    function loadFacebookSdk() {
+    function loadFacebookSdk($document, $window) {
       if (!$document[0].getElementById('fb-root')) {
         $document.find('body').append('<div id="fb-root"></div>');
       }
@@ -126,14 +111,18 @@ angular.module('ngAuth', [])
 
       $get: function($http, $location, $rootScope, $alert, $q, $injector, $window, $document) {
 
-       getTokenFromLocalStorage();
+        var token = $window.localStorage.token;
+        if (token) {
+          var payload = JSON.parse($window.atob(token.split('.')[1]));
+          $rootScope.currentUser = payload.user;
+        }
 
         if (config.providers.linkedin.clientId) {
           loadLinkedinSdk();
         }
 
         if (config.providers.facebook.appId) {
-          loadFacebookSdk();
+          loadFacebookSdk($document, $window);
         }
 
         if (config.providers.google.clientId) {
@@ -154,7 +143,7 @@ angular.module('ngAuth', [])
             $rootScope.currentUser = payload.user;
             $location.path(config.loginRedirect);
           });
-        },
+        }
 
         function signup(user) {
           return $http.post(config.signupUrl, user).success(function() {
@@ -197,17 +186,23 @@ angular.module('ngAuth', [])
                 client_id: config.providers.google.clientId,
                 scope: config.providers.google.scope,
                 immediate: false
-              }, function() {
-                console.log(gapi.auth.getToken());
-                var data = {
-                  signedRequest: response.authResponse.signedRequest,
-                  profile: profile
-                };
-                $http.post(config.providers.google.url, data).success(function(token) {
-                  var payload = JSON.parse($window.atob(token.split('.')[1]));
-                  $window.localStorage.token = token;
-                  $rootScope.currentUser = payload.user;
-                  $location.path(config.loginRedirect);
+              }, function(accessToken) {
+                gapi.client.load('plus', 'v1', function() {
+                  var request = gapi.client.plus.people.get({
+                    userId: 'me'
+                  });
+                  request.execute(function(response) {
+                    var data = {
+                      accessToken: accessToken,
+                      profile: response
+                    };
+                    $http.post(config.providers.google.url, data).success(function(token) {
+                      var payload = JSON.parse($window.atob(token.split('.')[1]));
+                      $window.localStorage.token = token;
+                      $rootScope.currentUser = payload.user;
+                      $location.path(config.loginRedirect);
+                    });
+                  });
                 });
               });
               console.log('google signin');
