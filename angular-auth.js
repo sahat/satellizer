@@ -53,14 +53,7 @@ angular.module('ngAuth', [])
 
       if (token) {
         var payload = JSON.parse($window.atob(token.split('.')[1]));
-        if (Date.now() > payload.exp) {
-          $window.alert('Token has expired');
-          delete $window.localStorage.token;
-        } else {
-          $rootScope.currentUser = payload.user;
-
-          console.log($rootScope.currentUser)
-        }
+        $rootScope.currentUser = payload.user;
       }
     }
 
@@ -147,53 +140,45 @@ angular.module('ngAuth', [])
           loadGooglePlusSdk();
         }
 
-        return {
-          loginOauth: function(provider) {
-            provider = provider.trim().toLowerCase();
+        function logout() {
+          delete $window.localStorage.token;
+          $rootScope.currentUser = null;
+          $location.path(config.logoutRedirect);
+        }
 
-            switch (provider) {
-              case 'facebook':
-                var scope = config.providers.facebook.scope.join(',');
-                FB.login(function(response) {
-                  FB.api('/me', function(profile) {
-                    var data = {
-                      signedRequest: response.authResponse.signedRequest,
-                      profile: profile
-                    };
-                    $http.post(config.providers.facebook.url, data).success(function(token) {
-                      var payload = JSON.parse($window.atob(token.split('.')[1]));
-                      $window.localStorage.token = token;
-                      $rootScope.currentUser = payload.user;
-                      $location.path(config.loginRedirect);
-                    });
-                  });
-                }, { scope: scope });
-                break;
-              case 'google':
-                gapi.auth.authorize({
-                  client_id: config.providers.google.clientId,
-                  scope: config.providers.google.scope,
-                  immediate: false
-                }, function() {
-                  console.log(gapi.auth.getToken());
-                  var data = {
-                    signedRequest: response.authResponse.signedRequest,
-                    profile: profile
-                  };
-                  $http.post(config.providers.google.url, data).success(function(token) {
-                    var payload = JSON.parse($window.atob(token.split('.')[1]));
-                    $window.localStorage.token = token;
-                    $rootScope.currentUser = payload.user;
-                    $location.path(config.loginRedirect);
-                  });
-                });
-                console.log('google signin');
-                break;
-              case 'linkedin':
-                console.log('sign in with linkedin');
-                IN.UI.Authorize().place();
-                IN.Event.on(IN, 'auth', function() {
-                  console.log('Logged in...');
+        function login(user) {
+          return $http.post(config.loginUrl, user).success(function(data) {
+            $window.localStorage.token = data.token;
+            var token = $window.localStorage.token;
+            var payload = JSON.parse($window.atob(token.split('.')[1]));
+            $rootScope.currentUser = payload.user;
+            $location.path(config.loginRedirect);
+          });
+        },
+
+        function signup(user) {
+          return $http.post(config.signupUrl, user).success(function() {
+            $location.path(config.signupRedirect);
+          });
+        }
+
+        function loggedIn() {
+          // TODO: return login status
+        }
+
+        function user() {
+          // TODO: move rootscope to here
+          // TODO: make a property
+        }
+
+        function loginOauth(provider) {
+          provider = provider.trim().toLowerCase();
+
+          switch (provider) {
+            case 'facebook':
+              var scope = config.providers.facebook.scope.join(',');
+              FB.login(function(response) {
+                FB.api('/me', function(profile) {
                   var data = {
                     signedRequest: response.authResponse.signedRequest,
                     profile: profile
@@ -205,43 +190,60 @@ angular.module('ngAuth', [])
                     $location.path(config.loginRedirect);
                   });
                 });
-                break;
-              default:
-                break;
-            }
-          },
-          login: function(user) {
-            return $http.post(config.loginUrl, user).success(function(data) {
-              $window.localStorage.token = data.token;
-              var token = $window.localStorage.token;
-              var payload = JSON.parse($window.atob(token.split('.')[1]));
-              $rootScope.currentUser = payload.user;
-              $location.path(config.loginRedirect);
-            });
-          },
-          signup: function(user) {
-            return $http.post(config.signupUrl, user).success(function() {
-              $location.path(config.signupRedirect);
-            });
-          },
-          logout: function() {
-            delete $window.localStorage.token;
-            $rootScope.currentUser = null;
-            $location.path(config.logoutRedirect);
-          },
-          loggedIn: function() {
-            // TODO: return login status
-          },
-          user: function() {
-            // TODO: move rootscope to here
-            // TODO: make a property
+              }, { scope: scope });
+              break;
+            case 'google':
+              gapi.auth.authorize({
+                client_id: config.providers.google.clientId,
+                scope: config.providers.google.scope,
+                immediate: false
+              }, function() {
+                console.log(gapi.auth.getToken());
+                var data = {
+                  signedRequest: response.authResponse.signedRequest,
+                  profile: profile
+                };
+                $http.post(config.providers.google.url, data).success(function(token) {
+                  var payload = JSON.parse($window.atob(token.split('.')[1]));
+                  $window.localStorage.token = token;
+                  $rootScope.currentUser = payload.user;
+                  $location.path(config.loginRedirect);
+                });
+              });
+              console.log('google signin');
+              break;
+            case 'linkedin':
+              console.log('sign in with linkedin');
+              IN.UI.Authorize().place();
+              IN.Event.on(IN, 'auth', function() {
+                console.log('Logged in...');
+                var data = {
+                  signedRequest: response.authResponse.signedRequest,
+                  profile: profile
+                };
+                $http.post(config.providers.facebook.url, data).success(function(token) {
+                  var payload = JSON.parse($window.atob(token.split('.')[1]));
+                  $window.localStorage.token = token;
+                  $rootScope.currentUser = payload.user;
+                  $location.path(config.loginRedirect);
+                });
+              });
+              break;
+            default:
+              break;
           }
+        }
+
+        return {
+          loginOauth: loginOauth,
+          login: login,
+          signup: signup,
+          logout: logout,
+          loggedIn: loggedIn,
+          user: user
         };
       }
     };
-
-
-
   })
   .factory('authInterceptor', function($q, $window, $location) {
     return {
