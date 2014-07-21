@@ -186,14 +186,14 @@ angular.module('ngAuth', [])
                 client_id: config.providers.google.clientId,
                 scope: config.providers.google.scope,
                 immediate: false
-              }, function(accessToken) {
+              }, function(token) {
                 gapi.client.load('plus', 'v1', function() {
                   var request = gapi.client.plus.people.get({
                     userId: 'me'
                   });
                   request.execute(function(response) {
                     var data = {
-                      accessToken: accessToken,
+                      accessToken: token.access_token,
                       profile: response
                     };
                     $http.post(config.providers.google.url, data).success(function(token) {
