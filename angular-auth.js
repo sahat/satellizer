@@ -7,9 +7,8 @@
 // TODO: Enable CORS, separate server from client, Gulp server runner
 // TODO: Provider return object, underscore private functions < 10loc
 // TODO: Modular, enable/disable facebook or twitter or local auth
-function test(res) {
-  console.log('loaded');
-}
+// TODO: directive for login buttons that interact with provider
+
 angular.module('ngAuth', [])
   .provider('Auth', function() {
 
@@ -33,94 +32,161 @@ angular.module('ngAuth', [])
           scope: null,
           redirectUri: null,
           responseType: 'token',
-          authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
-          verificationEndpoint: 'https://accounts.google.com/o/oauth2/token'
+        },
+        linkedin: {
+          clientId: null,
+          scope: null,
+          redirectUri: null,
+          responseType: 'token',
         }
       }
     };
+
 
     this.setProvider = function(provider, params) {
       config.providers[provider] = config.providers[provider] || {};
       angular.extend(config.providers[provider], params);
     };
 
-    this.$get = function($http, $location, $rootScope, $alert, $q, $injector, $window, $document) {
 
-      // Local
-      var token = $window.localStorage.token;
+    return {
+      facebook: function() {
+        angular.extend(config.providers.facebook, params);
+      },
+      google: function() {
+        angular.extend(config.providers.google, params);
+      },
+      linkedin: function() {
+        angular.extend(config.providers.linkedin, params);
+      },
+      $get: function($http, $location, $rootScope, $alert, $q, $injector, $window, $document) {
 
-      if (token) {
-        var payload = JSON.parse($window.atob(token.split('.')[1]));
-        if (Date.now() > payload.exp) {
-          $window.alert('Token has expired');
-          delete $window.localStorage.token;
-        } else {
-          $rootScope.currentUser = payload.user;
+        // Local
+        var token = $window.localStorage.token;
 
-          console.log($rootScope.currentUser)
-        }
-      }
+        if (token) {
+          var payload = JSON.parse($window.atob(token.split('.')[1]));
+          if (Date.now() > payload.exp) {
+            $window.alert('Token has expired');
+            delete $window.localStorage.token;
+          } else {
+            $rootScope.currentUser = payload.user;
 
-
-
-      // LinkedIn
-      if (config.providers.linkedin.clientId) {
-        (function() {
-          var e = document.createElement('script');
-          e.type = 'text/javascript';
-          e.src = 'http://platform.linkedin.com/in.js?async=true';
-          e.onload = function() {
-            IN.init({
-              api_key: '75z17ew9n8c2pm',
-              authorize: true
-            });
-          };
-          var s = document.getElementsByTagName('script')[0];
-          s.parentNode.insertBefore(e, s);
-        })();
-      }
-
-
-
-      // Initialzie Facebook
-      if (config.providers.facebook.appId) {
-        $window.fbAsyncInit = function() {
-          FB.init(config.providers.facebook);
-        };
-
-        (function(d, s, id) {
-          var js, fjs = d.getElementsByTagName(s)[0];
-          if (d.getElementById(id)) {
-            return;
+            console.log($rootScope.currentUser)
           }
-          js = d.createElement(s);
-          js.id = id;
-          js.src = "//connect.facebook.net/" + config.providers.facebook.locale + "/sdk.js";
-          fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
-      }
+        }
 
-      // Initialize Google
-      if (config.providers.google.clientId) {
-        (function() {
-          var po = document.createElement('script');
-          po.type = 'text/javascript';
-          po.async = true;
-          po.src = 'https://apis.google.com/js/client:plusone.js';
-          var s = document.getElementsByTagName('script')[0];
-          s.parentNode.insertBefore(po, s);
-        })();
-      }
 
-      return {
-        loginOauth: function(provider) {
-          provider = provider.trim().toLowerCase();
 
-          switch (provider) {
-            case 'facebook':
-              var scope = config.providers.facebook.scope.join(',');
-              FB.login(function(response) {
-                FB.api('/me', function(profile) {
+        // LinkedIn
+        if (config.providers.linkedin.clientId) {
+          (function() {
+            var e = document.createElement('script');
+            e.type = 'text/javascript';
+            e.src = 'http://platform.linkedin.com/in.js?async=true';
+            e.onload = function() {
+              IN.init({
+                api_key: '75z17ew9n8c2pm',
+                authorize: true
+              });
+            };
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(e, s);
+          })();
+        }
+
+
+
+        // Initialzie Facebook
+        if (config.providers.facebook.appId) {
+          if (!$document[0].getElementById('fb-root')) {
+            $document.find('body').append('<div id="fb-root"></div>');
+          }
+
+          $window.fbAsyncInit = function() {
+            FB.init(config.providers.facebook);
+          };
+
+          (function(d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {
+              return;
+            }
+            js = d.createElement(s);
+            js.id = id;
+            js.src = "//connect.facebook.net/" + config.providers.facebook.locale + "/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+          }(document, 'script', 'facebook-jssdk'));
+        }
+
+        // Initialize Google
+        if (config.providers.google.clientId) {
+          (function() {
+            var po = document.createElement('script');
+            po.type = 'text/javascript';
+            po.async = true;
+            po.src = 'https://apis.google.com/js/client:plusone.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(po, s);
+          })();
+        }
+
+        return {
+          facebook: function() {
+
+          },
+          google: function() {
+
+          },
+          linkedin: function() {
+
+          },
+          loginOauth: function(provider) {
+            provider = provider.trim().toLowerCase();
+
+            switch (provider) {
+              case 'facebook':
+                var scope = config.providers.facebook.scope.join(',');
+                FB.login(function(response) {
+                  FB.api('/me', function(profile) {
+                    var data = {
+                      signedRequest: response.authResponse.signedRequest,
+                      profile: profile
+                    };
+                    $http.post(config.providers.facebook.url, data).success(function(token) {
+                      var payload = JSON.parse($window.atob(token.split('.')[1]));
+                      $window.localStorage.token = token;
+                      $rootScope.currentUser = payload.user;
+                      $location.path(config.loginRedirect);
+                    });
+                  });
+                }, { scope: scope });
+                break;
+              case 'google':
+                gapi.auth.authorize({
+                  client_id: config.providers.google.clientId,
+                  scope: config.providers.google.scope,
+                  immediate: false
+                }, function() {
+                  console.log(gapi.auth.getToken());
+                  var data = {
+                    signedRequest: response.authResponse.signedRequest,
+                    profile: profile
+                  };
+                  $http.post(config.providers.google.url, data).success(function(token) {
+                    var payload = JSON.parse($window.atob(token.split('.')[1]));
+                    $window.localStorage.token = token;
+                    $rootScope.currentUser = payload.user;
+                    $location.path(config.loginRedirect);
+                  });
+                });
+                console.log('google signin');
+                break;
+              case 'linkedin':
+                console.log('sign in with linkedin');
+                IN.UI.Authorize().place();
+                IN.Event.on(IN, 'auth', function() {
+                  console.log('Logged in...');
                   var data = {
                     signedRequest: response.authResponse.signedRequest,
                     profile: profile
@@ -132,50 +198,43 @@ angular.module('ngAuth', [])
                     $location.path(config.loginRedirect);
                   });
                 });
-              }, { scope: scope });
-              break;
-            case 'google':
-              gapi.auth.authorize({
-                client_id: config.providers.google.clientId,
-                scope: config.providers.google.scope,
-                immediate: false
-              }, function() {
-                console.log(gapi.auth.getToken());
-              });
-              console.log('google signin');
-              break;
-            case 'linkedin':
-              console.log('sign in with linkedin');
-              IN.UI.Authorize().place();
-              IN.Event.on(IN, 'auth', function() {
-                console.log('Logged in...');
-              });
-              break;
-            default:
-              break;
+                break;
+              default:
+                break;
+            }
+          },
+          login: function(user) {
+            return $http.post(config.loginUrl, user).success(function(data) {
+              $window.localStorage.token = data.token;
+              var token = $window.localStorage.token;
+              var payload = JSON.parse($window.atob(token.split('.')[1]));
+              $rootScope.currentUser = payload.user;
+              $location.path(config.loginRedirect);
+            });
+          },
+          signup: function(user) {
+            return $http.post(config.signupUrl, user).success(function() {
+              $location.path(config.signupRedirect);
+            });
+          },
+          logout: function() {
+            delete $window.localStorage.token;
+            $rootScope.currentUser = null;
+            $location.path(config.logoutRedirect);
+          },
+          loggedIn: function() {
+            // TODO: return login status
+          },
+          user: function() {
+            // TODO: move rootscope to here
+            // TODO: make a property
           }
-        },
-        login: function(user) {
-          return $http.post(config.loginUrl, user).success(function(data) {
-            $window.localStorage.token = data.token;
-            var token = $window.localStorage.token;
-            var payload = JSON.parse($window.atob(token.split('.')[1]));
-            $rootScope.currentUser = payload.user;
-            $location.path(config.loginRedirect);
-          });
-        },
-        signup: function(user) {
-          return $http.post(config.signupUrl, user).success(function() {
-            $location.path(config.signupRedirect);
-          });
-        },
-        logout: function() {
-          delete $window.localStorage.token;
-          $rootScope.currentUser = null;
-          $location.path(config.logoutRedirect);
-        }
-      };
+        };
+      }
     };
+
+
+
   })
   .factory('authInterceptor', function($q, $window, $location) {
     return {
