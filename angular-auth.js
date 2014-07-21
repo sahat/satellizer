@@ -48,104 +48,106 @@ angular.module('ngAuth', [])
       angular.extend(config.providers[provider], params);
     };
 
+    function getTokenFromLocalStorage() {
+      var token = $window.localStorage.token;
+
+      if (token) {
+        var payload = JSON.parse($window.atob(token.split('.')[1]));
+        if (Date.now() > payload.exp) {
+          $window.alert('Token has expired');
+          delete $window.localStorage.token;
+        } else {
+          $rootScope.currentUser = payload.user;
+
+          console.log($rootScope.currentUser)
+        }
+      }
+    }
+
+    function loadLinkedinSdk() {
+      (function() {
+        var e = document.createElement('script');
+        e.type = 'text/javascript';
+        e.src = 'http://platform.linkedin.com/in.js?async=true';
+        e.onload = function() {
+          IN.init({
+            api_key: '75z17ew9n8c2pm',
+            authorize: true
+          });
+        };
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(e, s);
+      })();
+    }
+
+    function loadFacebookSdk() {
+      if (!$document[0].getElementById('fb-root')) {
+        $document.find('body').append('<div id="fb-root"></div>');
+      }
+
+      $window.fbAsyncInit = function() {
+        FB.init(config.providers.facebook);
+      };
+
+      (function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {
+          return;
+        }
+        js = d.createElement(s);
+        js.id = id;
+        js.src = "//connect.facebook.net/" + config.providers.facebook.locale + "/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+      }(document, 'script', 'facebook-jssdk'));
+    }
+
+    function loadGooglePlusSdk() {
+      (function() {
+        var po = document.createElement('script');
+        po.type = 'text/javascript';
+        po.async = true;
+        po.src = 'https://apis.google.com/js/client:plusone.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(po, s);
+      })();
+    }
 
     return {
       facebook: function(params) {
         angular.extend(config.providers.facebook, params);
       },
+
       google: function(params) {
         angular.extend(config.providers.google, params);
       },
+
       linkedin: function(params) {
         angular.extend(config.providers.linkedin, params);
       },
+
       oauth2: function(params) {
         var provider = params.name;
         config.providers[provider] = config.providers[provider] || {};
         angular.extend(config.providers[provider], params);
-      }
+      },
+
       $get: function($http, $location, $rootScope, $alert, $q, $injector, $window, $document) {
 
-        // Local
-        var token = $window.localStorage.token;
+       getTokenFromLocalStorage();
 
-        if (token) {
-          var payload = JSON.parse($window.atob(token.split('.')[1]));
-          if (Date.now() > payload.exp) {
-            $window.alert('Token has expired');
-            delete $window.localStorage.token;
-          } else {
-            $rootScope.currentUser = payload.user;
-
-            console.log($rootScope.currentUser)
-          }
-        }
-
-
-
-        // LinkedIn
         if (config.providers.linkedin.clientId) {
-          (function() {
-            var e = document.createElement('script');
-            e.type = 'text/javascript';
-            e.src = 'http://platform.linkedin.com/in.js?async=true';
-            e.onload = function() {
-              IN.init({
-                api_key: '75z17ew9n8c2pm',
-                authorize: true
-              });
-            };
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(e, s);
-          })();
+          loadLinkedinSdk();
         }
 
-
-
-        // Initialzie Facebook
         if (config.providers.facebook.appId) {
-          if (!$document[0].getElementById('fb-root')) {
-            $document.find('body').append('<div id="fb-root"></div>');
-          }
-
-          $window.fbAsyncInit = function() {
-            FB.init(config.providers.facebook);
-          };
-
-          (function(d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) {
-              return;
-            }
-            js = d.createElement(s);
-            js.id = id;
-            js.src = "//connect.facebook.net/" + config.providers.facebook.locale + "/sdk.js";
-            fjs.parentNode.insertBefore(js, fjs);
-          }(document, 'script', 'facebook-jssdk'));
+          loadFacebookSdk();
         }
 
-        // Initialize Google
         if (config.providers.google.clientId) {
-          (function() {
-            var po = document.createElement('script');
-            po.type = 'text/javascript';
-            po.async = true;
-            po.src = 'https://apis.google.com/js/client:plusone.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(po, s);
-          })();
+          loadGooglePlusSdk();
         }
 
         return {
-          facebook: function() {
-
-          },
-          google: function() {
-
-          },
-          linkedin: function() {
-
-          },
           loginOauth: function(provider) {
             provider = provider.trim().toLowerCase();
 
