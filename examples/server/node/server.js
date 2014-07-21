@@ -9,6 +9,7 @@ var bodyParser = require('body-parser');
 var crypto = require('crypto');
 var express = require('express');
 var logger = require('morgan');
+var request = require('request');
 var jwt = require('jwt-simple');
 var methodOverride = require('method-override');
 var moment = require('moment');
@@ -22,7 +23,7 @@ var userSchema = new mongoose.Schema({
   lastName: String,
   facebook: String,
   google: String,
-  twitter: String
+  linkedin: String
 });
 
 userSchema.pre('save', function(next) {
@@ -107,6 +108,40 @@ app.post('/auth/signup', function(req, res, next) {
     if (err) return next(err);
     res.send(200);
   });
+});
+
+app.post('/auth/google', function(req, res, next) {
+  var clientId = '828110519058.apps.googleusercontent.com';
+  var url = 'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=';
+  var accessToken = req.body.accessToken;
+  var profile = req.body.profile;
+
+  request.get(url + accessToken, function (e, r, tokenInfo) {
+    if (tokenInfo.user_id !== profile.id || tokenInfo.issued_to !== clientId) {
+      return res.send(400, 'Invalid Token');
+    }
+    User.findOne({ google: profile.id }, '-password', function(err, existingUser) {
+      if (existingUser) {
+        var token = createJwtToken(existingUser);
+        return res.send(token);
+      }
+      var user = new User({
+        google: profile.id,
+        firstName: profile.name.givenName,
+        lastName: profile.name.familyName
+      });
+      user.save(function(err) {
+        if (err) return next(err);
+        var token = createJwtToken(user);
+        res.send(token);
+      });
+    });
+  });
+});
+
+
+app.post('/auth/linkedin', function(req, res, next) {
+
 });
 
 app.post('/auth/facebook', function(req, res, next) {
