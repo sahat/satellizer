@@ -111,22 +111,21 @@ app.post('/auth/signup', function(req, res, next) {
 });
 
 app.post('/auth/google', function(req, res, next) {
-  var clientId = '828110519058.apps.googleusercontent.com';
-  var url = 'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=';
   var accessToken = req.body.accessToken;
   var profile = req.body.profile;
 
-  request.get(url + accessToken, function (e, r, tokenInfo) {
-    if (tokenInfo.user_id !== profile.id || tokenInfo.issued_to !== clientId) {
+  request.get('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' + accessToken, function (e, r, tokenInfo) {
+    console.log(tokenInfo);
+    if (tokenInfo.user_id !== profile.user_id) {
       return res.send(400, 'Invalid Token');
     }
-    User.findOne({ google: profile.id }, '-password', function(err, existingUser) {
+    User.findOne({ google: profile.user_id }, '-password', function(err, existingUser) {
       if (existingUser) {
         var token = createJwtToken(existingUser);
         return res.send(token);
       }
       var user = new User({
-        google: profile.id,
+        google: profile.user_id,
         firstName: profile.name.givenName,
         lastName: profile.name.familyName
       });
