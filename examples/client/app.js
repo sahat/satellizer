@@ -20,30 +20,53 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'ngAuth', 'mgcre
       .when('/protected', {
         templateUrl: 'views/protected.html',
         controller: 'ProtectedCtrl',
-//        resolve: AuthProvider.isAuthenticated,
         authenticated: true
-//        loginRequired: true
       })
       .otherwise({
         redirectTo: '/'
       });
 
-    AuthProvider.setProvider('facebook', {
+//    AuthProvider.setProvider('facebook', {
+//      url: '/auth/facebook',
+//      appId: '624059410963642',
+//      scope: ['email', 'public_profile', 'user_friends']
+//    });
+//
+//    AuthProvider.setProvider('google', {
+//      url: '/auth/google',
+//      clientId: '828110519058.apps.googleusercontent.com',
+//      scope: ['https://www.googleapis.com/auth/plus.login']
+//    });
+//
+//    AuthProvider.setProvider('linkedin', {
+//      url: '/auth/linkedin',
+//      clientId: 'JMBFUZQ6fajbxt92xDW8pw '
+//    });
+
+
+    AuthProvider.facebook({
       url: '/auth/facebook',
       appId: '624059410963642',
       scope: ['email', 'public_profile', 'user_friends']
     });
 
-    AuthProvider.setProvider('google', {
+    AuthProvider.google({
       url: '/auth/google',
       clientId: '828110519058.apps.googleusercontent.com',
       scope: ['https://www.googleapis.com/auth/plus.login']
     });
 
-    AuthProvider.setProvider('linkedin', {
+    AuthProvider.linkedin({
       url: '/auth/linkedin',
-      clientId: 'JMBFUZQ6fajbxt92xDW8pw '
+      clientId: '75z17ew9n8c2pm'
     });
 
+    AuthProvider.oauth2({
+      name: 'hacker-school',
+      url: '/auth/hacker-school'
+      appId: null
+    });
+
+    console.log(AuthProvider.facebook)
 
   });

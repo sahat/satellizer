@@ -50,15 +50,20 @@ angular.module('ngAuth', [])
 
 
     return {
-      facebook: function() {
+      facebook: function(params) {
         angular.extend(config.providers.facebook, params);
       },
-      google: function() {
+      google: function(params) {
         angular.extend(config.providers.google, params);
       },
-      linkedin: function() {
+      linkedin: function(params) {
         angular.extend(config.providers.linkedin, params);
       },
+      oauth2: function(params) {
+        var provider = params.name;
+        config.providers[provider] = config.providers[provider] || {};
+        angular.extend(config.providers[provider], params);
+      }
       $get: function($http, $location, $rootScope, $alert, $q, $injector, $window, $document) {
 
         // Local
