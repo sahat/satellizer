@@ -138,8 +138,7 @@ angular.module('ngAuth', [])
         function login(user) {
           return $http.post(config.loginUrl, user).success(function(data) {
             $window.localStorage.token = data.token;
-            var token = $window.localStorage.token;
-            var payload = JSON.parse($window.atob(token.split('.')[1]));
+            var payload = JSON.parse($window.atob(data.token.split('.')[1]));
             $rootScope.currentUser = payload.user;
             $location.path(config.loginRedirect);
           });
