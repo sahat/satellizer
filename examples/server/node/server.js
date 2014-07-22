@@ -56,10 +56,11 @@ function ensureAuthenticated(req, res, next) {
       if (decoded.exp <= Date.now()) {
         res.send(400, 'Access token has expired');
       } else {
+        req.user = decoded.user;
         return next();
       }
     } catch (err) {
-      return next();
+      return res.send(500, 'Error parsing token');
     }
   } else {
     return res.send(401);
