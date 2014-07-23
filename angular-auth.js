@@ -7,8 +7,8 @@
 // TODO: Enable CORS, separate server from client, Gulp server runner
 // TODO: Provider return object, underscore private functions < 10loc
 // TODO: Modular, enable/disable facebook or twitter or local auth
-// TODO: directive for login buttons that interact with provider
 
+// TODO: let user change currentuser to something else
 angular.module('ngAuth', [])
   .provider('Auth', function() {
 
@@ -18,6 +18,7 @@ angular.module('ngAuth', [])
       loginUrl: '/auth/login',
       signupUrl: '/auth/signup',
       signupRedirect: '/login',
+      userGlobal: 'currentUser',
       providers: {
         facebook: {
           url: '/auth/facebook',
@@ -114,7 +115,7 @@ angular.module('ngAuth', [])
         var token = $window.localStorage.token;
         if (token) {
           var payload = JSON.parse($window.atob(token.split('.')[1]));
-          $rootScope.currentUser = payload.user;
+          $rootScope[config.userGlobal] = payload.user;
         }
 
         if (config.providers.linkedin.clientId) {
@@ -131,7 +132,7 @@ angular.module('ngAuth', [])
 
         function logout() {
           delete $window.localStorage.token;
-          $rootScope.currentUser = null;
+          $rootScope[config.userGlobal] = null;
           $location.path(config.logoutRedirect);
         }
 
@@ -139,7 +140,7 @@ angular.module('ngAuth', [])
           return $http.post(config.loginUrl, user).success(function(data) {
             $window.localStorage.token = data.token;
             var payload = JSON.parse($window.atob(data.token.split('.')[1]));
-            $rootScope.currentUser = payload.user;
+            $rootScope[config.userGlobal] = payload.user;
             $location.path(config.loginRedirect);
           });
         }
@@ -151,7 +152,7 @@ angular.module('ngAuth', [])
         }
 
         function isAuthenticated() {
-          return $rootScope.currentUser;
+          return $rootScope[config.userGlobal];
         }
 
         function user() {
@@ -192,7 +193,7 @@ angular.module('ngAuth', [])
                   $http.post(config.providers.facebook.url, data).success(function(token) {
                     var payload = JSON.parse($window.atob(token.split('.')[1]));
                     $window.localStorage.token = token;
-                    $rootScope.currentUser = payload.user;
+                    $rootScope[config.userGlobal] = payload.user;
                     $location.path(config.loginRedirect);
                   });
                 });
@@ -264,11 +265,11 @@ angular.module('ngAuth', [])
   })
   .run(function($rootScope, $location) {
     $rootScope.$on('$routeChangeStart', function(event, current, previous) {
-      if ($rootScope.currentUser &&
+      if ($rootScope[config.userGlobal] &&
         (current.originalPath === '/login' || current.originalPath === '/signup')) {
         $location.path('/');
       }
-      if (current.authenticated && !$rootScope.currentUser) {
+      if (current.authenticated && !$rootScope[config.userGlobal]) {
         $location.path('/login');
       }
     });
