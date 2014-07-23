@@ -8,41 +8,38 @@
 // TODO: Provider return object, underscore private functions < 10loc
 // TODO: Modular, enable/disable facebook or twitter or local auth
 
-// TODO: let user change currentuser to something else
 angular.module('ngAuth', [])
-  .provider('Auth', function() {
-
-    var config = this.config = {
-      logoutRedirect: '/',
-      loginRedirect: '/',
-      loginUrl: '/auth/login',
-      signupUrl: '/auth/signup',
-      signupRedirect: '/login',
-      userGlobal: 'currentUser',
-      providers: {
-        facebook: {
-          url: '/auth/facebook',
-          appId: null,
-          scope: null,
-          responseType: 'token',
-          locale: 'en_US',
-          version: 'v2.0'
-        },
-        google: {
-          clientId: null,
-          scope: null,
-          redirectUri: null,
-          responseType: 'token'
-        },
-        linkedin: {
-          clientId: null,
-          scope: null,
-          redirectUri: null,
-          responseType: 'token'
-        }
+  .constant('config', {
+    logoutRedirect: '/',
+    loginRedirect: '/',
+    loginUrl: '/auth/login',
+    signupUrl: '/auth/signup',
+    signupRedirect: '/login',
+    userGlobal: 'currentUser',
+    providers: {
+      facebook: {
+        url: '/auth/facebook',
+        appId: null,
+        scope: null,
+        responseType: 'token',
+        locale: 'en_US',
+        version: 'v2.0'
+      },
+      google: {
+        clientId: null,
+        scope: null,
+        redirectUri: null,
+        responseType: 'token'
+      },
+      linkedin: {
+        clientId: null,
+        scope: null,
+        redirectUri: null,
+        responseType: 'token'
       }
-    };
-
+    }
+  })
+  .provider('Auth', function(config) {
     function loadLinkedinSdk() {
       (function() {
         var e = document.createElement('script');
@@ -263,7 +260,7 @@ angular.module('ngAuth', [])
   .config(function($httpProvider) {
     $httpProvider.interceptors.push('authInterceptor');
   })
-  .run(function($rootScope, $location) {
+  .run(function($rootScope, $location, config) {
     $rootScope.$on('$routeChangeStart', function(event, current, previous) {
       if ($rootScope[config.userGlobal] &&
         (current.originalPath === '/login' || current.originalPath === '/signup')) {
