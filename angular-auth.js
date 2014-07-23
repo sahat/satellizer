@@ -150,8 +150,8 @@ angular.module('ngAuth', [])
           });
         }
 
-        function loggedIn() {
-          // TODO: return login status
+        function isAuthenticated() {
+          return $rootScope.currentUser;
         }
 
         function user() {
@@ -183,7 +183,9 @@ angular.module('ngAuth', [])
               var scope = config.providers.facebook.scope.join(',');
               FB.login(function(response) {
                 FB.api('/me', function(profile) {
+                  // TODO normalize return properties like passport
                   var data = {
+                    accessToken: response.authResponse.accessToken,
                     signedRequest: response.authResponse.signedRequest,
                     profile: profile
                   };
@@ -220,7 +222,6 @@ angular.module('ngAuth', [])
                   });
                 });
               });
-              console.log('google signin');
               break;
             case 'linkedin':
               IN.UI.Authorize().place();
@@ -236,7 +237,7 @@ angular.module('ngAuth', [])
           login: login,
           signup: signup,
           logout: logout,
-          loggedIn: loggedIn,
+          isAuthenticated: isAuthenticated,
           user: user
         };
       }
