@@ -159,6 +159,22 @@ angular.module('ngAuth', [])
           // TODO: make a property
         }
 
+        function linkedinAuthorized() {
+          IN.API.Profile('me').result(function(result) {
+            var profile = result.values;
+//            var data = {
+//              signedRequest: response.authResponse.signedRequest,
+//              profile: profile
+//            };
+            $http.post(config.providers.linkedink.url, profile).success(function(token) {
+              var payload = JSON.parse($window.atob(token.split('.')[1]));
+              $window.localStorage.token = token;
+              $rootScope.currentUser = payload.user;
+              $location.path(config.loginRedirect);
+            });
+          });
+        }
+
         function loginOauth(provider) {
           provider = provider.trim().toLowerCase();
 
@@ -207,21 +223,8 @@ angular.module('ngAuth', [])
               console.log('google signin');
               break;
             case 'linkedin':
-              console.log('sign in with linkedin');
               IN.UI.Authorize().place();
-              IN.Event.on(IN, 'auth', function() {
-                console.log('Logged in...');
-                var data = {
-                  signedRequest: response.authResponse.signedRequest,
-                  profile: profile
-                };
-                $http.post(config.providers.facebook.url, data).success(function(token) {
-                  var payload = JSON.parse($window.atob(token.split('.')[1]));
-                  $window.localStorage.token = token;
-                  $rootScope.currentUser = payload.user;
-                  $location.path(config.loginRedirect);
-                });
-              });
+              IN.Event.on(IN, 'auth', linkedinAuthorized);
               break;
             default:
               break;
