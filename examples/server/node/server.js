@@ -15,6 +15,13 @@ var methodOverride = require('method-override');
 var moment = require('moment');
 var mongoose = require('mongoose');
 var path = require('path');
+var https = require("https");
+var fs = require('fs');
+
+var config = {
+  key: fs.readFileSync('./rootCA.key'),
+  cert: fs.readFileSync('./rootCA.crt')
+};
 
 var userSchema = new mongoose.Schema({
   email: { type: String, unique: true, lowercase: true },
@@ -115,7 +122,7 @@ app.post('/auth/google', function(req, res, next) {
   var accessToken = req.body.accessToken;
   var profile = req.body.profile;
 
-  request.get('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' + accessToken, function (e, r, tokenInfo) {
+  request.get('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' + accessToken, function(e, r, tokenInfo) {
     console.log(tokenInfo);
     if (tokenInfo.user_id !== profile.user_id) {
       return res.send(400, 'Invalid Token');
@@ -141,7 +148,9 @@ app.post('/auth/google', function(req, res, next) {
 
 
 app.post('/auth/linkedin', function(req, res, next) {
-
+  var accessToken = req.body.accessToken;
+  var profile = req.body.profile;
+  res.send(200);
 });
 
 app.post('/auth/facebook', function(req, res, next) {
@@ -186,6 +195,6 @@ app.use(function(err, req, res, next) {
   res.send(500, { error: err.message });
 });
 
-app.listen(app.get('port'), function() {
-  console.log('Express server listening on port ' + app.get('port'));
+var server = https.createServer(config, app).listen(app.get('port'), function() {
+  console.log("Express server listening on port " + app.get('port'));
 });
