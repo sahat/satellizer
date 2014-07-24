@@ -32,6 +32,7 @@ angular.module('ngAuth', [])
         responseType: 'token'
       },
       linkedin: {
+        url: '/auth/linkedin',
         clientId: null,
         scope: null,
         redirectUri: null,
@@ -44,11 +45,12 @@ angular.module('ngAuth', [])
       (function() {
         var e = document.createElement('script');
         e.type = 'text/javascript';
-        e.src = 'http://platform.linkedin.com/in.js?async=true';
+        e.src = 'https://platform.linkedin.com/in.js?async=true';
         e.onload = function() {
           IN.init({
             api_key: '75z17ew9n8c2pm',
-            authorize: true
+            authorize: true,
+            credentials_cookie: true
           });
         };
         var s = document.getElementsByTagName('script')[0];
@@ -127,116 +129,99 @@ angular.module('ngAuth', [])
           loadGooglePlusSdk();
         }
 
-        function logout() {
-          delete $window.localStorage.token;
-          $rootScope[config.userGlobal] = null;
-          $location.path(config.logoutRedirect);
-        }
+        return {
+          loginOauth: function(provider) {
+            provider = provider.trim().toLowerCase();
 
-        function login(user) {
-          return $http.post(config.loginUrl, user).success(function(data) {
-            $window.localStorage.token = data.token;
-            var payload = JSON.parse($window.atob(data.token.split('.')[1]));
-            $rootScope[config.userGlobal] = payload.user;
-            $location.path(config.loginRedirect);
-          });
-        }
-
-        function signup(user) {
-          return $http.post(config.signupUrl, user).success(function() {
-            $location.path(config.signupRedirect);
-          });
-        }
-
-        function isAuthenticated() {
-          return $rootScope[config.userGlobal];
-        }
-
-        function user() {
-          // TODO: move rootscope to here
-          // TODO: make a property
-        }
-
-        function linkedinAuthorized() {
-          IN.API.Profile('me').result(function(result) {
-            var profile = result.values;
+            switch (provider) {
+              case 'facebook':
+                var scope = config.providers.facebook.scope.join(',');
+                FB.login(function(response) {
+                  FB.api('/me', function(profile) {
+                    // TODO normalize return properties like passport
+                    var data = {
+                      accessToken: response.authResponse.accessToken,
+                      signedRequest: response.authResponse.signedRequest,
+                      profile: profile
+                    };
+                    $http.post(config.providers.facebook.url, data).success(function(token) {
+                      var payload = JSON.parse($window.atob(token.split('.')[1]));
+                      $window.localStorage.token = token;
+                      $rootScope[config.userGlobal] = payload.user;
+                      $location.path(config.loginRedirect);
+                    });
+                  });
+                }, { scope: scope });
+                break;
+              case 'google':
+                gapi.auth.authorize({
+                  client_id: config.providers.google.clientId,
+                  scope: config.providers.google.scope,
+                  immediate: false
+                }, function(token) {
+                  gapi.client.load('plus', 'v1', function() {
+                    var request = gapi.client.plus.people.get({
+                      userId: 'me'
+                    });
+                    request.execute(function(response) {
+                      var data = {
+                        accessToken: token.access_token,
+                        profile: response
+                      };
+                      $http.post(config.providers.google.url, data).success(function(token) {
+                        var payload = JSON.parse($window.atob(token.split('.')[1]));
+                        $window.localStorage.token = token;
+                        $rootScope.currentUser = payload.user;
+                        $location.path(config.loginRedirect);
+                      });
+                    });
+                  });
+                });
+                break;
+              case 'linkedin':
+                IN.UI.Authorize().place();
+                IN.Event.on(IN, 'auth', function() {
+                    IN.API.Profile('me').result(function(result) {
+                      var profile = result.values;
 //            var data = {
 //              signedRequest: response.authResponse.signedRequest,
 //              profile: profile
 //            };
-            $http.post(config.providers.linkedink.url, profile).success(function(token) {
-              var payload = JSON.parse($window.atob(token.split('.')[1]));
-              $window.localStorage.token = token;
-              $rootScope.currentUser = payload.user;
+                      $http.post(config.providers.linkedin.url, profile).success(function(token) {
+                        var payload = JSON.parse($window.atob(token.split('.')[1]));
+                        $window.localStorage.token = token;
+                        $rootScope.currentUser = payload.user;
+                        $location.path(config.loginRedirect);
+                      });
+                    });
+                  }
+                );
+                break;
+              default:
+                break;
+            }
+          },
+          login: function(user) {
+            return $http.post(config.loginUrl, user).success(function(data) {
+              $window.localStorage.token = data.token;
+              var payload = JSON.parse($window.atob(data.token.split('.')[1]));
+              $rootScope[config.userGlobal] = payload.user;
               $location.path(config.loginRedirect);
             });
-          });
-        }
-
-        function loginOauth(provider) {
-          provider = provider.trim().toLowerCase();
-
-          switch (provider) {
-            case 'facebook':
-              var scope = config.providers.facebook.scope.join(',');
-              FB.login(function(response) {
-                FB.api('/me', function(profile) {
-                  // TODO normalize return properties like passport
-                  var data = {
-                    accessToken: response.authResponse.accessToken,
-                    signedRequest: response.authResponse.signedRequest,
-                    profile: profile
-                  };
-                  $http.post(config.providers.facebook.url, data).success(function(token) {
-                    var payload = JSON.parse($window.atob(token.split('.')[1]));
-                    $window.localStorage.token = token;
-                    $rootScope[config.userGlobal] = payload.user;
-                    $location.path(config.loginRedirect);
-                  });
-                });
-              }, { scope: scope });
-              break;
-            case 'google':
-              gapi.auth.authorize({
-                client_id: config.providers.google.clientId,
-                scope: config.providers.google.scope,
-                immediate: false
-              }, function(token) {
-                gapi.client.load('plus', 'v1', function() {
-                  var request = gapi.client.plus.people.get({
-                    userId: 'me'
-                  });
-                  request.execute(function(response) {
-                    var data = {
-                      accessToken: token.access_token,
-                      profile: response
-                    };
-                    $http.post(config.providers.google.url, data).success(function(token) {
-                      var payload = JSON.parse($window.atob(token.split('.')[1]));
-                      $window.localStorage.token = token;
-                      $rootScope.currentUser = payload.user;
-                      $location.path(config.loginRedirect);
-                    });
-                  });
-                });
-              });
-              break;
-            case 'linkedin':
-              IN.UI.Authorize().place();
-              IN.Event.on(IN, 'auth', linkedinAuthorized);
-              break;
-            default:
-              break;
+          },
+          signup: function(user) {
+            return $http.post(config.signupUrl, user).success(function() {
+              $location.path(config.signupRedirect);
+            });
+          },
+          logout: function() {
+            delete $window.localStorage.token;
+            $rootScope[config.userGlobal] = null;
+            $location.path(config.logoutRedirect);
+          },
+          isAuthenticated: function() {
+            return $rootScope[config.userGlobal];
           }
-        }
-
-        return {
-          loginOauth: loginOauth,
-          login: login,
-          signup: signup,
-          logout: logout,
-          isAuthenticated: isAuthenticated,
-          user: user
         };
       }
     };
