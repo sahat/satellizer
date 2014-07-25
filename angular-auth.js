@@ -29,17 +29,29 @@ angular.module('ngAuth', [])
         angular.extend(config.providers[params.name], params);
       },
 
-      $get: function($timeout, $http, $location, $rootScope, $alert, $q, $injector, $window, $document, $cookieStore) {
+      $get: function($interval, $timeout, $http, $location, $rootScope, $alert, $q, $injector, $window, $document, $cookieStore) {
 
         // BEGIN OAUTH
         var oauthKeys = ['code', 'access_token', 'expires_in'];
 
-        var Popup = function() {
-          this.handlePostMessage = function(event) {
-            if (event.data.message === 'deliverCredenrials') {
-              delete event.data.message;
+
+        function parseKeyValue(keyValue) {
+          var obj = {}, key_value, key;
+          angular.forEach((keyValue || "").split('&'), function(keyValue){
+            if (keyValue) {
+              key_value = keyValue.split('=');
+              key = decodeURIComponent(key_value[0]);
+              obj[key] = angular.isDefined(key_value[1]) ? decodeURIComponent(key_value[1]) : true;
             }
-          };
+          });
+          return obj;
+        }
+
+
+        var Popup = function() {
+
+          this.popup = null;
+
           this.open = function(url, keys, options) {
             var lastPopup = this.popup;
             var deferred = $q.defer();
@@ -59,7 +71,22 @@ angular.module('ngAuth', [])
 
             $window.addEventListener('message', this.handlePostMessage, false);
 
+            var self = this;
+
+            this.polling = $interval(function() {
+              self.requestCredentials(self.popup);
+            }, 200);
+
+
             return   deferred.promise;
+          };
+
+          this.handlePostMessage = function(event) {
+            console.log('handling postMessage');
+            console.log(event)
+            if (event.data.message === 'deliverCredenrials') {
+              delete event.data.message;
+            }
           };
 
           this.close = function() {
@@ -90,7 +117,19 @@ angular.module('ngAuth', [])
 
           this.stopPolling = function() {
             console.log('stopping pooling');
-          }
+          };
+
+          this.requestCredentials = function(authWindow) {
+            var search = authWindow.location.search;
+            if (search.match('code') || search.match('token')) {
+              console.log('found code or token');
+              var data = parseKeyValue(authWindow.location.search.substring(1));
+              authWindow.postMessage(data, '*');
+              $interval.cancel(this.polling);
+            }
+            console.log('requesting creds!!')
+
+          };
         };
 
 
