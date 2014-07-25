@@ -27,11 +27,6 @@ angular.module('ngAuth', [])
       }
     };
 
-    function providerLookup(provider) {
-      var options = config.providers[provider];
-      return angular.extend(OAuth2, options);
-    }
-
     return {
       setProvider: function(params) {
         config.providers[params.name] = config.providers[params.name] || {};
@@ -43,15 +38,6 @@ angular.module('ngAuth', [])
 
         // BEGIN OAUTH
         var oauthKeys = ['code', 'access_token', 'expires_in'];
-
-        var oauthConfig = {
-          name: null,
-          baseUrl: null,
-          apiKey: null,
-          scope: null,
-          clientId: null,
-          responseType: 'code'
-        };
 
         var Popup = {
           open: function(url, keys, options) {
@@ -145,13 +131,23 @@ angular.module('ngAuth', [])
           return $window.location.href;
         };
 
-        var defaultRequiredUrlParams = {
-          response_type: oauthConfig.responseType,
-          client_id: oauthConfig.clientId,
-          redirect_uri: getRedirectUri()
-        };
+
+
 
         var OAuth2 = {
+          name: null,
+          clientId: null,
+          scope: null,
+          baseUrl: null,
+          responseType: 'code',
+
+
+          defaultRequiredUrlParams: {
+            response_type: this.responseType,
+            client_id: this.clientId,
+            redirect_uri: getRedirectUri()
+          },
+
           buildQueryString: function(obj) {
             var str = [];
             angular.forEach(obj, function(value, key) {
@@ -162,17 +158,17 @@ angular.module('ngAuth', [])
 
           buildUrl: function(optionalUrlParams) {
             if (this.requiredUrlParams) {
-              angular.extend(defaultRequiredUrlParams, this.requiredUrlParams);
+              angular.extend(this.defaultRequiredUrlParams, this.requiredUrlParams);
             }
 
-            var base = oauthConfig.baseUrl;
-            var params = angular.extend(defaultRequiredUrlParams, optionalUrlParams);
+            var base = this.baseUrl;
+            var params = angular.extend(this.defaultRequiredUrlParams, optionalUrlParams);
             var qs = this.buildQueryString(params);
             return [base, qs].join('?');
           },
 
           open: function() {
-            var name = oauthConfig.name;
+            var name = this.name;
             var url = this.buildUrl();
             var redirectUri = $window.location.href;
 
@@ -187,9 +183,12 @@ angular.module('ngAuth', [])
 
         };
 
+
+        function providerLookup(provider) {
+          var options = config.providers[provider];
+          return angular.extend(OAuth2, options);
+        }
         // END OAUTH
-
-
 
 
         var token = $window.localStorage.token;
@@ -205,7 +204,7 @@ angular.module('ngAuth', [])
               throw new Error('Expected a provider named \'' + provider + '\', did you forget to add it?');
             } else {
               provider = providerLookup(provider);
-              // angular.extend(OAuth2, options);
+              console.log(provider)
             }
 
             deferred.resolve(provider.open(options));
