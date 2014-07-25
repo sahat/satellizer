@@ -9,38 +9,40 @@
 // TODO: Modular, enable/disable facebook or twitter or local auth
 
 angular.module('ngAuth', [])
-  .constant('config', {
-    logoutRedirect: '/',
-    loginRedirect: '/',
-    loginUrl: '/auth/login',
-    signupUrl: '/auth/signup',
-    signupRedirect: '/login',
-    userGlobal: 'currentUser',
-    providers: {
-      facebook: {
-        url: '/auth/facebook',
-        appId: null,
-        scope: null,
-        responseType: 'token',
-        locale: 'en_US',
-        version: 'v2.0'
-      },
-      google: {
-        clientId: null,
-        scope: null,
-        getRedirectUri: null,
-        responseType: 'token'
-      },
-      linkedin: {
-        url: '/auth/linkedin',
-        clientId: null,
-        scope: null,
-        getRedirectUri: null,
-        responseType: 'token'
+  .provider('Auth', function() {
+
+    var config = this.config = {
+      logoutRedirect: '/',
+      loginRedirect: '/',
+      loginUrl: '/auth/login',
+      signupUrl: '/auth/signup',
+      signupRedirect: '/login',
+      userGlobal: 'currentUser',
+      providers: {
+        facebook: {
+          url: '/auth/facebook',
+          appId: null,
+          scope: null,
+          responseType: 'token',
+          locale: 'en_US',
+          version: 'v2.0'
+        },
+        google: {
+          clientId: null,
+          scope: null,
+          getRedirectUri: null,
+          responseType: 'token'
+        },
+        linkedin: {
+          url: '/auth/linkedin',
+          clientId: null,
+          scope: null,
+          getRedirectUri: null,
+          responseType: 'token'
+        }
       }
-    }
-  })
-  .provider('Auth', function(config) {
+    };
+
     function loadLinkedinSdk() {
       (function() {
         var e = document.createElement('script');
@@ -222,11 +224,8 @@ angular.module('ngAuth', [])
       }
     };
   })
-  .factory('OAuth2', function($window, $location, $http) {
+  .factory('OAuth2', function($window, $location, $http, $q, $scope, $timeout) {
     var oauthKeys = ['code', 'access_token', 'expires_in'];
-
-    var requiredUrlParams = ['response_type', 'client_id', 'redirect_uri'];
-    var optionalUrlParams = ['scope'];
 
     var config = {
       name: null,
@@ -237,17 +236,110 @@ angular.module('ngAuth', [])
       responseType: 'code'
     };
 
+    var Popup = {
+      // Open a popup window. Returns a promise that resolves or rejects
+      // accoring to if the popup is redirected with arguments in the URL.
+      //
+      // For example, an OAuth2 request:
+      //
+      // popup.open('http://some-oauth.com', ['code']).then(function(data){
+      //   // resolves with data.code, as from http://app.com?code=13124
+      // });
+      //
 
-    return {
-      getRedirectUri: function() {
-        return $window.location.href;
+      open: function(url, keys, options) {
+        var service = this;
+        var lastPopup = this.popup;
+        var deferred = $q.defer();
+
+        if (lastPopup) {
+          service.close();
+        }
+
+        var optionsString = stringifyOptions(prepareOptions(options || {}));
+        service.popup = window.open(url, 'ng-auth ;))', optionsString);
+
+        if (service.popup && !service.popup.closed) {
+          service.popup.focus();
+        } else {
+          deferred.reject('Popup could not open or was closed');
+        }
+
+        service.schedulePolling();
       },
 
-      getParams: function() {
+      close: function() {
+        if (this.popup) {
+          this.popup.close();
+          this.popup = null;
+          $scope.$emit('didClose');
+        }
+      },
+
+      pollPopup: function() {
+        if (!this.popup) {
+          return;
+        }
+        if (this.popup.closed) {
+          $scope.$emit('didClose');
+        }
+      },
+
+      schedulePolling: function() {
+        this.polling = $timeout(function() {
+          this.pollPopup();
+          this.schedulePolling();
+        }, 35);
+      },
+
+      stopPolling: function() {
+        $scope.$on('didClose', function() {
+          $timeout.cancel(this.polling);
+        });
+      }
+    };
+
+
+    function prepareOptions(options) {
+      var width = options.width || 500;
+      var height = options.height || 500;
+      return angular.extend({
+        left: ((screen.width / 2) - (width / 2)),
+        top: ((screen.height / 2) - (height / 2)),
+        width: width,
+        height: height
+      }, options);
+    }
+
+    function stringifyOptions(options) {
+      var optionsStrings = [];
+      for (var key in options) {
+        if (options.hasOwnProperty(key)) {
+          var value;
+          switch (options[key]) {
+            case true:
+              value = '1';
+              break;
+            case false:
+              value = '0';
+              break;
+            default:
+              value = options[key];
+          }
+          optionsStrings.push(
+              key + '=' + value
+          );
+        }
+      }
+      return optionsStrings.join(',');
+    }
+
+    return {
+      requiredUrlParams: function() {
         return {
           response_type: config.responseType,
           client_id: config.clientId,
-          redirect_uri: this.getRedirectUri()
+          redirect_uri: $window.location.href
         }
       },
 
@@ -259,9 +351,9 @@ angular.module('ngAuth', [])
         return str.join('&');
       },
 
-      buildUrl: function(extraParams) {
+      buildUrl: function(optionalUrlParams) {
         var base = config.baseUrl;
-        var params = angular.extend(this.getParams(), extraParams);
+        var params = angular.extend(this.requiredUrlParams(), optionalUrlParams);
         var qs = this.buildQueryString(params);
         return [base, qs].join('?');
       },
@@ -269,7 +361,7 @@ angular.module('ngAuth', [])
       open: function() {
         var name = config.name;
         var url = this.buildUrl();
-        var redirectUri = this.getRedirectUri();
+        var redirectUri = $window.location.href;
 
         return Popup.open(url, oauthKeys).then(function(authData) {
           return {
@@ -281,6 +373,16 @@ angular.module('ngAuth', [])
       }
 
     }
+  })
+  .factory('fb', function(OAuth2) {
+    var options = {
+      name: 'facebook-oauth2',
+      baseUrl: 'https://www.facebook.com/dialog/oauth',
+      requiredUrlParams: ['display'],
+      scope: configurable('scope', 'email'),
+      display: 'popup'
+    };
+    return angular.extend(OAuth2, options);
   })
   .factory('authInterceptor', function($q, $window, $location) {
     return {
@@ -301,13 +403,13 @@ angular.module('ngAuth', [])
   .config(function($httpProvider) {
     $httpProvider.interceptors.push('authInterceptor');
   })
-  .run(function($rootScope, $location, config) {
+  .run(function($rootScope, $location) {
     $rootScope.$on('$routeChangeStart', function(event, current, previous) {
-      if ($rootScope[config.userGlobal] &&
+      if ($rootScope.currentUser &&
         (current.originalPath === '/login' || current.originalPath === '/signup')) {
         $location.path('/');
       }
-      if (current.authenticated && !$rootScope[config.userGlobal]) {
+      if (current.authenticated && !$rootScope.currentUser) {
         $location.path('/login');
       }
     });
