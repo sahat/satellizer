@@ -109,7 +109,7 @@ angular.module('ngAuth', [])
         angular.extend(config.providers[provider], params);
       },
 
-      $get: function($http, $location, $rootScope, $alert, $q, $injector, $window, $document) {
+      $get: function($http, $location, $rootScope, $alert, $q, $injector, $window, $document, $cookieStore) {
 
         var token = $window.localStorage.token;
         if (token) {
@@ -182,12 +182,8 @@ angular.module('ngAuth', [])
                 IN.UI.Authorize().place();
                 IN.Event.on(IN, 'auth', function() {
                     IN.API.Profile('me').result(function(result) {
-                      var profile = result.values;
-//            var data = {
-//              signedRequest: response.authResponse.signedRequest,
-//              profile: profile
-//            };
-                      $http.post(config.providers.linkedin.url, profile).success(function(token) {
+                      var profile = result.values[0];
+                      $http.post(config.providers.linkedin.url, { profile: profile }).success(function(token) {
                         var payload = JSON.parse($window.atob(token.split('.')[1]));
                         $window.localStorage.token = token;
                         $rootScope.currentUser = payload.user;
@@ -225,6 +221,43 @@ angular.module('ngAuth', [])
         };
       }
     };
+  })
+  .factory('OAuth2', function($window, $location, $http) {
+    function currentUrl() {
+      return [$window.location.protocol,
+        '//',
+        $window.location.host,
+        $window.location.pathname].join('');
+    }
+
+    var oauthKeys = ['code', 'access_token', 'expires_in'];
+
+    var concatenatedProperties = ['requiredUrlParams', 'optionalUrlParams'];
+    var requiredUrlParams = ['response_type', 'client_id', 'redirect_uri'];
+    var optionalUrlParams = ['scope'];
+
+    return {
+      baseUrl: null, // required
+      apiKey: null, // required
+      scope: null, // required
+      clientId: null,
+      responseType: 'code',
+
+      redirectUri: function() {
+        return currentUrl();
+      },
+
+      buildQueryString: function() {
+        var s = [];
+        var add = function(key, value) {
+          s[s.length] = encodeURIComponent(key) + '=' + encodeURIComponent(value);
+        };
+      }
+
+    }
+  })
+  .service('QueryString', function() {
+
   })
   .factory('authInterceptor', function($q, $window, $location) {
     return {
