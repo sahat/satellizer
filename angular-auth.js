@@ -28,14 +28,14 @@ angular.module('ngAuth', [])
       google: {
         clientId: null,
         scope: null,
-        redirectUri: null,
+        getRedirectUri: null,
         responseType: 'token'
       },
       linkedin: {
         url: '/auth/linkedin',
         clientId: null,
         scope: null,
-        redirectUri: null,
+        getRedirectUri: null,
         responseType: 'token'
       }
     }
@@ -223,41 +223,64 @@ angular.module('ngAuth', [])
     };
   })
   .factory('OAuth2', function($window, $location, $http) {
-    function currentUrl() {
-      return [$window.location.protocol,
-        '//',
-        $window.location.host,
-        $window.location.pathname].join('');
-    }
-
     var oauthKeys = ['code', 'access_token', 'expires_in'];
 
-    var concatenatedProperties = ['requiredUrlParams', 'optionalUrlParams'];
     var requiredUrlParams = ['response_type', 'client_id', 'redirect_uri'];
     var optionalUrlParams = ['scope'];
 
-    return {
-      baseUrl: null, // required
-      apiKey: null, // required
-      scope: null, // required
+    var config = {
+      name: null,
+      baseUrl: null,
+      apiKey: null,
+      scope: null,
       clientId: null,
-      responseType: 'code',
+      responseType: 'code'
+    };
 
-      redirectUri: function() {
-        return currentUrl();
+
+    return {
+      getRedirectUri: function() {
+        return $window.location.href;
       },
 
-      buildQueryString: function() {
-        var s = [];
-        var add = function(key, value) {
-          s[s.length] = encodeURIComponent(key) + '=' + encodeURIComponent(value);
-        };
+      getParams: function() {
+        return {
+          response_type: config.responseType,
+          client_id: config.clientId,
+          redirect_uri: this.getRedirectUri()
+        }
+      },
+
+      buildQueryString: function(obj) {
+        var str = [];
+        angular.forEach(obj, function(value, key) {
+          str.push(encodeURIComponent(key) + "=" + encodeURIComponent(value));
+        });
+        return str.join('&');
+      },
+
+      buildUrl: function(extraParams) {
+        var base = config.baseUrl;
+        var params = angular.extend(this.getParams(), extraParams);
+        var qs = this.buildQueryString(params);
+        return [base, qs].join('?');
+      },
+
+      open: function() {
+        var name = config.name;
+        var url = this.buildUrl();
+        var redirectUri = this.getRedirectUri();
+
+        return Popup.open(url, oauthKeys).then(function(authData) {
+          return {
+            authorizationCode: authData.code,
+            provider: name,
+            getRedirectUri: redirectUri
+          }
+        });
       }
 
     }
-  })
-  .service('QueryString', function() {
-
   })
   .factory('authInterceptor', function($q, $window, $location) {
     return {
