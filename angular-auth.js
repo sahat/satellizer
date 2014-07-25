@@ -34,58 +34,62 @@ angular.module('ngAuth', [])
         // BEGIN OAUTH
         var oauthKeys = ['code', 'access_token', 'expires_in'];
 
-        var Popup = {
-          open: function(url, keys, options) {
-            var service = this;
+        var Popup = function() {
+          this.handlePostMessage = function(event) {
+            if (event.data.message === 'deliverCredenrials') {
+              delete event.data.message;
+            }
+          };
+          this.open = function(url, keys, options) {
             var lastPopup = this.popup;
             var deferred = $q.defer();
 
             if (lastPopup) {
-              service.close();
+              this.close();
             }
 
             var optionsString = stringifyOptions(prepareOptions(options || {}));
-            service.popup = window.open(url, 'ng-auth ;))', optionsString);
+            this.popup = window.open(url, 'ng-auth by sahat', optionsString);
 
-            if (service.popup && !service.popup.closed) {
-              service.popup.focus();
+            if (this.popup && !this.popup.closed) {
+              this.popup.focus();
             } else {
               deferred.reject('Popup could not open or was closed');
             }
 
-            service.schedulePolling();
+            $window.addEventListener('message', this.handlePostMessage, false);
 
-            return deferred.promise;
-          },
+            return   deferred.promise;
+          };
 
-          close: function() {
+          this.close = function() {
             if (this.popup) {
               this.popup.close();
               this.popup = null;
               $rootScope.$emit('didClose');
             }
-          },
+          };
 
-          pollPopup: function() {
+          this.pollPopup = function() {
+            console.log('pollin')
             if (!this.popup) {
               return;
             }
             if (this.popup.closed) {
-              $rootScope.$emit('didClose');
-            }
-          },
-
-          schedulePolling: function() {
-            this.polling = $timeout(function() {
-              this.pollPopup();
-              this.schedulePolling();
-            }, 35);
-          },
-
-          stopPolling: function() {
-            $rootScope.$on('didClose', function() {
               $timeout.cancel(this.polling);
-            });
+            }
+          };
+
+          this.schedulePolling = function() {
+            var self = this;
+            this.polling = $timeout(function() {
+              self.pollPopup();
+              self.schedulePolling();
+            }, 35);
+          };
+
+          this.stopPolling = function() {
+            console.log('stopping pooling');
           }
         };
 
@@ -169,7 +173,9 @@ angular.module('ngAuth', [])
             var url = this.buildUrl();
             var redirectUri = $window.location.href;
 
-            return Popup.open(url, oauthKeys).then(function(authData) {
+            var popup = new Popup();
+
+            return popup.open(url, oauthKeys).then(function(authData) {
               return {
                 authorizationCode: authData.code,
                 provider: name,
@@ -186,7 +192,7 @@ angular.module('ngAuth', [])
           var options = config.providers[provider];
           angular.copy(OAuth2, x);
           angular.extend(x, options)
-          console.log('MAA',x);
+          console.log('MAA', x);
           return x;
         }
 
