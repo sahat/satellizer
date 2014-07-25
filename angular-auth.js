@@ -93,6 +93,11 @@ angular.module('ngAuth', [])
     }
 
     return {
+      addProvider: function(params) {
+        config.providers[params.name] = config.providers[params.name] || {};
+        angular.extend(config.providers.params.name, params);
+      },
+
       facebook: function(params) {
         angular.extend(config.providers.facebook, params);
       },
