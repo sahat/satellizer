@@ -105,13 +105,7 @@ angular.module('ngAuth', [])
         angular.extend(config.providers.linkedin, params);
       },
 
-      oauth2: function(params) {
-        var provider = params.name;
-        config.providers[provider] = config.providers[provider] || {};
-        angular.extend(config.providers[provider], params);
-      },
-
-      $get: function($http, $location, $rootScope, $alert, $q, $injector, $window, $document, $cookieStore) {
+      $get: function(OAuth2, fb, $http, $location, $rootScope, $alert, $q, $injector, $window, $document, $cookieStore) {
 
         var token = $window.localStorage.token;
         if (token) {
@@ -132,6 +126,16 @@ angular.module('ngAuth', [])
         }
 
         return {
+          authenticate: function(provider, options) {
+            var deferred = $q.defer;
+            if (!provider) {
+              throw new Error('Expected a provider named \'' + provider + '\', did you forget to add it?');
+            }
+
+            deferred.resolve(provider.open(options));
+            return deferred.promise;
+          },
+
           loginOauth: function(provider) {
             provider = provider.trim().toLowerCase();
 
