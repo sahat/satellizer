@@ -32,12 +32,11 @@ angular.module('ngAuth', [])
       $get: function($interval, $timeout, $http, $location, $rootScope, $alert, $q, $injector, $window, $document, $cookieStore) {
 
         // BEGIN OAUTH
-        var oauthKeys = ['code', 'access_token', 'expires_in'];
 
 
         function parseKeyValue(keyValue) {
           var obj = {}, key_value, key;
-          angular.forEach((keyValue || "").split('&'), function(keyValue){
+          angular.forEach((keyValue || "").split('&'), function(keyValue) {
             if (keyValue) {
               key_value = keyValue.split('=');
               key = decodeURIComponent(key_value[0]);
@@ -53,15 +52,15 @@ angular.module('ngAuth', [])
           this.popup = null;
 
           this.open = function(url, keys, options) {
-            var lastPopup = this.popup;
             var deferred = $q.defer();
+            var lastPopup = this.popup;
 
             if (lastPopup) {
               this.close();
             }
 
             var optionsString = stringifyOptions(prepareOptions(options || {}));
-            this.popup = window.open(url, 'ng-auth by sahat', optionsString);
+            this.popup = window.open(url, 'ng-auth', optionsString);
 
             if (this.popup && !this.popup.closed) {
               this.popup.focus();
@@ -69,24 +68,22 @@ angular.module('ngAuth', [])
               deferred.reject('Popup could not open or was closed');
             }
 
-            $window.addEventListener('message', this.handlePostMessage, false);
+            $window.addEventListener('message', function(event) {
+              console.log('handling postMessage');
+              console.log(event);
+              if (event.data.message === 'deliverCredenrials') {
+                delete event.data.message;
+              }
+              deferred.resolve(event.data);
+            }, false);
 
             var self = this;
 
             this.polling = $interval(function() {
               self.requestCredentials(self.popup);
-            }, 200);
-
+            }, 35);
 
             return   deferred.promise;
-          };
-
-          this.handlePostMessage = function(event) {
-            console.log('handling postMessage');
-            console.log(event)
-            if (event.data.message === 'deliverCredenrials') {
-              delete event.data.message;
-            }
           };
 
           this.close = function() {
@@ -172,30 +169,32 @@ angular.module('ngAuth', [])
         };
 
 
-        var OAuth2 = {
-          name: null,
-          clientId: null,
-          scope: null,
-          baseUrl: null,
-          responseType: 'code',
+        var oauthKeys = ['code', 'access_token', 'expires_in'];
 
-          getDefaultRequiredUrlParams: function() {
+        var OAuth2 = function() {
+          this.name = null;
+          this.clientId = null;
+          this.scope = null;
+          this.baseUrl = null;
+          this.responseType = 'code';
+
+          this.getDefaultRequiredUrlParams = function() {
             return {
               response_type: this.responseType,
               client_id: this.clientId,
               redirect_uri: getRedirectUri()
             }
-          },
+          };
 
-          buildQueryString: function(obj) {
+          this.buildQueryString = function(obj) {
             var str = [];
             angular.forEach(obj, function(value, key) {
-              str.push(encodeURIComponent(key) + "=" + encodeURIComponent(value));
+              str.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
             });
             return str.join('&');
-          },
+          };
 
-          buildUrl: function(optionalUrlParams) {
+          this.buildUrl = function(optionalUrlParams) {
             var defaultRequiredUrlParams = this.getDefaultRequiredUrlParams();
             if (this.requiredUrlParams) {
               angular.extend(defaultRequiredUrlParams, this.requiredUrlParams);
@@ -205,9 +204,9 @@ angular.module('ngAuth', [])
             var params = angular.extend(defaultRequiredUrlParams, optionalUrlParams);
             var qs = this.buildQueryString(params);
             return [base, qs].join('?');
-          },
+          };
 
-          open: function() {
+          this.open = function() {
             var name = this.name;
             var url = this.buildUrl();
             var redirectUri = $window.location.href;
@@ -221,18 +220,15 @@ angular.module('ngAuth', [])
                 getRedirectUri: redirectUri
               }
             });
-          }
-
+          };
         };
 
-
-        function providerLookup(provider) {
-          var x = {};
-          var options = config.providers[provider];
-          angular.copy(OAuth2, x);
-          angular.extend(x, options)
-          console.log('MAA', x);
-          return x;
+        function providerLookup(providerName) {
+          var options = config.providers[providerName];
+          var oauth2 = new OAuth2();
+          var provider = angular.extend(oauth2, options);
+          console.log('MAA', provider);
+          return provider;
         }
 
         // END OAUTH
