@@ -348,13 +348,13 @@ angular.module('ngAuth', [])
       return $window.location.href;
     };
 
-    return {
-      requiredUrlParams: {
-          response_type: config.responseType,
-          client_id: config.clientId,
-          redirect_uri: getRedirectUri()
-      },
+    var defaultRequiredUrlParams = {
+      response_type: config.responseType,
+      client_id: config.clientId,
+      redirect_uri: getRedirectUri()
+    };
 
+    return {
       buildQueryString: function(obj) {
         var str = [];
         angular.forEach(obj, function(value, key) {
@@ -364,9 +364,12 @@ angular.module('ngAuth', [])
       },
 
       buildUrl: function(optionalUrlParams) {
+        if (this.requiredUrlParams) {
+          angular.extend(defaultRequiredUrlParams, this.requiredUrlParams);
+        }
 
         var base = config.baseUrl;
-        var params = angular.extend(this.requiredUrlParams, optionalUrlParams);
+        var params = angular.extend(defaultRequiredUrlParams, optionalUrlParams);
         var qs = this.buildQueryString(params);
         return [base, qs].join('?');
       },
@@ -391,9 +394,10 @@ angular.module('ngAuth', [])
     var options = {
       name: 'facebook-oauth2',
       baseUrl: 'https://www.facebook.com/dialog/oauth',
-      scope: 'scope,email',
+      scope: 'scope, email',
       requiredUrlParams: { display: 'popup' }
     };
+
     return angular.extend(OAuth2, options);
   })
   .factory('authInterceptor', function($q, $window, $location) {
