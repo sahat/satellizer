@@ -4,10 +4,6 @@
  * License: MIT
  */
 
-// TODO: Enable CORS, separate server from client, Gulp server runner
-// TODO: Provider return object, underscore private functions < 10loc
-// TODO: Modular, enable/disable facebook or twitter or local auth
-
 angular.module('ngAuth', [])
   .provider('Auth', function() {
 
@@ -32,7 +28,6 @@ angular.module('ngAuth', [])
         config.providers[params.name] = config.providers[params.name] || {};
         angular.extend(config.providers[params.name], params);
       },
-
 
       $get: function($timeout, $http, $location, $rootScope, $alert, $q, $injector, $window, $document, $cookieStore) {
 
@@ -59,6 +54,8 @@ angular.module('ngAuth', [])
             }
 
             service.schedulePolling();
+
+            return deferred.promise;
           },
 
           close: function() {
@@ -132,8 +129,6 @@ angular.module('ngAuth', [])
         };
 
 
-
-
         var OAuth2 = {
           name: null,
           clientId: null,
@@ -141,11 +136,12 @@ angular.module('ngAuth', [])
           baseUrl: null,
           responseType: 'code',
 
-
-          defaultRequiredUrlParams: {
-            response_type: this.responseType,
-            client_id: this.clientId,
-            redirect_uri: getRedirectUri()
+          getDefaultRequiredUrlParams: function() {
+            return {
+              response_type: this.responseType,
+              client_id: this.clientId,
+              redirect_uri: getRedirectUri()
+            }
           },
 
           buildQueryString: function(obj) {
@@ -157,12 +153,13 @@ angular.module('ngAuth', [])
           },
 
           buildUrl: function(optionalUrlParams) {
+            var defaultRequiredUrlParams = this.getDefaultRequiredUrlParams();
             if (this.requiredUrlParams) {
-              angular.extend(this.defaultRequiredUrlParams, this.requiredUrlParams);
+              angular.extend(defaultRequiredUrlParams, this.requiredUrlParams);
             }
 
             var base = this.baseUrl;
-            var params = angular.extend(this.defaultRequiredUrlParams, optionalUrlParams);
+            var params = angular.extend(defaultRequiredUrlParams, optionalUrlParams);
             var qs = this.buildQueryString(params);
             return [base, qs].join('?');
           },
@@ -185,9 +182,14 @@ angular.module('ngAuth', [])
 
 
         function providerLookup(provider) {
+          var x = {};
           var options = config.providers[provider];
-          return angular.extend(OAuth2, options);
+          angular.copy(OAuth2, x);
+          angular.extend(x, options)
+          console.log('MAA',x);
+          return x;
         }
+
         // END OAUTH
 
 
@@ -204,11 +206,8 @@ angular.module('ngAuth', [])
               throw new Error('Expected a provider named \'' + provider + '\', did you forget to add it?');
             } else {
               provider = providerLookup(provider);
-              console.log(provider)
             }
-
-            deferred.resolve(provider.open(options));
-            return deferred.promise;
+            provider.open(options);
           },
 
           loginOauth: function(provider) {
