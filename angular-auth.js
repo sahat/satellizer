@@ -94,8 +94,9 @@ angular.module('ngAuth', [])
 
     return {
       addProvider: function(params) {
+        console.log(params.name)
         config.providers[params.name] = config.providers[params.name] || {};
-        angular.extend(config.providers.params.name, params);
+        angular.extend(config.providers[params.name], params);
       },
 
       facebook: function(params) {
@@ -233,7 +234,7 @@ angular.module('ngAuth', [])
       }
     };
   })
-  .factory('OAuth2', function($window, $location, $http, $q, $scope, $timeout) {
+  .factory('OAuth2', function($window, $location, $http, $q, $rootScope, $timeout) {
     var oauthKeys = ['code', 'access_token', 'expires_in'];
 
     var config = {
@@ -281,7 +282,7 @@ angular.module('ngAuth', [])
         if (this.popup) {
           this.popup.close();
           this.popup = null;
-          $scope.$emit('didClose');
+          $rootScope.$emit('didClose');
         }
       },
 
@@ -290,7 +291,7 @@ angular.module('ngAuth', [])
           return;
         }
         if (this.popup.closed) {
-          $scope.$emit('didClose');
+          $rootScope.$emit('didClose');
         }
       },
 
@@ -302,7 +303,7 @@ angular.module('ngAuth', [])
       },
 
       stopPolling: function() {
-        $scope.$on('didClose', function() {
+        $rootScope.$on('didClose', function() {
           $timeout.cancel(this.polling);
         });
       }
@@ -343,13 +344,15 @@ angular.module('ngAuth', [])
       return optionsStrings.join(',');
     }
 
+    var getRedirectUri = function() {
+      return $window.location.href;
+    };
+
     return {
-      requiredUrlParams: function() {
-        return {
+      requiredUrlParams: {
           response_type: config.responseType,
           client_id: config.clientId,
-          redirect_uri: $window.location.href
-        }
+          redirect_uri: getRedirectUri()
       },
 
       buildQueryString: function(obj) {
@@ -361,8 +364,9 @@ angular.module('ngAuth', [])
       },
 
       buildUrl: function(optionalUrlParams) {
+
         var base = config.baseUrl;
-        var params = angular.extend(this.requiredUrlParams(), optionalUrlParams);
+        var params = angular.extend(this.requiredUrlParams, optionalUrlParams);
         var qs = this.buildQueryString(params);
         return [base, qs].join('?');
       },
@@ -387,9 +391,8 @@ angular.module('ngAuth', [])
     var options = {
       name: 'facebook-oauth2',
       baseUrl: 'https://www.facebook.com/dialog/oauth',
-      requiredUrlParams: ['display'],
-      scope: configurable('scope', 'email'),
-      display: 'popup'
+      scope: 'scope,email',
+      requiredUrlParams: { display: 'popup' }
     };
     return angular.extend(OAuth2, options);
   })
