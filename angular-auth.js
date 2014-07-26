@@ -177,50 +177,49 @@ angular.module('ngAuth', [])
           this.scope = null;
           this.baseUrl = null;
           this.responseType = 'code';
+        };
 
-          this.getDefaultRequiredUrlParams = function() {
+        OAuth2.prototype.getDefaultRequiredUrlParams = function() {
+          return {
+            response_type: this.responseType,
+            client_id: this.clientId,
+            redirect_uri: getRedirectUri()
+          }
+        };
+
+        OAuth2.prototype.buildQueryString = function(obj) {
+          var str = [];
+          angular.forEach(obj, function(value, key) {
+            str.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+          });
+          return str.join('&');
+        };
+
+        OAuth2.prototype.open = function() {
+          var name = this.name;
+          var url = this.buildUrl();
+          var redirectUri = $window.location.href;
+
+          var popup = new Popup();
+
+          return popup.open(url, oauthKeys).then(function(authData) {
             return {
-              response_type: this.responseType,
-              client_id: this.clientId,
-              redirect_uri: getRedirectUri()
+              authorizationCode: authData.code,
+              provider: name,
+              getRedirectUri: redirectUri
             }
-          };
+          });
+        };
 
-          this.buildQueryString = function(obj) {
-            var str = [];
-            angular.forEach(obj, function(value, key) {
-              str.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
-            });
-            return str.join('&');
-          };
-
-          this.buildUrl = function(optionalUrlParams) {
-            var defaultRequiredUrlParams = this.getDefaultRequiredUrlParams();
-            if (this.requiredUrlParams) {
-              angular.extend(defaultRequiredUrlParams, this.requiredUrlParams);
-            }
-
-            var base = this.baseUrl;
-            var params = angular.extend(defaultRequiredUrlParams, optionalUrlParams);
-            var qs = this.buildQueryString(params);
-            return [base, qs].join('?');
-          };
-
-          this.open = function() {
-            var name = this.name;
-            var url = this.buildUrl();
-            var redirectUri = $window.location.href;
-
-            var popup = new Popup();
-
-            return popup.open(url, oauthKeys).then(function(authData) {
-              return {
-                authorizationCode: authData.code,
-                provider: name,
-                getRedirectUri: redirectUri
-              }
-            });
-          };
+        OAuth2.prototype.buildUrl = function(optionalUrlParams) {
+          var defaultRequiredUrlParams = this.getDefaultRequiredUrlParams();
+          if (this.requiredUrlParams) {
+            angular.extend(defaultRequiredUrlParams, this.requiredUrlParams);
+          }
+          var base = this.baseUrl;
+          var params = angular.extend(defaultRequiredUrlParams, optionalUrlParams);
+          var qs = this.buildQueryString(params);
+          return [base, qs].join('?');
         };
 
         function providerLookup(providerName) {
