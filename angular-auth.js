@@ -48,7 +48,6 @@ angular.module('ngAuth', [])
 
 
         var Popup = function() {
-
           this.popup = null;
         };
 
@@ -110,7 +109,7 @@ angular.module('ngAuth', [])
           if (search.match('code') || search.match('token')) {
             console.log('found code or token');
             var data = parseKeyValue(authWindow.location.search.substring(1));
-            authWindow.postMessage(data, '*');
+            $window.postMessage(data, $window.location.origin);
             $interval.cancel(this.polling);
           }
           console.log('requesting creds!!')
