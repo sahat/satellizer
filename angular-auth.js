@@ -50,83 +50,71 @@ angular.module('ngAuth', [])
         var Popup = function() {
 
           this.popup = null;
+        };
 
-          this.open = function(url, keys, options) {
-            var deferred = $q.defer();
-            var lastPopup = this.popup;
+        Popup.prototype.open = function(url, keys, options) {
+          var deferred = $q.defer();
+          var lastPopup = this.popup;
 
-            if (lastPopup) {
-              this.close();
+          if (lastPopup) {
+            this.close();
+          }
+
+          var optionsString = stringifyOptions(prepareOptions(options || {}));
+          this.popup = window.open(url, 'ng-auth', optionsString);
+
+          if (this.popup && !this.popup.closed) {
+            this.popup.focus();
+          } else {
+            deferred.reject('Popup could not open or was closed');
+          }
+
+          $window.addEventListener('message', function(event) {
+            console.log('handling postMessage');
+            console.log(event);
+            if (event.data.message === 'deliverCredenrials') {
+              delete event.data.message;
             }
+            deferred.resolve(event.data);
+          }, false);
 
-            var optionsString = stringifyOptions(prepareOptions(options || {}));
-            this.popup = window.open(url, 'ng-auth', optionsString);
+          var self = this;
 
-            if (this.popup && !this.popup.closed) {
-              this.popup.focus();
-            } else {
-              deferred.reject('Popup could not open or was closed');
-            }
+          this.polling = $interval(function() {
+            self.requestCredentials(self.popup);
+          }, 35);
 
-            $window.addEventListener('message', function(event) {
-              console.log('handling postMessage');
-              console.log(event);
-              if (event.data.message === 'deliverCredenrials') {
-                delete event.data.message;
-              }
-              deferred.resolve(event.data);
-            }, false);
+          return deferred.promise;
+        };
 
-            var self = this;
+        Popup.prototype.close = function() {
+          if (this.popup) {
+            this.popup.close();
+            this.popup = null;
+            $rootScope.$emit('didClose');
+          }
+        };
 
-            this.polling = $interval(function() {
-              self.requestCredentials(self.popup);
-            }, 35);
+        Popup.prototype.pollPopup = function() {
+          console.log('pollin');
+          if (!this.popup) {
+            return;
+          }
+          if (this.popup.closed) {
+            $timeout.cancel(this.polling);
+          }
+        };
 
-            return   deferred.promise;
-          };
+        Popup.prototype.requestCredentials = function(authWindow) {
+          var search = authWindow.location.search;
+          if (search.match('code') || search.match('token')) {
+            console.log('found code or token');
+            var data = parseKeyValue(authWindow.location.search.substring(1));
+            authWindow.postMessage(data, '*');
+            $interval.cancel(this.polling);
+          }
+          console.log('requesting creds!!')
 
-          this.close = function() {
-            if (this.popup) {
-              this.popup.close();
-              this.popup = null;
-              $rootScope.$emit('didClose');
-            }
-          };
-
-          this.pollPopup = function() {
-            console.log('pollin')
-            if (!this.popup) {
-              return;
-            }
-            if (this.popup.closed) {
-              $timeout.cancel(this.polling);
-            }
-          };
-
-          this.schedulePolling = function() {
-            var self = this;
-            this.polling = $timeout(function() {
-              self.pollPopup();
-              self.schedulePolling();
-            }, 35);
-          };
-
-          this.stopPolling = function() {
-            console.log('stopping pooling');
-          };
-
-          this.requestCredentials = function(authWindow) {
-            var search = authWindow.location.search;
-            if (search.match('code') || search.match('token')) {
-              console.log('found code or token');
-              var data = parseKeyValue(authWindow.location.search.substring(1));
-              authWindow.postMessage(data, '*');
-              $interval.cancel(this.polling);
-            }
-            console.log('requesting creds!!')
-
-          };
         };
 
 
@@ -221,17 +209,14 @@ angular.module('ngAuth', [])
           var qs = this.buildQueryString(params);
           return [base, qs].join('?');
         };
-
         function providerLookup(providerName) {
-          var options = config.providers[providerName];
+          var providerOptions = config.providers[providerName];
           var oauth2 = new OAuth2();
-          var provider = angular.extend(oauth2, options);
-          console.log('MAA', provider);
+          var provider = angular.extend(oauth2, providerOptions);
           return provider;
         }
 
         // END OAUTH
-
 
         var token = $window.localStorage.token;
         if (token) {
