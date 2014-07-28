@@ -232,10 +232,10 @@ angular.module('ngAuth', [])
             var deferred = $q.defer;
             if (!providerName) {
               deferred.reject('Expected a provider named \'' + providerName + '\', did you forget to add it?');
-              return;
+              return deferred.promise;
             }
             var provider = OAuth2.createProvider(providerName);
-            provider.open(options);
+            return provider.open(options);
           },
 
           loginOauth: function(provider) {

@@ -1,5 +1,7 @@
 angular.module('MyApp')
   .controller('LoginCtrl', function($scope, Auth) {
+
+
     $scope.login = function() {
       Auth.login({
         email: $scope.email,
@@ -7,6 +9,13 @@ angular.module('MyApp')
       });
     };
     $scope.loginOauth = function(provider) {
-      Auth.loginOauth(provider);
+
+      Auth.authenticate(provider)
+        .success(function() {
+          console.log('Auth succeeded');
+        })
+        .fail(function() {
+          console.log('Auth failed');
+        });
     }
   });
