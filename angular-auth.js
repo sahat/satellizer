@@ -111,6 +111,8 @@ angular.module('ngAuth', [])
             var data = parseKeyValue(authWindow.location.search.substring(1));
             $window.postMessage(data, $window.location.origin);
             $interval.cancel(this.polling);
+            // angular lifecycle before page loads
+            authWindow.close();
           }
           console.log('requesting creds!!')
 
@@ -208,12 +210,14 @@ angular.module('ngAuth', [])
           var qs = this.buildQueryString(params);
           return [base, qs].join('?');
         };
-        function providerLookup(providerName) {
+
+
+        OAuth2.createProvider = function(providerName) {
           var providerOptions = config.providers[providerName];
           var oauth2 = new OAuth2();
           var provider = angular.extend(oauth2, providerOptions);
           return provider;
-        }
+        };
 
         // END OAUTH
 
@@ -224,13 +228,13 @@ angular.module('ngAuth', [])
         }
 
         return {
-          authenticate: function(provider, options) {
+          authenticate: function(providerName, options) {
             var deferred = $q.defer;
-            if (!provider) {
-              throw new Error('Expected a provider named \'' + provider + '\', did you forget to add it?');
-            } else {
-              provider = providerLookup(provider);
+            if (!providerName) {
+              deferred.reject('Expected a provider named \'' + providerName + '\', did you forget to add it?');
+              return;
             }
+            var provider = OAuth2.createProvider(providerName);
             provider.open(options);
           },
 
