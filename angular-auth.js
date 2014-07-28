@@ -154,7 +154,7 @@ angular.module('ngAuth', [])
         }
 
         var getRedirectUri = function() {
-          return $window.location.href;
+          return $window.location.origin;
         };
 
 
