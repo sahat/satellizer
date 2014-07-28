@@ -19,9 +19,19 @@ angular.module('ngAuth', [])
           authorizationUrl: 'https://www.facebook.com/dialog/oauth',
           scope: 'scope, email',
           requiredUrlParams: { display: 'popup' }
+        },
+        google: {
+          authorizationUrl: 'https://accounts.google.com/o/oauth2/auth',
+          scope: ''
+        },
+        linkedin: {
+          authorizationUrl: 'https://www.linkedin.com/uas/oauth2/authorization',
+          state: 'STATE'
         }
       }
     };
+    // TODO: Use requiredUrlParams instead of passing all properties
+    // TODO: pass scope delimiter
 
     return {
       setProvider: function(params) {
