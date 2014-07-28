@@ -16,7 +16,7 @@ angular.module('ngAuth', [])
       userGlobal: 'currentUser',
       providers: {
         facebook: {
-          baseUrl: 'https://www.facebook.com/dialog/oauth',
+          authorizationUrl: 'https://www.facebook.com/dialog/oauth',
           scope: 'scope, email',
           requiredUrlParams: { display: 'popup' }
         }
@@ -164,7 +164,7 @@ angular.module('ngAuth', [])
           this.name = null;
           this.clientId = null;
           this.scope = null;
-          this.baseUrl = null;
+          this.authorizationUrl = null;
           this.responseType = 'code';
         };
 
@@ -205,7 +205,7 @@ angular.module('ngAuth', [])
           if (this.requiredUrlParams) {
             angular.extend(defaultRequiredUrlParams, this.requiredUrlParams);
           }
-          var base = this.baseUrl;
+          var base = this.authorizationUrl;
           var params = angular.extend(defaultRequiredUrlParams, optionalUrlParams);
           var qs = this.buildQueryString(params);
           return [base, qs].join('?');
