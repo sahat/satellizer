@@ -32,6 +32,7 @@ angular.module('ngAuth', [])
     };
     // TODO: Use requiredUrlParams instead of passing all properties
     // TODO: pass scope delimiter
+    // TODO: default responseType to code if token is obtained on server
 
     return {
       setProvider: function(params) {
