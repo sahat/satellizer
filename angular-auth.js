@@ -176,8 +176,8 @@
             var popup = new Popup();
 
             popup.open(url, oauthKeys).then(function(code) {
-              this.exchangeForToken(code).then(function(token) {
-                deferred.resolve(token);
+              this.exchangeForToken(code).then(function(response) {
+                deferred.resolve(response.data);
               });
             }.bind(this));
 
@@ -225,7 +225,6 @@
           Oauth2.createProvider = function(providerName) {
             var providerOptions = config.providers[providerName];
             var provider = new Oauth2(providerOptions);
-            console.log('MyProv', provider);
             return provider;
           };
 
@@ -246,9 +245,9 @@
               }
               var provider = Oauth2.createProvider(providerName);
 
-              provider.open(options).then(function() {
+              provider.open(options).then(function(data) {
                 console.log('OPENED')
-                deferred.resolve('done');
+                deferred.resolve(data);
               });
 
               return deferred.promise;
