@@ -30,6 +30,7 @@ angular.module('ngAuth', [])
         }
       }
     };
+
     // TODO: Use requiredUrlParams instead of passing all properties
     // TODO: pass scope delimiter
     // TODO: default responseType to code if token is obtained on server
@@ -40,7 +41,7 @@ angular.module('ngAuth', [])
         angular.extend(config.providers[params.name], params);
       },
 
-      $get: function($interval, $timeout, $http, $location, $rootScope, $alert, $q, $injector, $window, $document, $cookieStore) {
+      $get: function($interval, $timeout, $http, $location, $rootScope, $alert, $q, $injector, $window) {
 
         // BEGIN OAUTH
 
@@ -57,28 +58,31 @@ angular.module('ngAuth', [])
           return obj;
         }
 
-
+        // Popup window.
+        // TODO: Only one instance of popup?!
         var Popup = function() {
           this.popup = null;
         };
 
         Popup.prototype.open = function(url, keys, options) {
           var deferred = $q.defer();
-          var lastPopup = this.popup;
 
-          if (lastPopup) {
+          // Check if popup is already open.
+          if (this.popup) {
             this.close();
           }
 
+          // TODO: refactor
           var optionsString = stringifyOptions(prepareOptions(options || {}));
-          this.popup = window.open(url, 'ng-auth', optionsString);
+
+          this.popup = window.open(url, '*', optionsString);
 
           if (this.popup && !this.popup.closed) {
             this.popup.focus();
           } else {
             deferred.reject('Popup could not open or was closed');
           }
-
+          // TODO: Remove event listener on close
           $window.addEventListener('message', function(event) {
             console.log('handling postMessage');
             console.log(event);
@@ -88,11 +92,9 @@ angular.module('ngAuth', [])
             deferred.resolve(event.data);
           }, false);
 
-          var self = this;
-
-          this.polling = $interval(function() {
-            self.requestCredentials(self.popup);
-          }, 35);
+          this.polling = $interval(angular.bind(this, function() {
+            this.requestCredentials(this.popup);
+          }, 35));
 
           return deferred.promise;
         };
@@ -164,6 +166,7 @@ angular.module('ngAuth', [])
           return optionsStrings.join(',');
         }
 
+        // TODO: getRedirectUri vs redirect_uri using location.href
         var getRedirectUri = function() {
           return $window.location.origin;
         };
@@ -199,9 +202,8 @@ angular.module('ngAuth', [])
           var name = this.name;
           var url = this.buildUrl();
           var redirectUri = $window.location.href;
-
+          // TODO cleanup from memory
           var popup = new Popup();
-
           return popup.open(url, oauthKeys).then(function(authData) {
             return {
               authorizationCode: authData.code,
@@ -229,6 +231,7 @@ angular.module('ngAuth', [])
           var provider = angular.extend(oauth2, providerOptions);
           return provider;
         };
+
 
         // END OAUTH
 
