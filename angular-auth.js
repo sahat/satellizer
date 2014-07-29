@@ -20,9 +20,10 @@
         providers: {
           facebook: {
             authorizationUrl: 'https://www.facebook.com/dialog/oauth',
-            scope: 'scope, email',
+            scope: 'email',
             requiredUrlParams: ['display'],
-            display: 'popup'
+            display: 'popup',
+            redirectUri: 'http://localhost:3000'
           },
           google: {
             authorizationUrl: 'https://accounts.google.com/o/oauth2/auth',
