@@ -51,8 +51,6 @@ angular.module('ngAuth', [])
           this.popup = null;
         };
 
-
-
         Popup.prototype.open = function(url, keys, options) {
           var deferred = $q.defer();
           // TODO: refactor
@@ -62,19 +60,19 @@ angular.module('ngAuth', [])
 
           this.createPostMessageHandler(deferred);
           this.pollPopup(deferred);
+
+          return deferred.promise;
         };
 
-
-
         Popup.prototype.pollPopup = function(deferred) {
-          var intervalHandler = angular.bind(this, function() {
-            if (this.popup.closed) {
-              $interval.cancel(this.polling);
+          var self = this;
+          var intervalHandler = function() {
+            if (self.popup.closed) {
+              $interval.cancel(self.polling);
               deferred.reject('Popup was closed by the user.');
-              return deferred.promise;
             }
-            this.requestAuthorizationCode(deferred);
-          });
+            self.requestAuthorizationCode();
+          };
           this.polling = $interval(intervalHandler, 35);
         };
 
@@ -82,8 +80,8 @@ angular.module('ngAuth', [])
           var query = this.popup.location.search.substring(1);
           if (query.indexOf('code') > -1) {
             var code = this.parseQueryString(query).code;
-            $interval.cancel(this.polling);
             $window.postMessage(code, $window.location.origin);
+            $interval.cancel(this.polling);
             this.popup.close();
           }
         };
@@ -94,17 +92,8 @@ angular.module('ngAuth', [])
           }, false);
         };
 
-        Popup.prototype.close = function() {
-          if (this.popup) {
-            this.popup.close();
-            this.popup = null;
-          }
-        };
-
         Popup.prototype.parseQueryString = function(keyValue) {
-          var obj = {};
-          var key;
-          var value;
+          var obj = {}, key, value;
           angular.forEach((keyValue || '').split('&'), function(keyValue) {
             if (keyValue) {
               value = keyValue.split('=');
@@ -115,6 +104,12 @@ angular.module('ngAuth', [])
           return obj;
         };
 
+        Popup.prototype.close = function() {
+          if (this.popup) {
+            this.popup.close();
+            this.popup = null;
+          }
+        };
 
         function prepareOptions(options) {
           var width = options.width || 500;

@@ -11,11 +11,8 @@ angular.module('MyApp')
     $scope.loginOauth = function(provider) {
 
       Auth.authenticate(provider)
-        .success(function() {
-          console.log('Auth succeeded');
+        .then(function(){
+          console.log('authenticated!');
         })
-        .fail(function() {
-          console.log('Auth failed');
-        });
     }
   });
