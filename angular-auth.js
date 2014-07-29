@@ -157,19 +157,9 @@
             this.scope = config.scope;
             this.authorizationUrl = config.authorizationUrl;
             this.responseType = 'code';
-            this.requiredUrlParams = ['response_type', 'client_id', 'redirect_uri'];
+            this.requiredUrlParams = ['response_type', 'client_id', 'redirect_uri'].concat(config.requiredUrlParams);
             this.optionalUrlParams = ['scope'];
           };
-
-          Oauth2.prototype.requiredUrlParams = function() {
-            return {
-              response_type: this.responseType,
-              client_id: this.clientId,
-              redirect_uri: $window.location.origin
-            }
-          };
-
-
 
           Oauth2.prototype.open = function() {
             var deferred = $q.defer();
@@ -208,6 +198,7 @@
 
             var baseUrl = this.authorizationUrl;
             var qs = this.buildQueryString(this.requiredUrlParams, this.optionalUrlParams);
+            console.log(qs);
             return [baseUrl, qs].join('?');
           };
 
@@ -217,14 +208,13 @@
 
             angular.forEach(requiredUrlParams, function(paramName) {
               var paramValue = obj[paramName];
-              console.log(paramName, paramValue)
               keyValuePairs.push([paramName, paramValue]);
             });
 
-//            angular.forEach(optionalUrlParams, function(paramName) {
-//              var paramValue = this[paramName];
-//              keyValuePairs.push([paramName, paramValue]);
-//            });
+            angular.forEach(optionalUrlParams, function(paramName) {
+              var paramValue = obj[paramName];
+              keyValuePairs.push([paramName, paramValue]);
+            });
 
             return keyValuePairs.map(function(pair) {
               return pair.join('=');
@@ -234,6 +224,7 @@
 
           Oauth2.createProvider = function(providerName) {
             var providerOptions = config.providers[providerName];
+            console.log(providerOptions)
             var oauth2 = new Oauth2(providerOptions);
             // TODO: pass args to OAuth2 instead of extend here
             var provider = angular.extend(oauth2, providerOptions);
