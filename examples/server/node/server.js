@@ -18,7 +18,7 @@ var moment = require('moment');
 var mongoose = require('mongoose');
 var path = require('path');
 var fs = require('fs');
-var querystring = require('querystring');
+var qs = require('querystring');
 
 
 var passport = require('passport');
@@ -236,15 +236,20 @@ app.post('/auth/linkedin', function(req, res, next) {
 
 app.post('/auth/facebook', function(req, res, next) {
   //TODO:: use client's clientid and redirect_uri then append code and secret to that object before stringiying
-  var qs = querystring.stringify({
-    client_id: 'q',
-    redirect_uri: 'q',
-    client_secret: 'q',
-    code: 'q'
+  console.log(req.body.clientId);
+  console.log(req.body.redirectUri);
+  console.log(req.body.code);
+
+  var url = 'https://graph.facebook.com/oauth/access_token?';
+  var oauth = qs.stringify({
+    redirect_uri: req.body.redirectUri,
+    client_secret: '298fb6c080fda239b809ae418bf49700',
+    client_id: req.body.clientId,
+    code: req.body.code
   });
 
-  request.get('https://graph.facebook.com/oauth/access_token?' + qs, function(e, r, b) {
-
+  request.get(url + oauth, function(error, response, body) {
+    res.send(response.statusCode, qs.parse(body));
   });
 //
 //  var profile = req.body.profile;
@@ -260,23 +265,23 @@ app.post('/auth/facebook', function(req, res, next) {
 //  if (encodedSignature !== expectedSignature) {
 //    return res.send(400, 'Bad signature');
 //  }
-
-  User.findOne({facebook: profile.id}, '-password', function(err, existingUser) {
-    if (existingUser) {
-      var token = createJwtToken(existingUser);
-      return res.send(token);
-    }
-    var user = new User({
-      facebook: profile.id,
-      firstName: profile.first_name,
-      lastName: profile.last_name
-    });
-    user.save(function(err) {
-      if (err) return next(err);
-      var token = createJwtToken(user);
-      res.send(token);
-    });
-  });
+//
+//  User.findOne({facebook: profile.id}, '-password', function(err, existingUser) {
+//    if (existingUser) {
+//      var token = createJwtToken(existingUser);
+//      return res.send(token);
+//    }
+//    var user = new User({
+//      facebook: profile.id,
+//      firstName: profile.first_name,
+//      lastName: profile.last_name
+//    });
+//    user.save(function(err) {
+//      if (err) return next(err);
+//      var token = createJwtToken(user);
+//      res.send(token);
+//    });
+//  });
 });
 
 app.get('/api/me', ensureAuthenticated, function(req, res) {
