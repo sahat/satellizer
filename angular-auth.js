@@ -147,35 +147,45 @@
             return optionsStrings.join(',');
           }
 
-          // TODO: getRedirectUri vs redirect_uri using location.href
-          var getRedirectUri = function() {
-            return $window.location.origin;
-          };
 
           var oauthKeys = ['code', 'access_token', 'expires_in'];
 
-          var Oauth2 = function() {
-            this.name = null;
-            this.clientId = null;
-            this.scope = null;
-            this.authorizationUrl = null;
+          var Oauth2 = function(config) {
+            this.name = config.name;
+            this.clientId = config.clientId;
+            this.scope = config.scope;
+            this.authorizationUrl = config.authorizationUrl;
             this.responseType = 'code';
+            this.requiredUrlParams = ['response_type', 'client_id', 'redirect_uri'];
+            this.optionalUrlParams = ['scope'];
           };
 
-          Oauth2.prototype.getDefaultRequiredUrlParams = function() {
+          Oauth2.prototype.requiredUrlParams = function() {
             return {
               response_type: this.responseType,
               client_id: this.clientId,
-              redirect_uri: getRedirectUri()
+              redirect_uri: $window.location.origin
             }
           };
 
-          Oauth2.prototype.buildQueryString = function(obj) {
-            var str = [];
-            angular.forEach(obj, function(value, key) {
-              str.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
-            });
-            return str.join('&');
+          Oauth2.prototype.buildQueryString = function(requiredUrlParams, optionalUrlParams) {
+            var obj = {};
+            var keyValuePairs = [];
+
+            angular.forEach(requiredUrlParams, function(paramName) {
+              var paramValue = this[paramName];
+              keyValuePairs.push([paramName, paramValue]);
+              console.log('PARAM VALUE IS ', this[paramName])
+            }, this);
+
+            angular.forEach(optionalUrlParams, function(paramName) {
+              var paramValue = this[paramName];
+              keyValuePairs.push([paramName, paramValue]);
+            }, this);
+
+            return keyValuePairs.map(function(pair) {
+              return pair.join('=');
+            }).join('&');
           };
 
           Oauth2.prototype.open = function() {
@@ -209,7 +219,7 @@
             }
             var base = this.authorizationUrl;
             var params = angular.extend(defaultRequiredUrlParams, optionalUrlParams);
-            var qs = this.buildQueryString(params);
+            var qs = this.buildQueryString(this.requiredUrlParams, this.optionalUrlParams);
             return [base, qs].join('?');
           };
 
@@ -217,6 +227,7 @@
           Oauth2.createProvider = function(providerName) {
             var providerOptions = config.providers[providerName];
             var oauth2 = new Oauth2();
+            // TODO: pass args to OAuth2 instead of extend here
             var provider = angular.extend(oauth2, providerOptions);
             return provider;
           };
