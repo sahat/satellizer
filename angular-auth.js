@@ -157,9 +157,16 @@
             this.clientId = config.clientId;
             this.scope = config.scope;
             this.authorizationUrl = config.authorizationUrl;
+            this.redirectUri = config.redirectUri;
             this.responseType = 'code';
             this.requiredUrlParams = defaultUrlParams.concat(config.requiredUrlParams);
             this.optionalUrlParams = ['scope'];
+          };
+
+          Oauth2.prototype.camelCase = function(name) {
+            return name.replace(/([\:\-\_]+(.))/g, function(_, separator, letter, offset) {
+              return offset ? letter.toUpperCase() : letter;
+            });
           };
 
           Oauth2.prototype.open = function() {
@@ -189,7 +196,6 @@
           Oauth2.prototype.buildUrl = function() {
             var baseUrl = this.authorizationUrl;
             var qs = this.buildQueryString();
-            console.log(this.requiredUrlParams);
             return [baseUrl, qs].join('?');
           };
 
@@ -198,12 +204,14 @@
             var keyValuePairs = [];
 
             angular.forEach(this.requiredUrlParams, function(paramName) {
-              var paramValue = obj[paramName];
+              var camelizedName = obj.camelCase(paramName);
+              var paramValue = obj[camelizedName];
               keyValuePairs.push([paramName, paramValue]);
             });
 
             angular.forEach(this.optionalUrlParams, function(paramName) {
-              var paramValue = obj[paramName];
+              var camelizedName = obj.camelCase(paramName);
+              var paramValue = obj[camelizedName];
               keyValuePairs.push([paramName, paramValue]);
             });
 
