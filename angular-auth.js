@@ -46,17 +46,7 @@ angular.module('ngAuth', [])
         // BEGIN OAUTH
 
 
-        function parseKeyValue(keyValue) {
-          var obj = {}, key_value, key;
-          angular.forEach((keyValue || "").split('&'), function(keyValue) {
-            if (keyValue) {
-              key_value = keyValue.split('=');
-              key = decodeURIComponent(key_value[0]);
-              obj[key] = angular.isDefined(key_value[1]) ? decodeURIComponent(key_value[1]) : true;
-            }
-          });
-          return obj;
-        }
+
 
         // Popup window.
         // TODO: Only one instance of popup?!
@@ -74,7 +64,7 @@ angular.module('ngAuth', [])
           var deferred = $q.defer();
           // TODO: refactor
           var optionsString = stringifyOptions(prepareOptions(options || {}));
-          this.popup = window.open(url, '*', optionsString);
+          this.popup = $window.open(url, '*', optionsString);
           this.popup.focus();
 
           this.addPostMessageListener(deferred);
@@ -90,15 +80,15 @@ angular.module('ngAuth', [])
             }
             this.requestAuthorizationCode(deferred);
           });
-
           this.polling = $interval(intervalHandler, 35);
         };
 
         Popup.prototype.requestAuthorizationCode = function() {
-          if (this.popup.location.search.match('code')) {
-            var code = parseKeyValue(this.popup.location.search.substring(1));
-            $window.postMessage(code, $window.location.origin);
+          var qs = this.popup.location.search.substring(1);
+          if (qs.indexOf('code') > -1) {
+            var code = this.parseQueryString(qs);
             $interval.cancel(this.polling);
+            $window.postMessage(code, $window.location.origin);
             this.popup.close();
           }
         };
@@ -110,7 +100,19 @@ angular.module('ngAuth', [])
           }
         };
 
-
+        Popup.prototype.parseQueryString = function(keyValue) {
+          var obj = {};
+          var key;
+          var value;
+          angular.forEach((keyValue || '').split('&'), function(keyValue) {
+            if (keyValue) {
+              value = keyValue.split('=');
+              key = decodeURIComponent(value[0]);
+              obj[key] = angular.isDefined(value[1]) ? decodeURIComponent(value[1]) : true;
+            }
+          });
+          return obj;
+        };
 
 
 
@@ -355,4 +357,4 @@ angular.module('ngAuth', [])
         $location.path('/login');
       }
     });
-  });
+  }) 
