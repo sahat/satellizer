@@ -150,6 +150,7 @@
 
 
           var oauthKeys = ['code', 'access_token', 'expires_in'];
+          var defaultUrlParams = ['response_type', 'client_id', 'redirect_uri'];
 
           var Oauth2 = function(config) {
             this.name = config.name;
@@ -157,7 +158,7 @@
             this.scope = config.scope;
             this.authorizationUrl = config.authorizationUrl;
             this.responseType = 'code';
-            this.requiredUrlParams = ['response_type', 'client_id', 'redirect_uri'].concat(config.requiredUrlParams);
+            this.requiredUrlParams = defaultUrlParams.concat(config.requiredUrlParams);
             this.optionalUrlParams = ['scope'];
           };
 
@@ -185,33 +186,23 @@
             return $http.post('/auth/facebook', params);
           };
 
-          Oauth2.prototype.buildUrl = function(optionalUrlParams) {
-//            var params = angular.extend(defaultRequiredUrlParams, optionalUrlParams);
-//
-//            var defaultRequiredUrlParams = this.getDefaultRequiredUrlParams();
-//
-//            // todo extend default params during instantiate
-//
-//            if (this.requiredUrlParams) {
-//              angular.extend(defaultRequiredUrlParams, this.requiredUrlParams);
-//            }
-
+          Oauth2.prototype.buildUrl = function() {
             var baseUrl = this.authorizationUrl;
-            var qs = this.buildQueryString(this.requiredUrlParams, this.optionalUrlParams);
-            console.log(qs);
+            var qs = this.buildQueryString();
+            console.log(this.requiredUrlParams);
             return [baseUrl, qs].join('?');
           };
 
-          Oauth2.prototype.buildQueryString = function(requiredUrlParams, optionalUrlParams) {
+          Oauth2.prototype.buildQueryString = function() {
             var obj = this;
             var keyValuePairs = [];
 
-            angular.forEach(requiredUrlParams, function(paramName) {
+            angular.forEach(this.requiredUrlParams, function(paramName) {
               var paramValue = obj[paramName];
               keyValuePairs.push([paramName, paramValue]);
             });
 
-            angular.forEach(optionalUrlParams, function(paramName) {
+            angular.forEach(this.optionalUrlParams, function(paramName) {
               var paramValue = obj[paramName];
               keyValuePairs.push([paramName, paramValue]);
             });
@@ -224,11 +215,9 @@
 
           Oauth2.createProvider = function(providerName) {
             var providerOptions = config.providers[providerName];
-            console.log(providerOptions)
-            var oauth2 = new Oauth2(providerOptions);
-            // TODO: pass args to OAuth2 instead of extend here
-            var provider = angular.extend(oauth2, providerOptions);
-            return oauth2;
+            var provider = new Oauth2(providerOptions);
+            console.log('MyProv', provider);
+            return provider;
           };
 
 
