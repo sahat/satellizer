@@ -8,6 +8,8 @@ var bcrypt = require('bcryptjs');
 var bodyParser = require('body-parser');
 var crypto = require('crypto');
 var express = require('express');
+var cookieParser = require('cookie-parser');
+var session = require('express-session')
 var logger = require('morgan');
 var request = require('request');
 var jwt = require('jwt-simple');
@@ -15,16 +17,57 @@ var methodOverride = require('method-override');
 var moment = require('moment');
 var mongoose = require('mongoose');
 var path = require('path');
-var https = require("https");
 var fs = require('fs');
+var querystring = require('querystring');
 
-var config = {
-  key: fs.readFileSync('./rootCA.key'),
-  cert: fs.readFileSync('./rootCA.crt')
+
+var passport = require('passport');
+//var InstagramStrategy = require('passport-instagram').Strategy;
+//var LocalStrategy = require('passport-local').Strategy;
+var FacebookStrategy = require('passport-facebook').Strategy;
+//var TwitterStrategy = require('passport-twitter').Strategy;
+//var GitHubStrategy = require('passport-github').Strategy;
+//var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+//var LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
+//var OAuthStrategy = require('passport-oauth').OAuthStrategy; // Tumblr
+//var OAuth2Strategy = require('passport-oauth').OAuth2Strategy; // Venmo, Foursquare
+
+var secrets = {
+  facebook: {
+    clientID: process.env.FACEBOOK_ID || '754220301289665',
+    clientSecret: process.env.FACEBOOK_SECRET || '41860e58c256a3d7ad8267d3c1939a4a',
+    callbackURL: '/auth/facebook/callback',
+    passReqToCallback: true
+  }
 };
 
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
+
+passport.deserializeUser(function(id, done) {
+  User.findById(id, function(err, user) {
+    done(err, user);
+  });
+});
+
+passport.use(new FacebookStrategy(secrets.facebook, function(req, accessToken, refreshToken, profile, done) {
+  User.findOne({facebook: profile.id}, function(err, existingUser) {
+    if (existingUser) return done(null, existingUser);
+    var user = new User({
+      facebook: profile.id,
+      firstName: profile.name.givenName,
+      lastName: profile.name.familyName
+    });
+    user.save(function(err) {
+      if (err) return next(err);
+      done(err, user);
+    });
+  });
+}));
+
 var userSchema = new mongoose.Schema({
-  email: { type: String, unique: true, lowercase: true },
+  email: {type: String, unique: true, lowercase: true},
   password: String,
   firstName: String,
   lastName: String,
@@ -93,16 +136,33 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(methodOverride());
+app.use(cookieParser());
+app.use(session({secret: 'keyboard cat'}));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(function(req, res, next) {
+  if (req.user) {
+    res.cookie('user', JSON.stringify(req.user));
+  }
+  next();
+});
 app.use(express.static(path.join(__dirname, '../../client')));
 app.use(express.static(path.join(__dirname, '../../..')));
 
+
+//
+//app.get('/auth/facebook', passport.authenticate('facebook'));
+//app.get('/auth/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/login' }), function(req, res) {
+//  res.redirect('/');
+//});
+
 app.post('/auth/login', function(req, res, next) {
-  User.findOne({ email: req.body.email }, function(err, user) {
+  User.findOne({email: req.body.email}, function(err, user) {
     if (!user) return res.send(401, 'User does not exist');
     user.comparePassword(req.body.password, function(err, isMatch) {
       if (!isMatch) return res.send(401, 'Invalid email and/or password');
       var token = createJwtToken(user);
-      res.send({ token: token });
+      res.send({token: token});
     });
   });
 });
@@ -127,7 +187,7 @@ app.post('/auth/google', function(req, res, next) {
     if (tokenInfo.user_id !== profile.user_id) {
       return res.send(400, 'Invalid Token');
     }
-    User.findOne({ google: profile.user_id }, '-password', function(err, existingUser) {
+    User.findOne({google: profile.user_id}, '-password', function(err, existingUser) {
       if (existingUser) {
         var token = createJwtToken(existingUser);
         return res.send(token);
@@ -150,25 +210,58 @@ app.post('/auth/google', function(req, res, next) {
 app.post('/auth/linkedin', function(req, res, next) {
   var accessToken = req.body.accessToken;
   var profile = req.body.profile;
+
+
+  User.findOne({linkedin: profile.id}, '-password', function(err, existingUser) {
+    if (existingUser) {
+      var token = createJwtToken(existingUser);
+      return res.send(token);
+    }
+    var user = new User({
+      linkedin: profile.id,
+      firstName: profile.firstName,
+      lastName: profile.lastName
+    });
+    user.save(function(err) {
+      if (err) return next(err);
+      var token = createJwtToken(user);
+      res.send(token);
+    });
+  });
+
+  console.log(accessToken);
+  console.log(profile);
   res.send(200);
 });
 
 app.post('/auth/facebook', function(req, res, next) {
-  var profile = req.body.profile;
-  var signedRequest = req.body.signedRequest;
-  var encodedSignature = signedRequest.split('.')[0];
-  var payload = signedRequest.split('.')[1];
+  //TODO:: use client's clientid and redirect_uri then append code and secret to that object before stringiying
+  var qs = querystring.stringify({
+    client_id: 'q',
+    redirect_uri: 'q',
+    client_secret: 'q',
+    code: 'q'
+  });
 
-  var appSecret = '298fb6c080fda239b809ae418bf49700';
+  request.get('https://graph.facebook.com/oauth/access_token?' + qs, function(e, r, b) {
 
-  var expectedSignature = crypto.createHmac('sha256', appSecret).update(payload).digest('base64');
-  expectedSignature = expectedSignature.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  });
+//
+//  var profile = req.body.profile;
+//  var signedRequest = req.body.signedRequest;
+//  var encodedSignature = signedRequest.split('.')[0];
+//  var payload = signedRequest.split('.')[1];
+//
+//  var appSecret = '298fb6c080fda239b809ae418bf49700';
+//
+//  var expectedSignature = crypto.createHmac('sha256', appSecret).update(payload).digest('base64');
+//  expectedSignature = expectedSignature.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+//
+//  if (encodedSignature !== expectedSignature) {
+//    return res.send(400, 'Bad signature');
+//  }
 
-  if (encodedSignature !== expectedSignature) {
-    return res.send(400, 'Bad signature');
-  }
-
-  User.findOne({ facebook: profile.id }, '-password', function(err, existingUser) {
+  User.findOne({facebook: profile.id}, '-password', function(err, existingUser) {
     if (existingUser) {
       var token = createJwtToken(existingUser);
       return res.send(token);
@@ -192,9 +285,9 @@ app.get('/api/me', ensureAuthenticated, function(req, res) {
 
 app.use(function(err, req, res, next) {
   console.error(err.stack);
-  res.send(500, { error: err.message });
+  res.send(500, {error: err.message});
 });
 
-var server = https.createServer(config, app).listen(app.get('port'), function() {
+app.listen(app.get('port'), function() {
   console.log("Express server listening on port " + app.get('port'));
 });
