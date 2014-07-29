@@ -39,14 +39,17 @@ h1, h2, h3, h4, h5, h6 {
   padding-left: 15px;
 }
 
-.navbar-brand {
-  background-color: #ffe939;
-  transition: 0.25s all;
+.navbar-default .navbar-brand {
   margin-left: -15px;
+  color: #fff;
+  background-color: #22ae5f;
+  transition: 0.25s all;
 }
 
-
-
+.navbar-default .navbar-brand:hover {
+  background: #000;
+  color: #fff;
+}
 .panel {
   border-color: #cfd9D7;
   border-radius: 2px;
