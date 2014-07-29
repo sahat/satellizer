@@ -152,10 +152,9 @@
             return $window.location.origin;
           };
 
-
           var oauthKeys = ['code', 'access_token', 'expires_in'];
 
-          var OAuth2 = function() {
+          var Oauth2 = function() {
             this.name = null;
             this.clientId = null;
             this.scope = null;
@@ -163,7 +162,7 @@
             this.responseType = 'code';
           };
 
-          OAuth2.prototype.getDefaultRequiredUrlParams = function() {
+          Oauth2.prototype.getDefaultRequiredUrlParams = function() {
             return {
               response_type: this.responseType,
               client_id: this.clientId,
@@ -171,7 +170,7 @@
             }
           };
 
-          OAuth2.prototype.buildQueryString = function(obj) {
+          Oauth2.prototype.buildQueryString = function(obj) {
             var str = [];
             angular.forEach(obj, function(value, key) {
               str.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
@@ -179,40 +178,36 @@
             return str.join('&');
           };
 
-          OAuth2.prototype.open = function() {
-            var name = this.name;
+          Oauth2.prototype.open = function() {
+            var deferred = $q.defer;
             var url = this.buildUrl();
-            var redirectUri = $window.location.href;
+
             var popup = new Popup();
 
-
-            window.POP = popup;
-//
-//
-//          var params = {
-//            client_id: clientId
-//            code: event.data
-//          };
-//
-//          $http.post('/auth/facebook', params)
-//            .success(function(token) {
-//              deferred.resolve(token);
-//            })
-//            .error(function(error) {
-//              deferred.reject(error);
-//            });
-
-            return popup.open(url, oauthKeys).then(function(authData) {
-
-              return {
-                authorizationCode: authData.code,
-                provider: name,
-                getRedirectUri: redirectUri
-              }
-            });
+            popup.open(url, oauthKeys).then(function(code) {
+              this.exchangeForToken(code, deferred);
+              return deferred.promise;
+            }.bind(this));
           };
 
-          OAuth2.prototype.buildUrl = function(optionalUrlParams) {
+          Oauth2.prototype.exchangeForToken = function(code, deferred) {
+            var params = {
+              clientId: config.providers[this.name].clientId,
+              redirectUri: $window.location.href,
+              code: event.data
+            };
+
+            $http.post('/auth/facebook', params)
+              .success(function(token) {
+                deferred.resolve(token);
+              })
+              .error(function(error) {
+                deferred.reject(error);
+              });
+
+          };
+
+          Oauth2.prototype.buildUrl = function(optionalUrlParams) {
             var defaultRequiredUrlParams = this.getDefaultRequiredUrlParams();
             if (this.requiredUrlParams) {
               angular.extend(defaultRequiredUrlParams, this.requiredUrlParams);
@@ -224,9 +219,9 @@
           };
 
 
-          OAuth2.createProvider = function(providerName) {
+          Oauth2.createProvider = function(providerName) {
             var providerOptions = config.providers[providerName];
-            var oauth2 = new OAuth2();
+            var oauth2 = new Oauth2();
             var provider = angular.extend(oauth2, providerOptions);
             return provider;
           };
@@ -247,7 +242,7 @@
                 deferred.reject('Expected a provider named \'' + providerName + '\', did you forget to add it?');
                 return deferred.promise;
               }
-              var provider = OAuth2.createProvider(providerName);
+              var provider = Oauth2.createProvider(providerName);
               return provider.open(options);
             },
 
@@ -275,44 +270,9 @@
                   }, {scope: scope});
                   break;
                 case 'google':
-                  gapi.auth.authorize({
-                    client_id: config.providers.google.clientId,
-                    scope: config.providers.google.scope,
-                    immediate: false
-                  }, function(token) {
-                    gapi.client.load('plus', 'v1', function() {
-                      var request = gapi.client.plus.people.get({
-                        userId: 'me'
-                      });
-                      request.execute(function(response) {
-                        var data = {
-                          accessToken: token.access_token,
-                          profile: response
-                        };
-                        $http.post(config.providers.google.url, data).success(function(token) {
-                          var payload = JSON.parse($window.atob(token.split('.')[1]));
-                          $window.localStorage.token = token;
-                          $rootScope.currentUser = payload.user;
-                          $location.path(config.loginRedirect);
-                        });
-                      });
-                    });
-                  });
+
                   break;
                 case 'linkedin':
-                  IN.UI.Authorize().place();
-                  IN.Event.on(IN, 'auth', function() {
-                      IN.API.Profile('me').result(function(result) {
-                        var profile = result.values[0];
-                        $http.post(config.providers.linkedin.url, {profile: profile}).success(function(token) {
-                          var payload = JSON.parse($window.atob(token.split('.')[1]));
-                          $window.localStorage.token = token;
-                          $rootScope.currentUser = payload.user;
-                          $location.path(config.loginRedirect);
-                        });
-                      });
-                    }
-                  );
                   break;
                 default:
                   break;
