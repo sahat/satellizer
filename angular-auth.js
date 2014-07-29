@@ -90,7 +90,11 @@ angular.module('ngAuth', [])
           $window.addEventListener('message', this._handlePostMessage, false);
 
           this.polling = $interval(angular.bind(this, function() {
-            this.requestCredentials(this.popup);
+            if (this.popup.closed) {
+              $interval.cancel(this.polling);
+              deferred.reject('Popup was closed');
+            }
+            this._requestAuthorizationCode();
           }, 35));
 
           return deferred.promise;
@@ -100,32 +104,18 @@ angular.module('ngAuth', [])
           if (this.popup) {
             this.popup.close();
             this.popup = null;
-            $rootScope.$emit('didClose');
+            $window.removeEventListener('message', this._handlePostMessage, false);
           }
         };
 
-        Popup.prototype.pollPopup = function() {
-          console.log('pollin');
-          if (!this.popup) {
-            return;
-          }
-          if (this.popup.closed) {
-            $timeout.cancel(this.polling);
-          }
-        };
 
-        Popup.prototype.requestCredentials = function(authWindow) {
-          var search = authWindow.location.search;
-          if (search.match('code') || search.match('token')) {
-            console.log('found code or token');
-            var data = parseKeyValue(authWindow.location.search.substring(1));
-            $window.postMessage(data, $window.location.origin);
+        Popup.prototype._requestAuthorizationCode = function() {
+          if (this.popup.location.search.match('code')) {
+            var code = parseKeyValue(this.popup.location.search.substring(1));
+            $window.postMessage(code, $window.location.origin);
             $interval.cancel(this.polling);
-            // angular lifecycle before page loads
-            authWindow.close();
+            this.popup.close();
           }
-          console.log('requesting creds!!')
-
         };
 
 
