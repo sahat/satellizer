@@ -18,7 +18,7 @@ angular.module('ngAuth', [])
         facebook: {
           authorizationUrl: 'https://www.facebook.com/dialog/oauth',
           scope: 'scope, email',
-          requiredUrlParams: { display: 'popup' }
+          requiredUrlParams: {display: 'popup'}
         },
         google: {
           authorizationUrl: 'https://accounts.google.com/o/oauth2/auth',
@@ -46,19 +46,12 @@ angular.module('ngAuth', [])
         // BEGIN OAUTH
 
 
-
-
         // Popup window.
-        // TODO: Only one instance of popup?!
         var Popup = function() {
           this.popup = null;
         };
 
-        Popup.prototype.addPostMessageListener = function(deferred) {
-          $window.addEventListener('message', function(event) {
-            deferred.resolve(event.data.code);
-          }, false);
-        };
+
 
         Popup.prototype.open = function(url, keys, options) {
           var deferred = $q.defer();
@@ -67,9 +60,11 @@ angular.module('ngAuth', [])
           this.popup = $window.open(url, '*', optionsString);
           this.popup.focus();
 
-          this.addPostMessageListener(deferred);
+          this.createPostMessageHandler(deferred);
           this.pollPopup(deferred);
         };
+
+
 
         Popup.prototype.pollPopup = function(deferred) {
           var intervalHandler = angular.bind(this, function() {
@@ -84,13 +79,19 @@ angular.module('ngAuth', [])
         };
 
         Popup.prototype.requestAuthorizationCode = function() {
-          var qs = this.popup.location.search.substring(1);
-          if (qs.indexOf('code') > -1) {
-            var code = this.parseQueryString(qs);
+          var query = this.popup.location.search.substring(1);
+          if (query.indexOf('code') > -1) {
+            var code = this.parseQueryString(query).code;
             $interval.cancel(this.polling);
             $window.postMessage(code, $window.location.origin);
             this.popup.close();
           }
+        };
+
+        Popup.prototype.createPostMessageHandler = function(deferred) {
+          $window.addEventListener('message', function(event) {
+            deferred.resolve(event.data);
+          }, false);
         };
 
         Popup.prototype.close = function() {
@@ -113,7 +114,6 @@ angular.module('ngAuth', [])
           });
           return obj;
         };
-
 
 
         function prepareOptions(options) {
@@ -143,7 +143,7 @@ angular.module('ngAuth', [])
                   value = options[key];
               }
               optionsStrings.push(
-                  key + '=' + value
+                key + '=' + value
               );
             }
           }
@@ -257,7 +257,7 @@ angular.module('ngAuth', [])
                       $location.path(config.loginRedirect);
                     });
                   });
-                }, { scope: scope });
+                }, {scope: scope});
                 break;
               case 'google':
                 gapi.auth.authorize({
@@ -289,7 +289,7 @@ angular.module('ngAuth', [])
                 IN.Event.on(IN, 'auth', function() {
                     IN.API.Profile('me').result(function(result) {
                       var profile = result.values[0];
-                      $http.post(config.providers.linkedin.url, { profile: profile }).success(function(token) {
+                      $http.post(config.providers.linkedin.url, {profile: profile}).success(function(token) {
                         var payload = JSON.parse($window.atob(token.split('.')[1]));
                         $window.localStorage.token = token;
                         $rootScope.currentUser = payload.user;
@@ -357,4 +357,4 @@ angular.module('ngAuth', [])
         $location.path('/login');
       }
     });
-  }) 
+  });
