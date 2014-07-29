@@ -64,33 +64,30 @@ angular.module('ngAuth', [])
           this.popup = null;
         };
 
+        Popup.prototype._handlePostMessage = function(event) {
+          console.log('handling postMessage');
+          console.log(event);
+          if (event.data.message === 'deliverCredenrials') {
+            delete event.data.message;
+          }
+          deferred.resolve(event.data);
+        };
+
         Popup.prototype.open = function(url, keys, options) {
+
+
+
           var deferred = $q.defer();
 
-          // Check if popup is already open.
-          if (this.popup) {
-            this.close();
-          }
 
           // TODO: refactor
           var optionsString = stringifyOptions(prepareOptions(options || {}));
 
           this.popup = window.open(url, '*', optionsString);
+          this.popup.focus();
 
-          if (this.popup && !this.popup.closed) {
-            this.popup.focus();
-          } else {
-            deferred.reject('Popup could not open or was closed');
-          }
           // TODO: Remove event listener on close
-          $window.addEventListener('message', function(event) {
-            console.log('handling postMessage');
-            console.log(event);
-            if (event.data.message === 'deliverCredenrials') {
-              delete event.data.message;
-            }
-            deferred.resolve(event.data);
-          }, false);
+          $window.addEventListener('message', this._handlePostMessage, false);
 
           this.polling = $interval(angular.bind(this, function() {
             this.requestCredentials(this.popup);
