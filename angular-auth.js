@@ -64,37 +64,27 @@ angular.module('ngAuth', [])
           this.popup = null;
         };
 
-        Popup.prototype._handlePostMessage = function(event) {
-          console.log('handling postMessage');
-          console.log(event);
-          if (event.data.message === 'deliverCredenrials') {
-            delete event.data.message;
-          }
-          deferred.resolve(event.data);
+        Popup.prototype.addPostMessageListener = function(deferred) {
+          $window.addEventListener('message', function(event) {
+            deferred.resolve(event.data.code);
+          }, false);
         };
 
         Popup.prototype.open = function(url, keys, options) {
-
-
-
           var deferred = $q.defer();
-
-
           // TODO: refactor
           var optionsString = stringifyOptions(prepareOptions(options || {}));
-
           this.popup = window.open(url, '*', optionsString);
           this.popup.focus();
 
-          // TODO: Remove event listener on close
-          $window.addEventListener('message', this._handlePostMessage, false);
+          this.addPostMessageListener(deferred);
 
           this.polling = $interval(angular.bind(this, function() {
             if (this.popup.closed) {
               $interval.cancel(this.polling);
               deferred.reject('Popup was closed');
             }
-            this._requestAuthorizationCode();
+            this.requestAuthorizationCode();
           }, 35));
 
           return deferred.promise;
@@ -104,12 +94,11 @@ angular.module('ngAuth', [])
           if (this.popup) {
             this.popup.close();
             this.popup = null;
-            $window.removeEventListener('message', this._handlePostMessage, false);
           }
         };
 
 
-        Popup.prototype._requestAuthorizationCode = function() {
+        Popup.prototype.requestAuthorizationCode = function() {
           if (this.popup.location.search.match('code')) {
             var code = parseKeyValue(this.popup.location.search.substring(1));
             $window.postMessage(code, $window.location.origin);
