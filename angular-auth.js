@@ -3,6 +3,7 @@
  * (c) 2014 Sahat Yalkabov <sahat@me.com>
  * License: MIT
  */
+
 (function(window, angular, undefined) {
   'use strict';
 
@@ -67,14 +68,13 @@
           };
 
           Popup.prototype.pollPopup = function(deferred) {
-            var self = this;
             var intervalHandler = function() {
-              if (self.popup.closed) {
-                $interval.cancel(self.polling);
+              if (this.popup.closed) {
+                $interval.cancel(this.polling);
                 deferred.reject('Popup was closed by the user.');
               }
-              self.requestAuthorizationCode();
-            };
+              this.requestAuthorizationCode();
+            }.bind(this);
             this.polling = $interval(intervalHandler, 35);
           };
 
@@ -179,32 +179,27 @@
           };
 
           Oauth2.prototype.open = function() {
-            var deferred = $q.defer;
+            var deferred = $q.defer();
             var url = this.buildUrl();
-
             var popup = new Popup();
 
             popup.open(url, oauthKeys).then(function(code) {
-              this.exchangeForToken(code, deferred);
-              return deferred.promise;
+              this.exchangeForToken(code).then(function(token) {
+                deferred.resolve(token);
+              });
             }.bind(this));
+
+            return deferred.promise;
           };
 
-          Oauth2.prototype.exchangeForToken = function(code, deferred) {
+          Oauth2.prototype.exchangeForToken = function(code) {
             var params = {
               clientId: config.providers[this.name].clientId,
-              redirectUri: $window.location.href,
-              code: event.data
+              redirectUri: $window.location.origin + '/',
+              code: code
             };
 
-            $http.post('/auth/facebook', params)
-              .success(function(token) {
-                deferred.resolve(token);
-              })
-              .error(function(error) {
-                deferred.reject(error);
-              });
-
+            return $http.post('/auth/facebook', params);
           };
 
           Oauth2.prototype.buildUrl = function(optionalUrlParams) {
@@ -237,13 +232,18 @@
 
           return {
             authenticate: function(providerName, options) {
-              var deferred = $q.defer;
+              var deferred = $q.defer();
               if (!providerName) {
                 deferred.reject('Expected a provider named \'' + providerName + '\', did you forget to add it?');
-                return deferred.promise;
               }
               var provider = Oauth2.createProvider(providerName);
-              return provider.open(options);
+
+              provider.open(options).then(function() {
+                console.log('OPENED')
+                deferred.resolve('done');
+              });
+
+              return deferred.promise;
             },
 
             loginOauth: function(provider) {
