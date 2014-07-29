@@ -78,16 +78,29 @@ angular.module('ngAuth', [])
           this.popup.focus();
 
           this.addPostMessageListener(deferred);
+          this.pollPopup(deferred);
+        };
 
-          this.polling = $interval(angular.bind(this, function() {
+        Popup.prototype.pollPopup = function(deferred) {
+          var intervalHandler = angular.bind(this, function() {
             if (this.popup.closed) {
               $interval.cancel(this.polling);
-              deferred.reject('Popup was closed');
+              deferred.reject('Popup was closed by the user.');
+              return deferred.promise;
             }
-            this.requestAuthorizationCode();
-          }, 35));
+            this.requestAuthorizationCode(deferred);
+          });
 
-          return deferred.promise;
+          this.polling = $interval(intervalHandler, 35);
+        };
+
+        Popup.prototype.requestAuthorizationCode = function() {
+          if (this.popup.location.search.match('code')) {
+            var code = parseKeyValue(this.popup.location.search.substring(1));
+            $window.postMessage(code, $window.location.origin);
+            $interval.cancel(this.polling);
+            this.popup.close();
+          }
         };
 
         Popup.prototype.close = function() {
@@ -98,14 +111,7 @@ angular.module('ngAuth', [])
         };
 
 
-        Popup.prototype.requestAuthorizationCode = function() {
-          if (this.popup.location.search.match('code')) {
-            var code = parseKeyValue(this.popup.location.search.substring(1));
-            $window.postMessage(code, $window.location.origin);
-            $interval.cancel(this.polling);
-            this.popup.close();
-          }
-        };
+
 
 
         function prepareOptions(options) {
