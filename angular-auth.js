@@ -88,7 +88,13 @@ angular.module('ngAuth', [])
 
         Popup.prototype.createPostMessageHandler = function(deferred) {
           $window.addEventListener('message', function(event) {
-            deferred.resolve(event.data);
+            $http.post('/auth/facebook', event.data)
+              .success(function(token) {
+                deferred.resolve(token);
+              })
+              .error(function(error) {
+                deferred.reject(error);
+              });
           }, false);
         };
 
