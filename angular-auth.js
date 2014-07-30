@@ -31,8 +31,10 @@
             authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
             redirectUri: 'http://localhost:3000',
             scope: 'openid profile email',
-            requiredUrlParams: ['display'],
-            display: 'popup'
+            requiredUrlParams: ['scope'],
+            optionalUrlParams: ['display', 'state'],
+            display: 'popup',
+            state: 'STATE'
           },
           linkedin: {
             authorizationEndpoint: 'https://www.linkedin.com/uas/oauth2/authorization',
@@ -163,7 +165,7 @@
 
 
 
-          var defaultUrlParams = ['response_type', 'client_id', 'redirect_uri'];
+
 
           var Oauth2 = function(config) {
             //if (this instanceof CustomObject)
@@ -174,8 +176,9 @@
             this.authorizationEndpoint = config.authorizationEndpoint;
             this.redirectUri = config.redirectUri;
             this.responseType = 'code';
-            this.requiredUrlParams = defaultUrlParams.concat(config.requiredUrlParams);
-            this.optionalUrlParams = ['scope'];
+            this.defaultUrlParams = ['response_type', 'client_id', 'redirect_uri'];
+            this.requiredUrlParams = config.requiredUrlParams;
+            this.optionalUrlParams = config.optionalUrlParams;
           };
 
           Oauth2.prototype.camelCase = function(name) {
@@ -218,6 +221,12 @@
             var obj = this;
             var keyValuePairs = [];
 
+            angular.forEach(this.defaultUrlParams, function(paramName) {
+              var camelizedName = obj.camelCase(paramName);
+              var paramValue = obj[camelizedName];
+              keyValuePairs.push([paramName, paramValue]);
+            });
+
             angular.forEach(this.requiredUrlParams, function(paramName) {
               var camelizedName = obj.camelCase(paramName);
               var paramValue = obj[camelizedName];
@@ -230,6 +239,7 @@
               keyValuePairs.push([paramName, paramValue]);
             });
 
+            console.log(keyValuePairs)
             return keyValuePairs.map(function(pair) {
               return pair.join('=');
             }).join('&');
