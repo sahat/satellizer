@@ -385,7 +385,7 @@
     .config(function($httpProvider) {
       $httpProvider.interceptors.push('authInterceptor');
     })
-    .run(function($rootScope, $window) {
+    .run(function($rootScope, $window, $location) {
       var query = $window.location.search.substring(1);
       if ($window.opener && query.indexOf('code') > -1) {
         $window.opener.postMessage(query, '*');
