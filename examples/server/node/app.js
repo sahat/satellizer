@@ -131,7 +131,10 @@ app.post('/auth/google', function(req, res, next) {
     redirect_uri: req.body.redirectUri
   };
 
-  request.post(tokenEndpoint, { json: true, form: params }, function(error, response, data) {
+  request.post(tokenEndpoint, {
+    json: true,
+    form: params
+  }, function(error, response, data) {
     var accessToken = data.access_token;
     var idToken = data.id_token;
 
@@ -145,7 +148,11 @@ app.post('/auth/google', function(req, res, next) {
       }
 
       var authorizationHeader = { Authorization: 'Bearer ' + accessToken };
-      request.get({ url: userinfoEndpoint, headers: authorizationHeader, json: true }, function(error, response, profile) {
+      request.get({
+        url: userinfoEndpoint,
+        headers: authorizationHeader,
+        json: true
+      }, function(error, response, profile) {
         var user = new User({
           google: profile.sub,
           firstName: profile.given_name,
@@ -197,23 +204,32 @@ app.post('/auth/facebook', function(req, res, next) {
     code: req.body.code
   });
 
-  request.get({ url: url, qs: params }, function(error, response, body) {
-    console.log(body);
-    // TODO: make request to get profile
-    User.findOne({ facebook: profile.id }, '-password', function(err, existingUser) {
-      if (existingUser) {
-        var token = createJwtToken(existingUser);
-        return res.send(token);
-      }
-      var user = new User({
-        facebook: profile.id,
-        firstName: profile.first_name,
-        lastName: profile.last_name
-      });
-      user.save(function(err) {
-        if (err) return next(err);
-        var token = createJwtToken(user);
-        res.send(token);
+  request.get([url, params].join('?'), function(error, response, data) {
+    var accessToken = querystring.parse(data).access_token;
+    var graphApiUrl = 'https://graph.facebook.com/me';
+    var params = {
+      access_token: accessToken
+    };
+    request.get({
+      url: graphApiUrl,
+      qs: params,
+      json: true
+    }, function(error, response, profile) {
+      User.findOne({ facebook: profile.id }, '-password', function(err, existingUser) {
+        if (existingUser) {
+          var token = createJwtToken(existingUser);
+          return res.send(token);
+        }
+        var user = new User({
+          facebook: profile.id,
+          firstName: profile.first_name,
+          lastName: profile.last_name
+        });
+        user.save(function(err) {
+          if (err) return next(err);
+          var token = createJwtToken(user);
+          res.send(token);
+        });
       });
     });
   });
