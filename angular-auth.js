@@ -23,7 +23,7 @@
           facebook: {
             url: '/auth/facebook',
             authorizationEndpoint: 'https://www.facebook.com/dialog/oauth',
-            redirectUri: 'http://localhost:3000',
+            redirectUri: 'http://localhost:3000/',
             scope: 'email',
             requiredUrlParams: ['display'],
             display: 'popup'
@@ -46,7 +46,6 @@
           twitter: {
             requestTokenUri: 'https://api.twitter.com/oauth/request_token',
             authorizationUrl: 'https://api.twitter.com/oauth/authenticate',
-
             redirectUri: ''
           }
         }
@@ -252,19 +251,19 @@
           angular.forEach(this.defaultUrlParams, function(paramName) {
             var camelizedName = obj.camelCase(paramName);
             var paramValue = obj[camelizedName];
-            keyValuePairs.push([paramName, paramValue]);
+            keyValuePairs.push([paramName, encodeURIComponent(paramValue)]);
           });
 
           angular.forEach(this.requiredUrlParams, function(paramName) {
             var camelizedName = obj.camelCase(paramName);
             var paramValue = obj[camelizedName];
-            keyValuePairs.push([paramName, paramValue]);
+            keyValuePairs.push([paramName, encodeURIComponent(paramValue)]);
           });
 
           angular.forEach(this.optionalUrlParams, function(paramName) {
             var camelizedName = obj.camelCase(paramName);
             var paramValue = obj[camelizedName];
-            keyValuePairs.push([paramName, paramValue]);
+            keyValuePairs.push([paramName, encodeURIComponent(paramValue)]);
           });
 
           // TODO: avoid duplicates
