@@ -387,7 +387,7 @@
     })
     .run(function($rootScope, $window) {
       var query = $window.location.search.substring(1);
-      if (query.indexOf('code') > -1) {
+      if ($window.opener && query.indexOf('code') > -1) {
         $window.opener.postMessage(query, '*');
         $window.close();
       }
