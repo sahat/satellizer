@@ -168,7 +168,7 @@
 
 
           var Oauth2 = function(config) {
-            //if (this instanceof CustomObject)
+            angular.extend(this, config);
 
             this.name = config.name;
             this.clientId = config.clientId;
@@ -236,9 +236,14 @@
             angular.forEach(this.optionalUrlParams, function(paramName) {
               var camelizedName = obj.camelCase(paramName);
               var paramValue = obj[camelizedName];
+              console.log(paramName)
+              console.log(camelizedName);
+              console.log(obj[paramName]);
+
               keyValuePairs.push([paramName, paramValue]);
             });
 
+            // TODO: avoid duplicates
             console.log(keyValuePairs)
             return keyValuePairs.map(function(pair) {
               return pair.join('=');
@@ -249,6 +254,7 @@
           Oauth2.createProvider = function(providerName) {
             var providerOptions = config.providers[providerName];
             var provider = new Oauth2(providerOptions);
+            console.log(provider);
             return provider;
           };
 
