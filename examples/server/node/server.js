@@ -180,17 +180,16 @@ app.post('/auth/signup', function(req, res, next) {
 
 app.post('/auth/google', function(req, res, next) {
   var url = 'https://accounts.google.com/o/oauth2/token';
-  var params = querystring.stringify({
+  var payload = {
     grant_type: 'authorization_code',
     code: req.body.code,
     client_id: req.body.clientId,
     client_secret: 'xGxxgKAObIRUwOKycySkL9Fi',
     redirect_uri: req.body.redirectUri
-  });
-  querystring.unescape(params);
+  };
 
-  request.post([url, params].join('?'), function(error, response, body) {
-    console.log(body);
+
+  request.post(url, { form: payload }, function(error, response, body) {
     res.send(response.statusCode, querystring.parse(body));
 
 //    User.findOne({google: profile.user_id}, '-password', function(err, existingUser) {
