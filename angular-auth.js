@@ -30,9 +30,9 @@
             url: '/auth/google',
             authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
             redirectUri: 'http://localhost:3000',
-            scope: 'email',
-            requiredUrlParams: ['state'],
-            state: 'STATE'
+            scope: 'openid profile email',
+            requiredUrlParams: ['display'],
+            display: 'popup'
           },
           linkedin: {
             authorizationEndpoint: 'https://www.linkedin.com/uas/oauth2/authorization',
@@ -43,6 +43,8 @@
         }
       };
 
+
+      // TODO: defineProperty setter on scope
       // TODO: $state = md5(rand());
       // TODO: Use requiredUrlParams instead of passing all properties
       // TODO: pass scope delimiter
