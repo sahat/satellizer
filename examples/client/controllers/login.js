@@ -8,10 +8,8 @@ angular.module('MyApp')
         password: $scope.password
       });
     };
-    $scope.loginOauth = function(provider) {
-
-      Auth.authenticate(provider)
-        .then(function(data){
+    $scope.authenticate = function(provider) {
+      Auth.authenticate(provider).then(function(data){
           console.log(data);
           console.log('authenticated!');
         })

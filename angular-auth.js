@@ -19,21 +19,23 @@
         userGlobal: 'currentUser',
         providers: {
           facebook: {
-            authorizationUrl: 'https://www.facebook.com/dialog/oauth',
+            url: '/auth/facebook',
+            authorizationEndpoint: 'https://www.facebook.com/dialog/oauth',
             redirectUri: 'http://localhost:3000',
             scope: 'email',
             requiredUrlParams: ['display'],
             display: 'popup'
           },
           google: {
-            authorizationUrl: 'https://accounts.google.com/o/oauth2/auth',
+            url: '/auth/google',
+            authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
             redirectUri: 'http://localhost:3000',
             scope: 'email',
             requiredUrlParams: ['state'],
             state: 'STATE'
           },
           linkedin: {
-            authorizationUrl: 'https://www.linkedin.com/uas/oauth2/authorization',
+            authorizationEndpoint: 'https://www.linkedin.com/uas/oauth2/authorization',
             redirectUri: 'http://localhost:3000',
             requiredUrlParams: ['state'],
             state: 'STATE'
@@ -41,6 +43,7 @@
         }
       };
 
+      // TODO: $state = md5(rand());
       // TODO: Use requiredUrlParams instead of passing all properties
       // TODO: pass scope delimiter
       // TODO: default responseType to code if token is obtained on server
@@ -62,6 +65,7 @@
           };
 
           Popup.prototype.open = function(url, keys, options) {
+            console.log(url)
             var deferred = $q.defer();
             // TODO: refactor
             // todo wildcard star
@@ -165,7 +169,7 @@
             this.name = config.name;
             this.clientId = config.clientId;
             this.scope = config.scope;
-            this.authorizationUrl = config.authorizationUrl;
+            this.authorizationEndpoint = config.authorizationEndpoint;
             this.redirectUri = config.redirectUri;
             this.responseType = 'code';
             this.requiredUrlParams = defaultUrlParams.concat(config.requiredUrlParams);
@@ -203,7 +207,7 @@
           };
 
           Oauth2.prototype.buildUrl = function() {
-            var baseUrl = this.authorizationUrl;
+            var baseUrl = this.authorizationEndpoint;
             var qs = this.buildQueryString();
             return [baseUrl, qs].join('?');
           };
