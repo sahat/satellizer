@@ -131,8 +131,7 @@ app.post('/auth/google', function(req, res, next) {
     redirect_uri: req.body.redirectUri
   };
 
-  request.post(tokenEndpoint, { form: params }, function(error, response, data) {
-    data = JSON.parse(data);
+  request.post(tokenEndpoint, { json: true, form: params }, function(error, response, data) {
     var accessToken = data.access_token;
     var idToken = data.id_token;
 
@@ -151,7 +150,6 @@ app.post('/auth/google', function(req, res, next) {
           google: profile.sub,
           firstName: profile.given_name,
           lastName: profile.family_name
-
         });
         user.save(function(err) {
           if (err) return next(err);
