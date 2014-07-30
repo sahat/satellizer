@@ -13,58 +13,17 @@ var session = require('express-session')
 var logger = require('morgan');
 var request = require('request');
 var jwt = require('jwt-simple');
-var methodOverride = require('method-override');
 var moment = require('moment');
 var mongoose = require('mongoose');
 var path = require('path');
 var fs = require('fs');
 var querystring = require('querystring');
 
-
-var passport = require('passport');
-//var InstagramStrategy = require('passport-instagram').Strategy;
-//var LocalStrategy = require('passport-local').Strategy;
-var FacebookStrategy = require('passport-facebook').Strategy;
-//var TwitterStrategy = require('passport-twitter').Strategy;
-//var GitHubStrategy = require('passport-github').Strategy;
-//var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
-//var LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
-//var OAuthStrategy = require('passport-oauth').OAuthStrategy; // Tumblr
-//var OAuth2Strategy = require('passport-oauth').OAuth2Strategy; // Venmo, Foursquare
-
-var secrets = {
-  facebook: {
-    clientID: process.env.FACEBOOK_ID || '754220301289665',
-    clientSecret: process.env.FACEBOOK_SECRET || '41860e58c256a3d7ad8267d3c1939a4a',
-    callbackURL: '/auth/facebook/callback',
-    passReqToCallback: true
-  }
+var config = {
+  tokenSecret: 'keyboard cat',
+  facebookSecret: '298fb6c080fda239b809ae418bf49700',
+  googleSecret: 'xGxxgKAObIRUwOKycySkL9Fi'
 };
-
-passport.serializeUser(function(user, done) {
-  done(null, user.id);
-});
-
-passport.deserializeUser(function(id, done) {
-  User.findById(id, function(err, user) {
-    done(err, user);
-  });
-});
-
-passport.use(new FacebookStrategy(secrets.facebook, function(req, accessToken, refreshToken, profile, done) {
-  User.findOne({facebook: profile.id}, function(err, existingUser) {
-    if (existingUser) return done(null, existingUser);
-    var user = new User({
-      facebook: profile.id,
-      firstName: profile.name.givenName,
-      lastName: profile.name.familyName
-    });
-    user.save(function(err) {
-      if (err) return next(err);
-      done(err, user);
-    });
-  });
-}));
 
 var userSchema = new mongoose.Schema({
   email: {type: String, unique: true, lowercase: true},
@@ -102,7 +61,7 @@ function ensureAuthenticated(req, res, next) {
   if (req.headers.authorization) {
     var token = req.headers.authorization.split(' ')[1];
     try {
-      var decoded = jwt.decode(token, app.get('tokenSecret'));
+      var decoded = jwt.decode(token, config.tokenSecret);
       if (decoded.exp <= Date.now()) {
         res.send(400, 'Access token has expired');
       } else {
@@ -123,7 +82,7 @@ function createJwtToken(user) {
     iat: new Date().getTime(),
     exp: moment().add('days', 7).valueOf()
   };
-  return jwt.encode(payload, app.get('tokenSecret'));
+  return jwt.encode(payload, config.tokenSecret);
 }
 
 mongoose.connect('localhost');
@@ -131,30 +90,13 @@ mongoose.connect('localhost');
 var app = express();
 
 app.set('port', process.env.PORT || 3000);
-app.set('tokenSecret', 'keyboard cat');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
-app.use(methodOverride());
 app.use(cookieParser());
 app.use(session({secret: 'keyboard cat'}));
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(function(req, res, next) {
-  if (req.user) {
-    res.cookie('user', JSON.stringify(req.user));
-  }
-  next();
-});
 app.use(express.static(path.join(__dirname, '../../client')));
 app.use(express.static(path.join(__dirname, '../../..')));
-
-
-//
-//app.get('/auth/facebook', passport.authenticate('facebook'));
-//app.get('/auth/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/login' }), function(req, res) {
-//  res.redirect('/');
-//});
 
 app.post('/auth/login', function(req, res, next) {
   User.findOne({email: req.body.email}, function(err, user) {
@@ -184,30 +126,28 @@ app.post('/auth/google', function(req, res, next) {
     grant_type: 'authorization_code',
     code: req.body.code,
     client_id: req.body.clientId,
-    client_secret: 'xGxxgKAObIRUwOKycySkL9Fi',
+    client_secret: config.googleSecret,
     redirect_uri: req.body.redirectUri
   };
 
-
-  request.post(url, { form: payload }, function(error, response, body) {
-    res.send(response.statusCode, querystring.parse(body));
-
-//    User.findOne({google: profile.user_id}, '-password', function(err, existingUser) {
-//      if (existingUser) {
-//        var token = createJwtToken(existingUser);
-//        return res.send(token);
-//      }
-//      var user = new User({
-//        google: profile.user_id,
-//        firstName: profile.name.givenName,
-//        lastName: profile.name.familyName
-//      });
-//      user.save(function(err) {
-//        if (err) return next(err);
-//        var token = createJwtToken(user);
-//        res.send(token);
-//      });
-//    });
+  request.post(url, {form: payload}, function(error, response, body) {
+    console.log(body);
+    User.findOne({google: profile.user_id}, '-password', function(err, existingUser) {
+      if (existingUser) {
+        var token = createJwtToken(existingUser);
+        return res.send(token);
+      }
+      var user = new User({
+        google: profile.user_id,
+        firstName: profile.name.givenName,
+        lastName: profile.name.familyName
+      });
+      user.save(function(err) {
+        if (err) return next(err);
+        var token = createJwtToken(user);
+        res.send(token);
+      });
+    });
   });
 });
 
@@ -239,48 +179,34 @@ app.post('/auth/linkedin', function(req, res, next) {
 });
 
 app.post('/auth/facebook', function(req, res, next) {
-  //TODO:: use client's clientid and redirect_uri then append code and secret to that object before stringiying
   var url = 'https://graph.facebook.com/oauth/access_token';
-  var oauth = querystring.stringify({
+  var params = querystring.stringify({
     redirect_uri: req.body.redirectUri,
-    client_secret: '298fb6c080fda239b809ae418bf49700',
+    client_secret: config.facebookSecret,
     client_id: req.body.clientId,
     code: req.body.code
   });
 
-  request.get([url, oauth].join('?'), function(error, response, body) {
+  request.get({url: url, qs: params}, function(error, response, body) {
+    console.log(body);
+    // TODO: make request to get profile
+    User.findOne({facebook: profile.id}, '-password', function(err, existingUser) {
+      if (existingUser) {
+        var token = createJwtToken(existingUser);
+        return res.send(token);
+      }
+      var user = new User({
+        facebook: profile.id,
+        firstName: profile.first_name,
+        lastName: profile.last_name
+      });
+      user.save(function(err) {
+        if (err) return next(err);
+        var token = createJwtToken(user);
+        res.send(token);
+      });
+    });
   });
-//
-//  var profile = req.body.profile;
-//  var signedRequest = req.body.signedRequest;
-//  var encodedSignature = signedRequest.split('.')[0];
-//  var payload = signedRequest.split('.')[1];
-//
-//  var appSecret = '298fb6c080fda239b809ae418bf49700';
-//
-//  var expectedSignature = crypto.createHmac('sha256', appSecret).update(payload).digest('base64');
-//  expectedSignature = expectedSignature.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-//
-//  if (encodedSignature !== expectedSignature) {
-//    return res.send(400, 'Bad signature');
-//  }
-//
-//  User.findOne({facebook: profile.id}, '-password', function(err, existingUser) {
-//    if (existingUser) {
-//      var token = createJwtToken(existingUser);
-//      return res.send(token);
-//    }
-//    var user = new User({
-//      facebook: profile.id,
-//      firstName: profile.first_name,
-//      lastName: profile.last_name
-//    });
-//    user.save(function(err) {
-//      if (err) return next(err);
-//      var token = createJwtToken(user);
-//      res.send(token);
-//    });
-//  });
 });
 
 app.get('/api/me', ensureAuthenticated, function(req, res) {
@@ -293,5 +219,5 @@ app.use(function(err, req, res, next) {
 });
 
 app.listen(app.get('port'), function() {
-  console.log("Express server listening on port " + app.get('port'));
+  console.log('Express server listening on port ' + app.get('port'));
 });
