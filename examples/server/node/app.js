@@ -26,7 +26,7 @@ var config = {
 };
 
 var userSchema = new mongoose.Schema({
-  email: {type: String, unique: true, lowercase: true},
+  email: { type: String, unique: true, lowercase: true },
   password: String,
   firstName: String,
   lastName: String,
@@ -94,17 +94,17 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
-app.use(session({secret: 'keyboard cat'}));
+app.use(session({ secret: 'keyboard cat' }));
 app.use(express.static(path.join(__dirname, '../../client')));
 app.use(express.static(path.join(__dirname, '../../..')));
 
 app.post('/auth/login', function(req, res, next) {
-  User.findOne({email: req.body.email}, function(err, user) {
+  User.findOne({ email: req.body.email }, function(err, user) {
     if (!user) return res.send(401, 'User does not exist');
     user.comparePassword(req.body.password, function(err, isMatch) {
       if (!isMatch) return res.send(401, 'Invalid email and/or password');
       var token = createJwtToken(user);
-      res.send({token: token});
+      res.send({ token: token });
     });
   });
 });
@@ -121,8 +121,9 @@ app.post('/auth/signup', function(req, res, next) {
 });
 
 app.post('/auth/google', function(req, res, next) {
-  var url = 'https://accounts.google.com/o/oauth2/token';
-  var payload = {
+  var tokenEndpoint = 'https://accounts.google.com/o/oauth2/token';
+  var userinfoEndpoint = 'https://www.googleapis.com/plus/v1/people/me/openIdConnect';
+  var params = {
     grant_type: 'authorization_code',
     code: req.body.code,
     client_id: req.body.clientId,
@@ -130,22 +131,33 @@ app.post('/auth/google', function(req, res, next) {
     redirect_uri: req.body.redirectUri
   };
 
-  request.post(url, {form: payload}, function(error, response, body) {
-    console.log(body);
-    User.findOne({google: profile.user_id}, '-password', function(err, existingUser) {
+  request.post(tokenEndpoint, { form: params }, function(error, response, data) {
+    data = JSON.parse(data);
+    var accessToken = data.access_token;
+    var idToken = data.id_token;
+
+    var jwtToken = idToken.split('.');
+    var payload = new Buffer(jwtToken[1], 'base64').toString();
+
+    User.findOne({ google: payload.sub }, function(err, existingUser) {
       if (existingUser) {
         var token = createJwtToken(existingUser);
         return res.send(token);
       }
-      var user = new User({
-        google: profile.user_id,
-        firstName: profile.name.givenName,
-        lastName: profile.name.familyName
-      });
-      user.save(function(err) {
-        if (err) return next(err);
-        var token = createJwtToken(user);
-        res.send(token);
+
+      var authorizationHeader = { Authorization: 'Bearer ' + accessToken };
+      request.get({ url: userinfoEndpoint, headers: authorizationHeader, json: true }, function(error, response, profile) {
+        var user = new User({
+          google: profile.sub,
+          firstName: profile.given_name,
+          lastName: profile.family_name
+
+        });
+        user.save(function(err) {
+          if (err) return next(err);
+          var token = createJwtToken(user);
+          res.send(token);
+        });
       });
     });
   });
@@ -156,7 +168,7 @@ app.post('/auth/linkedin', function(req, res, next) {
   var profile = req.body.profile;
 
 
-  User.findOne({linkedin: profile.id}, '-password', function(err, existingUser) {
+  User.findOne({ linkedin: profile.id }, '-password', function(err, existingUser) {
     if (existingUser) {
       var token = createJwtToken(existingUser);
       return res.send(token);
@@ -187,10 +199,10 @@ app.post('/auth/facebook', function(req, res, next) {
     code: req.body.code
   });
 
-  request.get({url: url, qs: params}, function(error, response, body) {
+  request.get({ url: url, qs: params }, function(error, response, body) {
     console.log(body);
     // TODO: make request to get profile
-    User.findOne({facebook: profile.id}, '-password', function(err, existingUser) {
+    User.findOne({ facebook: profile.id }, '-password', function(err, existingUser) {
       if (existingUser) {
         var token = createJwtToken(existingUser);
         return res.send(token);
@@ -215,7 +227,7 @@ app.get('/api/me', ensureAuthenticated, function(req, res) {
 
 app.use(function(err, req, res, next) {
   console.error(err.stack);
-  res.send(500, {error: err.message});
+  res.send(500, { error: err.message });
 });
 
 app.listen(app.get('port'), function() {
