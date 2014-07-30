@@ -179,30 +179,34 @@ app.post('/auth/signup', function(req, res, next) {
 });
 
 app.post('/auth/google', function(req, res, next) {
-  var accessToken = req.body.accessToken;
-  var profile = req.body.profile;
+  var url = 'https://accounts.google.com/o/oauth2/token';
+  var oauth = qs.stringify({
+    code: code,
+    client_id: req.body.clientId,
+    client_secret: 'xGxxgKAObIRUwOKycySkL9Fi',
+    redirect_uri: req.body.redirectUri,
+    grant_type: 'authorization_code'
+  });
 
-  request.get('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' + accessToken, function(e, r, tokenInfo) {
-    console.log(tokenInfo);
-    if (tokenInfo.user_id !== profile.user_id) {
-      return res.send(400, 'Invalid Token');
-    }
-    User.findOne({google: profile.user_id}, '-password', function(err, existingUser) {
-      if (existingUser) {
-        var token = createJwtToken(existingUser);
-        return res.send(token);
-      }
-      var user = new User({
-        google: profile.user_id,
-        firstName: profile.name.givenName,
-        lastName: profile.name.familyName
-      });
-      user.save(function(err) {
-        if (err) return next(err);
-        var token = createJwtToken(user);
-        res.send(token);
-      });
-    });
+  request.get([url, oauth].join('?'), function(error, response, body) {
+    res.send(response.statusCode, qs.parse(body));
+
+//    User.findOne({google: profile.user_id}, '-password', function(err, existingUser) {
+//      if (existingUser) {
+//        var token = createJwtToken(existingUser);
+//        return res.send(token);
+//      }
+//      var user = new User({
+//        google: profile.user_id,
+//        firstName: profile.name.givenName,
+//        lastName: profile.name.familyName
+//      });
+//      user.save(function(err) {
+//        if (err) return next(err);
+//        var token = createJwtToken(user);
+//        res.send(token);
+//      });
+//    });
   });
 });
 
@@ -236,11 +240,7 @@ app.post('/auth/linkedin', function(req, res, next) {
 
 app.post('/auth/facebook', function(req, res, next) {
   //TODO:: use client's clientid and redirect_uri then append code and secret to that object before stringiying
-  console.log(req.body.clientId);
-  console.log(req.body.redirectUri);
-  console.log(req.body.code);
-
-  var url = 'https://graph.facebook.com/oauth/access_token?';
+  var url = 'https://graph.facebook.com/oauth/access_token';
   var oauth = qs.stringify({
     redirect_uri: req.body.redirectUri,
     client_secret: '298fb6c080fda239b809ae418bf49700',
@@ -248,8 +248,7 @@ app.post('/auth/facebook', function(req, res, next) {
     code: req.body.code
   });
 
-  request.get(url + oauth, function(error, response, body) {
-    res.send(response.statusCode, qs.parse(body));
+  request.get([url, oauth].join('?'), function(error, response, body) {
   });
 //
 //  var profile = req.body.profile;
