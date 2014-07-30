@@ -18,7 +18,7 @@ var moment = require('moment');
 var mongoose = require('mongoose');
 var path = require('path');
 var fs = require('fs');
-var qs = require('querystring');
+var querystring = require('querystring');
 
 
 var passport = require('passport');
@@ -180,16 +180,18 @@ app.post('/auth/signup', function(req, res, next) {
 
 app.post('/auth/google', function(req, res, next) {
   var url = 'https://accounts.google.com/o/oauth2/token';
-  var oauth = qs.stringify({
-    code: code,
+  var params = querystring.stringify({
+    grant_type: 'authorization_code',
+    code: req.body.code,
     client_id: req.body.clientId,
     client_secret: 'xGxxgKAObIRUwOKycySkL9Fi',
-    redirect_uri: req.body.redirectUri,
-    grant_type: 'authorization_code'
+    redirect_uri: req.body.redirectUri
   });
+  querystring.unescape(params);
 
-  request.get([url, oauth].join('?'), function(error, response, body) {
-    res.send(response.statusCode, qs.parse(body));
+  request.post([url, params].join('?'), function(error, response, body) {
+    console.log(body);
+    res.send(response.statusCode, querystring.parse(body));
 
 //    User.findOne({google: profile.user_id}, '-password', function(err, existingUser) {
 //      if (existingUser) {
@@ -209,7 +211,6 @@ app.post('/auth/google', function(req, res, next) {
 //    });
   });
 });
-
 
 app.post('/auth/linkedin', function(req, res, next) {
   var accessToken = req.body.accessToken;
@@ -241,7 +242,7 @@ app.post('/auth/linkedin', function(req, res, next) {
 app.post('/auth/facebook', function(req, res, next) {
   //TODO:: use client's clientid and redirect_uri then append code and secret to that object before stringiying
   var url = 'https://graph.facebook.com/oauth/access_token';
-  var oauth = qs.stringify({
+  var oauth = querystring.stringify({
     redirect_uri: req.body.redirectUri,
     client_secret: '298fb6c080fda239b809ae418bf49700',
     client_id: req.body.clientId,
