@@ -20,17 +20,22 @@
         providers: {
           facebook: {
             authorizationUrl: 'https://www.facebook.com/dialog/oauth',
+            redirectUri: 'http://localhost:3000',
             scope: 'email',
             requiredUrlParams: ['display'],
-            display: 'popup',
-            redirectUri: 'http://localhost:3000'
+            display: 'popup'
           },
           google: {
             authorizationUrl: 'https://accounts.google.com/o/oauth2/auth',
-            scope: ''
+            redirectUri: 'http://localhost:3000',
+            scope: 'email',
+            requiredUrlParams: ['state'],
+            state: 'STATE'
           },
           linkedin: {
             authorizationUrl: 'https://www.linkedin.com/uas/oauth2/authorization',
+            redirectUri: 'http://localhost:3000',
+            requiredUrlParams: ['state'],
             state: 'STATE'
           }
         }
