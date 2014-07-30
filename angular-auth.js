@@ -59,6 +59,7 @@
           Popup.prototype.open = function(url, keys, options) {
             var deferred = $q.defer();
             // TODO: refactor
+            // todo wildcard star
             var optionsString = stringifyOptions(prepareOptions(options || {}));
             this.popup = $window.open(url, '*', optionsString);
             this.popup.focus();
@@ -150,10 +151,12 @@
           }
 
 
-          var oauthKeys = ['code', 'access_token', 'expires_in'];
+
           var defaultUrlParams = ['response_type', 'client_id', 'redirect_uri'];
 
           var Oauth2 = function(config) {
+            //if (this instanceof CustomObject)
+
             this.name = config.name;
             this.clientId = config.clientId;
             this.scope = config.scope;
@@ -175,7 +178,7 @@
             var url = this.buildUrl();
             var popup = new Popup();
 
-            popup.open(url, oauthKeys).then(function(code) {
+            popup.open(url).then(function(code) {
               this.exchangeForToken(code).then(function(response) {
                 deferred.resolve(response.data);
               });
@@ -239,11 +242,13 @@
 
           return {
             authenticate: function(providerName, options) {
-              var deferred = $q.defer();
               if (!providerName) {
-                deferred.reject('Expected a provider named \'' + providerName + '\', did you forget to add it?');
+                return $q.reject('Expected a provider named \'' + providerName + '\', did you forget to add it?');
               }
+
               var provider = Oauth2.createProvider(providerName);
+
+              var deferred = $q.defer();
 
               provider.open(options).then(function(data) {
                 console.log('OPENED')
