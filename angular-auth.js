@@ -4,6 +4,8 @@
  * License: MIT
  */
 
+// TODO: add support for token response_type if user wants to use client-side only
+
 (function(window, angular, undefined) {
   'use strict';
 
@@ -40,6 +42,12 @@
             redirectUri: 'http://localhost:3000',
             requiredUrlParams: ['state'],
             state: 'STATE'
+          },
+          twitter: {
+            requestTokenUri: 'https://api.twitter.com/oauth/request_token',
+            authorizationUrl: 'https://api.twitter.com/oauth/authenticate',
+
+            redirectUri: ''
           }
         }
       };
@@ -82,7 +90,7 @@
               $interval.cancel(this.polling);
               deferred.reject('Popup was closed by the user.');
             }
-            this.requestAuthorizationCode();
+            //this.requestAuthorizationCode();
           }.bind(this);
           this.polling = $interval(intervalHandler, 35);
         };
@@ -91,7 +99,6 @@
           var query = this.popup.location.search.substring(1);
           if (query.indexOf('code') > -1) {
             var code = this.parseQueryString(query).code;
-            console.log(code);
             $window.postMessage(code, $window.location.origin);
             $interval.cancel(this.polling);
             this.popup.close();
@@ -99,8 +106,11 @@
         };
 
         Popup.prototype.createPostMessageHandler = function(deferred) {
+          var self = this;
           $window.addEventListener('message', function(event) {
-            deferred.resolve(event.data);
+            var code = self.parseQueryString(event.data).code;
+            console.log(code);
+            deferred.resolve(code);
           }, false);
         };
 
@@ -157,6 +167,35 @@
           return optionsStrings.join(',');
         }
 
+
+        /**
+         * OAuth 1.0
+         */
+        var Oauth1 = function(config) {
+          angular.extend(this, config);
+          this.name = config.name;
+          this.requestTokenUri = config.requestTokenUri;
+        };
+
+        Oauth1.prototype.open = function() {
+          var deferred = $q.defer();
+          var url = this.requestTokenUri;
+
+          var popup = new Popup();
+
+          popup.open(url).then(function(authData) {
+            console.log(authData);
+            deferred.resolve(authData);
+          });
+
+          return deferred.promise;
+        };
+
+
+
+        /**
+         * OAuth 2.0
+         */
         var Oauth2 = function(config) {
           angular.extend(this, config);
           this.name = config.name;
@@ -182,7 +221,7 @@
           var popup = new Popup();
 
           popup.open(url).then(function(code) {
-            this.exchangeForToken(code).then(function(response) {
+            this.exchangeForJwtToken(code).then(function(response) {
               deferred.resolve(response.data);
             });
           }.bind(this));
@@ -190,7 +229,7 @@
           return deferred.promise;
         };
 
-        Oauth2.prototype.exchangeForToken = function(code) {
+        Oauth2.prototype.exchangeForJwtToken = function(code) {
           var params = {
             code: code,
             clientId: config.providers[this.name].clientId,
@@ -260,8 +299,12 @@
 
             var deferred = $q.defer();
 
-            provider.open(options).then(function(data) {
-              deferred.resolve(data);
+            provider.open(options).then(function(token) {
+              var payload = JSON.parse($window.atob(token.split('.')[1]));
+              $window.localStorage.token = token;
+              $rootScope.currentUser = payload.user;
+              $location.path(config.loginRedirect);
+              deferred.resolve();
             });
 
             return deferred.promise;
@@ -342,7 +385,13 @@
     .config(function($httpProvider) {
       $httpProvider.interceptors.push('authInterceptor');
     })
-    .run(function($rootScope, $location) {
+    .run(function($rootScope, $window) {
+      var query = $window.location.search.substring(1);
+      if (query.indexOf('code') > -1) {
+        $window.opener.postMessage(query, '*');
+        $window.close();
+      }
+
       $rootScope.$on('$routeChangeStart', function(event, current, previous) {
         if ($rootScope.currentUser &&
           (current.originalPath === '/login' || current.originalPath === '/signup')) {
