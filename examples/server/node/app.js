@@ -22,7 +22,9 @@ var querystring = require('querystring');
 var config = {
   tokenSecret: 'keyboard cat',
   facebookSecret: '298fb6c080fda239b809ae418bf49700',
-  googleSecret: 'xGxxgKAObIRUwOKycySkL9Fi'
+  googleSecret: 'xGxxgKAObIRUwOKycySkL9Fi',
+  linkedinSecret: '7bDltzdHlP9b42xy',
+  twitterSecret: ''
 };
 
 var userSchema = new mongoose.Schema({
@@ -169,29 +171,47 @@ app.post('/auth/google', function(req, res, next) {
 });
 
 app.post('/auth/linkedin', function(req, res, next) {
-  var accessToken = req.body.accessToken;
-  var profile = req.body.profile;
 
+  var url = 'https://www.linkedin.com/uas/oauth2/accessToken';
+  var params = {
+    grant_type: 'authorization_code',
+    code: req.body.code,
+    client_id: req.body.clientId,
+    client_secret: config.linkedinSecret,
+    redirect_uri: req.body.redirectUri
+  };
 
-  User.findOne({ linkedin: profile.id }, '-password', function(err, existingUser) {
-    if (existingUser) {
-      var token = createJwtToken(existingUser);
-      return res.send(token);
-    }
-    var user = new User({
-      linkedin: profile.id,
-      firstName: profile.firstName,
-      lastName: profile.lastName
-    });
-    user.save(function(err) {
-      if (err) return next(err);
-      var token = createJwtToken(user);
-      res.send(token);
+  console.log(params);
+
+  request.post(url, { form: params, json: true }, function(err, response, data) {
+    var accessToken = data.access_token;
+    var url = 'https://api.linkedin.com/v1/people/~:(id,first-name,last-name)';
+    var params = {
+      oauth2_access_token: accessToken,
+      format: 'json'
+    };
+    request.get({ url: url, qs: params, json: true }, function(error, response, profile) {
+      User.findOne({ linkedin: profile.id }, function(err, existingUser) {
+        if (existingUser) {
+          var token = createJwtToken(existingUser);
+          return res.send(token);
+        }
+        var user = new User({
+          linkedin: profile.id,
+          firstName: profile.firstName,
+          lastName: profile.lastName
+        });
+        user.save(function(err) {
+          if (err) return next(err);
+          var token = createJwtToken(user);
+          res.send(token);
+        });
+      });
+
     });
   });
 
-  console.log(accessToken);
-  console.log(profile);
+
   res.send(200);
 });
 
@@ -215,7 +235,7 @@ app.post('/auth/facebook', function(req, res, next) {
       qs: params,
       json: true
     }, function(error, response, profile) {
-      User.findOne({ facebook: profile.id }, '-password', function(err, existingUser) {
+      User.findOne({ facebook: profile.id }, function(err, existingUser) {
         if (existingUser) {
           var token = createJwtToken(existingUser);
           return res.send(token);
