@@ -94,16 +94,6 @@
           }, 35);
         };
 
-        Popup.prototype.requestAuthorizationCode = function() {
-          var query = this.popup.location.search.substring(1);
-          if (query.indexOf('code') > -1) {
-            var code = this.parseQueryString(query).code;
-            $window.postMessage(code, $window.location.origin);
-            $interval.cancel(this.polling);
-            this.popup.close();
-          }
-        };
-
         Popup.prototype.createPostMessageHandler = function(deferred) {
           var self = this;
           $window.addEventListener('message', function(event) {
