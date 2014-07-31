@@ -76,7 +76,6 @@
           // TODO: refactor
           // todo wildcard star
           var optionsString = stringifyOptions(prepareOptions(options || {}));
-          console.log(optionsString)
           this.popup = $window.open(url, $window.location.origin, optionsString);
           this.popup.focus();
 
@@ -90,7 +89,7 @@
           var self = this;
           this.polling = $interval(function() {
             if (self.popup.closed) {
-              $interval.cancel(this.polling);
+              $interval.cancel(self.polling);
               deferred.reject('Popup was closed by the user.');
             }
           }, 35);
@@ -99,9 +98,16 @@
         Popup.prototype.createPostMessageHandler = function(deferred) {
           var self = this;
           $window.addEventListener('message', function(event) {
-            var code = self.parseQueryString(event.data).code;
-            console.log(code);
-            deferred.resolve(code);
+            if (event.origin === $window.location.origin) {
+              console.log('same origin');
+              var code = self.parseQueryString(event.data).code;
+              console.log(code);
+              deferred.resolve(code);
+            } else {
+              console.log(event)
+              console.log('different origin');
+            }
+
           }, false);
         };
 
