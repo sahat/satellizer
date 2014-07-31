@@ -38,12 +38,14 @@
             display: 'popup',
           },
           linkedin: {
+            url: '/auth/linkedin',
             authorizationEndpoint: 'https://www.linkedin.com/uas/oauth2/authorization',
             redirectUri: 'http://localhost:3000',
             requiredUrlParams: ['state'],
             state: 'STATE'
           },
           twitter: {
+            url: '/auth/twitter',
             requestTokenUri: 'https://api.twitter.com/oauth/request_token',
             authorizationUrl: 'https://api.twitter.com/oauth/authenticate',
             redirectUri: ''
@@ -234,6 +236,8 @@
             clientId: config.providers[this.name].clientId,
             redirectUri: config.providers[this.name].redirectUri
           };
+
+          console.log(params);
 
           return $http.post(this.url, params);
         };

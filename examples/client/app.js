@@ -39,7 +39,7 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'ngAuth', 'mgcre
 
     AuthProvider.setProvider({
       name: 'linkedin',
-      clientId: 'JMBFUZQ6fajbxt92xDW8pw'
+      clientId: '77cw786yignpzj'
     });
 
 //    AuthProvider.providers['facebook'] = {
