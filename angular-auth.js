@@ -46,9 +46,8 @@
           },
           twitter: {
             url: '/auth/twitter',
-            type: 'OAuth1',
-            requestTokenUri: 'https://api.twitter.com/oauth/request_token',
-            authorizationEndpoint: 'https://api.twitter.com/oauth/authenticate',
+            protocol: 'OAuth1',
+            authorizationEndpoint: 'http://localhost:3000/auth/twitter',
             redirectUri: 'http://localhost:3000'
           }
         }
@@ -77,6 +76,7 @@
           // TODO: refactor
           // todo wildcard star
           var optionsString = stringifyOptions(prepareOptions(options || {}));
+          console.log(optionsString)
           this.popup = $window.open(url, $window.location.origin, optionsString);
           this.popup.focus();
 
@@ -87,8 +87,9 @@
         };
 
         Popup.prototype.pollPopup = function(deferred) {
+          var self = this;
           this.polling = $interval(function() {
-            if (this.popup.closed) {
+            if (self.popup.closed) {
               $interval.cancel(this.polling);
               deferred.reject('Popup was closed by the user.');
             }
@@ -164,20 +165,14 @@
         var Oauth1 = function(config) {
           angular.extend(this, config);
           this.name = config.name;
-          this.consumerKey = config.consumerKey;
-          this.requestTokenUri = config.requestTokenUri;
           this.authorizationEndpoint = config.authorizationEndpoint;
-          this.defaultUrlParams = [];
-          this.requiredUrlParams = config.requiredUrlParams;
-          this.optionalUrlParams = config.optionalUrlParams;
         };
 
         Oauth1.prototype.open = function() {
           var deferred = $q.defer();
-          var url = this.requestTokenUri;
+          var url = this.authorizationEndpoint;
 
           var popup = new Popup();
-
           popup.open(url).then(function(authData) {
             console.log(authData);
             deferred.resolve(authData);
@@ -191,6 +186,15 @@
           var provider = new Oauth1(providerOptions);
           return provider;
         };
+
+        // TODO: send initiation GET to /auth/twitter
+        // TODO: get oauth_token from POST /request_token
+        // TODO: send it back to the client
+        // TODO: open popup api.twitter.com/oauth/authenticate?oauth_token=XXX
+        // TODO: twitter redirects to http://localhost:3000/auth/twitter with oauth_token and oauth_verifier
+        // TODO: check if oauth_token matches new oauth_token
+        // TODO: POST oauth/access_token
+        // TODO: redirect back to localhost:3000 in popup at some point
 
 
         /**
@@ -299,7 +303,7 @@
               return $q.reject('Expected a provider named \'' + providerName + '\', did you forget to add it?');
             }
 
-            if (config[providerName].type === 'OAuth1') {
+            if (config.providers[providerName].protocol === 'OAuth1') {
               provider = Oauth1.createProvider(providerName);
             } else {
               provider = Oauth2.createProvider(providerName);
