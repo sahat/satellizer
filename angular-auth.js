@@ -86,14 +86,12 @@
         };
 
         Popup.prototype.pollPopup = function(deferred) {
-          var intervalHandler = function() {
+          this.polling = $interval(function() {
             if (this.popup.closed) {
               $interval.cancel(this.polling);
               deferred.reject('Popup was closed by the user.');
             }
-            //this.requestAuthorizationCode();
-          }.bind(this);
-          this.polling = $interval(intervalHandler, 35);
+          }, 35);
         };
 
         Popup.prototype.requestAuthorizationCode = function() {
