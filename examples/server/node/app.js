@@ -34,7 +34,8 @@ var userSchema = new mongoose.Schema({
   lastName: String,
   facebook: String,
   google: String,
-  linkedin: String
+  linkedin: String,
+  twitter: String
 });
 
 userSchema.pre('save', function(next) {
@@ -250,6 +251,55 @@ app.post('/auth/facebook', function(req, res, next) {
       });
     });
   });
+});
+
+app.get('/auth/twitter', function(req, res, next) {
+  var requestTokenUrl = 'https://api.twitter.com/oauth/request_token';
+  var accessTokenUrl = 'https://api.twitter.com/oauth/access_token';
+  var callbackUrl = encodeURIComponent('http://localhost:3000/auth/twitter');
+  var consumerKey = 'vdrg4sqxyTPSRdJHKu4UVVdeD';
+  var consumerSecret = 'cUIobhRgRlXsFyObUMg3tBq56EgGSwabmcavQP4fncABvotRMA';
+  var oauth;
+
+  // Handle twitter callback here
+  if (req.query.oauth_token && req.query.oauth_verifier) {
+    oauth = {
+      consumer_key: 'vdrg4sqxyTPSRdJHKu4UVVdeD',
+      consumer_secret: 'cUIobhRgRlXsFyObUMg3tBq56EgGSwabmcavQP4fncABvotRMA',
+      token: req.query.oauth_token,
+      verifier: req.query.oauth_verifier
+    };
+    request.post({ url: accessTokenUrl, oauth: oauth }, function(error, response, body) {
+      var profile = querystring.parse(body);
+      User.findOne({ twitter: profile.user_id }, function(err, existingUser) {
+        if (existingUser) {
+          var token = createJwtToken(existingUser);
+          return res.send(token);
+        }
+        var user = new User({
+          twitter: profile.user_id,
+          firstName: profile.screen_name,
+        });
+        user.save(function(err) {
+          if (err) return next(err);
+          var token = createJwtToken(user);
+          console.log('here is your JWT token', token);
+          console.log(user);
+          res.send(token);
+        });
+      });
+    });
+  } else {
+    oauth = {
+      consumer_key: 'vdrg4sqxyTPSRdJHKu4UVVdeD',
+      consumer_secret: 'cUIobhRgRlXsFyObUMg3tBq56EgGSwabmcavQP4fncABvotRMA',
+      callback: 'http://localhost:3000/auth/twitter'
+    };
+    request.post({ url: requestTokenUrl, oauth: oauth }, function (error, response, body) {
+      var token = querystring.parse(body);
+      res.redirect('https://api.twitter.com/oauth/authenticate?oauth_token=' + token.oauth_token);
+    });
+  }
 });
 
 app.get('/api/me', ensureAuthenticated, function(req, res) {
