@@ -210,9 +210,6 @@ app.post('/auth/linkedin', function(req, res, next) {
 
     });
   });
-
-
-  res.send(200);
 });
 
 app.post('/auth/facebook', function(req, res, next) {
