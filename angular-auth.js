@@ -47,12 +47,12 @@
           twitter: {
             url: '/auth/twitter',
             requestTokenUri: 'https://api.twitter.com/oauth/request_token',
-            authorizationUrl: 'https://api.twitter.com/oauth/authenticate',
-            redirectUri: ''
+            authorizationEndpoint: 'https://api.twitter.com/oauth/authenticate',
+            redirectUri: 'http://localhost:3000'
           }
         }
       };
-
+// TODO: rename twitter clientid to consumerKey
       // TODO: defineProperty setter on scope
       // TODO: $state = md5(rand());
 
@@ -163,7 +163,12 @@
         var Oauth1 = function(config) {
           angular.extend(this, config);
           this.name = config.name;
+          this.consumerKey = config.consumerKey;
           this.requestTokenUri = config.requestTokenUri;
+          this.authorizationEndpoint = config.authorizationEndpoint;
+          this.defaultUrlParams = [];
+          this.requiredUrlParams = config.requiredUrlParams;
+          this.optionalUrlParams = config.optionalUrlParams;
         };
 
         Oauth1.prototype.open = function() {
@@ -179,7 +184,6 @@
 
           return deferred.promise;
         };
-
 
 
         /**
@@ -301,38 +305,6 @@
             return deferred.promise;
           },
 
-          loginOauth: function(provider) {
-            provider = provider.trim().toLowerCase();
-
-            switch (provider) {
-              case 'facebook':
-                var scope = config.providers.facebook.scope.join(',');
-                FB.login(function(response) {
-                  FB.api('/me', function(profile) {
-                    // TODO normalize return properties like passport
-                    var data = {
-                      accessToken: response.authResponse.accessToken,
-                      signedRequest: response.authResponse.signedRequest,
-                      profile: profile
-                    };
-                    $http.post(config.providers.facebook.url, data).success(function(token) {
-                      var payload = JSON.parse($window.atob(token.split('.')[1]));
-                      $window.localStorage.token = token;
-                      $rootScope[config.userGlobal] = payload.user;
-                      $location.path(config.loginRedirect);
-                    });
-                  });
-                }, {scope: scope});
-                break;
-              case 'google':
-
-                break;
-              case 'linkedin':
-                break;
-              default:
-                break;
-            }
-          },
           login: function(user) {
             return $http.post(config.loginUrl, user).success(function(data) {
               $window.localStorage.token = data.token;
