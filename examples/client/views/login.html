@@ -16,7 +16,10 @@
             <button type="submit" ng-disabled="loginForm.$invalid" class="btn btn-lg btn-block btn-success">Sign In</button>
           </form>
 
-          <hr/>
+          <div class="signup-or-separator">
+            <h6 class="text shift text-special">or</h6>
+            <hr>
+          </div>
 
           <button class="btn btn-block btn-social btn-facebook" ng-click="authenticate('facebook')">
             <i class="fa fa-facebook"></i> Sign in with Facebook
@@ -26,6 +29,9 @@
           </button>
           <button class="btn btn-block btn-social btn-google-plus" ng-click="authenticate('google')">
             <i class="fa fa-google-plus"></i> Sign in with Google
+          </button>
+          <button class="btn btn-block btn-social btn-twitter" ng-click="authenticate('twitter')">
+            <i class="fa fa-twitter"></i> Sign in with Twitter
           </button>
         </div>
     </div>

@@ -81,3 +81,22 @@ h1, h2, h3, h4, h5, h6 {
   width: 330px;
   margin: 12% auto;
 }
+
+.signup-or-separator {
+  background: none;
+  height: 34px;
+  position: relative;
+  text-align: center;
+}
+
+.signup-or-separator hr {
+  margin: -16px auto 10px auto;
+  width: 90%;
+}
+
+.signup-or-separator .text {
+  background-color: #fff;
+  display: inline-block;
+  margin: 0;
+  padding: 8px;
+}
