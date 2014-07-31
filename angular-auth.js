@@ -46,6 +46,7 @@
           },
           twitter: {
             url: '/auth/twitter',
+            type: 'OAuth1',
             requestTokenUri: 'https://api.twitter.com/oauth/request_token',
             authorizationEndpoint: 'https://api.twitter.com/oauth/authenticate',
             redirectUri: 'http://localhost:3000'
@@ -185,6 +186,12 @@
           return deferred.promise;
         };
 
+        Oauth1.createProvider = function(providerName) {
+          var providerOptions = config.providers[providerName];
+          var provider = new Oauth1(providerOptions);
+          return provider;
+        };
+
 
         /**
          * OAuth 2.0
@@ -286,11 +293,17 @@
 
         return {
           authenticate: function(providerName, options) {
+            var provider;
+
             if (!providerName) {
               return $q.reject('Expected a provider named \'' + providerName + '\', did you forget to add it?');
             }
 
-            var provider = Oauth2.createProvider(providerName);
+            if (config[providerName].type === 'OAuth1') {
+              provider = Oauth1.createProvider(providerName);
+            } else {
+              provider = Oauth2.createProvider(providerName);
+            }
 
             var deferred = $q.defer();
 
