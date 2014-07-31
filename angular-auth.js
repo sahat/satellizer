@@ -67,8 +67,9 @@
 
 
         // Popup window.
-        var Popup = function() {
+        var Popup = function(protocol) {
           this.popup = null;
+          this.protocol = protocol;
         };
 
         Popup.prototype.open = function(url, keys, options) {
@@ -100,11 +101,10 @@
           $window.addEventListener('message', function(event) {
             if (event.origin === $window.location.origin) {
               console.log('same origin');
-              var code = self.parseQueryString(event.data).code;
-              console.log(code);
-              deferred.resolve(code);
+              var query = self.parseQueryString(event.data);
+              deferred.resolve({ code: query.code, token: query.token });
             } else {
-              console.log(event)
+              console.log(event);
               console.log('different origin');
             }
 
@@ -180,8 +180,7 @@
 
           var popup = new Popup();
           popup.open(url).then(function(authData) {
-            console.log(authData);
-            deferred.resolve(authData);
+            deferred.resolve(authData.token);
           });
 
           return deferred.promise;
@@ -230,8 +229,8 @@
           var url = this.buildUrl();
           var popup = new Popup();
 
-          popup.open(url).then(function(code) {
-            this.exchangeForJwtToken(code).then(function(response) {
+          popup.open(url).then(function(authData) {
+            this.exchangeForJwtToken(authData.code).then(function(response) {
               deferred.resolve(response.data);
             });
           }.bind(this));
@@ -373,7 +372,7 @@
     })
     .run(function($rootScope, $window, $location) {
       var query = $window.location.search.substring(1);
-      if ($window.opener && query.indexOf('code') > -1) {
+      if ($window.opener && (query.indexOf('code') > -1 || query.indexOf('token') > -1)) {
         $window.opener.postMessage(query, '*');
         $window.close();
       }
