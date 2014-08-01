@@ -261,7 +261,7 @@ app.get('/auth/twitter', function(req, res, next) {
   var requestTokenUrl = 'https://api.twitter.com/oauth/request_token';
   var accessTokenUrl = 'https://api.twitter.com/oauth/access_token';
   var authenticateUrl = 'https://api.twitter.com/oauth/authenticate';
-  var callbackUrl = 'http://localhost:3000/auth/twitter';
+  var callbackUrl = 'http://localhost:3000';
 
   // Handle twitter callback here
   if (req.query.oauth_token && req.query.oauth_verifier) {
