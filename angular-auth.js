@@ -16,7 +16,6 @@
         loginUrl: '/auth/login',
         signupUrl: '/auth/signup',
         signupRedirect: '/login',
-        userGlobal: 'currentUser',
         providers: {
           facebook: {
             url: '/auth/facebook',
@@ -24,7 +23,8 @@
             redirectUri: window.location.origin,
             scope: 'email',
             requiredUrlParams: ['display'],
-            display: 'popup'
+            display: 'popup',
+            protocol: 'OAuth2'
           },
           google: {
             url: '/auth/google',
@@ -34,19 +34,21 @@
             requiredUrlParams: ['scope'],
             optionalUrlParams: ['display'],
             display: 'popup',
+            protocol: 'OAuth2'
           },
           linkedin: {
             url: '/auth/linkedin',
             authorizationEndpoint: 'https://www.linkedin.com/uas/oauth2/authorization',
             redirectUri: window.location.origin,
             requiredUrlParams: ['state'],
-            state: 'STATE'
+            state: 'STATE',
+            protocol: 'OAuth2'
           },
           twitter: {
             url: '/auth/twitter',
-            protocol: 'OAuth1',
             authorizationEndpoint: 'http://localhost:3000/auth/twitter',
-            redirectUri: window.location.origin
+            redirectUri: window.location.origin,
+            protocol: 'OAuth1'
           }
         }
       };
