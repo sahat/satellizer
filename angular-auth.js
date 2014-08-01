@@ -112,7 +112,7 @@
           };
 
           Popup.prototype.parseQueryString = function(keyValue) {
-            var obj = {}, key, value;
+            var obj = { }, key, value;
             angular.forEach((keyValue || '').split('&'), function(keyValue) {
               if (keyValue) {
                 value = keyValue.split('=');
@@ -167,13 +167,13 @@
           /**
            * OAuth 1.0
            */
-          var Oauth1 = function(config) {
+          var OAuth1 = function(config) {
             angular.extend(this, config);
             this.name = config.name;
             this.authorizationEndpoint = config.authorizationEndpoint;
           };
 
-          Oauth1.prototype.open = function() {
+          OAuth1.prototype.open = function() {
             var deferred = $q.defer();
             var url = this.authorizationEndpoint;
 
@@ -183,12 +183,6 @@
             });
 
             return deferred.promise;
-          };
-
-          Oauth1.createProvider = function(providerName) {
-            var providerOptions = config.providers[providerName];
-            var provider = new Oauth1(providerOptions);
-            return provider;
           };
 
           // TODO: send initiation GET to /auth/twitter
@@ -236,12 +230,6 @@
             }.bind(this));
 
             return deferred.promise;
-          };
-
-          OAuth2.createProvider = function(providerName) {
-            var providerOptions = config.providers[providerName];
-            var provider = new OAuth2(providerOptions);
-            return provider;
           };
 
           OAuth2.prototype._exchangeForJwtToken = function(code) {
@@ -303,9 +291,9 @@
               }
 
               if (config.providers[providerName].protocol === 'OAuth1') {
-                provider = Oauth1.createProvider(providerName);
+                provider = new OAuth1(config.providers[providerName]);
               } else {
-                provider = OAuth2.createProvider(providerName);
+                provider = new OAuth2(config.providers[providerName]);
               }
 
               var deferred = $q.defer();
@@ -371,6 +359,7 @@
       if ($window.opener && (query.indexOf('code') > -1 || query.indexOf('token') > -1)) {
         $window.opener.postMessage(query, '*');
         $window.close();
+        // TODO don't close popup until verified with server
       }
 
       $rootScope.$on('$routeChangeStart', function(event, current, previous) {
