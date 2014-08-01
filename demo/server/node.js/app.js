@@ -99,7 +99,7 @@ app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 app.use(session({ secret: 'keyboard cat' }));
 app.use(express.static(path.join(__dirname, '../../client')));
-app.use(express.static(path.join(__dirname, '../../..')));
+app.use(express.static(path.join(__dirname, '../../../lib')));
 
 app.post('/auth/login', function(req, res, next) {
   User.findOne({ email: req.body.email }, function(err, user) {
