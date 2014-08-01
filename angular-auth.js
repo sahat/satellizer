@@ -9,7 +9,6 @@
 
   angular.module('ngAuth', [])
     .provider('Auth', function() {
-
       var config = this.config = {
         logoutRedirect: '/',
         loginRedirect: '/',
@@ -46,13 +45,10 @@
           },
           twitter: {
             url: '/auth/twitter',
-            authorizationEndpoint: 'http://localhost:3000/auth/twitter',
-            redirectUri: window.location.origin,
             protocol: 'OAuth1'
           }
         }
       };
-// TODO: rename twitter clientid to consumerKey
       // TODO: defineProperty setter on scope
       // TODO: $state = md5(rand());
 
@@ -78,12 +74,12 @@
             this.protocol = protocol;
           };
 
-          Popup.prototype.open = function(url, keys, options) {
+          Popup.prototype.open = function(url, options) {
             var deferred = $q.defer();
             // TODO: refactor
             // todo wildcard star
             var optionsString = stringifyOptions(prepareOptions(options || { }));
-            this.popup = $window.open(url, $window.location.origin, optionsString);
+            this.popup = $window.open(url, 'ngAuth', optionsString);
             this.popup.focus();
 
             this.createPostMessageHandler(deferred);
@@ -112,7 +108,7 @@
           };
 
           Popup.prototype.parseQueryString = function(keyValue) {
-            var obj = { }, key, value;
+            var obj = {}, key, value;
             angular.forEach((keyValue || '').split('&'), function(keyValue) {
               if (keyValue) {
                 value = keyValue.split('=');
@@ -134,8 +130,8 @@
             var width = options.width || 500;
             var height = options.height || 500;
             return angular.extend({
-              left: ((screen.width / 2) - (width / 2)),
-              top: ((screen.height / 2) - (height / 2)),
+              left: ((window.screen.width / 2) - (width / 2)),
+              top: ((window.screen.height / 2) - (height / 2)),
               width: width,
               height: height
             }, options);
@@ -163,7 +159,6 @@
             }
             return optionsStrings.join(',');
           }
-
 
           /**
            * OAuth 1.0
@@ -289,7 +284,6 @@
               return pair.join('=');
             }).join('&');
           };
-
 
 
           // END OAUTH
