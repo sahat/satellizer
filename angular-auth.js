@@ -4,8 +4,6 @@
  * License: MIT
  */
 
-// TODO: add support for token response_type if user wants to use client-side only
-
 (function(window, angular, undefined) {
   'use strict';
 
@@ -23,7 +21,7 @@
           facebook: {
             url: '/auth/facebook',
             authorizationEndpoint: 'https://www.facebook.com/dialog/oauth',
-            redirectUri: 'http://localhost:3000/',
+            redirectUri: window.location.origin,
             scope: 'email',
             requiredUrlParams: ['display'],
             display: 'popup'
@@ -31,7 +29,7 @@
           google: {
             url: '/auth/google',
             authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
-            redirectUri: 'http://localhost:3000',
+            redirectUri: window.location.origin,
             scope: 'openid profile email',
             requiredUrlParams: ['scope'],
             optionalUrlParams: ['display'],
@@ -40,7 +38,7 @@
           linkedin: {
             url: '/auth/linkedin',
             authorizationEndpoint: 'https://www.linkedin.com/uas/oauth2/authorization',
-            redirectUri: 'http://localhost:3000',
+            redirectUri: window.location.origin,
             requiredUrlParams: ['state'],
             state: 'STATE'
           },
@@ -48,7 +46,7 @@
             url: '/auth/twitter',
             protocol: 'OAuth1',
             authorizationEndpoint: 'http://localhost:3000/auth/twitter',
-            redirectUri: 'http://localhost:3000'
+            redirectUri: window.location.origin
           }
         }
       };
@@ -106,7 +104,7 @@
             $window.addEventListener('message', function(event) {
               if (event.origin === $window.location.origin) {
                 var query = this.parseQueryString(event.data);
-                deferred.resolve({ code: query.code, token: query.token });
+                deferred.resolve(query);
               }
             }.bind(this), false);
           };
