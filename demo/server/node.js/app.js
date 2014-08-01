@@ -17,14 +17,17 @@ var moment = require('moment');
 var mongoose = require('mongoose');
 var path = require('path');
 var fs = require('fs');
-var querystring = require('querystring');
+var qs = require('querystring');
 
 var config = {
   tokenSecret: 'keyboard cat',
   facebookSecret: '298fb6c080fda239b809ae418bf49700',
   googleSecret: 'xGxxgKAObIRUwOKycySkL9Fi',
   linkedinSecret: '7bDltzdHlP9b42xy',
-  twitterSecret: ''
+  twitter: {
+    consumerKey: 'vdrg4sqxyTPSRdJHKu4UVVdeD',
+    consumerSecret: 'cUIobhRgRlXsFyObUMg3tBq56EgGSwabmcavQP4fncABvotRMA'
+  }
 };
 
 var userSchema = new mongoose.Schema({
@@ -215,7 +218,7 @@ app.post('/auth/linkedin', function(req, res, next) {
 
 app.post('/auth/facebook', function(req, res, next) {
   var url = 'https://graph.facebook.com/oauth/access_token';
-  var params = querystring.stringify({
+  var params = qs.stringify({
     redirect_uri: req.body.redirectUri,
     client_secret: config.facebookSecret,
     client_id: req.body.clientId,
@@ -223,7 +226,7 @@ app.post('/auth/facebook', function(req, res, next) {
   });
 
   request.get([url, params].join('?'), function(error, response, data) {
-    var accessToken = querystring.parse(data).access_token;
+    var accessToken = qs.parse(data).access_token;
     var graphApiUrl = 'https://graph.facebook.com/me';
     var params = {
       access_token: accessToken
@@ -254,23 +257,22 @@ app.post('/auth/facebook', function(req, res, next) {
 });
 
 app.get('/auth/twitter', function(req, res, next) {
+  var oauth;
   var requestTokenUrl = 'https://api.twitter.com/oauth/request_token';
   var accessTokenUrl = 'https://api.twitter.com/oauth/access_token';
-  var callbackUrl = encodeURIComponent('http://localhost:3000/auth/twitter');
-  var consumerKey = 'vdrg4sqxyTPSRdJHKu4UVVdeD';
-  var consumerSecret = 'cUIobhRgRlXsFyObUMg3tBq56EgGSwabmcavQP4fncABvotRMA';
-  var oauth;
+  var authenticateUrl = 'https://api.twitter.com/oauth/authenticate';
+  var callbackUrl = 'http://localhost:3000/auth/twitter';
 
   // Handle twitter callback here
   if (req.query.oauth_token && req.query.oauth_verifier) {
     oauth = {
-      consumer_key: 'vdrg4sqxyTPSRdJHKu4UVVdeD',
-      consumer_secret: 'cUIobhRgRlXsFyObUMg3tBq56EgGSwabmcavQP4fncABvotRMA',
+      consumer_key: config.twitter.consumerKey,
+      consumer_secret: config.twitter.consumerSecret,
       token: req.query.oauth_token,
       verifier: req.query.oauth_verifier
     };
     request.post({ url: accessTokenUrl, oauth: oauth }, function(error, response, body) {
-      var profile = querystring.parse(body);
+      var profile = qs.parse(body);
       User.findOne({ twitter: profile.user_id }, function(err, existingUser) {
         if (existingUser) {
           var token = createJwtToken(existingUser);
@@ -283,21 +285,20 @@ app.get('/auth/twitter', function(req, res, next) {
         user.save(function(err) {
           if (err) return next(err);
           var token = createJwtToken(user);
-          console.log('here is your JWT token', token);
-          console.log(user);
           res.redirect('http://localhost:3000?token=' + token);
         });
       });
     });
   } else {
     oauth = {
-      consumer_key: 'vdrg4sqxyTPSRdJHKu4UVVdeD',
-      consumer_secret: 'cUIobhRgRlXsFyObUMg3tBq56EgGSwabmcavQP4fncABvotRMA',
-      callback: 'http://localhost:3000/auth/twitter'
+      consumer_key: config.twitter.consumerKey,
+      consumer_secret: config.twitter.consumerSecret,
+      callback: callbackUrl
     };
     request.post({ url: requestTokenUrl, oauth: oauth }, function (error, response, body) {
-      var token = querystring.parse(body);
-      res.redirect('https://api.twitter.com/oauth/authenticate?oauth_token=' + token.oauth_token);
+      var token = qs.parse(body);
+      var params = qs.stringify({ oauth_token: token.oauth_token });
+      res.redirect([authenticateUrl, params].join('?'));
     });
   }
 });
