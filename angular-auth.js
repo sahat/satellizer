@@ -56,300 +56,297 @@
       // TODO: defineProperty setter on scope
       // TODO: $state = md5(rand());
 
-      this.setProvider = function(params) {
-          config.providers[params.name] = config.providers[params.name] || {};
+      return {
+        setProvider: function(params) {
+          config.providers[params.name] = config.providers[params.name] || { };
           angular.extend(config.providers[params.name], params);
-      };
+        },
+        $get: function($interval, $timeout, $http, $location, $rootScope, $alert, $q, $injector, $window) {
 
-      this.$get = function($interval, $timeout, $http, $location, $rootScope, $alert, $q, $injector, $window) {
+          var token = $window.localStorage.token;
+          if (token) {
+            var payload = JSON.parse($window.atob(token.split('.')[1]));
+            $rootScope[config.userGlobal] = payload.user;
+          }
 
-        // BEGIN OAUTH
+          // BEGIN OAUTH
 
 
-        // Popup window.
-        var Popup = function(protocol) {
-          this.popup = null;
-          this.protocol = protocol;
-        };
-
-        Popup.prototype.open = function(url, keys, options) {
-          var deferred = $q.defer();
-          // TODO: refactor
-          // todo wildcard star
-          var optionsString = stringifyOptions(prepareOptions(options || {}));
-          this.popup = $window.open(url, $window.location.origin, optionsString);
-          this.popup.focus();
-
-          this.createPostMessageHandler(deferred);
-          this.pollPopup(deferred);
-
-          return deferred.promise;
-        };
-
-        Popup.prototype.pollPopup = function(deferred) {
-          var self = this;
-          this.polling = $interval(function() {
-            if (self.popup.closed) {
-              $interval.cancel(self.polling);
-              deferred.reject('Popup was closed by the user.');
-            }
-          }, 35);
-        };
-
-        Popup.prototype.createPostMessageHandler = function(deferred) {
-          var self = this;
-          $window.addEventListener('message', function(event) {
-            if (event.origin === $window.location.origin) {
-              console.log('same origin');
-              var query = self.parseQueryString(event.data);
-              deferred.resolve({ code: query.code, token: query.token });
-            } else {
-              console.log(event);
-              console.log('different origin');
-            }
-
-          }, false);
-        };
-
-        Popup.prototype.parseQueryString = function(keyValue) {
-          var obj = {}, key, value;
-          angular.forEach((keyValue || '').split('&'), function(keyValue) {
-            if (keyValue) {
-              value = keyValue.split('=');
-              key = decodeURIComponent(value[0]);
-              obj[key] = angular.isDefined(value[1]) ? decodeURIComponent(value[1]) : true;
-            }
-          });
-          return obj;
-        };
-
-        Popup.prototype.close = function() {
-          if (this.popup) {
-            this.popup.close();
+          // Popup window.
+          var Popup = function(protocol) {
             this.popup = null;
-          }
-        };
-
-        function prepareOptions(options) {
-          var width = options.width || 500;
-          var height = options.height || 500;
-          return angular.extend({
-            left: ((screen.width / 2) - (width / 2)),
-            top: ((screen.height / 2) - (height / 2)),
-            width: width,
-            height: height
-          }, options);
-        }
-
-        function stringifyOptions(options) {
-          var optionsStrings = [];
-          for (var key in options) {
-            if (options.hasOwnProperty(key)) {
-              var value;
-              switch (options[key]) {
-                case true:
-                  value = '1';
-                  break;
-                case false:
-                  value = '0';
-                  break;
-                default:
-                  value = options[key];
-              }
-              optionsStrings.push(
-                key + '=' + value
-              );
-            }
-          }
-          return optionsStrings.join(',');
-        }
-
-
-        /**
-         * OAuth 1.0
-         */
-        var Oauth1 = function(config) {
-          angular.extend(this, config);
-          this.name = config.name;
-          this.authorizationEndpoint = config.authorizationEndpoint;
-        };
-
-        Oauth1.prototype.open = function() {
-          var deferred = $q.defer();
-          var url = this.authorizationEndpoint;
-
-          var popup = new Popup();
-          popup.open(url).then(function(authData) {
-            deferred.resolve(authData.token);
-          });
-
-          return deferred.promise;
-        };
-
-        Oauth1.createProvider = function(providerName) {
-          var providerOptions = config.providers[providerName];
-          var provider = new Oauth1(providerOptions);
-          return provider;
-        };
-
-        // TODO: send initiation GET to /auth/twitter
-        // TODO: get oauth_token from POST /request_token
-        // TODO: send it back to the client
-        // TODO: open popup api.twitter.com/oauth/authenticate?oauth_token=XXX
-        // TODO: twitter redirects to http://localhost:3000/auth/twitter with oauth_token and oauth_verifier
-        // TODO: check if oauth_token matches new oauth_token
-        // TODO: POST oauth/access_token
-        // TODO: redirect back to localhost:3000 in popup at some point
-
-
-        /**
-         * OAuth 2.0
-         */
-        var Oauth2 = function(config) {
-          angular.extend(this, config);
-          this.name = config.name;
-          this.clientId = config.clientId;
-          this.scope = config.scope;
-          this.authorizationEndpoint = config.authorizationEndpoint;
-          this.redirectUri = config.redirectUri;
-          this.responseType = 'code';
-          this.defaultUrlParams = ['response_type', 'client_id', 'redirect_uri'];
-          this.requiredUrlParams = config.requiredUrlParams;
-          this.optionalUrlParams = config.optionalUrlParams;
-        };
-
-        Oauth2.prototype.camelCase = function(name) {
-          return name.replace(/([\:\-\_]+(.))/g, function(_, separator, letter, offset) {
-            return offset ? letter.toUpperCase() : letter;
-          });
-        };
-
-        Oauth2.prototype.open = function() {
-          var deferred = $q.defer();
-          var url = this.buildUrl();
-          var popup = new Popup();
-
-          popup.open(url).then(function(authData) {
-            this.exchangeForJwtToken(authData.code).then(function(response) {
-              deferred.resolve(response.data);
-            });
-          }.bind(this));
-
-          return deferred.promise;
-        };
-
-        Oauth2.prototype.exchangeForJwtToken = function(code) {
-          var params = {
-            code: code,
-            clientId: config.providers[this.name].clientId,
-            redirectUri: config.providers[this.name].redirectUri
+            this.protocol = protocol;
           };
 
-          console.log(params);
-
-          return $http.post(this.url, params);
-        };
-
-        Oauth2.prototype.buildUrl = function() {
-          var baseUrl = this.authorizationEndpoint;
-          var qs = this.buildQueryString();
-          return [baseUrl, qs].join('?');
-        };
-
-        Oauth2.prototype.buildQueryString = function() {
-          var obj = this;
-          var keyValuePairs = [];
-
-          angular.forEach(this.defaultUrlParams, function(paramName) {
-            var camelizedName = obj.camelCase(paramName);
-            var paramValue = obj[camelizedName];
-            keyValuePairs.push([paramName, encodeURIComponent(paramValue)]);
-          });
-
-          angular.forEach(this.requiredUrlParams, function(paramName) {
-            var camelizedName = obj.camelCase(paramName);
-            var paramValue = obj[camelizedName];
-            keyValuePairs.push([paramName, encodeURIComponent(paramValue)]);
-          });
-
-          angular.forEach(this.optionalUrlParams, function(paramName) {
-            var camelizedName = obj.camelCase(paramName);
-            var paramValue = obj[camelizedName];
-            keyValuePairs.push([paramName, encodeURIComponent(paramValue)]);
-          });
-
-          // TODO: avoid duplicates
-          return keyValuePairs.map(function(pair) {
-            return pair.join('=');
-          }).join('&');
-        };
-
-
-        Oauth2.createProvider = function(providerName) {
-          var providerOptions = config.providers[providerName];
-          var provider = new Oauth2(providerOptions);
-          return provider;
-        };
-
-
-        // END OAUTH
-
-        var token = $window.localStorage.token;
-        if (token) {
-          var payload = JSON.parse($window.atob(token.split('.')[1]));
-          $rootScope[config.userGlobal] = payload.user;
-        }
-
-        return {
-          authenticate: function(providerName, options) {
-            var provider;
-
-            if (!providerName) {
-              return $q.reject('Expected a provider named \'' + providerName + '\', did you forget to add it?');
-            }
-
-            if (config.providers[providerName].protocol === 'OAuth1') {
-              provider = Oauth1.createProvider(providerName);
-            } else {
-              provider = Oauth2.createProvider(providerName);
-            }
-
+          Popup.prototype.open = function(url, keys, options) {
             var deferred = $q.defer();
+            // TODO: refactor
+            // todo wildcard star
+            var optionsString = stringifyOptions(prepareOptions(options || { }));
+            this.popup = $window.open(url, $window.location.origin, optionsString);
+            this.popup.focus();
 
-            provider.open(options).then(function(token) {
-              var payload = JSON.parse($window.atob(token.split('.')[1]));
-              $window.localStorage.token = token;
-              $rootScope.currentUser = payload.user;
-              $location.path(config.loginRedirect);
-              deferred.resolve();
+            this.createPostMessageHandler(deferred);
+            this.pollPopup(deferred);
+
+            return deferred.promise;
+          };
+
+          Popup.prototype.pollPopup = function(deferred) {
+            var self = this;
+            this.polling = $interval(function() {
+              if (self.popup.closed) {
+                $interval.cancel(self.polling);
+                deferred.reject('Popup was closed by the user.');
+              }
+            }, 35);
+          };
+
+          Popup.prototype.createPostMessageHandler = function(deferred) {
+            $window.addEventListener('message', function(event) {
+              if (event.origin === $window.location.origin) {
+                var query = this.parseQueryString(event.data);
+                deferred.resolve({ code: query.code, token: query.token });
+              }
+            }.bind(this), false);
+          };
+
+          Popup.prototype.parseQueryString = function(keyValue) {
+            var obj = { }, key, value;
+            angular.forEach((keyValue || '').split('&'), function(keyValue) {
+              if (keyValue) {
+                value = keyValue.split('=');
+                key = decodeURIComponent(value[0]);
+                obj[key] = angular.isDefined(value[1]) ? decodeURIComponent(value[1]) : true;
+              }
+            });
+            return obj;
+          };
+
+          Popup.prototype.close = function() {
+            if (this.popup) {
+              this.popup.close();
+              this.popup = null;
+            }
+          };
+
+          function prepareOptions(options) {
+            var width = options.width || 500;
+            var height = options.height || 500;
+            return angular.extend({
+              left: ((screen.width / 2) - (width / 2)),
+              top: ((screen.height / 2) - (height / 2)),
+              width: width,
+              height: height
+            }, options);
+          }
+
+          function stringifyOptions(options) {
+            var optionsStrings = [];
+            for (var key in options) {
+              if (options.hasOwnProperty(key)) {
+                var value;
+                switch (options[key]) {
+                  case true:
+                    value = '1';
+                    break;
+                  case false:
+                    value = '0';
+                    break;
+                  default:
+                    value = options[key];
+                }
+                optionsStrings.push(
+                  key + '=' + value
+                );
+              }
+            }
+            return optionsStrings.join(',');
+          }
+
+
+          /**
+           * OAuth 1.0
+           */
+          var Oauth1 = function(config) {
+            angular.extend(this, config);
+            this.name = config.name;
+            this.authorizationEndpoint = config.authorizationEndpoint;
+          };
+
+          Oauth1.prototype.open = function() {
+            var deferred = $q.defer();
+            var url = this.authorizationEndpoint;
+
+            var popup = new Popup();
+            popup.open(url).then(function(authData) {
+              deferred.resolve(authData.token);
             });
 
             return deferred.promise;
-          },
+          };
 
-          login: function(user) {
-            return $http.post(config.loginUrl, user).success(function(data) {
-              $window.localStorage.token = data.token;
-              var payload = JSON.parse($window.atob(data.token.split('.')[1]));
-              $rootScope[config.userGlobal] = payload.user;
-              $location.path(config.loginRedirect);
+          Oauth1.createProvider = function(providerName) {
+            var providerOptions = config.providers[providerName];
+            var provider = new Oauth1(providerOptions);
+            return provider;
+          };
+
+          // TODO: send initiation GET to /auth/twitter
+          // TODO: get oauth_token from POST /request_token
+          // TODO: send it back to the client
+          // TODO: open popup api.twitter.com/oauth/authenticate?oauth_token=XXX
+          // TODO: twitter redirects to http://localhost:3000/auth/twitter with oauth_token and oauth_verifier
+          // TODO: check if oauth_token matches new oauth_token
+          // TODO: POST oauth/access_token
+          // TODO: redirect back to localhost:3000 in popup at some point
+
+
+          /**
+           * OAuth 2.0
+           */
+          var OAuth2 = function(config) {
+            angular.extend(this, config);
+            this.name = config.name;
+            this.clientId = config.clientId;
+            this.scope = config.scope;
+            this.authorizationEndpoint = config.authorizationEndpoint;
+            this.redirectUri = config.redirectUri;
+            this.responseType = 'code';
+            this.defaultUrlParams = ['response_type', 'client_id', 'redirect_uri'];
+            this.requiredUrlParams = config.requiredUrlParams;
+            this.optionalUrlParams = config.optionalUrlParams;
+          };
+
+          OAuth2.prototype._camelCase = function(name) {
+            return name.replace(/([\:\-\_]+(.))/g, function(_, separator, letter, offset) {
+              return offset ? letter.toUpperCase() : letter;
             });
-          },
-          signup: function(user) {
-            return $http.post(config.signupUrl, user).success(function() {
-              $location.path(config.signupRedirect);
+          };
+
+          OAuth2.prototype.open = function() {
+            var deferred = $q.defer();
+            var url = this._buildUrl();
+            var popup = new Popup();
+
+            popup.open(url).then(function(authData) {
+              this._exchangeForJwtToken(authData.code).then(function(response) {
+                deferred.resolve(response.data);
+              });
+            }.bind(this));
+
+            return deferred.promise;
+          };
+
+          OAuth2.createProvider = function(providerName) {
+            var providerOptions = config.providers[providerName];
+            var provider = new OAuth2(providerOptions);
+            return provider;
+          };
+
+          OAuth2.prototype._exchangeForJwtToken = function(code) {
+            var params = {
+              code: code,
+              clientId: config.providers[this.name].clientId,
+              redirectUri: config.providers[this.name].redirectUri
+            };
+
+            console.log(params);
+
+            return $http.post(this.url, params);
+          };
+
+          OAuth2.prototype._buildUrl = function() {
+            var baseUrl = this.authorizationEndpoint;
+            var qs = this._buildQueryString();
+            return [baseUrl, qs].join('?');
+          };
+
+          OAuth2.prototype._buildQueryString = function() {
+            var obj = this;
+            var keyValuePairs = [];
+
+            angular.forEach(this.defaultUrlParams, function(paramName) {
+              var camelizedName = obj._camelCase(paramName);
+              var paramValue = obj[camelizedName];
+              keyValuePairs.push([paramName, encodeURIComponent(paramValue)]);
             });
-          },
-          logout: function() {
-            delete $window.localStorage.token;
-            $rootScope[config.userGlobal] = null;
-            $location.path(config.logoutRedirect);
-          },
-          isAuthenticated: function() {
-            return $rootScope[config.userGlobal];
-          }
-        };
-      };
+
+            angular.forEach(this.requiredUrlParams, function(paramName) {
+              var camelizedName = obj._camelCase(paramName);
+              var paramValue = obj[camelizedName];
+              keyValuePairs.push([paramName, encodeURIComponent(paramValue)]);
+            });
+
+            angular.forEach(this.optionalUrlParams, function(paramName) {
+              var camelizedName = obj._camelCase(paramName);
+              var paramValue = obj[camelizedName];
+              keyValuePairs.push([paramName, encodeURIComponent(paramValue)]);
+            });
+
+            // TODO: avoid duplicates
+            return keyValuePairs.map(function(pair) {
+              return pair.join('=');
+            }).join('&');
+          };
+
+
+
+          // END OAUTH
+
+
+          return {
+            authenticate: function(providerName, options) {
+              var provider;
+
+              if (!providerName) {
+                return $q.reject('Expected a provider named \'' + providerName + '\', did you forget to add it?');
+              }
+
+              if (config.providers[providerName].protocol === 'OAuth1') {
+                provider = Oauth1.createProvider(providerName);
+              } else {
+                provider = OAuth2.createProvider(providerName);
+              }
+
+              var deferred = $q.defer();
+
+              provider.open(options).then(function(token) {
+                var payload = JSON.parse($window.atob(token.split('.')[1]));
+                $window.localStorage.token = token;
+                $rootScope.currentUser = payload.user;
+                $location.path(config.loginRedirect);
+                deferred.resolve();
+              });
+
+              return deferred.promise;
+            },
+
+            login: function(user) {
+              return $http.post(config.loginUrl, user).success(function(data) {
+                $window.localStorage.token = data.token;
+                var payload = JSON.parse($window.atob(data.token.split('.')[1]));
+                $rootScope[config.userGlobal] = payload.user;
+                $location.path(config.loginRedirect);
+              });
+            },
+            signup: function(user) {
+              return $http.post(config.signupUrl, user).success(function() {
+                $location.path(config.signupRedirect);
+              });
+            },
+            logout: function() {
+              delete $window.localStorage.token;
+              $rootScope[config.userGlobal] = null;
+              $location.path(config.logoutRedirect);
+            },
+            isAuthenticated: function() {
+              return $rootScope[config.userGlobal];
+            }
+          };
+        }
+      }
+
     })
     .factory('authInterceptor', function($q, $window, $location) {
       return {
