@@ -274,7 +274,7 @@ app.get('/auth/twitter', function(req, res, next) {
       User.findOne({ twitter: profile.user_id }, function(err, existingUser) {
         if (existingUser) {
           var token = createJwtToken(existingUser);
-          return res.send(token);
+          return res.redirect('http://localhost:3000?token=' + token);
         }
         var user = new User({
           twitter: profile.user_id,
@@ -285,7 +285,7 @@ app.get('/auth/twitter', function(req, res, next) {
           var token = createJwtToken(user);
           console.log('here is your JWT token', token);
           console.log(user);
-          res.send(token);
+          res.redirect('http://localhost:3000?token=' + token);
         });
       });
     });

@@ -9,9 +9,8 @@ angular.module('MyApp')
       });
     };
     $scope.authenticate = function(provider) {
-      Auth.authenticate(provider).then(function(data){
-          console.log(data);
-          console.log('authenticated!');
-        })
+      Auth.authenticate(provider).then(function() {
+        console.log('authenticated!');
+      });
     }
   });

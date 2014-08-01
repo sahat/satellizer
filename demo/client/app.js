@@ -42,6 +42,11 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'ngAuth', 'mgcre
       clientId: '77cw786yignpzj'
     });
 
+    AuthProvider.setProvider({
+      name: 'twitter',
+      consumerKey: 'vdrg4sqxyTPSRdJHKu4UVVdeD'
+    });
+
 //    AuthProvider.providers['facebook'] = {
 //      clientId: '624059410963642'
 //    };

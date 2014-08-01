@@ -90,6 +90,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .signup-or-separator hr {
+  border-top: 1px solid #dce0e0;
   margin: -16px auto 10px auto;
   width: 90%;
 }
