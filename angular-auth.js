@@ -23,7 +23,11 @@
             scope: 'email',
             requiredUrlParams: ['display'],
             display: 'popup',
-            protocol: 'OAuth2'
+            protocol: 'OAuth2',
+            popupOptions: {
+              width: 481,
+              height: 269
+            }
           },
           google: {
             url: '/auth/google',
@@ -211,6 +215,7 @@
             this.defaultUrlParams = ['response_type', 'client_id', 'redirect_uri'];
             this.requiredUrlParams = config.requiredUrlParams;
             this.optionalUrlParams = config.optionalUrlParams;
+            this.popupOptions = config.popupOptions;
           };
 
           OAuth2.prototype._camelCase = function(name) {
@@ -224,7 +229,7 @@
             var url = this._buildUrl();
             var popup = new Popup();
 
-            popup.open(url).then(function(authData) {
+            popup.open(url, this.popupOptions).then(function(authData) {
               this._exchangeForJwtToken(authData.code).then(function(response) {
                 deferred.resolve(response.data);
               });
