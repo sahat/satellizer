@@ -263,7 +263,6 @@ app.get('/auth/twitter', function(req, res, next) {
   var authenticateUrl = 'https://api.twitter.com/oauth/authenticate';
   var callbackUrl = 'http://localhost:3000';
 
-  // Handle twitter callback here
   if (req.query.oauth_token && req.query.oauth_verifier) {
     oauth = {
       consumer_key: config.twitter.consumerKey,
@@ -276,7 +275,7 @@ app.get('/auth/twitter', function(req, res, next) {
       User.findOne({ twitter: profile.user_id }, function(err, existingUser) {
         if (existingUser) {
           var token = createJwtToken(existingUser);
-          return res.redirect('http://localhost:3000?token=' + token);
+          return res.send(token);
         }
         var user = new User({
           twitter: profile.user_id,
@@ -285,7 +284,7 @@ app.get('/auth/twitter', function(req, res, next) {
         user.save(function(err) {
           if (err) return next(err);
           var token = createJwtToken(user);
-          res.redirect('http://localhost:3000?token=' + token);
+          res.send(token);
         });
       });
     });
@@ -296,8 +295,8 @@ app.get('/auth/twitter', function(req, res, next) {
       callback: callbackUrl
     };
     request.post({ url: requestTokenUrl, oauth: oauth }, function (error, response, body) {
-      var token = qs.parse(body);
-      var params = qs.stringify({ oauth_token: token.oauth_token });
+      var oauthToken = qs.parse(body);
+      var params = qs.stringify({ oauth_token: oauthToken.oauth_token });
       res.redirect([authenticateUrl, params].join('?'));
     });
   }
