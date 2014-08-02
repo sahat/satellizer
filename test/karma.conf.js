@@ -19,7 +19,12 @@ module.exports = function(config) {
     plugins: [
       'karma-chrome-launcher',
       'karma-jasmine'
-    ]
+    ],
 
+    reporters: ['coverage'],
+
+    preprocessors: {
+      'lib/angular-auth.js': ['coverage']
+    }
   });
 };
