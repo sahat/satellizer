@@ -1,15 +1,15 @@
 angular.module('MyApp')
-  .controller('LoginCtrl', function($scope, Auth) {
+  .controller('LoginCtrl', function($scope, $auth) {
 
 
     $scope.login = function() {
-      Auth.login({
+      $auth.login({
         email: $scope.email,
         password: $scope.password
       });
     };
     $scope.authenticate = function(provider) {
-      Auth.authenticate(provider).then(function() {
+      $auth.authenticate(provider).then(function() {
         console.log('authenticated!');
       });
     }

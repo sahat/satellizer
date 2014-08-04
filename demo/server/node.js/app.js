@@ -8,8 +8,6 @@ var bcrypt = require('bcryptjs');
 var bodyParser = require('body-parser');
 var crypto = require('crypto');
 var express = require('express');
-var cookieParser = require('cookie-parser');
-var session = require('express-session')
 var logger = require('morgan');
 var request = require('request');
 var jwt = require('jwt-simple');
@@ -99,8 +97,6 @@ app.set('port', process.env.PORT || 3000);
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
-app.use(cookieParser());
-app.use(session({ secret: 'keyboard cat' }));
 app.use(express.static(path.join(__dirname, '../../client')));
 app.use(express.static(path.join(__dirname, '../../../lib')));
 
