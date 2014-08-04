@@ -1,5 +1,5 @@
 angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'ngAuth', 'mgcrea.ngStrap'])
-  .config(function($routeProvider, AuthProvider) {
+  .config(function($routeProvider, $authProvider) {
     $routeProvider
       .when('/', {
         templateUrl: 'views/home.html',
@@ -27,22 +27,22 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'ngAuth', 'mgcre
       });
 
 
-    AuthProvider.setProvider({
+    $authProvider.setProvider({
       name: 'facebook',
       clientId: '624059410963642'
     });
 
-    AuthProvider.setProvider({
+    $authProvider.setProvider({
       name: 'google',
       clientId: '836215426053-98eofc7oss4p4oaeahdi2q5c3ocvnp8s.apps.googleusercontent.com',
     });
 
-    AuthProvider.setProvider({
+    $authProvider.setProvider({
       name: 'linkedin',
       clientId: '77cw786yignpzj'
     });
 
-    AuthProvider.setProvider({
+    $authProvider.setProvider({
       name: 'twitter',
       consumerKey: 'vdrg4sqxyTPSRdJHKu4UVVdeD'
     });
