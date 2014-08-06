@@ -4,27 +4,27 @@ module.exports = function(config) {
     basePath: '../',
 
     files: [
-      'examples/client/vendor/angular.js',
-      'examples/client/vendor/angular-mocks.js',
-      'src/angular-auth.js',
-      'test/*.spec.js'
+      'demo/client/bower_components/angular/angular.js',
+      'demo/client/bower_components/angular-mocks/angular-mocks.js',
+      'lib/angular-auth.js',
+      'test/unit/*.js'
     ],
 
-    autoWatch: true,
+    autoWatch: false,
 
     frameworks: ['jasmine'],
 
-    browsers: ['Chrome'],
+    browsers: ['PhantomJS'],
 
     plugins: [
-      'karma-chrome-launcher',
+      'karma-phantomjs-launcher',
       'karma-jasmine'
-    ],
+    ]
 
-    reporters: ['coverage'],
-
-    preprocessors: {
-      'lib/angular-auth.js': ['coverage']
-    }
+//    reporters: ['coverage'],
+//
+//    preprocessors: {
+//      'lib/angular-auth.js': ['coverage']
+//    }
   });
 };
