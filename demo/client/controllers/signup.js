@@ -1,7 +1,7 @@
 angular.module('MyApp')
-  .controller('SignupCtrl', function($scope, Auth) {
+  .controller('SignupCtrl', function($scope, $auth) {
     $scope.signup = function() {
-      Auth.signup({
+      $auth.signup({
         email: $scope.email,
         password: $scope.password
       });
