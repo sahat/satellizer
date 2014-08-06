@@ -7,7 +7,8 @@
     "gulp-rename": "^1.2.0",
     "gulp-uglify": "^0.3.1",
     "karma": "~0.10",
-    "karma-coverage": "^0.2.5"
+    "karma-coverage": "^0.2.5",
+    "karma-phantomjs-launcher": "^0.1.4"
   },
   "scripts": {
     "test": "karma start test/karma.conf.js"
