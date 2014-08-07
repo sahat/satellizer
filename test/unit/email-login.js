@@ -1,10 +1,5 @@
-describe('Local sign-in via email', function() {
-  beforeEach(module('ngAuth'));
-
-//  afterEach(function() {
-//    $httpBackend.verifyNoOutstandingExpectation();
-//    $httpBackend.verifyNoOutstandingRequest();
-//  });
+describe('Login with email and password', function() {
+  beforeEach(module('Satellizer'));
 
   it('should have a login function', inject(function($auth) {
     expect(angular.isFunction($auth.login)).toBe(true);
