@@ -1,4 +1,4 @@
-angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'Satellizer', 'mgcrea.ngStrap'])
+angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'Satellizer'])
   .config(function($routeProvider, $authProvider) {
     $routeProvider
       .when('/', {
@@ -26,7 +26,6 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'Satellizer', 'm
         redirectTo: '/'
       });
 
-
     $authProvider.setProvider({
       name: 'facebook',
       clientId: '624059410963642'
@@ -46,43 +45,4 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'Satellizer', 'm
       name: 'twitter',
       consumerKey: 'vdrg4sqxyTPSRdJHKu4UVVdeD'
     });
-
-//    AuthProvider.providers['facebook'] = {
-//      clientId: '624059410963642'
-//    };
-
-//    AuthProvider.providers['hackerschool'] = {
-//      clientId: '04d6956da17b5401c49ce46fd86091d212d9fb8c1282bedd4922156d90670099',
-//      authorizationUrl: 'https://www.hackerschool.com/oauth/authorize'
-//    };
-//
-//    AuthProvider.providers['facebook'] = {
-//      clientId: '624059410963642'
-//    };
-//
-//
-//    AuthProvider.setProvider('linkedin', {
-//      url: '/auth/linkedin',
-//      clientId: 'JMBFUZQ6fajbxt92xDW8pw '
-//    });
-//
-//
-//    AuthProvider.google({
-//      url: '/auth/google',
-//      clientId: '828110519058.apps.googleusercontent.com',
-//      scope: ['https://www.googleapis.com/auth/plus.login', 'https://www.googleapis.com/auth/plus.me']
-//    });
-//
-//    AuthProvider.linkedin({
-//      url: '/auth/linkedin',
-//      clientId: '75z17ew9n8c2pm'
-//    });
-//
-//    AuthProvider.oauth2({
-//      name: 'hacker-school',
-//      url: '/auth/hacker-school',
-//      appId: null
-//    });
-
-
   });
