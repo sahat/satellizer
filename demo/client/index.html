@@ -13,17 +13,17 @@
   <link href="stylesheets/style.css" rel="stylesheet">
 </head>
 <body>
-<div class="navbar navbar-default navbar-static-top" role="navigation" bs-navbar>
+<div class="navbar navbar-default navbar-static-top">
   <div class="navbar-header">
-    <a class="navbar-brand" href="/">ng<strong>Auth</strong></a>
+    <a class="navbar-brand" href="/">Satellizer</a>
   </div>
   <ul class="nav navbar-nav">
-    <li data-match-route="/$"><a href="/">Home</a></li>
-    <li data-match-route="/protected" ng-if="currentUser"><a href="/#/protected">Protected</a></li>
+    <li><a href="/">Home</a></li>
+    <li ng-if="currentUser"><a href="/#/protected">Protected</a></li>
   </ul>
   <ul class="nav navbar-nav pull-right" ng-if="!currentUser">
-    <li data-match-route="/login"><a href="/#/login">Login</a></li>
-    <li data-match-route="/signup"><a href="/#/signup">Sign up</a></li>
+    <li><a href="/#/login">Login</a></li>
+    <li><a href="/#/signup">Sign up</a></li>
   </ul>
   <ul class="nav navbar-nav pull-right" ng-if="currentUser">
     <li><a href="/#/logout">Logout</a></li>
@@ -32,12 +32,10 @@
 
 <div ng-view></div>
 
-<script src="bower_components/angular/angular.js"></script>
-<script src="bower_components/angular-strap/dist/angular-strap.js"></script>
-<script src="bower_components/angular-strap/dist/angular-strap.tpl.js"></script>
-<script src="bower_components/angular-messages/angular-messages.js"></script>
-<script src="bower_components/angular-resource/angular-resource.js"></script>
-<script src="bower_components/angular-route/angular-route.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.0-beta.13/angular.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.0-beta.13/angular-messages.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.0-beta.13/angular-resource.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.0-beta.13/angular-route.js"></script>
 <script src="satellizer.js"></script>
 
 <script src="app.js"></script>
