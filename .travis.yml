@@ -3,4 +3,6 @@
    - "0.10"
  before_script:
    - npm install -g bower
-   - cd demo/client && bower install
+   - cd demo
+   - cd client
+   - bower install
