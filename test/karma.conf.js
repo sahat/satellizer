@@ -4,8 +4,8 @@ module.exports = function(config) {
     basePath: '../',
 
     files: [
-      '//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.0-beta.13/angular.js',
-      '//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.0-beta.13/angular-mocks.js',
+      'http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.0-beta.13/angular.js',
+      'http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.0-beta.13/angular-mocks.js',
       'lib/satellizer.js',
       'test/unit/*.js'
     ],
