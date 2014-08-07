@@ -8,7 +8,9 @@
 
 **:octocat: Demo:** [http://satellizer.herokuapp.com](http://satellizer.herokuapp.com)
 
-**Satellizer** is a simple to use authentication module for [AngularJS](http://angularjs.org) with built-in support for Google, Facebook, LinkedIn and Twitter OAuth providers, as well as email and password authentication. You are not limited to the above sign-in options, you could easily add your own OAuth 1.0 or OAuth 2.0 provider by passing provider-specific information during the configuration phase.
+**Satellizer** is a simple to use, end-to-end, token-based authentication module for [AngularJS](http://angularjs.org) with built-in support for Google, Facebook, LinkedIn, Twitter and Email & Password sign-in methods. You are not limited to the sign-in options options above, in fact you can add any *OAuth 1.0* or *OAuth 2.0* provider by passing provider-specific information during the configuration step.
+
+Unlike many other modules and code examples, **Satellizer** uses *popups* instead of *page redirects* for authentication with third-party providers. So, in that respect it is closer to [Torii](http://vestorly.github.io/torii/demo.html) than [angular-client-side-auth](http://angular-client-side-auth.herokuapp.com/) or [ng-token-auth](https://github.com/lynndylanhurley/ng-token-auth) projects. Personally, I believe that in a *single-page application* authentication via a popup provides a slightly better user experience than a page redirect.
 
 ![Screenshot](https://lh4.googleusercontent.com/-0UUIecT-3N4/U-LQJkd75iI/AAAAAAAAEZY/YN3Oe-eUPGc/w1676-h1158-no/satellizer.png)
 
@@ -30,7 +32,7 @@ Install via **NPM:**
 npm install satellizer --save
 ```
 
-Alternatively, you may just manually grab `satellizer.js` or `satellizer.min.js` from the **lib/** directory.
+**Note:** Alternatively, you may just manually grab `satellizer.js` or `satellizer.min.js` from the **lib/** directory.
 
 ## Usage
 
@@ -46,6 +48,9 @@ angular.module('MyApp', ['ngAuth']).config(function($authProvider) {
   
 });
 ```
+
+## How It Works
+It relies on *Token-Based Authentication* with [JSON Web Tokens](https://auth0.com/blog/2014/01/07/angularjs-authentication-with-cookies-vs-token/) instead of cookies and sessions.
 
 
 ## OAuth Credentials
