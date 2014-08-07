@@ -6,7 +6,7 @@
 [![Coverage](http://img.shields.io/codeclimate/coverage/github/satellizer/satellizer.svg)](https://codeclimate.com/github/sahat/satellizer)
 [![GitHub Tag](http://img.shields.io/github/tag/sahat/satellizer.svg)](https://github.com/sahat/satellizer/tags)
 
-**:octocat: Demo:** [http://satellizer.herokuapp.com](http://satellizer.herokuapp.com)
+**:palm_tree: Demo:** [http://satellizer.herokuapp.com](http://satellizer.herokuapp.com)
 
 **Satellizer** is a simple to use, end-to-end, token-based authentication module for [AngularJS](http://angularjs.org) with built-in support for Google, Facebook, LinkedIn, Twitter and Email & Password sign-in methods. You are not limited to the sign-in options above, in fact you can add any *OAuth 1.0* or *OAuth 2.0* provider by passing provider-specific information during the configuration step.
 
@@ -117,7 +117,7 @@ app.post('/auth/facebook', function(req, res, next) {
 
 ## Configuration
 
-Below is a complete listing of all config options.
+Below is a complete listing of all configuration options.
 
 ```js
 $authProvider.logoutRedirect = '/';
@@ -182,8 +182,20 @@ $authProvider.setProvider({
   ```
 
 ## How It Works
-It relies on *Token-Based Authentication* with [JSON Web Tokens](https://auth0.com/blog/2014/01/07/angularjs-authentication-with-cookies-vs-token/) instead of cookies and sessions.
+**Satellizer** relies on *Token-Based Authentication* with
+[JSON Web Tokens](https://auth0.com/blog/2014/01/07/angularjs-authentication-with-cookies-vs-token/) 
+instead of cookies and sessions. Below are mini-tutorials that go in depth into
+how each authentication process works.
 
+### Login with OAuth 2.0
+
+### Login OAuth 1.0
+
+### Login with Email and Password
+
+### Signup
+
+### Logout
 
 ## Obtaining OAuth Keys
 
