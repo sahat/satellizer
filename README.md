@@ -1,6 +1,6 @@
 ![Project Logo](https://lh6.googleusercontent.com/-YmfKZZLZKL0/U-KVPFSbiOI/AAAAAAAAEZA/maoYT8iJCnA/w1089-h513-no/sshot-1.png)
 
-# Satellizer 
+# [Satellizer](https://github.com/sahat/satellizer/) 
 [![Build Status](https://travis-ci.org/sahat/satellizer.svg?branch=master)](https://travis-ci.org/sahat/satellizer) 
 [![Code Climate](http://img.shields.io/codeclimate/github/sahat/satellizer.svg)](https://codeclimate.com/github/sahat/satellizer) 
 [![Coverage](http://img.shields.io/codeclimate/coverage/github/satellizer/satellizer.svg)](https://codeclimate.com/github/sahat/satellizer)
@@ -10,10 +10,7 @@
 
 **Satellizer** is a simple to use, end-to-end, token-based authentication module for [AngularJS](http://angularjs.org) with built-in support for Google, Facebook, LinkedIn, Twitter and Email & Password sign-in methods. You are not limited to the sign-in options above, in fact you can add any *OAuth 1.0* or *OAuth 2.0* provider by passing provider-specific information during the configuration step.
 
-Unlike many other modules and code examples, **Satellizer** uses *popups* instead of *page redirects* for authentication with third-party providers. So, in that respect it is closer to [Torii](http://vestorly.github.io/torii/demo.html) than [angular-client-side-auth](http://angular-client-side-auth.herokuapp.com/) project. Personally, I believe that in a *single-page application* authentication via a popup provides a slightly better user experience than a page redirect.
-
 ![Screenshot](https://lh4.googleusercontent.com/-0UUIecT-3N4/U-LQJkd75iI/AAAAAAAAEZY/YN3Oe-eUPGc/w1676-h1158-no/satellizer.png)
-
 
 ## Getting Started
 
@@ -29,15 +26,15 @@ Install via **NPM:**
 npm install satellizer --save
 ```
 
-**Note:** Alternatively, you may just manually grab `satellizer.js` or `satellizer.min.js` from the **lib** directory.
+**:exclamation: Note:** Alternatively, you may just manually grab `satellizer.js` or `satellizer.min.js` from the **lib** directory.
 
 ## Usage
 
 This example demonstrates end-to-end sign-in process using AngularJS, Node.js and MongoDB. For other languages and server-side frameworks see **examples** directory.
 
-<hr>
+### Client-side
 
-1. **app.js**
+**app.js**
 Include `Satellizer` just as any other AngularJS module. The `$authProvider` can then be injected into the [configuration block](https://docs.angularjs.org/guide/module) of your application. You do not need to give much information for pre-defined OAuth providers as it has already been done for you.
 
 ```js
@@ -51,7 +48,7 @@ angular.module('MyApp', ['Satellizer'])
   });
 ```
 
-2. controllers/**login.js**
+**controllers/login.js**
 The `$auth` provider can now be injected into your controllers. Since we are in the
 *run phase* and not the *configuration phase* at this point, we can drop the `Provider` postfix.
  
@@ -66,7 +63,7 @@ angular.module('MyApp')
   });
 ```
 
-3. views/**login.html**
+**views/login.html**
 The `$auth.authenticate` expects a valid provider name, i.e. *facebook*, *google*,
  *linkedin*, *twitter* or any custom provider that you have created in the config
  block.
@@ -75,7 +72,7 @@ The `$auth.authenticate` expects a valid provider name, i.e. *facebook*, *google
 <button ng-click="authenticate('facebook')">Sign in with Facebook</button>
 ```
 
-<hr>
+### Server-side
 
 After user enters his/her Facebook credentials, a *POST* request is made to this end-point with the `code` object, which stands for `authorization_code`. The code is then exchanged for an `access_token`. And finally access token is used to query the [Graph API](https://developers.facebook.com/docs/graph-api) to get user's profile information. It is then checks if it's a new or a returning user. And finally it generates a *JSON Web Token* that is sent back to the client.
 
@@ -188,39 +185,48 @@ $authProvider.setProvider({
 It relies on *Token-Based Authentication* with [JSON Web Tokens](https://auth0.com/blog/2014/01/07/angularjs-authentication-with-cookies-vs-token/) instead of cookies and sessions.
 
 
-## OAuth Credentials
+## Obtaining OAuth Keys
 
-Google
-Facebook
-LinkedIn
-Twitter
+<img src="http://images.google.com/intl/en_ALL/images/srpr/logo6w.png" width="200">
+- Visit [Google Cloud Console](https://cloud.google.com/console/project)
+- Click **CREATE PROJECT** button
+- Enter *Project Name*, then click **CREATE**
+- Then select *APIs & auth* from the sidebar and click on *Credentials* tab
+- Click **CREATE NEW CLIENT ID** button
+ - **Application Type**: Web Application
+ - **Authorized Javascript origins**: http://localhost:3000
+ - **Authorized redirect URI**: http://localhost:3000
+
+<hr>
+
+<img src="http://www.doit.ba/img/facebook.jpg" width="200">
+- Visit [Facebook Developers](https://developers.facebook.com/)
+- Click **Apps > Create a New App** in the navigation bar
+- Enter *Display Name*, then choose a category, then click **Create app**
+- Click on *Settings* on the sidebar, then click **+ Add Platform**
+- Select **Website**
+- Enter `http://localhost:3000` for *Site URL*
+
+<hr>
+
+<img src="https://g.twimg.com/Twitter_logo_blue.png" width="90">
+- Sign in at [https://dev.twitter.com](https://dev.twitter.com/)
+- From the profile picture dropdown menu select **My Applications**
+- Click **Create a new application**
+- Enter your application name, website and description
+- For **Callback URL**: http://127.0.0.1:3000
+- Go to **Settings** tab
+- Under *Application Type* select **Read and Write** access
+- Check the box **Allow this application to be used to Sign in with Twitter**
+- Click **Update this Twitter's applications settings**
 
 ## API Reference
 
-- [`any`](#any)
-  - [`any.allow(value)`](#anyallowvalue)
-  - [`any.valid(value)`](#anyvalidvalue)
-  - [`any.invalid(value)`](#anyinvalidvalue)
-  - [`any.required()`](#anyrequired)
-  - [`any.optional()`](#anyoptional)
-  - [`any.forbidden()`](#anyforbidden)
-  - [`any.description(desc)`](#anydescriptiondesc)
-  - [`any.notes(notes)`](#anynotesnotes)
-  - [`any.tags(tags)`](#anytagstags)
-  - [`any.meta(meta)`](#anymetameta)
-  - [`any.example(value)`](#anyexamplevalue)
-  - [`any.unit(name)`](#anyunitname)
-  - [`any.options(options)`](#anyoptionsoptions)
-  - [`any.strict()`](#anystrict)
-  - [`any.default(value)`](#anydefaultvalue)
-  - [`any.concat(schema)`](#anyconcatschema)
-  - [`any.when(ref, options)`](#anywhenref-options)
-- [`array`](#array)
-  - [`array.includes(type)`](#arrayincludestype)
-  - [`array.excludes(type)`](#arrayexcludestype)
-  - [`array.min(limit)`](#arrayminlimit)
-  - [`array.max(limit)`](#arraymaxlimit)
-  - [`array.length(limit)`](#arraylengthlimit)
+- [`$auth.login(value)`](#anyallowvalue)
+- [`$auth.signup(value)`](#anyvalidvalue)
+- [`$auth.authenticate(value)`](#anyinvalidvalue)
+- [`$auth.logout()`](#anyrequired)
+- [`$auth.isAuthenticated()`](#anyoptional)
 
 #### `any.tags(tags)`
 
