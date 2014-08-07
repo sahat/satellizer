@@ -4,9 +4,9 @@ module.exports = function(config) {
     basePath: '../',
 
     files: [
-      'demo/client/bower_components/angular/angular.js',
-      'demo/client/bower_components/angular-mocks/angular-mocks.js',
-      'lib/angular-auth.js',
+      '//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.0-beta.13/angular.js',
+      '//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.0-beta.13/angular-mocks.js',
+      'lib/satellizer.js',
       'test/unit/*.js'
     ],
 
