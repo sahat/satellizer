@@ -29,17 +29,17 @@ Install via **NPM:**
 npm install satellizer --save
 ```
 
-**Note:** Alternatively, you may just manually grab `satellizer.js` or `satellizer.min.js` from the **lib/** directory.
+**Note:** Alternatively, you may just manually grab `satellizer.js` or `satellizer.min.js` from the **lib** directory.
 
 ## Usage
 
-This example demonstrates end-to-end sign-in process using AngularJS, Node.js and MongoDB. For other languages and server-side frameworks see **examples/** directory.
+This example demonstrates end-to-end sign-in process using AngularJS, Node.js and MongoDB. For other languages and server-side frameworks see **examples** directory.
 
-### Client-side
+<hr>
 
-Include `Satellizer` just as any other AngularJS module. The `$authProvider` can then be injected into the [configuration block](https://docs.angularjs.org/guide/module) of your application. You do not need to give much information for pre-defined OAuth providers as I have already done that for you.
+1. **app.js**
+Include `Satellizer` just as any other AngularJS module. The `$authProvider` can then be injected into the [configuration block](https://docs.angularjs.org/guide/module) of your application. You do not need to give much information for pre-defined OAuth providers as it has already been done for you.
 
-**app.js**
 ```js
 angular.module('MyApp', ['Satellizer'])
   .config(function($authProvider) {
@@ -51,7 +51,10 @@ angular.module('MyApp', ['Satellizer'])
   });
 ```
 
-**controllers/login.js**
+2. controllers/**login.js**
+The `$auth` provider can now be injected into your controllers. Since we are in the
+*run phase* and not the *configuration phase* at this point, we can drop the `Provider` postfix.
+ 
 ```js
 angular.module('MyApp')
   .controller('LoginCtrl', function($scope, $auth) {
@@ -63,12 +66,16 @@ angular.module('MyApp')
   });
 ```
 
-**views/login.html**
+3. views/**login.html**
+The `$auth.authenticate` expects a valid provider name, i.e. *facebook*, *google*,
+ *linkedin*, *twitter* or any custom provider that you have created in the config
+ block.
+
 ```html
 <button ng-click="authenticate('facebook')">Sign in with Facebook</button>
 ```
 
-### Server-side
+<hr>
 
 After user enters his/her Facebook credentials, a *POST* request is made to this end-point with the `code` object, which stands for `authorization_code`. The code is then exchanged for an `access_token`. And finally access token is used to query the [Graph API](https://developers.facebook.com/docs/graph-api) to get user's profile information. It is then checks if it's a new or a returning user. And finally it generates a *JSON Web Token* that is sent back to the client.
 
@@ -113,7 +120,69 @@ app.post('/auth/facebook', function(req, res, next) {
 
 ## Configuration
 
+Below is a complete listing of all config options.
 
+```js
+$authProvider.logoutRedirect = '/';
+$authProvider.loginRedirect = '/';
+$authProvider.loginUrl = '/auth/login';
+$authProvider.signupUrl = '/auth/signup';
+$authProvider.signupRedirect = '/login';
+$authProvider.loginRoute = '/login';
+$authProvider.signupRoute = '/signup';
+$authProvider.user = 'currentUser';
+
+// Google
+$authProvider.setProvider({
+  name: 'google',
+  url: '/auth/google',
+  authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
+  redirectUri: window.location.origin,
+  scope: 'openid profile email',
+  requiredUrlParams: ['scope'],
+  optionalUrlParams: ['display'],
+  display: 'popup',
+  type: 'oauth2',
+  popupOptions: {
+    width: 452,
+    height: 633
+  }
+});
+
+// Facebook
+$authProvider.setProvider({
+  name: 'facebook',
+  url: '/auth/facebook',
+  authorizationEndpoint: 'https://www.facebook.com/dialog/oauth',
+  redirectUri: window.location.origin,
+  scope: 'email',
+  requiredUrlParams: ['display'],
+  display: 'popup',
+  type: 'oauth2',
+  popupOptions: {
+    width: 481,
+    height: 269
+  }
+});
+
+// LinkedIn
+$authProvider.setProvider({
+  name: 'linkedin',
+  url: '/auth/linkedin',
+  authorizationEndpoint: 'https://www.linkedin.com/uas/oauth2/authorization',
+  redirectUri: window.location.origin,
+  requiredUrlParams: ['state'],
+  state: 'STATE',
+  type: 'oauth2'
+});
+
+// Twitter
+$authProvider.setProvider({
+  url: '/auth/twitter',
+  authorizationEndpoint: 'https://api.twitter.com/oauth/authenticate',
+  type: 'oauth1'
+});
+  ```
 
 ## How It Works
 It relies on *Token-Based Authentication* with [JSON Web Tokens](https://auth0.com/blog/2014/01/07/angularjs-authentication-with-cookies-vs-token/) instead of cookies and sessions.
