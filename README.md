@@ -1,13 +1,12 @@
 ![Project Logo](https://lh6.googleusercontent.com/-YmfKZZLZKL0/U-KVPFSbiOI/AAAAAAAAEZA/maoYT8iJCnA/w1089-h513-no/sshot-1.png)
 
-# Satellizer [![Build Status](https://travis-ci.org/sahat/ngAuth.svg?branch=master)](https://travis-ci.org/sahat/ngAuth) [![Code Climate](http://img.shields.io/codeclimate/github/sahat/ngAuth.svg)](https://codeclimate.com/github/sahat/ngAuth)  [![GitHub Release](http://img.shields.io/github/release/qubyte/rubidium.svg
-)]
+# Satellizer [![Build Status](https://travis-ci.org/sahat/ngAuth.svg?branch=master)](https://travis-ci.org/sahat/ngAuth) [![Code Climate](http://img.shields.io/codeclimate/github/sahat/ngAuth.svg)](https://codeclimate.com/github/sahat/ngAuth) ![Coverage](http://img.shields.io/codeclimate/coverage/github/triAGENS/ashikawa-core.svg) ![GitHub Tag](http://img.shields.io/github/tag/strongloop/express.svg)
 
-:octocat: **Live Demo:** [http://satellizer.herokuapp.com](#)
+**:globe_with_meridians: Live Demo:** [http://satellizer.heroku.com](#)
 
-Introduction....
+**Satellizer is a simple to use authentication module for AngularJS with built-in support for *Google*, *Facebook*, *LinkedIn* and *Twitter* OAuth providers, as well as email and password authentication. You are not limited to the above sign-in options, you could easily add your own OAuth 1.0 or OAuth 2.0 provider by passing provider-specific information during the configuration phase.
 
-<Screenshot with popup>
+![Screenshot](https://lh4.googleusercontent.com/-0UUIecT-3N4/U-LQJkd75iI/AAAAAAAAEZY/YN3Oe-eUPGc/w1676-h1158-no/satellizer.png)
 
 ## Features (optional)
 
@@ -15,12 +14,13 @@ Introduction....
 
 ## Install
 
-Using **Bower:**
+<img src="http://bower.io/img/bower-logo.png" height="32"> Using **Bower:**
+
 ```bash
 bower install satellizer
 ```
 
-Using **npm:**
+<img src="http://www.codeasearch.com/wp-content/uploads/2014/04/npm-logo.png" height="32"> Using **npm:**
 
 ```bash
 npm install satellizer
@@ -51,7 +51,59 @@ Twitter
 
 ## API Reference
 
-<hapi joi>
+- [`any`](#any)
+  - [`any.allow(value)`](#anyallowvalue)
+  - [`any.valid(value)`](#anyvalidvalue)
+  - [`any.invalid(value)`](#anyinvalidvalue)
+  - [`any.required()`](#anyrequired)
+  - [`any.optional()`](#anyoptional)
+  - [`any.forbidden()`](#anyforbidden)
+  - [`any.description(desc)`](#anydescriptiondesc)
+  - [`any.notes(notes)`](#anynotesnotes)
+  - [`any.tags(tags)`](#anytagstags)
+  - [`any.meta(meta)`](#anymetameta)
+  - [`any.example(value)`](#anyexamplevalue)
+  - [`any.unit(name)`](#anyunitname)
+  - [`any.options(options)`](#anyoptionsoptions)
+  - [`any.strict()`](#anystrict)
+  - [`any.default(value)`](#anydefaultvalue)
+  - [`any.concat(schema)`](#anyconcatschema)
+  - [`any.when(ref, options)`](#anywhenref-options)
+- [`array`](#array)
+  - [`array.includes(type)`](#arrayincludestype)
+  - [`array.excludes(type)`](#arrayexcludestype)
+  - [`array.min(limit)`](#arrayminlimit)
+  - [`array.max(limit)`](#arraymaxlimit)
+  - [`array.length(limit)`](#arraylengthlimit)
+
+#### `any.tags(tags)`
+
+Annotates the key where:
+- `tags` - the tag string or array of strings.
+
+```javascript
+var schema = Joi.any().tags(['api', 'user']);
+```
+
+#### `any.meta(meta)`
+
+Attaches metadata to the key where:
+- `meta` - the meta object to attach.
+
+```javascript
+var schema = Joi.any().meta({ index: true });
+```
+
+#### `any.example(value)`
+
+Annotates the key where:
+- `value` - an example value.
+
+If the example fails to pass validation, the function will throw.
+
+```javascript
+var schema = Joi.string().min(4).example('abcd');
+```
 
 ## License
 
