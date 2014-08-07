@@ -1,14 +1,14 @@
 ![Project Logo](https://lh6.googleusercontent.com/-YmfKZZLZKL0/U-KVPFSbiOI/AAAAAAAAEZA/maoYT8iJCnA/w1089-h513-no/sshot-1.png)
 
-# <img src="https://lh4.googleusercontent.com/-TMzIAkt5bFg/U-LWdFXJFdI/AAAAAAAAEZo/g-3R62Q9PmA/w602-h636-no/angularjs-logo-trans.png" style="height: 42px; vertical-align: top;"> Satellizer 
+# Satellizer 
 [![Build Status](https://travis-ci.org/sahat/satellizer.svg?branch=master)](https://travis-ci.org/sahat/satellizer) 
 [![Code Climate](http://img.shields.io/codeclimate/github/sahat/satellizer.svg)](https://codeclimate.com/github/sahat/satellizer) 
 [![Coverage](http://img.shields.io/codeclimate/coverage/github/satellizer/satellizer.svg)](https://codeclimate.com/github/sahat/satellizer)
 [![GitHub Tag](http://img.shields.io/github/tag/sahat/satellizer.svg)](https://github.com/sahat/satellizer/tags)
 
-**:palm_tree: Demo:** [http://satellizer.herokuapp.com](http://satellizer.herokuapp.com)
+**:octocat: Demo:** [http://satellizer.herokuapp.com](http://satellizer.herokuapp.com)
 
-**Satellizer** is a simple to use authentication module for AngularJS with built-in support for Google, Facebook, LinkedIn and Twitter OAuth providers, as well as email and password authentication. You are not limited to the above sign-in options, you could easily add your own OAuth 1.0 or OAuth 2.0 provider by passing provider-specific information during the configuration phase.
+**Satellizer** is a simple to use authentication module for [AngularJS](http://angularjs.org) with built-in support for Google, Facebook, LinkedIn and Twitter OAuth providers, as well as email and password authentication. You are not limited to the above sign-in options, you could easily add your own OAuth 1.0 or OAuth 2.0 provider by passing provider-specific information during the configuration phase.
 
 ![Screenshot](https://lh4.googleusercontent.com/-0UUIecT-3N4/U-LQJkd75iI/AAAAAAAAEZY/YN3Oe-eUPGc/w1676-h1158-no/satellizer.png)
 

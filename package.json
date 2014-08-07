@@ -1,5 +1,5 @@
 {
-  "name": "ngAuth",
+  "name": "satellizer",
   "version": "0.0.0",
   "devDependencies": {
     "gulp": "^3.8.5",
