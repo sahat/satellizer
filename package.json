@@ -1,5 +1,5 @@
 {
-  "name": "ngAuth",
+  "name": "satellizer",
   "version": "0.0.0",
   "devDependencies": {
     "gulp": "^3.8.5",
@@ -12,5 +12,39 @@
   },
   "scripts": {
     "test": "karma start test/karma.conf.js"
-  }
+  },
+  "description": "![Project Logo](https://lh6.googleusercontent.com/-YmfKZZLZKL0/U-KVPFSbiOI/AAAAAAAAEZA/maoYT8iJCnA/w1089-h513-no/sshot-1.png)",
+  "main": "gulpfile.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "gulp": "^3.8.7",
+    "gulp-ngmin": "^0.3.0",
+    "gulp-uglify": "^0.3.1",
+    "karma-chrome-launcher": "^0.1.4",
+    "growly": "^1.1.1",
+    "karma-html2js-preprocessor": "^0.1.0",
+    "karma-coverage": "^0.2.5",
+    "gulp-rename": "^1.2.0",
+    "karma-coffee-preprocessor": "^0.1.3",
+    "karma": "^0.10.10",
+    "requirejs": "^2.1.14",
+    "karma-requirejs": "^0.2.2",
+    "karma-firefox-launcher": "^0.1.3",
+    "karma-growl-reporter": "^0.1.1",
+    "karma-jasmine": "^0.1.5",
+    "karma-script-launcher": "^0.1.0",
+    "karma-phantomjs-launcher": "^0.1.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sahat/ngAuth.git"
+  },
+  "author": "'Sahat <'sakhat@gmail.com'>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sahat/ngAuth/issues"
+  },
+  "homepage": "https://github.com/sahat/ngAuth"
 }
