@@ -222,39 +222,78 @@ It relies on *Token-Based Authentication* with [JSON Web Tokens](https://auth0.c
 
 ## API Reference
 
-- [`$auth.login(value)`](#anyallowvalue)
-- [`$auth.signup(value)`](#anyvalidvalue)
-- [`$auth.authenticate(value)`](#anyinvalidvalue)
-- [`$auth.logout()`](#anyrequired)
-- [`$auth.isAuthenticated()`](#anyoptional)
+- [`$auth.login(user)`](#authlogin)
+- [`$auth.signup(user)`](#authsignup)
+- [`$auth.authenticate(name)`](#authauthenticate)
+- [`$auth.logout()`](#authlogout)
+- [`$auth.isAuthenticated()`](#authisauthenticated)
 
-#### `any.tags(tags)`
+#### `$auth.login(user)`
 
-Annotates the key where:
-- `tags` - the tag string or array of strings.
+Sign in via email and password where:
+- `user` - object with *email* and *password* properties.
 
-```javascript
-var schema = Joi.any().tags(['api', 'user']);
+```js
+$auth.login({
+  email: $scope.email,
+  password: $scope.password
+});
 ```
 
-#### `any.meta(meta)`
+#### `$auth.signup(user)`
 
-Attaches metadata to the key where:
-- `meta` - the meta object to attach.
+Creates a new local account where: 
+- `user` - object with *email*, *password* and *other* fields.
 
-```javascript
-var schema = Joi.any().meta({ index: true });
+```js
+$auth.signup({
+  email: $scope.email,
+  password: $scope.password
+});
 ```
 
-#### `any.example(value)`
+#### `$auth.authenticate(name)`
 
-Annotates the key where:
-- `value` - an example value.
+Starts the *OAuth 1.0* or *OAuth 2.0* authentication flow by opening a poup where:
+- `name` - valid provider name.
 
-If the example fails to pass validation, the function will throw.
+If empty or invalid name is provided, the function will throw an error.
 
-```javascript
-var schema = Joi.string().min(4).example('abcd');
+```js
+$auth.authenticate('google').then(function() {
+  // signed in!
+});
+```
+
+#### `$auth.logout()`
+
+Logs out current user by deleting the token from *Local Storage* and setting
+`currentUser` to `null`. *No request to the server is necessary*.
+
+```js
+$auth.logout();
+});
+```
+
+#### `$auth.isAuthenticated()`
+
+Returns `true` or `false` if the user is signed in or not.
+
+```js
+$auth.isAuthenticated() // true
+```
+
+Alternatively, you may check if `currentUser` is defined to determine the 
+authentication state.
+
+```html
+<ul class="nav navbar-nav pull-right" ng-if="!currentUser">
+  <li><a href="/#/login">Login</a></li>
+  <li><a href="/#/signup">Sign up</a></li>
+</ul>
+<ul class="nav navbar-nav pull-right" ng-if="currentUser">
+  <li><a href="/#/logout">Logout</a></li>
+</ul>
 ```
 
 ## License
@@ -263,8 +302,19 @@ The MIT License (MIT)
 
 Copyright (c) 2014 Sahat Yalkabov
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of 
+this software and associated documentation files (the "Software"), to deal in 
+the Software without restriction, including without limitation the rights to 
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR 
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER 
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
