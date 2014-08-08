@@ -116,38 +116,31 @@ app.post('/auth/signup', function(req, res) {
 ////////////////////////////////////////////////////////////////////////////////
 
 app.post('/auth/google', function(req, res) {
-  var tokenEndpoint = 'https://accounts.google.com/o/oauth2/token';
-  var userinfoEndpoint = 'https://www.googleapis.com/plus/v1/people/me/openIdConnect';
+  var accessTokenUrl = 'https://accounts.google.com/o/oauth2/token';
+  var peopleApiUrl = 'https://www.googleapis.com/plus/v1/people/me/openIdConnect';
+
   var params = {
-    grant_type: 'authorization_code',
-    code: req.body.code,
     client_id: req.body.clientId,
+    redirect_uri: req.body.redirectUri,
     client_secret: config.googleSecret,
-    redirect_uri: req.body.redirectUri
+    code: req.body.code,
+    grant_type: 'authorization_code'
   };
 
-  request.post(tokenEndpoint, {
-    json: true,
-    form: params
-  }, function(error, response, data) {
-    var accessToken = data.access_token;
-    var idToken = data.id_token;
+  // Exchange authorization code for access token.
+  request.post(accessTokenUrl, { json: true, form: params }, function(error, response, token) {
 
-    var jwtToken = idToken.split('.');
-    var payload = new Buffer(jwtToken[1], 'base64').toString();
+    var accessToken = token.access_token;
+    var headers = { Authorization: 'Bearer ' + accessToken };
 
-    User.findOne({ google: payload.sub }, function(err, existingUser) {
-      if (existingUser) {
-        var token = createJwtToken(existingUser);
-        return res.send(token);
-      }
-      var authorizationHeader = { Authorization: 'Bearer ' + accessToken };
-      request.get({
-        url: userinfoEndpoint,
-        headers: authorizationHeader,
-        json: true
-      }, function(error, response, profile) {
-        var user = new User({
+    // Retrieve information about the current user.
+    request.get({ url: peopleApiUrl, headers: headers, json: true }, function(error, response, profile) {
+      User.findOne({ google: profile.sub }, function(err, user) {
+        if (user) {
+          var token = createJwtToken(user);
+          return res.send(token);
+        }
+        user = new User({
           google: profile.sub,
           firstName: profile.given_name,
           lastName: profile.family_name
@@ -189,7 +182,7 @@ app.post('/auth/linkedin', function(req, res) {
     request.get({ url: peopleApiUrl, qs: params, json: true }, function(error, response, profile) {
       User.findOne({ linkedin: profile.id }, function(err, user) {
         if (user) {
-          var token = createJwtToken(existingUser);
+          var token = createJwtToken(user);
           return res.send(token);
         }
         user = new User({
