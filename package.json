@@ -9,9 +9,9 @@
     "gulp": "^3.8.7",
     "gulp-rename": "^1.2.0",
     "gulp-uglify": "^0.3.1",
-    "karma": "^0.10.10",
-    "karma-jasmine": "^0.1.5",
+    "karma": "^0.12.21",
     "karma-coverage": "^0.2.6",
+    "karma-jasmine": "^0.1.5",
     "karma-phantomjs-launcher": "^0.1.4"
   },
   "repository": {

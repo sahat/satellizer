@@ -12,21 +12,18 @@
 
 ![Screenshot](https://lh4.googleusercontent.com/-0UUIecT-3N4/U-LQJkd75iI/AAAAAAAAEZY/YN3Oe-eUPGc/w1676-h1158-no/satellizer.png)
 
-## Getting Started
+## Installation
 
-Install via  **Bower:**
+The easiest way to get **Satellizer** is by running either of the following commands:
 
 ```bash
+# Bower
 bower install satellizer --save
-```
 
+# NPM
 Install via **NPM:**
 
-```bash
-npm install satellizer --save
-```
-
-**:exclamation: Note:** Alternatively, you may just manually grab `satellizer.js` or `satellizer.min.js` from the **lib** directory.
+**Note:** Alternatively, you may just manually grab `satellizer.js` or `satellizer.min.js` from the **lib** directory.
 
 ## Usage
 
@@ -117,7 +114,7 @@ app.post('/auth/facebook', function(req, res, next) {
 
 ## Configuration
 
-Below is a complete listing of all configuration options.
+Below is a complete listing of all default configuration options.
 
 ```js
 $authProvider.logoutRedirect = '/';

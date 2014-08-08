@@ -1,11 +1,13 @@
 describe('OAuth 2.0 Login', function() {
 
   var auth;
+  var httpBackend;
 
   beforeEach(module('Satellizer'));
 
-  beforeEach(inject(function($auth) {
+  beforeEach(inject(function($auth, $httpBackend) {
     auth = $auth;
+    httpBackend = $httpBackend;
   }));
 
   it('authenticate should be defined', function() {
@@ -14,11 +16,27 @@ describe('OAuth 2.0 Login', function() {
   });
 
   it('should throw an error without provider name', function() {
-    var authNoParams = function() {
+    var authenticate = function() {
       auth.authenticate();
     };
-    expect(authNoParams).toThrow();
+    expect(authenticate).toThrow();
   });
+
+  it('should throw an error if provider name does not exist', function() {
+    var authenticate = function() {
+      auth.authenticate('asdfqwerty');
+    };
+    expect(authenticate).toThrow();
+  });
+
+//  it('should sign in with facebook', function() {
+//    var authenticate = function() {
+//
+//    };
+//    console.log(auth.authenticate('facebook'))
+//    expect(authenticate).toBe(true);
+//  });
+
 
 
 });

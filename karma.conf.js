@@ -2,8 +2,8 @@ module.exports = function(config) {
   config.set({
 
     files: [
-      'http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.0-beta.13/angular.js',
-      'http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.0-beta.13/angular-mocks.js',
+      'bower_components/angular/angular.js',
+      'bower_components/angular-mocks/angular-mocks.js',
       'lib/satellizer.js',
       'test/*.js'
     ],
@@ -20,10 +20,10 @@ module.exports = function(config) {
       'karma-coverage'
     ],
 
-    reporters: ['progress', 'coverage'],
-
-    preprocessors: {
-      'lib/satellizer.js': ['coverage']
-    }
+//    reporters: ['progress', 'coverage'],
+//
+//    preprocessors: {
+//      'lib/satellizer.js': ['coverage']
+//    }
   });
 };
