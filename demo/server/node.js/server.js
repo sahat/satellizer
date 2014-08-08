@@ -87,6 +87,8 @@ app.post('/auth/login', function(req, res) {
       if (!isMatch) {
         return res.send(401, 'Wrong email or password');
       }
+      user = user.toObject();
+      delete user.password;
       var token = createJwtToken(user);
       res.send(token);
     });
