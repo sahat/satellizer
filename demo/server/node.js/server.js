@@ -76,7 +76,9 @@ app.get('/api/me', ensureAuthenticated, function(req, res) {
   res.send(req.user);
 });
 
-// Log in with email and password.
+////////////////////////////////////////////////////////////////////////////////
+// Log in with Email ///////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 app.post('/auth/login', function(req, res) {
   User.findOne({ email: req.body.email }, function(err, user) {
@@ -95,7 +97,9 @@ app.post('/auth/login', function(req, res) {
   });
 });
 
-// Create new email account.
+////////////////////////////////////////////////////////////////////////////////
+// Create Email and Password Account ///////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 app.post('/auth/signup', function(req, res) {
   var user = new User({
@@ -107,7 +111,9 @@ app.post('/auth/signup', function(req, res) {
   });
 });
 
-// Login with Google.
+////////////////////////////////////////////////////////////////////////////////
+// Log in with Google //////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 app.post('/auth/google', function(req, res) {
   var tokenEndpoint = 'https://accounts.google.com/o/oauth2/token';
@@ -155,7 +161,9 @@ app.post('/auth/google', function(req, res) {
   });
 });
 
-// Log in with LinkedIn.
+////////////////////////////////////////////////////////////////////////////////
+// Log in with LinkedIn ////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 app.post('/auth/linkedin', function(req, res) {
 
@@ -195,34 +203,33 @@ app.post('/auth/linkedin', function(req, res) {
   });
 });
 
-// Log in with Facebook.
+////////////////////////////////////////////////////////////////////////////////
+// Log in with Facebook ////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 app.post('/auth/facebook', function(req, res) {
-  var url = 'https://graph.facebook.com/oauth/access_token';
-  var params = qs.stringify({
+  var accessTokenUrl = 'https://graph.facebook.com/oauth/access_token';
+  var graphApiUrl = 'https://graph.facebook.com/me';
+
+  var params = {
+    client_id: req.body.clientId,
     redirect_uri: req.body.redirectUri,
     client_secret: config.facebookSecret,
-    client_id: req.body.clientId,
     code: req.body.code
-  });
+  };
 
-  request.get([url, params].join('?'), function(error, response, data) {
-    var accessToken = qs.parse(data).access_token;
-    var graphApiUrl = 'https://graph.facebook.com/me';
-    var params = {
-      access_token: accessToken
-    };
-    request.get({
-      url: graphApiUrl,
-      qs: params,
-      json: true
-    }, function(error, response, profile) {
-      User.findOne({ facebook: profile.id }, function(err, existingUser) {
-        if (existingUser) {
-          var token = createJwtToken(existingUser);
+  // Exchange authorization code for access token.
+  request.get({ url: accessTokenUrl, qs: params }, function(error, response, accessToken) {
+    accessToken = qs.parse(accessToken);
+
+    // Retrieve information about the current user.
+    request.get({ url: graphApiUrl, qs: accessToken, json: true }, function(error, response, profile) {
+      User.findOne({ facebook: profile.id }, function(err, user) {
+        if (user) {
+          var token = createJwtToken(user);
           return res.send(token);
         }
-        var user = new User({
+        user = new User({
           facebook: profile.id,
           firstName: profile.first_name,
           lastName: profile.last_name
@@ -236,7 +243,9 @@ app.post('/auth/facebook', function(req, res) {
   });
 });
 
-// Log in with Twitter.
+////////////////////////////////////////////////////////////////////////////////
+// Log in with Twitter /////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 app.get('/auth/twitter', function(req, res) {
   var oauth;
@@ -275,7 +284,7 @@ app.get('/auth/twitter', function(req, res) {
       consumer_secret: config.twitter.consumerSecret,
       callback: callbackUrl
     };
-    request.post({ url: requestTokenUrl, oauth: oauth }, function (error, response, body) {
+    request.post({ url: requestTokenUrl, oauth: oauth }, function(error, response, body) {
       var oauthToken = qs.parse(body);
       var params = qs.stringify({ oauth_token: oauthToken.oauth_token });
       res.redirect([authenticateUrl, params].join('?'));
@@ -283,7 +292,9 @@ app.get('/auth/twitter', function(req, res) {
   }
 });
 
-// Login required middleware.
+////////////////////////////////////////////////////////////////////////////////
+// Login Required Middleware ///////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 function ensureAuthenticated(req, res, next) {
   if (req.headers.authorization) {
@@ -304,7 +315,9 @@ function ensureAuthenticated(req, res, next) {
   }
 }
 
-// JSON Web Token helper function.
+////////////////////////////////////////////////////////////////////////////////
+// Generate JSON Web Token /////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 function createJwtToken(user) {
   var payload = {
@@ -314,8 +327,6 @@ function createJwtToken(user) {
   };
   return jwt.encode(payload, config.tokenSecret);
 }
-
-// Start the server.
 
 app.listen(app.get('port'), function() {
   console.log('Express server listening on port ' + app.get('port'));
