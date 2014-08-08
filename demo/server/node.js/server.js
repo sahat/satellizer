@@ -1,9 +1,9 @@
 /**
- * (c) 2014 Sahat Yalkabov
+ * Satellizer Node.js Demo
+ * (c) 2014 Sahat Yalkabov <sahat@me.com>
  * License: MIT
  */
 
-var _ = require('lodash');
 var bcrypt = require('bcryptjs');
 var bodyParser = require('body-parser');
 var crypto = require('crypto');
@@ -14,7 +14,6 @@ var jwt = require('jwt-simple');
 var moment = require('moment');
 var mongoose = require('mongoose');
 var path = require('path');
-var fs = require('fs');
 var qs = require('querystring');
 
 var config = {
@@ -45,57 +44,20 @@ userSchema.pre('save', function(next) {
     return next();
   }
   bcrypt.genSalt(10, function(err, salt) {
-    if (err) {
-      return next(err);
-    }
     bcrypt.hash(user.password, salt, function(err, hash) {
-      if (err) {
-        return next(err);
-      }
       user.password = hash;
       next();
     });
   });
 });
 
-userSchema.methods.comparePassword = function(candidatePassword, done) {
-  bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
-    if (err) {
-      return done(err);
-    }
-    done(null, isMatch);
+userSchema.methods.comparePassword = function(password, done) {
+  bcrypt.compare(password, this.password, function(err, isMatch) {
+    done(err, isMatch);
   });
 };
 
 var User = mongoose.model('User', userSchema);
-
-function ensureAuthenticated(req, res, next) {
-  if (req.headers.authorization) {
-    var token = req.headers.authorization.split(' ')[1];
-    try {
-      var decoded = jwt.decode(token, config.tokenSecret);
-      if (decoded.exp <= Date.now()) {
-        res.send(400, 'Access token has expired');
-      } else {
-        req.user = decoded.user;
-        return next();
-      }
-    } catch (err) {
-      return res.send(500, 'Error parsing token');
-    }
-  } else {
-    return res.send(401);
-  }
-}
-
-function createJwtToken(user) {
-  var payload = {
-    user: user,
-    iat: new Date().getTime(),
-    exp: moment().add('days', 7).valueOf()
-  };
-  return jwt.encode(payload, config.tokenSecret);
-}
 
 mongoose.connect('localhost');
 
@@ -108,35 +70,36 @@ app.use(bodyParser.urlencoded());
 app.use(express.static(path.join(__dirname, '../../client')));
 app.use(express.static(path.join(__dirname, '../../../lib')));
 
-app.post('/auth/login', function(req, res, next) {
+app.get('/api/me', ensureAuthenticated, function(req, res) {
+  res.send(req.user);
+});
+
+app.post('/auth/login', function(req, res) {
   User.findOne({ email: req.body.email }, function(err, user) {
     if (!user) {
-      return res.send(401, 'User does not exist');
+      return res.send(401, 'Wrong email or password');
     }
     user.comparePassword(req.body.password, function(err, isMatch) {
       if (!isMatch) {
-        return res.send(401, 'Invalid email and/or password');
+        return res.send(401, 'Wrong email or password');
       }
       var token = createJwtToken(user);
-      res.send({ token: token });
+      res.send(token);
     });
   });
 });
 
-app.post('/auth/signup', function(req, res, next) {
+app.post('/auth/signup', function(req, res) {
   var user = new User({
     email: req.body.email,
     password: req.body.password
   });
-  user.save(function(err) {
-    if (err) {
-      return next(err);
-    }
+  user.save(function() {
     res.send(200);
   });
 });
 
-app.post('/auth/google', function(req, res, next) {
+app.post('/auth/google', function(req, res) {
   var tokenEndpoint = 'https://accounts.google.com/o/oauth2/token';
   var userinfoEndpoint = 'https://www.googleapis.com/plus/v1/people/me/openIdConnect';
   var params = {
@@ -162,7 +125,6 @@ app.post('/auth/google', function(req, res, next) {
         var token = createJwtToken(existingUser);
         return res.send(token);
       }
-
       var authorizationHeader = { Authorization: 'Bearer ' + accessToken };
       request.get({
         url: userinfoEndpoint,
@@ -174,10 +136,7 @@ app.post('/auth/google', function(req, res, next) {
           firstName: profile.given_name,
           lastName: profile.family_name
         });
-        user.save(function(err) {
-          if (err) {
-            return next(err);
-          }
+        user.save(function() {
           var token = createJwtToken(user);
           res.send(token);
         });
@@ -186,7 +145,7 @@ app.post('/auth/google', function(req, res, next) {
   });
 });
 
-app.post('/auth/linkedin', function(req, res, next) {
+app.post('/auth/linkedin', function(req, res) {
 
   var url = 'https://www.linkedin.com/uas/oauth2/accessToken';
   var params = {
@@ -196,9 +155,6 @@ app.post('/auth/linkedin', function(req, res, next) {
     client_secret: config.linkedinSecret,
     redirect_uri: req.body.redirectUri
   };
-
-  console.log(params);
-
   request.post(url, { form: params, json: true }, function(err, response, data) {
     var accessToken = data.access_token;
     var url = 'https://api.linkedin.com/v1/people/~:(id,first-name,last-name)';
@@ -217,10 +173,7 @@ app.post('/auth/linkedin', function(req, res, next) {
           firstName: profile.firstName,
           lastName: profile.lastName
         });
-        user.save(function(err) {
-          if (err) {
-            return next(err);
-          }
+        user.save(function() {
           var token = createJwtToken(user);
           res.send(token);
         });
@@ -230,7 +183,7 @@ app.post('/auth/linkedin', function(req, res, next) {
   });
 });
 
-app.post('/auth/facebook', function(req, res, next) {
+app.post('/auth/facebook', function(req, res) {
   var url = 'https://graph.facebook.com/oauth/access_token';
   var params = qs.stringify({
     redirect_uri: req.body.redirectUri,
@@ -260,10 +213,7 @@ app.post('/auth/facebook', function(req, res, next) {
           firstName: profile.first_name,
           lastName: profile.last_name
         });
-        user.save(function(err) {
-          if (err) {
-            return next(err);
-          }
+        user.save(function() {
           var token = createJwtToken(user);
           res.send(token);
         });
@@ -272,7 +222,7 @@ app.post('/auth/facebook', function(req, res, next) {
   });
 });
 
-app.get('/auth/twitter', function(req, res, next) {
+app.get('/auth/twitter', function(req, res) {
   var oauth;
   var requestTokenUrl = 'https://api.twitter.com/oauth/request_token';
   var accessTokenUrl = 'https://api.twitter.com/oauth/access_token';
@@ -297,10 +247,7 @@ app.get('/auth/twitter', function(req, res, next) {
           twitter: profile.user_id,
           firstName: profile.screen_name
         });
-        user.save(function(err) {
-          if (err) {
-            return next(err);
-          }
+        user.save(function() {
           var token = createJwtToken(user);
           res.send(token);
         });
@@ -320,15 +267,38 @@ app.get('/auth/twitter', function(req, res, next) {
   }
 });
 
-app.get('/api/me', ensureAuthenticated, function(req, res) {
-  res.send(req.user);
-});
-
-app.use(function(err, req, res, next) {
-  console.error(err.stack);
-  res.send(500, { error: err.message });
-});
-
 app.listen(app.get('port'), function() {
   console.log('Express server listening on port ' + app.get('port'));
 });
+
+/**
+ * Helper Functions
+ */
+
+function ensureAuthenticated(req, res, next) {
+  if (req.headers.authorization) {
+    var token = req.headers.authorization.split(' ')[1];
+    try {
+      var decoded = jwt.decode(token, config.tokenSecret);
+      if (decoded.exp <= Date.now()) {
+        res.send(400, 'Access token has expired');
+      } else {
+        req.user = decoded.user;
+        return next();
+      }
+    } catch (err) {
+      return res.send(500, 'Error parsing token');
+    }
+  } else {
+    return res.send(401);
+  }
+}
+
+function createJwtToken(user) {
+  var payload = {
+    user: user,
+    iat: new Date().getTime(),
+    exp: moment().add('days', 7).valueOf()
+  };
+  return jwt.encode(payload, config.tokenSecret);
+}
