@@ -27,7 +27,9 @@ module.exports = function(config) {
     },
 
     coverageReporter: {
-      type: 'lcov'
+      type: 'lcov',
+      dir: 'coverage',
+      subdir: '.'
     }
   });
 };
