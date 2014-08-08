@@ -8,7 +8,7 @@ before_script:
   - bower install angular angular-mocks
 
 after_script:
-  - cat lcov.info | codeclimate
+  - cat coverage/lcov.info | codeclimate
 
 addons:
   code_climate:

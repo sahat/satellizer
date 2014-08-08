@@ -20,10 +20,14 @@ module.exports = function(config) {
       'karma-coverage'
     ],
 
-//    reporters: ['progress', 'coverage'],
-//
-//    preprocessors: {
-//      'lib/satellizer.js': ['coverage']
-//    }
+    reporters: ['progress', 'coverage'],
+
+    preprocessors: {
+      'lib/satellizer.js': ['coverage']
+    },
+
+    coverageReporter: {
+      type: 'lcov'
+    }
   });
 };
