@@ -4,7 +4,7 @@
 [![Build Status](https://travis-ci.org/sahat/satellizer.svg?branch=master)](https://travis-ci.org/sahat/satellizer) 
 [![Code Climate](http://img.shields.io/codeclimate/github/sahat/satellizer.svg)](https://codeclimate.com/github/sahat/satellizer) 
 [![Coverage](http://img.shields.io/codeclimate/coverage/github/satellizer/satellizer.svg)](https://codeclimate.com/github/sahat/satellizer)
-[![GitHub Tag](http://img.shields.io/github/tag/sahat/satellizer.svg)](https://github.com/sahat/satellizer/tags)
+[![Bower version](https://badge.fury.io/bo/satellizer.svg)](http://badge.fury.io/bo/satellizer)
 
 **:palm_tree: Demo:** [http://satellizer.herokuapp.com](http://satellizer.herokuapp.com)
 
@@ -21,7 +21,8 @@ The easiest way to get **Satellizer** is by running either of the following comm
 bower install satellizer --save
 
 # NPM
-Install via **NPM:**
+npm install satellizer --save
+```
 
 **Note:** Alternatively, you may just manually grab `satellizer.js` or `satellizer.min.js` from the **lib** directory.
 
