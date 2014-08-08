@@ -2,8 +2,8 @@ module.exports = function(config) {
   config.set({
 
     files: [
-      'angular.js',
-      'angular-mocks.js',
+      'http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.0-beta.13/angular.js',
+      'http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.0-beta.13/angular-mocks.js',
       'lib/satellizer.js',
       'test/*.js'
     ],
@@ -16,13 +16,14 @@ module.exports = function(config) {
 
     plugins: [
       'karma-phantomjs-launcher',
-      'karma-jasmine'
-    ]
+      'karma-jasmine',
+      'karma-coverage'
+    ],
 
-//    reporters: ['coverage'],
-//
-//    preprocessors: {
-//      'lib/angular-auth.js': ['coverage']
-//    }
+    reporters: ['progress', 'coverage'],
+
+    preprocessors: {
+      'lib/satellizer.js': ['coverage']
+    }
   });
 };

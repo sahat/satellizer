@@ -1,3 +1,11 @@
- language: node_js
- node_js:
-   - "0.10"
+language: node_js
+
+node_js:
+  - "0.10"
+
+after_script:
+  - cat lcov.info | codeclimate
+
+addons:
+  code_climate:
+    repo_token: bcdb10bb2c4dc0cb26430ba50da0bd9884c24393
