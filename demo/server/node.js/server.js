@@ -41,11 +41,17 @@ var userSchema = new mongoose.Schema({
 
 userSchema.pre('save', function(next) {
   var user = this;
-  if (!user.isModified('password')) return next();
+  if (!user.isModified('password')) {
+    return next();
+  }
   bcrypt.genSalt(10, function(err, salt) {
-    if (err) return next(err);
+    if (err) {
+      return next(err);
+    }
     bcrypt.hash(user.password, salt, function(err, hash) {
-      if (err) return next(err);
+      if (err) {
+        return next(err);
+      }
       user.password = hash;
       next();
     });
@@ -54,7 +60,9 @@ userSchema.pre('save', function(next) {
 
 userSchema.methods.comparePassword = function(candidatePassword, done) {
   bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
-    if (err) return done(err);
+    if (err) {
+      return done(err);
+    }
     done(null, isMatch);
   });
 };
@@ -102,9 +110,13 @@ app.use(express.static(path.join(__dirname, '../../../lib')));
 
 app.post('/auth/login', function(req, res, next) {
   User.findOne({ email: req.body.email }, function(err, user) {
-    if (!user) return res.send(401, 'User does not exist');
+    if (!user) {
+      return res.send(401, 'User does not exist');
+    }
     user.comparePassword(req.body.password, function(err, isMatch) {
-      if (!isMatch) return res.send(401, 'Invalid email and/or password');
+      if (!isMatch) {
+        return res.send(401, 'Invalid email and/or password');
+      }
       var token = createJwtToken(user);
       res.send({ token: token });
     });
@@ -117,7 +129,9 @@ app.post('/auth/signup', function(req, res, next) {
     password: req.body.password
   });
   user.save(function(err) {
-    if (err) return next(err);
+    if (err) {
+      return next(err);
+    }
     res.send(200);
   });
 });
@@ -161,7 +175,9 @@ app.post('/auth/google', function(req, res, next) {
           lastName: profile.family_name
         });
         user.save(function(err) {
-          if (err) return next(err);
+          if (err) {
+            return next(err);
+          }
           var token = createJwtToken(user);
           res.send(token);
         });
@@ -202,7 +218,9 @@ app.post('/auth/linkedin', function(req, res, next) {
           lastName: profile.lastName
         });
         user.save(function(err) {
-          if (err) return next(err);
+          if (err) {
+            return next(err);
+          }
           var token = createJwtToken(user);
           res.send(token);
         });
@@ -243,7 +261,9 @@ app.post('/auth/facebook', function(req, res, next) {
           lastName: profile.last_name
         });
         user.save(function(err) {
-          if (err) return next(err);
+          if (err) {
+            return next(err);
+          }
           var token = createJwtToken(user);
           res.send(token);
         });
@@ -275,10 +295,12 @@ app.get('/auth/twitter', function(req, res, next) {
         }
         var user = new User({
           twitter: profile.user_id,
-          firstName: profile.screen_name,
+          firstName: profile.screen_name
         });
         user.save(function(err) {
-          if (err) return next(err);
+          if (err) {
+            return next(err);
+          }
           var token = createJwtToken(user);
           res.send(token);
         });
