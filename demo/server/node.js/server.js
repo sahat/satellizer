@@ -70,9 +70,13 @@ app.use(bodyParser.urlencoded());
 app.use(express.static(path.join(__dirname, '../../client')));
 app.use(express.static(path.join(__dirname, '../../../lib')));
 
+// Get user's profile.
+
 app.get('/api/me', ensureAuthenticated, function(req, res) {
   res.send(req.user);
 });
+
+// Log in with email and password.
 
 app.post('/auth/login', function(req, res) {
   User.findOne({ email: req.body.email }, function(err, user) {
@@ -89,6 +93,8 @@ app.post('/auth/login', function(req, res) {
   });
 });
 
+// Create new email account.
+
 app.post('/auth/signup', function(req, res) {
   var user = new User({
     email: req.body.email,
@@ -98,6 +104,8 @@ app.post('/auth/signup', function(req, res) {
     res.send(200);
   });
 });
+
+// Login with Google.
 
 app.post('/auth/google', function(req, res) {
   var tokenEndpoint = 'https://accounts.google.com/o/oauth2/token';
@@ -145,6 +153,8 @@ app.post('/auth/google', function(req, res) {
   });
 });
 
+// Log in with LinkedIn.
+
 app.post('/auth/linkedin', function(req, res) {
 
   var url = 'https://www.linkedin.com/uas/oauth2/accessToken';
@@ -182,6 +192,8 @@ app.post('/auth/linkedin', function(req, res) {
     });
   });
 });
+
+// Log in with Facebook.
 
 app.post('/auth/facebook', function(req, res) {
   var url = 'https://graph.facebook.com/oauth/access_token';
@@ -221,6 +233,8 @@ app.post('/auth/facebook', function(req, res) {
     });
   });
 });
+
+// Log in with Twitter.
 
 app.get('/auth/twitter', function(req, res) {
   var oauth;
@@ -267,13 +281,7 @@ app.get('/auth/twitter', function(req, res) {
   }
 });
 
-app.listen(app.get('port'), function() {
-  console.log('Express server listening on port ' + app.get('port'));
-});
-
-/**
- * Helper Functions
- */
+// Login required middleware.
 
 function ensureAuthenticated(req, res, next) {
   if (req.headers.authorization) {
@@ -294,6 +302,8 @@ function ensureAuthenticated(req, res, next) {
   }
 }
 
+// JSON Web Token helper function.
+
 function createJwtToken(user) {
   var payload = {
     user: user,
@@ -302,3 +312,9 @@ function createJwtToken(user) {
   };
   return jwt.encode(payload, config.tokenSecret);
 }
+
+// Start the server.
+
+app.listen(app.get('port'), function() {
+  console.log('Express server listening on port ' + app.get('port'));
+});
