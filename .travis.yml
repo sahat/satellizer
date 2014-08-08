@@ -4,10 +4,10 @@ node_js:
   - "0.10"
 
 script:
-  - node_modules/.bin/karma start karma.conf.js --no-auto-watch --single-run --browsers PhantomJS
+  - ./node_modules/karma/bin/karma start karma.conf.js --no-auto-watch --single-run --browsers PhantomJS
 
 before_script:
-  - npm install -g bower
+  - npm install -g bower karma-cli
   - npm install
   - bower install angular angular-mocks
 
