@@ -2,8 +2,8 @@
 
 # [Satellizer](https://github.com/sahat/satellizer/) 
 [![Build Status](https://travis-ci.org/sahat/satellizer.svg?branch=master)](https://travis-ci.org/sahat/satellizer) 
-[![Code Climate](http://img.shields.io/codeclimate/github/sahat/satellizer.svg)](https://codeclimate.com/github/sahat/satellizer) 
-[![Coverage](http://img.shields.io/codeclimate/coverage/github/satellizer/satellizer.svg)](https://codeclimate.com/github/sahat/satellizer)
+[![Code Climate](https://codeclimate.com/github/sahat/satellizer/badges/gpa.svg)](https://codeclimate.com/github/sahat/satellizer) 
+[![Test Coverage](https://codeclimate.com/github/sahat/satellizer/badges/coverage.svg)](https://codeclimate.com/github/sahat/satellizer)
 [![Bower version](https://badge.fury.io/bo/satellizer.svg)](http://badge.fury.io/bo/satellizer)
 
 **:palm_tree: Demo:** [http://satellizer.herokuapp.com](http://satellizer.herokuapp.com)
