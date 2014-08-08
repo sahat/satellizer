@@ -6,9 +6,14 @@
 [![Test Coverage](https://codeclimate.com/github/sahat/satellizer/badges/coverage.svg)](https://codeclimate.com/github/sahat/satellizer)
 [![Bower version](https://badge.fury.io/bo/satellizer.svg)](http://badge.fury.io/bo/satellizer)
 
-**:palm_tree: Demo:** [http://satellizer.herokuapp.com](http://satellizer.herokuapp.com)
+**Live Demo:** [http://satellizer.herokuapp.com](http://satellizer.herokuapp.com)
 
-**Satellizer** is a simple to use, end-to-end, token-based authentication module for [AngularJS](http://angularjs.org) with built-in support for Google, Facebook, LinkedIn, Twitter and Email & Password sign-in methods. You are not limited to the sign-in options above, in fact you can add any *OAuth 1.0* or *OAuth 2.0* provider by passing provider-specific information during the configuration step.
+**Satellizer** is a simple to use, end-to-end, token-based authentication module 
+for [AngularJS](http://angularjs.org) with built-in support for Google, Facebook,
+LinkedIn, Twitter authentication providers, plus Email and Password sign-in 
+method. You are not limited to the sign-in options above, in fact you can add
+any *OAuth 1.0* or *OAuth 2.0* provider by passing provider-specific information
+during the configuration step.
 
 ![Screenshot](https://lh4.googleusercontent.com/-0UUIecT-3N4/U-LQJkd75iI/AAAAAAAAEZY/YN3Oe-eUPGc/w1676-h1158-no/satellizer.png)
 
