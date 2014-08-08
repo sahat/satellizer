@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "author": "Sahat Yalkabov",
   "scripts": {
-    "test": "karma start"
+    "test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS"
   },
   "devDependencies": {
     "gulp": "^3.8.7",
