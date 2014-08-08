@@ -323,7 +323,7 @@ function createJwtToken(user) {
   var payload = {
     user: user,
     iat: new Date().getTime(),
-    exp: moment().add('days', 7).valueOf()
+    exp: moment().add(7, 'days').valueOf()
   };
   return jwt.encode(payload, config.tokenSecret);
 }
