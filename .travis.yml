@@ -4,7 +4,8 @@ node_js:
   - "0.10"
 
 before_script:
-  - npm install -g bower
+  - npm install -g bower karma
+  - npm install
   - bower install angular angular-mocks
 
 after_script:
