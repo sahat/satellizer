@@ -166,29 +166,33 @@ app.post('/auth/google', function(req, res) {
 ////////////////////////////////////////////////////////////////////////////////
 
 app.post('/auth/linkedin', function(req, res) {
+  var accessTokenUrl = 'https://www.linkedin.com/uas/oauth2/accessToken';
+  var peopleApiUrl = 'https://api.linkedin.com/v1/people/~:(id,first-name,last-name)';
 
-  var url = 'https://www.linkedin.com/uas/oauth2/accessToken';
   var params = {
-    grant_type: 'authorization_code',
-    code: req.body.code,
     client_id: req.body.clientId,
+    redirect_uri: req.body.redirectUri,
     client_secret: config.linkedinSecret,
-    redirect_uri: req.body.redirectUri
+    code: req.body.code,
+    grant_type: 'authorization_code'
   };
-  request.post(url, { form: params, json: true }, function(err, response, data) {
-    var accessToken = data.access_token;
-    var url = 'https://api.linkedin.com/v1/people/~:(id,first-name,last-name)';
+
+  // Exchange authorization code for access token.
+  request.post(accessTokenUrl, { form: params, json: true }, function(err, response, accessToken) {
+
     var params = {
-      oauth2_access_token: accessToken,
+      oauth2_access_token: accessToken.access_token,
       format: 'json'
     };
-    request.get({ url: url, qs: params, json: true }, function(error, response, profile) {
-      User.findOne({ linkedin: profile.id }, function(err, existingUser) {
-        if (existingUser) {
+
+    // Retrieve information about the current user.
+    request.get({ url: peopleApiUrl, qs: params, json: true }, function(error, response, profile) {
+      User.findOne({ linkedin: profile.id }, function(err, user) {
+        if (user) {
           var token = createJwtToken(existingUser);
           return res.send(token);
         }
-        var user = new User({
+        user = new User({
           linkedin: profile.id,
           firstName: profile.firstName,
           lastName: profile.lastName
@@ -198,7 +202,6 @@ app.post('/auth/linkedin', function(req, res) {
           res.send(token);
         });
       });
-
     });
   });
 });
