@@ -19,20 +19,11 @@ describe('Configuration', function() {
     expect(stringOptions).toBe('width=481,height=269');
   }));
 
+
+
   it('should open a new popup', inject(function(Popup) {
-    var oauthData = null;
-    var url = 'https://www.facebook.com/dialog/oauth';
-    var open = function() {
-      Popup.open(url).then(function(data) {
-        oauthData = data;
-        console.log(oauthData)
-      });
-    };
-    expect(open).toBeDefined();
+    var open = Popup.open('https://www.facebook.com/dialog/oauth');
+    expect(angular.isObject(open)).toBe(true);
   }));
-
-
-
-
 });
 
