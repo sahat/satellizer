@@ -18,12 +18,19 @@ var qs = require('querystring');
 
 var config = {
   tokenSecret: 'keyboard cat',
-  facebookSecret: '298fb6c080fda239b809ae418bf49700',
-  googleSecret: 'xGxxgKAObIRUwOKycySkL9Fi',
-  linkedinSecret: '7bDltzdHlP9b42xy',
+  facebook: {
+    clientSecret: '298fb6c080fda239b809ae418bf49700'
+  },
+  google: {
+    clientSecret: 'xGxxgKAObIRUwOKycySkL9Fi'
+  },
+  linkedin: {
+    clientSecret: '7bDltzdHlP9b42xy'
+  },
   twitter: {
     consumerKey: 'vdrg4sqxyTPSRdJHKu4UVVdeD',
-    consumerSecret: 'cUIobhRgRlXsFyObUMg3tBq56EgGSwabmcavQP4fncABvotRMA'
+    consumerSecret: 'cUIobhRgRlXsFyObUMg3tBq56EgGSwabmcavQP4fncABvotRMA',
+    callbackUrl: 'http://localhost:3000'
   }
 };
 
@@ -244,27 +251,27 @@ app.post('/auth/facebook', function(req, res) {
 ////////////////////////////////////////////////////////////////////////////////
 
 app.get('/auth/twitter', function(req, res) {
-  var oauth;
   var requestTokenUrl = 'https://api.twitter.com/oauth/request_token';
   var accessTokenUrl = 'https://api.twitter.com/oauth/access_token';
   var authenticateUrl = 'https://api.twitter.com/oauth/authenticate';
-  var callbackUrl = 'http://localhost:3000';
 
   if (req.query.oauth_token && req.query.oauth_verifier) {
-    oauth = {
+    var accessTokenOauth = {
       consumer_key: config.twitter.consumerKey,
       consumer_secret: config.twitter.consumerSecret,
       token: req.query.oauth_token,
       verifier: req.query.oauth_verifier
     };
-    request.post({ url: accessTokenUrl, oauth: oauth }, function(error, response, body) {
-      var profile = qs.parse(body);
-      User.findOne({ twitter: profile.user_id }, function(err, existingUser) {
-        if (existingUser) {
-          var token = createJwtToken(existingUser);
+
+    // Step 3. Exchange oauth token and oauth verifier for access token.
+    request.post({ url: accessTokenUrl, oauth: accessTokenOauth }, function(error, response, profile) {
+      profile = qs.parse(profile);
+      User.findOne({ twitter: profile.user_id }, function(err, user) {
+        if (user) {
+          var token = createJwtToken(user);
           return res.send(token);
         }
-        var user = new User({
+        user = new User({
           twitter: profile.user_id,
           firstName: profile.screen_name
         });
@@ -275,15 +282,19 @@ app.get('/auth/twitter', function(req, res) {
       });
     });
   } else {
-    oauth = {
+    var requestTokenOauth = {
       consumer_key: config.twitter.consumerKey,
       consumer_secret: config.twitter.consumerSecret,
-      callback: callbackUrl
+      callback: config.twitter.callbackUrl
     };
-    request.post({ url: requestTokenUrl, oauth: oauth }, function(error, response, body) {
+
+    // Step 1. Obtain request token.
+    request.post({ url: requestTokenUrl, oauth: requestTokenOauth }, function(error, response, body) {
       var oauthToken = qs.parse(body);
       var params = qs.stringify({ oauth_token: oauthToken.oauth_token });
-      res.redirect([authenticateUrl, params].join('?'));
+
+      // Step 2. Redirect to the authorization screen.
+      res.redirect(authenticateUrl + '?' + params);
     });
   }
 });
