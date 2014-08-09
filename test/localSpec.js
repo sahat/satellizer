@@ -46,9 +46,15 @@ describe('Email and password flow', function() {
     expect(result).toEqual('Wrong email or password');
   }));
 
-  it('should have a logout function', inject(function($window, Local) {
+  it('should have a logout function', inject(function(Local) {
     expect(Local.logout).toBeDefined();
     expect(angular.isFunction(Local.logout)).toBe(true);
+  }));
+
+  it('should log out a user', inject(function($window, $location, Local) {
+    Local.logout();
+    expect($window.localStorage.jwtToken).toBeUndefined();
+    expect($location.path()).toEqual('/');
   }));
 
   it('should have a signup function', inject(function($window, Local) {
