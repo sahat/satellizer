@@ -62,6 +62,23 @@ describe('Email and password flow', function() {
     expect(angular.isFunction(Local.signup)).toBe(true);
   }));
 
+  it('should create a new user', inject(function($httpBackend, $location, Local) {
+    var user = {
+      email: 'john@email.com',
+      password: '1234'
+    };
+
+    $httpBackend.expectPOST('/auth/signup').respond(200);
+
+    Local.signup(user);
+
+    $httpBackend.flush();
+
+    expect($location.path()).toEqual('/login');
+  }));
+
+
+
   it('should have a isAuthenticated function', inject(function($window, Local) {
     expect(Local.isAuthenticated).toBeDefined();
     expect(angular.isFunction(Local.isAuthenticated)).toBe(true);
