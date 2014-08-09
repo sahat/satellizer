@@ -77,11 +77,13 @@ describe('Email and password flow', function() {
     expect($location.path()).toEqual('/login');
   }));
 
-
-
-  it('should have a isAuthenticated function', inject(function($window, Local) {
+  it('should have a isAuthenticated function', inject(function(Local) {
     expect(Local.isAuthenticated).toBeDefined();
     expect(angular.isFunction(Local.isAuthenticated)).toBe(true);
+  }));
+
+  it('should have a isAuthenticated function', inject(function(Local) {
+    expect(Local.isAuthenticated()).toBe(false);
   }));
 });
 
