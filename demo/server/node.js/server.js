@@ -134,13 +134,13 @@ app.post('/auth/google', function(req, res) {
     grant_type: 'authorization_code'
   };
 
-  // Exchange authorization code for access token.
+  // Step 1. Exchange authorization code for access token.
   request.post(accessTokenUrl, { json: true, form: params }, function(error, response, token) {
 
     var accessToken = token.access_token;
     var headers = { Authorization: 'Bearer ' + accessToken };
 
-    // Retrieve information about the current user.
+    // Step 2. Retrieve information about the current user.
     request.get({ url: peopleApiUrl, headers: headers, json: true }, function(error, response, profile) {
       User.findOne({ google: profile.sub }, function(err, user) {
         if (user) {
@@ -177,7 +177,7 @@ app.post('/auth/linkedin', function(req, res) {
     grant_type: 'authorization_code'
   };
 
-  // Exchange authorization code for access token.
+  // Step 1. Exchange authorization code for access token.
   request.post(accessTokenUrl, { form: params, json: true }, function(err, response, accessToken) {
 
     var params = {
@@ -185,7 +185,7 @@ app.post('/auth/linkedin', function(req, res) {
       format: 'json'
     };
 
-    // Retrieve information about the current user.
+    // Step 2. Retrieve information about the current user.
     request.get({ url: peopleApiUrl, qs: params, json: true }, function(error, response, profile) {
       User.findOne({ linkedin: profile.id }, function(err, user) {
         if (user) {
@@ -221,11 +221,11 @@ app.post('/auth/facebook', function(req, res) {
     code: req.body.code
   };
 
-  // Exchange authorization code for access token.
+  // Step 1. Exchange authorization code for access token.
   request.get({ url: accessTokenUrl, qs: params }, function(error, response, accessToken) {
     accessToken = qs.parse(accessToken);
 
-    // Retrieve information about the current user.
+    // Step 2. Retrieve information about the current user.
     request.get({ url: graphApiUrl, qs: accessToken, json: true }, function(error, response, profile) {
       User.findOne({ facebook: profile.id }, function(err, user) {
         if (user) {
@@ -329,7 +329,7 @@ function ensureAuthenticated(req, res, next) {
 function createJwtToken(user) {
   var payload = {
     user: user,
-    iat: new Date().getTime(),
+    iat: moment().valueOf(),
     exp: moment().add(7, 'days').valueOf()
   };
   return jwt.encode(payload, config.tokenSecret);
