@@ -23,6 +23,15 @@ describe('Configuration', function() {
     expect(authProvider.setProvider).toBeDefined();
   });
 
+  it('should update provider with new params', function() {
+    authProvider.setProvider({
+      name: 'facebook',
+      scope: 'profile'
+    });
+    var facebook = authProvider.getProvider('facebook');
+    expect(facebook.scope).toBe('profile');
+  });
+
   it('should have addProvider method', function() {
     expect(authProvider.addProvider).toBeDefined();
   });
