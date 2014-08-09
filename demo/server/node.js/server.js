@@ -77,8 +77,6 @@ app.use(bodyParser.urlencoded());
 app.use(express.static(path.join(__dirname, '../../client')));
 app.use(express.static(path.join(__dirname, '../../../lib')));
 
-// Get user's profile.
-
 app.get('/api/me', ensureAuthenticated, function(req, res) {
   res.send(req.user);
 });
@@ -304,22 +302,19 @@ app.get('/auth/twitter', function(req, res) {
 ////////////////////////////////////////////////////////////////////////////////
 
 function ensureAuthenticated(req, res, next) {
-  if (req.headers.authorization) {
-    var token = req.headers.authorization.split(' ')[1];
-    try {
-      var decoded = jwt.decode(token, config.tokenSecret);
-      if (decoded.exp <= Date.now()) {
-        res.send(400, 'Access token has expired');
-      } else {
-        req.user = decoded.user;
-        return next();
-      }
-    } catch (err) {
-      return res.send(500, 'Error parsing token');
-    }
-  } else {
+  if (!req.headers.authorization) {
     return res.send(401);
   }
+
+  var token = req.headers.authorization.split(' ')[1];
+  var payload = jwt.decode(token, config.tokenSecret);
+
+  if (payload.exp <= Date.now()) {
+    return res.send(401, 'Token has expired');
+  }
+
+  req.user = payload.user;
+  next();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
