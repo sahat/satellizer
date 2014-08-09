@@ -2,12 +2,14 @@ describe('OAuth 2.0 Login', function() {
 
   var auth;
   var httpBackend;
+  var oauth2;
 
   beforeEach(module('Satellizer'));
 
-  beforeEach(inject(function($auth, $httpBackend) {
+  beforeEach(inject(function($auth, $httpBackend, Oauth2) {
     auth = $auth;
     httpBackend = $httpBackend;
+    oauth2 = Oauth2;
   }));
 
   it('authenticate should be defined', function() {
@@ -29,13 +31,19 @@ describe('OAuth 2.0 Login', function() {
     expect(authenticate).toThrow();
   });
 
-//  it('should sign in with facebook', function() {
-//    var authenticate = function() {
-//
-//    };
-//    console.log(auth.authenticate('facebook'))
-//    expect(authenticate).toBe(true);
-//  });
+  it('should call open method', function() {
+    oauth2.open({
+      url: '/auth/facebook',
+      authorizationEndpoint: 'https://www.facebook.com/dialog/oauth',
+      redirectUri: window.location.origin + '/',
+      scope: 'email',
+      requiredUrlParams: ['display'],
+      display: 'popup',
+      type: 'oauth2',
+
+    });
+    expect(oauth2.open).toBeDefined();
+  });
 
 
 
