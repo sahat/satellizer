@@ -13,6 +13,12 @@ describe('Configuration', function() {
     expect(preparedOptions.top).toBeDefined();
   }));
 
+  it('should stringify popup options', inject(function(Popup) {
+    var options = { width: 481, height: 269 };
+    var stringOptions = Popup.stringifyOptions(options);
+    expect(stringOptions).toBe('width=481,height=269');
+  }));
+
   it('should open a new popup', inject(function(Popup) {
     var oauthData = null;
     var url = 'https://www.facebook.com/dialog/oauth';
