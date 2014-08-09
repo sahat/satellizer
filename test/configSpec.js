@@ -36,5 +36,17 @@ describe('Configuration', function() {
     expect(authProvider.addProvider).toBeDefined();
   });
 
+  it('should add a new provider', function() {
+    authProvider.addProvider({
+      name: 'github',
+      url: '/auth/github',
+      authorizationEndpoint: 'https://github.com/login/oauth/authorize'
+    });
+    var github = authProvider.getProvider('github');
+    expect(github).toBeDefined();
+    expect(angular.isObject(github)).toBe(true);
+    expect(github.name).toBe('github');
+  });
+
 });
 
