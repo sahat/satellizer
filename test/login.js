@@ -1,38 +1,31 @@
 describe('Login with email and password', function() {
   beforeEach(module('Satellizer'));
 
-  it('should have a login function', inject(function($auth) {
-    expect(angular.isFunction($auth.login)).toBe(true);
+  it('should have a login function', inject(function(Local) {
+    expect(angular.isFunction(Local.login)).toBe(true);
   }));
 
-  it('should throw an error without params', inject(function($auth) {
-    var login = function() {
-      $auth.login();
+  it('should return a user object on successful login', inject(function($httpBackend, Local) {
+    var result = null;
+    var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7Il9pZCI6IjUzZTU3ZDZiY2MzNmMxNTgwNzU4NDJkZCIsImVtYWlsIjoiZm9vQGJhci5jb20iLCJfX3YiOjB9LCJpYXQiOjE0MDc1NDg3ODI5NzMsImV4cCI6MTQwODE1MzU4Mjk3M30.1Ak6mij5kfkSi6d_wtPOx4yK7pS7ZFSiwbkL7AJbnYs';
+    var user = {
+      email: 'foo@bar.com',
+      password: '1234'
     };
-    expect(login).toThrow();
-  }));
 
-  it('should return a current user', inject(function($httpBackend, $auth) {
-    var result;
-    $httpBackend.expectPOST('/auth/login').respond({
-      token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7Il9pZCI6IjUzZTEzYjIxMzczNjA2NjgwMjhjOWU3OCIsImVtYWlsIjoic2FoYXRAbWUuY29tIiwicGFzc3dvcmQiOiIkMmEkMTAkQVZTVFZmS3kyZDFFeUFnYWFYVTlydUdKTlplUUNjS1RzREJOL1lGUWFVNEpVb0VDdEtULnUiLCJfX3YiOjB9LCJpYXQiOjE0MDcyNzAyNDQ5MDEsImV4cCI6MTQwNzg3NTA0NDkwMn0.hjVTwHh1xjzq5BhLA1bw1iI_STQwhDLFxqyDxZ8mnaY'
-    });
+    $httpBackend.expectPOST('/auth/login').respond(token);
 
-    $auth.login({ email: 'foo@bar.com', password: '1234' }).then(function(response) {
+    Local.login(user).then(function(response) {
       result = response;
     });
 
     $httpBackend.flush();
 
-    expect(angular.isObject(result)).toBe(true);
     expect(result).toEqual({
-      _id: '53e13b2137360668028c9e78',
-      email: 'sahat@me.com',
-      password: '$2a$10$AVSTVfKy2d1EyAgaaXU9ruGJNZeQCcKTsDBN/YFQaU4JUoECtKT.u',
+      _id: '53e57d6bcc36c158075842dd',
+      email: 'foo@bar.com',
       __v: 0
     });
   }));
-
-
 });
 
