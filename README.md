@@ -142,19 +142,22 @@ how the authentication process works.
 
 ### Login with OAuth 2.0
 
-1. Opens popup window via `$auth.authenticate('provider_name')`.
-2. *Sign in* with that provider by entering your username and password.
-3. Popup is redirected back to your app, e.g. **http://localhost:3000**, with the `?code=` url parameter.
-4. The code is sent back to the parent window and popup is immediately closed.
-5. Parent window sends a `POST` request to **/auth/provider** with the authorization code from popup.
-6. On the server, *authorization code* is exchanged for *access token*.
-7. User information is retrived using the *access token* from **Step 6**.
-8. Look up the user by the unique *provider id*. If user already exists, grab 
+1. **Client:** Open a popup window via `$auth.authenticate('provider_name')`.
+2. **Client:** Sign in with that provider by entering your username and password.
+3. **Client:** Popup is redirected back to your app, e.g. **http://localhost:3000**, 
+with the `code` url parameter.
+4. **Client:** The `code` (authorization code) is sent back to the parent window
+and popup is immediately closed.
+5. **Client:** Parent window sends a `POST` request to **/auth/provider** with the 
+authorization code from popup.
+6. **Server:** Then *authorization code* is exchanged for *access token*.
+7. **Server:** User information is retrived using the *access token* from **Step 6**.
+8. **Server:** Look up the user by the unique *provider id*. If user already exists, grab 
 the existing user, otherwise create a new user account.
-9. In both cases of Step 8 creates a *JSON Web Token* using user object as the
+9. **Server:** In both cases of Step 8 creates a *JSON Web Token* using user object as the
 its *payload*.
-10. Reply with JSON Web Token.
-11. Back on the client, parse the token, extract user information from the
+10. **Server:** Reply with JSON Web Token.
+11. **Client:** Parse the token, extract user information from the
 payload and save it to Local Storage for subsequent use after page reload.
 
 ### Login with OAuth 1.0
