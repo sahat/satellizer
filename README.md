@@ -19,7 +19,8 @@ during the configuration step.
 
 ## Installation
 
-The easiest way to get **Satellizer** is by running either of the following commands:
+The easiest way to get **Satellizer** is by running one of the following 
+commands:
 
 ```bash
 # Bower
@@ -29,32 +30,32 @@ bower install satellizer --save
 npm install satellizer --save
 ```
 
-**Note:** Alternatively, you may just manually grab `satellizer.js` or `satellizer.min.js` from the **lib** directory.
+**Note:** Alternatively, you may just manually grab `satellizer.js` or
+`satellizer.min.js` from the [lib](https://github.com/sahat/satellizer/tree/master/lib)
+directory.
 
 ## Usage
 
-This example demonstrates end-to-end sign-in process using AngularJS, Node.js and MongoDB. For other languages and server-side frameworks see **examples** directory.
+This example demonstrates end-to-end sign-in process using AngularJS, 
+Node.js and MongoDB. For other languages and server-side frameworks 
+see **examples** directory.
 
-### Client-side
 
 **app.js**
-Include `Satellizer` just as any other AngularJS module. The `$authProvider` can then be injected into the [configuration block](https://docs.angularjs.org/guide/module) of your application. You do not need to give much information for pre-defined OAuth providers as it has already been done for you.
-
 ```js
 angular.module('MyApp', ['Satellizer'])
   .config(function($authProvider) {
+    
     $authProvider.setProvider({
       name: 'facebook',
       clientId: '624059410963642',
       url: '/auth/facebook'
     });
+    
   });
 ```
 
-**controllers/login.js**
-The `$auth` provider can now be injected into your controllers. Since we are in the
-*run phase* and not the *configuration phase* at this point, we can drop the `Provider` postfix.
- 
+**loginCtrl.js**
 ```js
 angular.module('MyApp')
   .controller('LoginCtrl', function($scope, $auth) {
@@ -66,57 +67,13 @@ angular.module('MyApp')
   });
 ```
 
-**views/login.html**
-The `$auth.authenticate` expects a valid provider name, i.e. *facebook*, *google*,
- *linkedin*, *twitter* or any custom provider that you have created in the config
- block.
+For server-side usage please refer to the [examples](https://github.com/sahat/satellizer/tree/master/examples)
+directory.
 
+**login.html**
 ```html
 <button ng-click="authenticate('facebook')">Sign in with Facebook</button>
 ```
-
-### Server-side
-
-After user enters his/her Facebook credentials, a *POST* request is made to this end-point with the `code` object, which stands for `authorization_code`. The code is then exchanged for an `access_token`. And finally access token is used to query the [Graph API](https://developers.facebook.com/docs/graph-api) to get user's profile information. It is then checks if it's a new or a returning user. And finally it generates a *JSON Web Token* that is sent back to the client.
-
-```js
-app.post('/auth/facebook', function(req, res, next) {
-  var url = 'https://graph.facebook.com/oauth/access_token';
-  var params = qs.stringify({
-    redirect_uri: req.body.redirectUri,
-    client_secret: config.facebookSecret,
-    client_id: req.body.clientId,
-    code: req.body.code
-  });
-
-  request.get([url, params].join('?'), function(error, response, data) {
-    var accessToken = qs.parse(data).access_token;
-    var graphApiUrl = 'https://graph.facebook.com/me';
-    var params = {
-      access_token: accessToken
-    };
-    request.get({ url: graphApiUrl, qs: params, json: true }, function(error, response, profile) {
-      User.findOne({ facebook: profile.id }, function(err, existingUser) {
-        if (existingUser) {
-          var token = createJwtToken(existingUser);
-          return res.send(token);
-        }
-        var user = new User({
-          facebook: profile.id,
-          firstName: profile.first_name,
-          lastName: profile.last_name
-        });
-        user.save(function(err) {
-          if (err) return next(err);
-          var token = createJwtToken(user);
-          res.send(token);
-        });
-      });
-    });
-  });
-});
-```
-
 
 ## Configuration
 
@@ -202,7 +159,7 @@ how each authentication process works.
 
 ## Obtaining OAuth Keys
 
-<img src="http://images.google.com/intl/en_ALL/images/srpr/logo6w.png" width="200">
+<img src="http://images.google.com/intl/en_ALL/images/srpr/logo6w.png" width="150">
 - Visit [Google Cloud Console](https://cloud.google.com/console/project)
 - Click **CREATE PROJECT** button
 - Enter *Project Name*, then click **CREATE**
@@ -214,7 +171,7 @@ how each authentication process works.
 
 <hr>
 
-<img src="http://www.doit.ba/img/facebook.jpg" width="200">
+<img src="http://www.etherelive.com/files/Facebooklogo.png" width="150">
 - Visit [Facebook Developers](https://developers.facebook.com/)
 - Click **Apps > Create a New App** in the navigation bar
 - Enter *Display Name*, then choose a category, then click **Create app**
@@ -224,7 +181,7 @@ how each authentication process works.
 
 <hr>
 
-<img src="https://g.twimg.com/Twitter_logo_blue.png" width="90">
+<img src="http://indonesia-royal.com/wp-content/uploads/2014/06/twitter-bird-square-logo.jpg" width="150">
 - Sign in at [https://dev.twitter.com](https://dev.twitter.com/)
 - From the profile picture dropdown menu select **My Applications**
 - Click **Create a new application**
