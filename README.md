@@ -137,18 +137,42 @@ $authProvider.setProvider({
 ## How It Works
 **Satellizer** relies on *Token-Based Authentication* with
 [JSON Web Tokens](https://auth0.com/blog/2014/01/07/angularjs-authentication-with-cookies-vs-token/) 
-instead of cookies and sessions. Below are mini-tutorials that go in depth into
-how each authentication process works.
+instead of cookies and sessions. Each sub-section below goes in-depth into
+how the authentication process works.
 
 ### Login with OAuth 2.0
 
-### Login OAuth 1.0
+1. Open a popup window by callign `$auth.authenticate('provider_name')`.
+2. *Sign in* with that provider by entering your username and password.
+3. Popup is redirected back to your app, e.g. **http://localhost:3000**, with the `?code=` url parameter.
+4. The code is sent back to the parent window and popup is immediately closed.
+5. Parent window sends a `POST` request to **/auth/provider** with the authorization code from popup.
+6. On the server, *authorization code* is exchanged for *access token*.
+7. User information is retrived using the *access token* from **Step 6**.
+8. Look up the user by the unique *provider id*. If user already exists, grab 
+the existing user, otherwise create a new user account.
+9. In both cases of Step 8 creates a *JSON Web Token* using user object as the
+its *payload*.
+10. Reply with JSON Web Token.
+11. Back on the client, parse the token, extract user information from the
+payload and save it to Local Storage for subsequent use after page reload.
+
+### Login with OAuth 1.0
+
+foo bar
+
 
 ### Login with Email and Password
 
+foo bar
+
 ### Signup
 
+foo bar
+
 ### Logout
+
+foo bar
 
 ## Obtaining OAuth Keys
 
