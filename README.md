@@ -142,7 +142,7 @@ how the authentication process works.
 
 ### Login with OAuth 2.0
 
-1. Open a popup window by callign `$auth.authenticate('provider_name')`.
+1. Opens popup window via `$auth.authenticate('provider_name')`.
 2. *Sign in* with that provider by entering your username and password.
 3. Popup is redirected back to your app, e.g. **http://localhost:3000**, with the `?code=` url parameter.
 4. The code is sent back to the parent window and popup is immediately closed.
