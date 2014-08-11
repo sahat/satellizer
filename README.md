@@ -36,11 +36,6 @@ directory.
 
 ## Usage
 
-This example demonstrates end-to-end sign-in process using AngularJS, 
-Node.js and MongoDB. For other languages and server-side frameworks 
-see **examples** directory.
-
-
 **app.js**
 ```js
 angular.module('MyApp', ['Satellizer'])
@@ -60,20 +55,18 @@ angular.module('MyApp', ['Satellizer'])
 angular.module('MyApp')
   .controller('LoginCtrl', function($scope, $auth) {
     $scope.authenticate = function(provider) {
-      $auth.authenticate(provider).then(function() {
-        console.log('Authenticated!');
-      });
-    }
+      $auth.authenticate(provider);
+    };
   });
 ```
-
-For server-side usage please refer to the [examples](https://github.com/sahat/satellizer/tree/master/examples)
-directory.
 
 **login.html**
 ```html
 <button ng-click="authenticate('facebook')">Sign in with Facebook</button>
 ```
+
+For server-side usage please refer to the [examples](https://github.com/sahat/satellizer/tree/master/examples)
+directory.
 
 ## Configuration
 
@@ -171,7 +164,7 @@ how each authentication process works.
 
 <hr>
 
-<img src="http://www.etherelive.com/files/Facebooklogo.png" width="150">
+<img src="http://www.doit.ba/img/facebook.jpg" width="150">
 - Visit [Facebook Developers](https://developers.facebook.com/)
 - Click **Apps > Create a New App** in the navigation bar
 - Enter *Display Name*, then choose a category, then click **Create app**
@@ -181,7 +174,7 @@ how each authentication process works.
 
 <hr>
 
-<img src="http://indonesia-royal.com/wp-content/uploads/2014/06/twitter-bird-square-logo.jpg" width="150">
+<img src="http://indonesia-royal.com/wp-content/uploads/2014/06/twitter-bird-square-logo.jpg" height="70">
 - Sign in at [https://dev.twitter.com](https://dev.twitter.com/)
 - From the profile picture dropdown menu select **My Applications**
 - Click **Create a new application**
