@@ -20,7 +20,6 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'Satellizer'])
       .when('/protected', {
         templateUrl: 'views/protected.html',
         controller: 'ProtectedCtrl',
-        authenticated: true
       })
       .otherwise({
         redirectTo: '/'
@@ -39,10 +38,5 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'Satellizer'])
     $authProvider.setProvider({
       name: 'linkedin',
       clientId: '77cw786yignpzj'
-    });
-
-    $authProvider.setProvider({
-      name: 'twitter',
-      consumerKey: 'vdrg4sqxyTPSRdJHKu4UVVdeD'
     });
   });
