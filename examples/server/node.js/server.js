@@ -75,7 +75,6 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(express.static(path.join(__dirname, '../../client')));
-app.use(express.static(path.join(__dirname, '../../../lib')));
 
 app.get('/api/me', ensureAuthenticated, function(req, res) {
   res.send(req.user);
