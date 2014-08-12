@@ -1,6 +1,6 @@
 import json
 import os
-from flask import Flask, send_file, request, session, g, redirect, url_for, abort, jsonify
+from flask import Flask, send_file, request, make_response, g, redirect, url_for, abort, jsonify
 from flask.ext.sqlalchemy import SQLAlchemy
 
 # Configuration
@@ -39,6 +39,13 @@ class User(db.Model):
     linkedin = db.Column(db.String(120))
     twitter = db.Column(db.String(120))
 
+    def __init__(self, username, email):
+        self.username = username
+        self.email = email
+
+    def __repr__(self):
+        return '<User %r>' % self.email
+
 db.create_all()
 
 # Routes
@@ -54,6 +61,12 @@ def me():
 
 @app.route('/auth/login', methods=['POST'])
 def login():
+    user = User.query.filter_by(email='hio').first()
+    if not user:
+        response = jsonify({'message': "Wrong Email or Password"})
+        response.status_code = 401
+        return response
+
     # find user by email
     # return 401 if no email is found
     # compare password, return 401 if no match
