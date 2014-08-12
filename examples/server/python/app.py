@@ -1,7 +1,10 @@
-import sqlite3
-from flask import Flask, request, session, g, redirect, url_for, abort
+import json
+import os
+from flask import Flask, send_file, request, session, g, redirect, url_for, abort, jsonify
+from flask.ext.sqlalchemy import SQLAlchemy
 
-# configuration
+# Configuration
+
 DATABASE = '/tmp/flaskr.db'
 DEBUG = True
 SECRET_KEY = 'development key'
@@ -14,21 +17,59 @@ LINKEDIN_SECRET = '7bDltzdHlP9b42xy'
 TWITTER_CONSUMER_KEY = 'vdrg4sqxyTPSRdJHKu4UVVdeD'
 TWITTER_CONSUMER_SECRET = 'cUIobhRgRlXsFyObUMg3tBq56EgGSwabmcavQP4fncABvotRMA'
 TWITTER_CALLBACK_URL = 'http://localhost:3000'
+SQLALCHEMY_DATABASE_URI = 'sqlite:///app.db'
 
-app = Flask(__name__)
+client_dir = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '..', 'client'))
+
+app = Flask(__name__, static_url_path='', static_folder=client_dir)
 app.config.from_object(__name__)
+
+# Database and User Model
+
+db = SQLAlchemy(app)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True)
+    password = db.Column(db.String(120))
+    first_name = db.Column(db.String(120))
+    last_name = db.Column(db.String(120))
+    facebook = db.Column(db.String(120))
+    google = db.Column(db.String(120))
+    linkedin = db.Column(db.String(120))
+    twitter = db.Column(db.String(120))
+
+db.create_all()
+
+# Routes
+
+@app.route('/')
+def index():
+  return send_file('../../client/index.html')
 
 @app.route('/api/me')
 def me():
-    pass
+    users = User.query.all()
+    return jsonify(users)
 
 @app.route('/auth/login', methods=['POST'])
 def login():
+    # find user by email
+    # return 401 if no email is found
+    # compare password, return 401 if no match
+    # delete password
+    # return jsonify user
     pass
 
 @app.route('/auth/signup', methods=['POST'])
 def signup():
-    pass
+    print request.json['email']
+    print request.json['password']
+    u = User(email=request.json['email'],
+             password=request.json['password'])
+    db.session.add(u)
+    db.session.commit()
+    return 'OK'
 
 @app.route('/auth/facebook', methods=['POST'])
 def facebook():
