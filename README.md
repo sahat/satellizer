@@ -196,7 +196,9 @@ foo bar
 
 ### Logout
 
-foo bar
+1. **Client:** Delete `currentUser` from the `$rootScope`.
+2. **Client:** Delete `jwtToken` from the Local Storage.
+3. **Client:** Redirect to `logoutRedirect`. (Default: `/`)
 
 ## Obtaining OAuth Keys
 
