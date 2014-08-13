@@ -8,6 +8,7 @@ from flask import Flask, send_file, request, make_response, g, redirect, \
     url_for, abort, jsonify
 from flask.ext.sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+from requests_oauthlib import OAuth1
 
 # TODO: refactor and break apart code into modules
 
@@ -228,7 +229,18 @@ def linkedin():
 
 @app.route('/auth/twitter')
 def twitter():
-    pass
+    request_token_url = 'https://api.twitter.com/oauth/request_token'
+    access_token_url = 'https://api.twitter.com/oauth/access_token'
+    authenticate_url = 'https://api.twitter.com/oauth/authenticate'
+
+    if request.args.get('oauth_token') and request.args.get('oauth_verifier'):
+        access_token_oauth = dict(
+            consumer_key=app.config['TWITTER_CONSUMER_KEY'],
+            consumer_secret=app.config['TWITTER_CONSUMER_SECRET'],
+            token=request.args.get('oauth_token'),
+            verifier=request.args.get('oauth_verifier'))
+        requests.post(access_token_url)
+
 
 
 if __name__ == '__main__':
