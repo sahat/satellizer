@@ -1,16 +1,15 @@
-import datetime
+from datetime import datetime, timedelta
 import os
 import jwt
 import json
 import requests
+from functools import wraps
 from urlparse import parse_qsl
 from urllib import urlencode
-from flask import Flask, send_file, request, redirect, url_for, jsonify
+from flask import Flask, abort, send_file, request, redirect, url_for, jsonify
 from flask.ext.sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from requests_oauthlib import OAuth1
-
-# TODO: refactor and break apart code into modules
 
 # Configuration
 
@@ -79,6 +78,47 @@ class User(db.Model):
 
 db.create_all()
 
+# Helper Functions
+
+def create_jwt_token(user):
+    payload = dict(
+        iat=datetime.now(),
+        exp=datetime.now() + timedelta(days=7),
+        user=dict(
+            id=user.id,
+            email=user.email,
+            first_name=user.first_name,
+            last_name=user.last_name,
+            facebook=user.facebook,
+            google=user.google,
+            linkedin=user.linkedin,
+            twitter=user.twitter))
+    token = jwt.encode(payload, app.config['TOKEN_SECRET'])
+    return token
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not request.headers.get('Authorization'):
+            response = jsonify(message='Missing authorization header')
+            response.status_code = 401
+            return response
+
+        auth = request.headers.get('Authorization')
+        token = auth.split()[1]
+        payload = jwt.decode(token, app.config['TOKEN_SECRET'])
+
+        print payload
+
+        if datetime(payload['exp']) <= datetime.now():
+            response = jsonify(message='Token has expired')
+            response.status_code = 401
+            return response
+
+        request.user = payload.user
+        return f(*args, **kwargs)
+    return decorated_function
+
 # Routes
 
 @app.route('/')
@@ -86,8 +126,11 @@ def index():
     return send_file('../../client/index.html')
 
 
+
 @app.route('/api/me')
+@login_required
 def me():
+    print request.user
     users = User.query.all()
     return jsonify(users)
 
@@ -110,23 +153,6 @@ def signup():
     db.session.add(u)
     db.session.commit()
     return 'OK'
-
-
-def create_jwt_token(user):
-    payload = dict(
-        iat=datetime.datetime.now(),
-        exp=datetime.datetime.now() + datetime.timedelta(days=7),
-        user=dict(
-            id=user.id,
-            email=user.email,
-            first_name=user.first_name,
-            last_name=user.last_name,
-            facebook=user.facebook,
-            google=user.google,
-            linkedin=user.linkedin,
-            twitter=user.twitter))
-    token = jwt.encode(payload, app.config['TOKEN_SECRET'])
-    return token
 
 
 @app.route('/auth/facebook', methods=['POST'])
