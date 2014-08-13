@@ -1,11 +1,19 @@
 {
   "name": "satellizer",
   "version": "1.0.0",
+  "main": "lib/satellizer.js",
   "homepage": "https://github.com/sahat/satellizer",
-  "license": "MIT",
-  "main": "dist/your-awesome-js-module.js",
   "ignore": [
     ".gitignore",
-    ".travis.yml"
+    ".travis.yml",
+    "node_modules",
+    "bower_components",
+    "test",
+    "README.md",
+    "package.json",
+    "gulpfile.js",
+    "karma.conf.js",
+    "examples",
+    "coverage"
   ]
 }
