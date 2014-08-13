@@ -1,7 +1,34 @@
 {
   "name": "satellizer",
+  "description": "Token-based AngularJS authentication module",
   "version": "1.0.0",
-  "author": "Sahat Yalkabov",
+  "homepage": "https://github.com/sahat/satellizer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sahat/satellizer.git"
+  },
+  "author": {
+    "name": "Sahat Yalkabov",
+    "email": "sahat@me.com",
+    "url": "http://sahatyalkabov.com"
+  },
+  "tags": [
+    "authentication",
+    "login",
+    "token",
+    "jwt",
+    "angularjs",
+    "angular",
+    "auth",
+    "facebook",
+    "google",
+    "linkedin",
+    "twitter",
+    "oauth",
+    "oauth 1.0",
+    "oauth 2.0",
+    "user management"
+  ],
   "devDependencies": {
     "gulp": "^3.8.7",
     "gulp-complexity": "^0.2.1",
@@ -13,9 +40,8 @@
     "karma-jasmine": "^0.1.5",
     "karma-phantomjs-launcher": "^0.1.4"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/sahat/satellizer.git"
+  "scripts": {
+    "test": "karma start"
   },
   "bugs": {
     "url": "https://github.com/sahat/satellizer/issues"
