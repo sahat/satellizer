@@ -4,7 +4,7 @@ var ngAnnotate = require('gulp-ng-annotate');
 var uglify = require('gulp-uglify');
 var complexity = require('gulp-complexity');
 
-gulp.task('default', function () {
+gulp.task('default', function() {
   return gulp.src('lib/satellizer.js')
     .pipe(ngAnnotate())
     .pipe(uglify())
@@ -12,7 +12,7 @@ gulp.task('default', function () {
     .pipe(gulp.dest('lib'));
 });
 
-gulp.task('complexity', function(){
+gulp.task('complexity', function() {
   return gulp.src('lib/satellizer.js')
     .pipe(complexity());
 });

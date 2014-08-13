@@ -8,7 +8,7 @@ describe('$auth provider', function() {
       password: '1234'
     };
 
-    $httpBackend.expectPOST('/auth/login').respond(token);
+    $httpBackend.expectPOST('/auth/login').respond({ token: token });
 
     $auth.login(user);
 
