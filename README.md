@@ -162,10 +162,10 @@ payload and save it to Local Storage for subsequent use after page reload.
 
 ### Login with OAuth 1.0
 
-1. Open a popup window via `$auth.authenticate('provider_name')`.
-2. Unlike OAuth 2.0 you cannot go directly to the authentication screen without
+1. **Client:* Open a popup window via `$auth.authenticate('provider_name')`.
+2. **Client:* Unlike OAuth 2.0 you cannot go directly to the authentication screen without
 a valid request token.
-3. The OAuth 1.0 flow starts with the `GET` request to `/auth/<provider>` inside a popup.  
+3. **Client:** The OAuth 1.0 flow starts with the `GET` request to `/auth/<provider>` inside a popup.  
 4. **Server:** Check if URL contains `oauth_token` and `oauth_verifier` parameters.
 5. **Sever:** No. Send an OAuth signed `POST` request to `/request_token` URL.
 6. **Server:** Redirect to `/authenticate` URL with a valid *request token*.
@@ -181,7 +181,14 @@ payload and save it to Local Storage for subsequent use after page reload.
 
 ### Login with Email and Password
 
-foo bar
+1. **Client:** Enter your email and password into the login form.
+2. **Client:** On form submit call `$auth.login()` by passing email and password.
+3. **Client:** Send a `POST` request to `/auth/login`.
+4. **Server:** Check if email exists, if not return `401`.
+5. **Server:** Check if password is correct, if not return `401`.
+5. **Server:** Reply with JSON Web Token.
+13. **Client:** Parse the token, extract user information from the
+payload and save it to Local Storage for subsequent use after page reload.
 
 ### Signup
 
