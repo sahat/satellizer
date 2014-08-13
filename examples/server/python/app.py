@@ -6,7 +6,7 @@ import requests
 from functools import wraps
 from urlparse import parse_qsl
 from urllib import urlencode
-from flask import Flask, abort, send_file, request, redirect, url_for, jsonify
+from flask import Flask, g, send_file, request, redirect, url_for, jsonify
 from flask.ext.sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from requests_oauthlib import OAuth1
@@ -96,6 +96,7 @@ def create_jwt_token(user):
     token = jwt.encode(payload, app.config['TOKEN_SECRET'])
     return token
 
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -103,21 +104,19 @@ def login_required(f):
             response = jsonify(message='Missing authorization header')
             response.status_code = 401
             return response
-
         auth = request.headers.get('Authorization')
         token = auth.split()[1]
         payload = jwt.decode(token, app.config['TOKEN_SECRET'])
-
-        print payload
-
         if datetime.fromtimestamp(payload['exp']) < datetime.now():
             response = jsonify(message='Token has expired')
             response.status_code = 401
             return response
 
-        request.user = payload.user
+        g.user = payload['user']
         return f(*args, **kwargs)
+
     return decorated_function
+
 
 # Routes
 
@@ -126,13 +125,10 @@ def index():
     return send_file('../../client/index.html')
 
 
-
 @app.route('/api/me')
 @login_required
 def me():
-    print request.user
-    users = User.query.all()
-    return jsonify(users)
+    return jsonify(g.user)
 
 
 @app.route('/auth/login', methods=['POST'])
