@@ -182,7 +182,7 @@ payload and save it to Local Storage for subsequent use after page reload.
 ### Login with Email and Password
 
 1. **Client:** Enter your email and password into the login form.
-2. **Client:** On form submit call `$auth.login()` by passing email and password.
+2. **Client:** On form submit call `$auth.login()` with email and password.
 3. **Client:** Send a `POST` request to `/auth/login`.
 4. **Server:** Check if email exists, if not return `401`.
 5. **Server:** Check if password is correct, if not return `401`.
@@ -192,7 +192,11 @@ payload and save it to Local Storage for subsequent use after page reload.
 
 ### Signup
 
-foo bar
+1. **Client:** Enter your email and password into the signup form.
+2. **Client:** On form submit call `$auth.signup()` with email and password.
+3. **Client:** Send a `POST` request to `/auth/signup`.
+4. **Server:** Create a new user account then return `200 OK`.
+5. **Client:** Redirect to `signupRedirect`. (Default: '/login')
 
 ### Logout
 
