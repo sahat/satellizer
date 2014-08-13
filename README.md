@@ -4,8 +4,7 @@
 [![Build Status](http://img.shields.io/travis/sahat/satellizer.svg?style=flat)](https://travis-ci.org/sahat/satellizer) 
 [![Code Climate](http://img.shields.io/codeclimate/github/kabisaict/flow.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer) 
 [![Test Coverage](http://img.shields.io/codeclimate/coverage/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
-[![Github release](http://img.shields.io/github/release/sahat/satellizer.svg?style=flat)](https://github.com/sahat/satellizer/releases)
-
+[![NPM status](http://img.shields.io/npm/v/satellizer.svg?style=flat)](https://www.npmjs.org/package/satellizer)
 
 
 
