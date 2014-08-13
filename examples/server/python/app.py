@@ -6,6 +6,8 @@ from flask import Flask, send_file, request, make_response, g, redirect, \
 from flask.ext.sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 
+# TODO: refactor and break apart code into modules
+
 # Configuration
 
 DATABASE = '/tmp/flaskr.db'
@@ -78,7 +80,7 @@ def login():
         response.status_code = 401
         return response
     payload = dict(
-        exp=datetime.datetime.now() + datetime.timedelta(days=10),
+        exp=datetime.datetime.now() + datetime.timedelta(days=7),
         user=dict(
             id=user.id,
             email=user.email,
@@ -91,7 +93,7 @@ def login():
         )
     )
     token = jwt.encode(payload, app.config['TOKEN_SECRET'])
-    return token
+    return jsonify(token=token)
 
 
 @app.route('/auth/signup', methods=['POST'])
