@@ -145,6 +145,7 @@ def facebook():
     # Step 2. Retrieve information about the current user.
     r = requests.get(graph_api_url, params=access_token)
     profile = json.loads(r.text)
+
     user = User.query.filter_by(facebook=profile['id']).first()
     if user:
         token = create_jwt_token(user)
@@ -178,7 +179,6 @@ def google():
     r = requests.get(people_api_url, headers=headers)
     profile = json.loads(r.text)
 
-
     user = User.query.filter_by(google=profile['sub']).first()
     if user:
         token = create_jwt_token(user)
@@ -194,7 +194,36 @@ def google():
 
 @app.route('/auth/linkedin', methods=['POST'])
 def linkedin():
-    pass
+    access_token_url = 'https://www.linkedin.com/uas/oauth2/accessToken'
+    people_api_url = 'https://api.linkedin.com/v1/people/~:(id,first-name,last-name)'
+
+    payload = dict(client_id=request.json['clientId'],
+                   redirect_uri=request.json['redirectUri'],
+                   client_secret=app.config['LINKEDIN_SECRET'],
+                   code=request.json['code'],
+                   grant_type='authorization_code')
+
+    # Step 1. Exchange authorization code for access token.
+    r = requests.post(access_token_url, data=payload)
+    access_token = json.loads(r.text)
+    params = dict(oauth2_access_token=access_token['access_token'],
+                  format='json')
+
+    # Step 2. Retrieve information about the current user.
+    r = requests.get(people_api_url, params=params)
+    profile = json.loads(r.text)
+
+    user = User.query.filter_by(linkedin=profile['id']).first()
+    if user:
+        token = create_jwt_token(user)
+        return jsonify(token=token)
+    u = User(linkedin=profile['id'],
+             first_name=profile['firstName'],
+             last_name=profile['lastName'])
+    db.session.add(u)
+    db.session.commit()
+    token = create_jwt_token(u)
+    return jsonify(token=token)
 
 
 @app.route('/auth/twitter')
