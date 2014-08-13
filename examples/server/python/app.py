@@ -149,18 +149,14 @@ def facebook():
     profile = json.loads(r.text)
     user = User.query.filter_by(facebook=profile['id']).first()
     if user:
-        print 'found +++++++++++++++++++++'
-        print user.first_name
-        print user.id
         token = create_jwt_token(user)
         return jsonify(token=token)
     u = User(facebook=profile['id'],
              first_name=profile['first_name'],
              last_name=profile['last_name'])
-    print u
     db.session.add(u)
     db.session.commit()
-    token = create_jwt_token(user)
+    token = create_jwt_token(u)
     return jsonify(token=token)
 
 
