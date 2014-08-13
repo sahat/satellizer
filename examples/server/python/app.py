@@ -83,20 +83,7 @@ def login():
         response = jsonify(message='Wrong Email or Password')
         response.status_code = 401
         return response
-    payload = dict(
-        exp=datetime.datetime.now() + datetime.timedelta(days=7),
-        user=dict(
-            id=user.id,
-            email=user.email,
-            first_name=user.first_name,
-            last_name=user.last_name,
-            facebook=user.facebook,
-            google=user.google,
-            linkedin=user.linkedin,
-            twitter=user.twitter
-        )
-    )
-    token = jwt.encode(payload, app.config['TOKEN_SECRET'])
+    token = create_jwt_token(user)
     return jsonify(token=token)
 
 
@@ -110,7 +97,22 @@ def signup():
 
 
 def create_jwt_token(user):
-    pass
+    payload = dict(
+        iat=datetime.datetime.now(),
+        exp=datetime.datetime.now() + datetime.timedelta(days=7),
+        user=dict(
+            id=user.id,
+            email=user.email,
+            first_name=user.first_name,
+            last_name=user.last_name,
+            facebook=user.facebook,
+            google=user.google,
+            linkedin=user.linkedin,
+            twitter=user.twitter
+        )
+    )
+    token = jwt.encode(payload, app.config['TOKEN_SECRET'])
+    return token
 
 
 @app.route('/auth/facebook', methods=['POST'])
