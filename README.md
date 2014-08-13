@@ -6,9 +6,7 @@
 [![Test Coverage](http://img.shields.io/codeclimate/coverage/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
 [![NPM status](http://img.shields.io/npm/v/satellizer.svg?style=flat)](https://www.npmjs.org/package/satellizer)
 
-
-
-**Live Demo:** [http://satellizer.herokuapp.com](http://satellizer.herokuapp.com)
+**:clapper: Live Demo:** [http://satellizer.herokuapp.com](http://satellizer.herokuapp.com)
 
 **Satellizer** is a simple to use, end-to-end, token-based authentication module 
 for [AngularJS](http://angularjs.org) with built-in support for Google, Facebook,
@@ -264,7 +262,7 @@ $auth.login({
 #### `$auth.signup(user)`
 
 Creates a new local account where: 
-- `user` - object with *email*, *password* and *other* fields.
+- `user` - object with *email*, *password* fields.
 
 ```js
 $auth.signup({
@@ -316,6 +314,17 @@ authentication state.
   <li><a href="/#/logout">Logout</a></li>
 </ul>
 ```
+
+## TODO
+
+- [ ] ASP.NET vNext implementation
+- [ ] Elixir implementation
+- [ ] Ruby on Rails implementation
+- [ ] Rust implementation
+- [ ] Go (Martini) implementation
+- [ ] Java (Spring MVC) implementation
+- [ ] Scala (Play!) implementation
+- [ ] PHP (Laravel) implementation
 
 ## License
 
