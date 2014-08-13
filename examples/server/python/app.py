@@ -123,9 +123,7 @@ def create_jwt_token(user):
             facebook=user.facebook,
             google=user.google,
             linkedin=user.linkedin,
-            twitter=user.twitter
-        )
-    )
+            twitter=user.twitter))
     token = jwt.encode(payload, app.config['TOKEN_SECRET'])
     return token
 
@@ -162,7 +160,36 @@ def facebook():
 
 @app.route('/auth/google', methods=['POST'])
 def google():
-    pass
+    access_token_url = 'https://accounts.google.com/o/oauth2/token'
+    people_api_url = 'https://www.googleapis.com/plus/v1/people/me/openIdConnect'
+
+    payload = dict(client_id=request.json['clientId'],
+                   redirect_uri=request.json['redirectUri'],
+                   client_secret=app.config['GOOGLE_SECRET'],
+                   code=request.json['code'],
+                   grant_type='authorization_code')
+
+    # Step 1. Exchange authorization code for access token.
+    r = requests.post(access_token_url, data=payload)
+    token = json.loads(r.text)
+    headers = {'Authorization': 'Bearer {0}'.format(token['access_token'])}
+
+    # Step 2. Retrieve information about the current user.
+    r = requests.get(people_api_url, headers=headers)
+    profile = json.loads(r.text)
+
+
+    user = User.query.filter_by(google=profile['sub']).first()
+    if user:
+        token = create_jwt_token(user)
+        return jsonify(token=token)
+    u = User(google=profile['sub'],
+             first_name=profile['given_name'],
+             last_name=profile['family_name'])
+    db.session.add(u)
+    db.session.commit()
+    token = create_jwt_token(u)
+    return jsonify(token=token)
 
 
 @app.route('/auth/linkedin', methods=['POST'])
