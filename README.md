@@ -1,10 +1,13 @@
 ![Project Logo](https://lh6.googleusercontent.com/-YmfKZZLZKL0/U-KVPFSbiOI/AAAAAAAAEZA/maoYT8iJCnA/w1089-h513-no/sshot-1.png)
 
 # [Satellizer](https://github.com/sahat/satellizer/) 
-[![Build Status](https://travis-ci.org/sahat/satellizer.svg?branch=master)](https://travis-ci.org/sahat/satellizer) 
-[![Code Climate](https://codeclimate.com/github/sahat/satellizer/badges/gpa.svg)](https://codeclimate.com/github/sahat/satellizer) 
-[![Test Coverage](https://codeclimate.com/github/sahat/satellizer/badges/coverage.svg)](https://codeclimate.com/github/sahat/satellizer)
-[![Bower version](https://badge.fury.io/bo/satellizer.svg)](http://badge.fury.io/bo/satellizer)
+[![Build Status](http://img.shields.io/travis/sahat/satellizer.svg?style=flat)](https://travis-ci.org/sahat/satellizer) 
+[![Code Climate](http://img.shields.io/codeclimate/github/kabisaict/flow.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer) 
+[![Test Coverage](http://img.shields.io/codeclimate/coverage/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
+[![Github release](http://img.shields.io/github/release/sahat/satellizer.svg?style=flat)](https://github.com/sahat/satellizer/releases)
+
+
+
 
 **Live Demo:** [http://satellizer.herokuapp.com](http://satellizer.herokuapp.com)
 
