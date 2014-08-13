@@ -1,5 +1,6 @@
-import json
+import datetime
 import os
+import jwt
 from flask import Flask, send_file, request, make_response, g, redirect, \
     url_for, abort, jsonify
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -53,22 +54,10 @@ class User(db.Model):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
-    def to_json(self):
-        return jsonify(id=self.id,
-                       email=self.email,
-                       first_name=self.first_name,
-                       last_name=self.last_name,
-                       facebook=self.facebook,
-                       google=self.google,
-                       linkedin=self.linkedin,
-                       twitter=self.twitter)
-
 
 db.create_all()
 
 # Routes
-
-
 
 @app.route('/')
 def index():
@@ -88,8 +77,21 @@ def login():
         response = jsonify(message='Wrong Email or Password')
         response.status_code = 401
         return response
-
-    return user.to_json()
+    payload = dict(
+        exp=datetime.datetime.now() + datetime.timedelta(days=10),
+        user=dict(
+            id=user.id,
+            email=user.email,
+            first_name=user.first_name,
+            last_name=user.last_name,
+            facebook=user.facebook,
+            google=user.google,
+            linkedin=user.linkedin,
+            twitter=user.twitter
+        )
+    )
+    token = jwt.encode(payload, app.config['TOKEN_SECRET'])
+    return token
 
 
 @app.route('/auth/signup', methods=['POST'])
