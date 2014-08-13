@@ -49,10 +49,25 @@ class User(db.Model):
     linkedin = db.Column(db.String(120))
     twitter = db.Column(db.String(120))
 
-    def __init__(self, email, password, first_name, last_name,
-                 facebook, google, linkedin, twitter):
-        self.email = email.lower()
-        self.set_password(password)
+    def __init__(self, email=None, password=None, first_name=None,
+                 last_name=None, facebook=None, google=None,
+                 linkedin=None, twitter=None):
+        if email:
+            self.email = email.lower()
+        if password:
+            self.set_password(password)
+        if first_name:
+            self.first_name = first_name
+        if last_name:
+            self.last_name = last_name
+        if facebook:
+            self.facebook = facebook
+        if google:
+            self.google = google
+        if linkedin:
+            self.linkedin = linkedin
+        if twitter:
+            self.twitter = twitter
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -132,13 +147,17 @@ def facebook():
     # Step 2. Retrieve information about the current user.
     r = requests.get(graph_api_url, params=access_token)
     profile = json.loads(r.text)
-    user = User.query.filter_by(facebook=profile['id'])
+    user = User.query.filter_by(facebook=profile['id']).first()
     if user:
+        print 'found +++++++++++++++++++++'
+        print user.first_name
+        print user.id
         token = create_jwt_token(user)
         return jsonify(token=token)
     u = User(facebook=profile['id'],
              first_name=profile['first_name'],
              last_name=profile['last_name'])
+    print u
     db.session.add(u)
     db.session.commit()
     token = create_jwt_token(user)
