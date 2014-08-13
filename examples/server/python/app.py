@@ -1,6 +1,9 @@
 import datetime
 import os
 import jwt
+import json
+import requests
+from urlparse import parse_qsl
 from flask import Flask, send_file, request, make_response, g, redirect, \
     url_for, abort, jsonify
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -46,7 +49,8 @@ class User(db.Model):
     linkedin = db.Column(db.String(120))
     twitter = db.Column(db.String(120))
 
-    def __init__(self, email, password):
+    def __init__(self, email, password, first_name, last_name,
+                 facebook, google, linkedin, twitter):
         self.email = email.lower()
         self.set_password(password)
 
@@ -98,8 +102,6 @@ def login():
 
 @app.route('/auth/signup', methods=['POST'])
 def signup():
-    print request.json['email']
-    print request.json['password']
     u = User(email=request.json['email'],
              password=request.json['password'])
     db.session.add(u)
@@ -107,9 +109,38 @@ def signup():
     return 'OK'
 
 
+def create_jwt_token(user):
+    pass
+
+
 @app.route('/auth/facebook', methods=['POST'])
 def facebook():
-    pass
+    access_token_url = 'https://graph.facebook.com/oauth/access_token'
+    graph_api_url = 'https://graph.facebook.com/me'
+
+    params = dict(client_id=request.json['clientId'],
+                  redirect_uri=request.json['redirectUri'],
+                  client_secret=app.config['FACEBOOK_SECRET'],
+                  code=request.json['code'])
+
+    # Step 1. Exchange authorization code for access token.
+    r = requests.get(access_token_url, params=params)
+    access_token = dict(parse_qsl(r.text))
+
+    # Step 2. Retrieve information about the current user.
+    r = requests.get(graph_api_url, params=access_token)
+    profile = json.loads(r.text)
+    user = User.query.filter_by(facebook=profile['id'])
+    if user:
+        token = create_jwt_token(user)
+        return jsonify(token=token)
+    u = User(facebook=profile['id'],
+             first_name=profile['first_name'],
+             last_name=profile['last_name'])
+    db.session.add(u)
+    db.session.commit()
+    token = create_jwt_token(user)
+    return jsonify(token=token)
 
 
 @app.route('/auth/google', methods=['POST'])
@@ -128,4 +159,4 @@ def twitter():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(port=3000)
