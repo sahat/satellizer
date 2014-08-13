@@ -110,7 +110,7 @@ def login_required(f):
 
         print payload
 
-        if datetime(payload['exp']) <= datetime.now():
+        if datetime.fromtimestamp(payload['exp']) < datetime.now():
             response = jsonify(message='Token has expired')
             response.status_code = 401
             return response
