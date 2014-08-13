@@ -96,7 +96,7 @@ app.post('/auth/login', function(req, res) {
       user = user.toObject();
       delete user.password;
       var token = createJwtToken(user);
-      res.send(token);
+      res.send({ token: token });
     });
   });
 });
@@ -142,7 +142,7 @@ app.post('/auth/google', function(req, res) {
       User.findOne({ google: profile.sub }, function(err, user) {
         if (user) {
           var token = createJwtToken(user);
-          return res.send(token);
+          return res.send({ token: token });
         }
         user = new User({
           google: profile.sub,
@@ -151,7 +151,7 @@ app.post('/auth/google', function(req, res) {
         });
         user.save(function() {
           var token = createJwtToken(user);
-          res.send(token);
+          res.send({ token: token });
         });
       });
     });
@@ -187,7 +187,7 @@ app.post('/auth/linkedin', function(req, res) {
       User.findOne({ linkedin: profile.id }, function(err, user) {
         if (user) {
           var token = createJwtToken(user);
-          return res.send(token);
+          return res.send({ token: token });
         }
         user = new User({
           linkedin: profile.id,
@@ -196,7 +196,7 @@ app.post('/auth/linkedin', function(req, res) {
         });
         user.save(function() {
           var token = createJwtToken(user);
-          res.send(token);
+          res.send({ token: token });
         });
       });
     });
@@ -227,7 +227,7 @@ app.post('/auth/facebook', function(req, res) {
       User.findOne({ facebook: profile.id }, function(err, user) {
         if (user) {
           var token = createJwtToken(user);
-          return res.send(token);
+          return res.send({ token: token });
         }
         user = new User({
           facebook: profile.id,
@@ -236,7 +236,7 @@ app.post('/auth/facebook', function(req, res) {
         });
         user.save(function() {
           var token = createJwtToken(user);
-          res.send(token);
+          res.send({ token: token });
         });
       });
     });
@@ -266,7 +266,7 @@ app.get('/auth/twitter', function(req, res) {
       User.findOne({ twitter: profile.user_id }, function(err, user) {
         if (user) {
           var token = createJwtToken(user);
-          return res.send(token);
+          return res.send({ token: token });
         }
         user = new User({
           twitter: profile.user_id,
@@ -274,7 +274,7 @@ app.get('/auth/twitter', function(req, res) {
         });
         user.save(function() {
           var token = createJwtToken(user);
-          res.send(token);
+          res.send({ token: token });
         });
       });
     });
