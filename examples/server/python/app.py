@@ -4,8 +4,8 @@ import jwt
 import json
 import requests
 from urlparse import parse_qsl
-from flask import Flask, send_file, request, make_response, g, redirect, \
-    url_for, abort, jsonify
+from urllib import urlencode
+from flask import Flask, send_file, request, redirect, url_for, jsonify
 from flask.ext.sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from requests_oauthlib import OAuth1
@@ -234,13 +234,31 @@ def twitter():
     authenticate_url = 'https://api.twitter.com/oauth/authenticate'
 
     if request.args.get('oauth_token') and request.args.get('oauth_verifier'):
-        access_token_oauth = dict(
-            consumer_key=app.config['TWITTER_CONSUMER_KEY'],
-            consumer_secret=app.config['TWITTER_CONSUMER_SECRET'],
-            token=request.args.get('oauth_token'),
-            verifier=request.args.get('oauth_verifier'))
-        requests.post(access_token_url)
+        auth = OAuth1(app.config['TWITTER_CONSUMER_KEY'],
+                      client_secret=app.config['TWITTER_CONSUMER_SECRET'],
+                      resource_owner_key=request.args.get('oauth_token'),
+                      verifier=request.args.get('oauth_verifier'))
+        r = requests.post(access_token_url, auth=auth)
+        profile = dict(parse_qsl(r.text))
 
+        user = User.query.filter_by(twitter=profile['user_id']).first()
+        if user:
+            token = create_jwt_token(user)
+            return jsonify(token=token)
+        u = User(twitter=profile['user_id'],
+                 first_name=profile['screen_name'])
+        db.session.add(u)
+        db.session.commit()
+        token = create_jwt_token(u)
+        return jsonify(token=token)
+    else:
+        oauth = OAuth1(app.config['TWITTER_CONSUMER_KEY'],
+                       client_secret=app.config['TWITTER_CONSUMER_SECRET'],
+                       callback_uri=app.config['TWITTER_CALLBACK_URL'])
+        r = requests.post(request_token_url, auth=oauth)
+        oauth_token = dict(parse_qsl(r.text))
+        qs = urlencode(dict(oauth_token=oauth_token['oauth_token']))
+        return redirect(authenticate_url + '?' + qs)
 
 
 if __name__ == '__main__':
