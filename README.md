@@ -143,7 +143,7 @@ how the authentication process works.
 ### Login with OAuth 2.0
 
 1. **Client:** Open a popup window via `$auth.authenticate('provider_name')`.
-2. **Client:** Sign in with that provider by entering your username and password.
+2. **Client:** Sign in with that provider by entering your username and password and authorize the application.
 3. **Client:** Popup is redirected back to your app, e.g. **http://localhost:3000**, 
 with the `code` url parameter.
 4. **Client:** The `code` (authorization code) is sent back to the parent window
@@ -162,8 +162,22 @@ payload and save it to Local Storage for subsequent use after page reload.
 
 ### Login with OAuth 1.0
 
-foo bar
-
+1. Open a popup window via `$auth.authenticate('provider_name')`.
+2. Unlike OAuth 2.0 you cannot go directly to the authentication screen without
+a valid request token.
+3. The OAuth 1.0 flow starts with the `GET` request to `/auth/<provider>` inside a popup.  
+4. **Server:** Check if URL contains `oauth_token` and `oauth_verifier` parameters.
+5. **Sever:** No. Send an OAuth signed `POST` request to `/request_token` URL.
+6. **Server:** Redirect to `/authenticate` URL with a valid *request token*.
+7. **Client:** Sign in with your username and password and authorize the application.
+8. **Client:** Send a *GET* request back to `/auth/<provider>` with `oauth_token` and `oauth_verifier` parameters.
+9. **Server:** Repeat **Step 4**.
+10. **Server:** Yes. Send an OAuth signed `POST` request to `/access_token` URL.
+11. **Server:** Look up the user by the unique *provider id*. If user already exists, grab 
+the existing user, otherwise create a new user account.
+12. **Server:** Reply with JSON Web Token.
+13. **Client:** Parse the token, extract user information from the
+payload and save it to Local Storage for subsequent use after page reload.
 
 ### Login with Email and Password
 
