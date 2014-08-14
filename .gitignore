@@ -367,3 +367,13 @@ erl_crash.dump
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+########################
+### PHP
+########################
+
+/bootstrap/compiled.php
+.env.*.php
+.env.php
+composer.phar
+composer.lock
