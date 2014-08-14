@@ -1,5 +1,5 @@
 ########################
-## Node.js
+### Node.js
 ########################
 
 # Logs
@@ -37,7 +37,7 @@ Gemfile.lock
 Thumbs.db
 
 ########################
-## Visual Studio
+### Visual Studio
 ########################
 
 ## Ignore Visual Studio temporary files, build results, and
@@ -224,7 +224,7 @@ FakesAssemblies/
 
 
 ########################
-## Python
+### Python
 ########################
 
 # Byte-compiled / optimized / DLL files
@@ -283,7 +283,7 @@ target/
 
 
 ########################
-## Ruby on Rails
+### Ruby on Rails
 ########################
 
 *.rbc
@@ -314,7 +314,7 @@ config/secrets.yml
 .rvmrc
 
 ########################
-## Go-lang
+### Go-lang
 ########################
 
 # Compiled Object files, Static and Dynamic libs (Shared Objects)
@@ -341,3 +341,12 @@ _testmain.go
 *.exe
 *.test
 *.prof
+
+########################
+### Elixir
+########################
+
+/_build
+/deps
+erl_crash.dump
+*.ez
