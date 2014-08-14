@@ -66,7 +66,7 @@ userSchema.methods.comparePassword = function(password, done) {
 
 var User = mongoose.model('User', userSchema);
 
-mongoose.connect('localhost');
+mongoose.connect('mongodb://demo:demo@kahana.mongohq.com:10014/satellizer');
 
 var app = express();
 
