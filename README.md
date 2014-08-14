@@ -320,7 +320,6 @@ authentication state.
 - [ ] ASP.NET vNext implementation
 - [ ] Elixir implementation
 - [ ] Ruby on Rails implementation
-- [ ] Rust implementation
 - [ ] Go (Martini) implementation
 - [ ] Java (Spring MVC) implementation
 - [ ] Scala (Play!) implementation
