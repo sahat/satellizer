@@ -1,7 +1,12 @@
 {
   "name": "satellizer",
+  "subdomain": "satellizer",
   "description": "Token-based AngularJS authentication module",
   "version": "0.1.0",
+  "scripts": {
+    "start": "node ./examples/server/node/server.js",
+    "test": "karma start"
+  },
   "homepage": "https://github.com/sahat/satellizer",
   "repository": {
     "type": "git",
@@ -39,9 +44,6 @@
     "karma-coverage": "^0.2.6",
     "karma-jasmine": "^0.1.5",
     "karma-phantomjs-launcher": "^0.1.4"
-  },
-  "scripts": {
-    "test": "karma start"
   },
   "bugs": {
     "url": "https://github.com/sahat/satellizer/issues"
