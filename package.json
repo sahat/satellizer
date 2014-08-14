@@ -1,6 +1,5 @@
 {
   "name": "satellizer",
-  "subdomain": "satellizer",
   "description": "Token-based AngularJS authentication module",
   "version": "0.1.0",
   "scripts": {
