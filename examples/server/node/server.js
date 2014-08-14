@@ -126,7 +126,7 @@ app.post('/auth/google', function(req, res) {
   var params = {
     client_id: req.body.clientId,
     redirect_uri: req.body.redirectUri,
-    client_secret: config.googleSecret,
+    client_secret: config.google.clientSecret,
     code: req.body.code,
     grant_type: 'authorization_code'
   };
@@ -169,7 +169,7 @@ app.post('/auth/linkedin', function(req, res) {
   var params = {
     client_id: req.body.clientId,
     redirect_uri: req.body.redirectUri,
-    client_secret: config.linkedinSecret,
+    client_secret: config.linkedin.clientSecret,
     code: req.body.code,
     grant_type: 'authorization_code'
   };
@@ -214,16 +214,18 @@ app.post('/auth/facebook', function(req, res) {
   var params = {
     client_id: req.body.clientId,
     redirect_uri: req.body.redirectUri,
-    client_secret: config.facebookSecret,
+    client_secret: config.facebook.clientSecret,
     code: req.body.code
   };
 
   // Step 1. Exchange authorization code for access token.
   request.get({ url: accessTokenUrl, qs: params }, function(error, response, accessToken) {
     accessToken = qs.parse(accessToken);
+    console.log(accessToken)
 
     // Step 2. Retrieve information about the current user.
     request.get({ url: graphApiUrl, qs: accessToken, json: true }, function(error, response, profile) {
+      console.log(profile)
       User.findOne({ facebook: profile.id }, function(err, user) {
         if (user) {
           var token = createJwtToken(user);
