@@ -326,6 +326,11 @@ authentication state.
 - [ ] Scala (Play!) implementation
 - [ ] PHP (Laravel) implementation
 
+## Contributing
+
+Found a typo or a bug? Send a pull request! I would especially appreciate pull
+requests for server-side examples in languages other than JavaScript.
+
 ## License
 
 The MIT License (MIT)
