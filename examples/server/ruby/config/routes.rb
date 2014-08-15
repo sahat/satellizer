@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
-  resources :users, except: [:new, :edit]
-
+  get '/api/me', to: 'users:me'
+  get '/auth/login', to: 'auth#login'
+  get '/auth/signup', to: 'auth#signup'
   get '/auth/facebook', to: 'auth#facebook'
   get '/auth/google', to: 'auth#google'
   get '/auth/linkedin', to: 'auth#linkedin'
