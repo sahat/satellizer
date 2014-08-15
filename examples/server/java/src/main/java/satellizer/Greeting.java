@@ -1,4 +1,4 @@
-package hello;
+package satellizer;
 
 public class Greeting {
 
