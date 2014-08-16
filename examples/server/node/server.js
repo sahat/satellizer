@@ -18,18 +18,22 @@ var qs = require('querystring');
 
 var config = {
   tokenSecret: 'keyboard cat',
+  mongodb: {
+    username: process.env.MONGOHQ_USER || 'MongoHQ Username',
+    password: process.env.MONGOHQ_PASSWORD || 'MongoHQ Password'
+  },
   facebook: {
-    clientSecret: '298fb6c080fda239b809ae418bf49700'
+    clientSecret: process.env.FACEBOOK_SECRET || 'FACEBOOK APP SECRET'
   },
   google: {
-    clientSecret: 'xGxxgKAObIRUwOKycySkL9Fi'
+    clientSecret: process.env.GOOGLE_SECRET || 'GOOGLE CLIENT SECRET'
   },
   linkedin: {
-    clientSecret: '7bDltzdHlP9b42xy'
+    clientSecret: process.env.LINKEDIN_SECRET || 'LINKEDIN CLIENT SECRET'
   },
   twitter: {
-    consumerKey: 'vdrg4sqxyTPSRdJHKu4UVVdeD',
-    consumerSecret: 'cUIobhRgRlXsFyObUMg3tBq56EgGSwabmcavQP4fncABvotRMA',
+    consumerKey: process.env.TWITTER_KEY || 'TWITTER CONSUMER KEY',
+    consumerSecret: process.env.TWITTER_SECRET || 'TWITTER CONSUMER SECRET',
     callbackUrl: 'http://localhost:3000'
   }
 };
@@ -66,7 +70,8 @@ userSchema.methods.comparePassword = function(password, done) {
 
 var User = mongoose.model('User', userSchema);
 
-mongoose.connect('mongodb://demo:demo@kahana.mongohq.com:10014/satellizer');
+mongoose.connect('mongodb://' + config.mongodb.username + ':' + config.mongodb.password +
+  '@kahana.mongohq.com:10014/satellizer');
 
 var app = express();
 
