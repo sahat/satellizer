@@ -162,8 +162,8 @@ payload and save it to Local Storage for subsequent use after page reload.
 
 ### Login with OAuth 1.0
 
-1. **Client:* Open a popup window via `$auth.authenticate('provider_name')`.
-2. **Client:* Unlike OAuth 2.0 you cannot go directly to the authentication screen without
+1. **Client:** Open a popup window via `$auth.authenticate('provider_name')`.
+2. **Client:** Unlike OAuth 2.0 you cannot go directly to the authentication screen without
 a valid request token.
 3. **Client:** The OAuth 1.0 flow starts with the `GET` request to `/auth/<provider>` inside a popup.  
 4. **Server:** Check if URL contains `oauth_token` and `oauth_verifier` parameters.
@@ -291,7 +291,6 @@ Logs out current user by deleting the token from *Local Storage* and setting
 
 ```js
 $auth.logout();
-});
 ```
 
 #### `$auth.isAuthenticated()`
@@ -299,7 +298,7 @@ $auth.logout();
 Returns `true` or `false` if the user is signed in or not.
 
 ```js
-$auth.isAuthenticated() // true
+$auth.isAuthenticated(); // true
 ```
 
 Alternatively, you may check if `currentUser` is defined to determine the 
@@ -318,12 +317,13 @@ authentication state.
 ## TODO
 
 - [ ] ASP.NET vNext implementation
-- [ ] Elixir implementation
+- [ ] Elixir (Phoenix) implementation
 - [ ] Ruby on Rails implementation
 - [ ] Go (Martini) implementation
-- [ ] Java (Spring MVC) implementation
+- [ ] Java (Spring) implementation
 - [ ] Scala (Play!) implementation
 - [ ] PHP (Laravel) implementation
+- [x] Python (Flask) implementation
 
 ## Contributing
 
