@@ -32,7 +32,7 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'Satellizer'])
 
     $authProvider.setProvider({
       name: 'google',
-      clientId: '836215426053-98eofc7oss4p4oaeahdi2q5c3ocvnp8s.apps.googleusercontent.com',
+      clientId: '631036554609-v5hm2amv4pvico3asfi97f54sc51ji4o.apps.googleusercontent.com',
     });
 
     $authProvider.setProvider({
