@@ -43,6 +43,7 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'Satellizer'])
 
     $authProvider.oauth2({
       name: 'foursquare',
+      clientId: 'MTCEJ3NGW2PNNB31WOSBFDSAD4MTHYVAZ1UKIULXZ2CVFC2K',
       url: '/auth/foursquare',
       authorizationEndpoint: 'https://foursquare.com/oauth2/authenticate',
       redirectUri: window.location.origin
