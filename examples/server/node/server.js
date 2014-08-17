@@ -1,42 +1,23 @@
 /**
- * Satellizer Node.js Demo
- * (c) 2014 Sahat Yalkabov <sahat@me.com>
+ * Satellizer Node.js Example
+ * (c) 2014 Sahat Yalkabov
  * License: MIT
  */
 
-var bcrypt = require('bcryptjs');
-var bodyParser = require('body-parser');
 var crypto = require('crypto');
-var express = require('express');
-var logger = require('morgan');
-var request = require('request');
-var jwt = require('jwt-simple');
-var moment = require('moment');
-var mongoose = require('mongoose');
 var path = require('path');
 var qs = require('querystring');
 
-var config = {
-  tokenSecret: 'keyboard cat',
-  mongodb: {
-    username: process.env.MONGOHQ_USER || 'MongoHQ Username',
-    password: process.env.MONGOHQ_PASSWORD || 'MongoHQ Password'
-  },
-  facebook: {
-    clientSecret: process.env.FACEBOOK_SECRET || 'FACEBOOK APP SECRET'
-  },
-  google: {
-    clientSecret: process.env.GOOGLE_SECRET || 'GOOGLE CLIENT SECRET'
-  },
-  linkedin: {
-    clientSecret: process.env.LINKEDIN_SECRET || 'LINKEDIN CLIENT SECRET'
-  },
-  twitter: {
-    consumerKey: process.env.TWITTER_KEY || 'TWITTER CONSUMER KEY',
-    consumerSecret: process.env.TWITTER_SECRET || 'TWITTER CONSUMER SECRET',
-    callbackUrl: 'http://localhost:3000'
-  }
-};
+var bcrypt = require('bcryptjs');
+var bodyParser = require('body-parser');
+var express = require('express');
+var logger = require('morgan');
+var jwt = require('jwt-simple');
+var moment = require('moment');
+var mongoose = require('mongoose');
+var request = require('request');
+
+var config = require('./config');
 
 var userSchema = new mongoose.Schema({
   email: { type: String, unique: true, lowercase: true },
@@ -70,15 +51,14 @@ userSchema.methods.comparePassword = function(password, done) {
 
 var User = mongoose.model('User', userSchema);
 
-mongoose.connect('mongodb://' + config.mongodb.username + ':' + config.mongodb.password +
-  '@kahana.mongohq.com:10014/satellizer');
+mongoose.connect(config.MONGO_URI);
 
 var app = express();
 
 app.set('port', process.env.PORT || 3000);
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../../client')));
 
 app.get('/api/me', ensureAuthenticated, function(req, res) {
@@ -92,11 +72,11 @@ app.get('/api/me', ensureAuthenticated, function(req, res) {
 app.post('/auth/login', function(req, res) {
   User.findOne({ email: req.body.email }, function(err, user) {
     if (!user) {
-      return res.send(401, 'Wrong email or password');
+      return res.send(401, 'Wrong email and/or password');
     }
     user.comparePassword(req.body.password, function(err, isMatch) {
       if (!isMatch) {
-        return res.send(401, 'Wrong email or password');
+        return res.send(401, 'Wrong email and/or password');
       }
       user = user.toObject();
       delete user.password;
@@ -131,7 +111,7 @@ app.post('/auth/google', function(req, res) {
   var params = {
     client_id: req.body.clientId,
     redirect_uri: req.body.redirectUri,
-    client_secret: config.google.clientSecret,
+    client_secret: config.GOOGLE_SECRET,
     code: req.body.code,
     grant_type: 'authorization_code'
   };
@@ -174,7 +154,7 @@ app.post('/auth/linkedin', function(req, res) {
   var params = {
     client_id: req.body.clientId,
     redirect_uri: req.body.redirectUri,
-    client_secret: config.linkedin.clientSecret,
+    client_secret: config.LINKEDIN_SECRET,
     code: req.body.code,
     grant_type: 'authorization_code'
   };
@@ -219,18 +199,16 @@ app.post('/auth/facebook', function(req, res) {
   var params = {
     client_id: req.body.clientId,
     redirect_uri: req.body.redirectUri,
-    client_secret: config.facebook.clientSecret,
+    client_secret: config.FACEBOOK_SECRET,
     code: req.body.code
   };
 
   // Step 1. Exchange authorization code for access token.
   request.get({ url: accessTokenUrl, qs: params }, function(error, response, accessToken) {
     accessToken = qs.parse(accessToken);
-    console.log(accessToken)
 
     // Step 2. Retrieve information about the current user.
     request.get({ url: graphApiUrl, qs: accessToken, json: true }, function(error, response, profile) {
-      console.log(profile)
       User.findOne({ facebook: profile.id }, function(err, user) {
         if (user) {
           var token = createJwtToken(user);
@@ -261,8 +239,8 @@ app.get('/auth/twitter', function(req, res) {
 
   if (req.query.oauth_token && req.query.oauth_verifier) {
     var accessTokenOauth = {
-      consumer_key: config.twitter.consumerKey,
-      consumer_secret: config.twitter.consumerSecret,
+      consumer_key: config.TWITTER_KEY,
+      consumer_secret: config.TWITTER_SECRET,
       token: req.query.oauth_token,
       verifier: req.query.oauth_verifier
     };
@@ -287,9 +265,9 @@ app.get('/auth/twitter', function(req, res) {
     });
   } else {
     var requestTokenOauth = {
-      consumer_key: config.twitter.consumerKey,
-      consumer_secret: config.twitter.consumerSecret,
-      callback: config.twitter.callbackUrl
+      consumer_key: config.TWITTER_KEY,
+      consumer_secret: config.TWITTER_SECRET,
+      callback: config.TWITTER_CALLBACK
     };
 
     // Step 1. Obtain request token.
@@ -313,7 +291,7 @@ function ensureAuthenticated(req, res, next) {
   }
 
   var token = req.headers.authorization.split(' ')[1];
-  var payload = jwt.decode(token, config.tokenSecret);
+  var payload = jwt.decode(token, config.TOKEN_SECRET);
 
   if (payload.exp <= Date.now()) {
     return res.send(401, 'Token has expired');
@@ -333,7 +311,7 @@ function createJwtToken(user) {
     iat: moment().valueOf(),
     exp: moment().add(7, 'days').valueOf()
   };
-  return jwt.encode(payload, config.tokenSecret);
+  return jwt.encode(payload, config.TOKEN_SECRET);
 }
 
 app.listen(app.get('port'), function() {
