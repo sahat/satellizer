@@ -19,24 +19,32 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'Satellizer'])
       })
       .when('/protected', {
         templateUrl: 'views/protected.html',
-        controller: 'ProtectedCtrl',
+        controller: 'ProtectedCtrl'
       })
       .otherwise({
         redirectTo: '/'
       });
 
-    $authProvider.setProvider({
-      name: 'facebook',
+    $authProvider.facebook({
       clientId: '657854390977827'
     });
 
-    $authProvider.setProvider({
-      name: 'google',
-      clientId: '631036554609-v5hm2amv4pvico3asfi97f54sc51ji4o.apps.googleusercontent.com',
+    $authProvider.google({
+      clientId: '631036554609-v5hm2amv4pvico3asfi97f54sc51ji4o.apps.googleusercontent.com'
     });
 
-    $authProvider.setProvider({
-      name: 'linkedin',
+    $authProvider.linkedin({
       clientId: '77cw786yignpzj'
+    });
+
+    $authProvider.twitter({
+      url: '/auth/twitter'
+    });
+
+    $authProvider.oauth2({
+      name: 'foursquare',
+      url: '/auth/foursquare',
+      authorizationEndpoint: 'https://foursquare.com/oauth2/authenticate',
+      redirectUri: window.location.origin
     });
   });
