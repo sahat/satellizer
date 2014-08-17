@@ -25,6 +25,7 @@ var userSchema = new mongoose.Schema({
   firstName: String,
   lastName: String,
   facebook: String,
+  foursquare: String,
   google: String,
   linkedin: String,
   twitter: String
@@ -60,6 +61,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../../client')));
+app.use(express.static(path.join(__dirname, '../../../lib')));
 
 app.get('/api/me', ensureAuthenticated, function(req, res) {
   res.send(req.user);
@@ -279,6 +281,51 @@ app.get('/auth/twitter', function(req, res) {
       res.redirect(authenticateUrl + '?' + params);
     });
   }
+});
+
+////////////////////////////////////////////////////////////////////////////////
+// Log in with Foursquare //////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+app.post('/auth/foursquare', function(req, res) {
+  var accessTokenUrl = 'https://foursquare.com/oauth2/access_token';
+  var userProfileUrl = 'https://api.foursquare.com/v2/users/self';
+
+  var payload = {
+    client_id: req.body.clientId,
+    redirect_uri: req.body.redirectUri,
+    client_secret: config.FOURSQUARE_SECRET,
+    code: req.body.code,
+    grant_type: 'authorization_code'
+  };
+
+  // Step 1. Exchange authorization code for access token.
+  request.post(accessTokenUrl, { json: true, form: payload }, function(error, response, body) {
+    var params = {
+      v: '20140806',
+      oauth_token: body.access_token
+    };
+
+    // Step 2. Retrieve information about the current user.
+    request.get({ url: userProfileUrl, qs: params, json: true }, function(error, response, profile) {
+      profile = profile.response.user;
+      User.findOne({ foursquare: profile.id }, function(err, user) {
+        if (user) {
+          var token = createJwtToken(user);
+          return res.send({ token: token });
+        }
+        user = new User({
+          foursquare: profile.id,
+          firstName: profile.firstName,
+          lastName: profile.lastName
+        });
+        user.save(function() {
+          var token = createJwtToken(user);
+          res.send({ token: token });
+        });
+      });
+    });
+  });
 });
 
 ////////////////////////////////////////////////////////////////////////////////
