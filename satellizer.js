@@ -251,7 +251,7 @@
     return popup;
   }
 
-  function Oauth1($q, $http, Popup, Utils) {
+  function Oauth1($q, $http, Popup) {
     var defaults = {
       url: null,
       name: null,
@@ -275,8 +275,20 @@
     };
 
     oauth1.exchangeForToken = function(oauthData) {
-      oauthData = Utils.buildQueryString(oauthData);
+      oauthData = oauth1.buildQueryString(oauthData);
       return $http.get(defaults.url + '?' + oauthData);
+    };
+
+    oauth1.buildQueryString = function(obj) {
+      var str = [];
+      for (var p in obj) {
+        if (obj.hasOwnProperty(p)) {
+          var k = p;
+          var v = obj[k];
+          str.push(angular.isObject(v) ? this.buildQueryString(v, k) : (k) + "=" + encodeURIComponent(v));
+        }
+      }
+      return str.join('&');
     };
 
     return oauth1;
@@ -401,6 +413,7 @@
         return offset ? letter.toUpperCase() : letter;
       });
     };
+
     this.parseQueryString = function(keyValue) {
       var obj = { }, key, value;
       angular.forEach((keyValue || '').split('&'), function(keyValue) {
@@ -412,19 +425,7 @@
       });
       return obj;
     };
-    this.buildQueryString = function(obj) {
-      var str = [];
-      for (var p in obj) {
-        if (obj.hasOwnProperty(p)) {
-          var k = p;
-          var v = obj[k];
-          str.push(angular.isObject(v) ? this.buildQueryString(v, k) : (k) + "=" + encodeURIComponent(v));
-        }
-      }
-      return str.join('&');
-    };
   }
-
 
 })(window, window.angular);
 
