@@ -1,3 +1,7 @@
+# Satellizer Python Example
+# (c) 2014 Sahat Yalkabov
+# License: MIT
+
 from datetime import datetime, timedelta
 import os
 import jwt
@@ -13,25 +17,11 @@ from requests_oauthlib import OAuth1
 
 # Configuration
 
-DATABASE = '/tmp/flaskr.db'
-DEBUG = True
-SECRET_KEY = 'development key'
-USERNAME = 'admin'
-PASSWORD = 'default'
-TOKEN_SECRET = 'keyboard cat'
-FACEBOOK_SECRET = '298fb6c080fda239b809ae418bf49700'
-GOOGLE_SECRET = 'xGxxgKAObIRUwOKycySkL9Fi'
-LINKEDIN_SECRET = '7bDltzdHlP9b42xy'
-TWITTER_CONSUMER_KEY = 'vdrg4sqxyTPSRdJHKu4UVVdeD'
-TWITTER_CONSUMER_SECRET = 'cUIobhRgRlXsFyObUMg3tBq56EgGSwabmcavQP4fncABvotRMA'
-TWITTER_CALLBACK_URL = 'http://localhost:3000'
-SQLALCHEMY_DATABASE_URI = 'sqlite:///app.db'
-
-client_dir = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '..', 'client'))
+current_path = os.path.dirname(__file__)
+client_path = os.path.abspath(os.path.join(current_path, '..', '..', 'client'))
 
 app = Flask(__name__, static_url_path='', static_folder=client_dir)
-app.config.from_object(__name__)
+app.config.from_object('config')
 
 # Database and User Model
 

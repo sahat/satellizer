@@ -1,0 +1,10 @@
+DEBUG = True
+TOKEN_SECRET = 'keyboard cat'
+FACEBOOK_SECRET = 'Facebook Client Secret'
+FOURSQUARE_SECRET = 'Foursquare Client Secret'
+GOOGLE_SECRET = 'Google Client Secret'
+LINKEDIN_SECRET = 'LinkedIn Client Secret'
+TWITTER_CONSUMER_KEY = 'Twitter Consumer Secret'
+TWITTER_CONSUMER_SECRET = 'Twitter Consumer Secret'
+TWITTER_CALLBACK_URL = 'http://localhost:3000'
+SQLALCHEMY_DATABASE_URI = 'sqlite:///app.db'
