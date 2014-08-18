@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node ./examples/server/node/server.js",
     "test": "karma start",
-    "postinstall": "npm install examples/client"
+    "postinstall": "cd examples/client && npm install"
   },
   "homepage": "https://github.com/sahat/satellizer",
   "repository": {
