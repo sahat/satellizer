@@ -4,7 +4,7 @@
 [![Build Status](http://img.shields.io/travis/sahat/satellizer.svg?style=flat)](https://travis-ci.org/sahat/satellizer) 
 [![Code Climate](http://img.shields.io/codeclimate/github/kabisaict/flow.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer) 
 [![Test Coverage](http://img.shields.io/codeclimate/coverage/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
-[![NPM status](http://img.shields.io/npm/v/satellizer.svg?style=flat)](https://www.npmjs.org/package/satellizer)
+[![Version](http://img.shields.io/badge/version-0.2.0-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
 
 **:clapper: Live Demo:** [http://satellizer.herokuapp.com](http://satellizer.herokuapp.com)
 
@@ -30,9 +30,8 @@ bower install satellizer --save
 npm install satellizer --save
 ```
 
-**Note:** Alternatively, you may just manually grab `satellizer.js` or
-`satellizer.min.js` from the [lib](https://github.com/sahat/satellizer/tree/master/lib)
-directory.
+**Note:** Alternatively, you may download the latest release for this GitHub
+repository.
 
 ## Usage
 
@@ -83,16 +82,16 @@ $authProvider.signupRoute = '/signup';
 $authProvider.user = 'currentUser';
 
 // Google
-$authProvider.setProvider({
-  name: 'google',
+$authProvider.google({
   url: '/auth/google',
   authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
   redirectUri: window.location.origin,
   scope: 'openid profile email',
+  scopeDelimiter: ' ',
   requiredUrlParams: ['scope'],
   optionalUrlParams: ['display'],
   display: 'popup',
-  type: 'oauth2',
+  type: '2.0',
   popupOptions: {
     width: 452,
     height: 633
@@ -100,15 +99,15 @@ $authProvider.setProvider({
 });
 
 // Facebook
-$authProvider.setProvider({
-  name: 'facebook',
+$authProvider.facebook({
   url: '/auth/facebook',
   authorizationEndpoint: 'https://www.facebook.com/dialog/oauth',
-  redirectUri: window.location.origin,
+  redirectUri: window.location.origin + '/',
   scope: 'email',
+  scopeDelimiter: ',',
   requiredUrlParams: ['display'],
   display: 'popup',
-  type: 'oauth2',
+  type: '2.0',
   popupOptions: {
     width: 481,
     height: 269
@@ -116,22 +115,67 @@ $authProvider.setProvider({
 });
 
 // LinkedIn
-$authProvider.setProvider({
-  name: 'linkedin',
+$authProvider.linkedin({
   url: '/auth/linkedin',
   authorizationEndpoint: 'https://www.linkedin.com/uas/oauth2/authorization',
   redirectUri: window.location.origin,
   requiredUrlParams: ['state'],
+  scope: [],
+  scopeDelimiter: ' ',
   state: 'STATE',
-  type: 'oauth2'
+  type: '2.0',
+  popupOptions: {
+    width: 527,
+    height: 582
+  }
 });
 
 // Twitter
-$authProvider.setProvider({
+$authProvider.twitter({
   url: '/auth/twitter',
-  authorizationEndpoint: 'https://api.twitter.com/oauth/authenticate',
-  type: 'oauth1'
+  type: '1.0'
 });
+
+// LinkedIn
+$authProvider.oauth2({
+  url: '/auth/linkedin',
+  authorizationEndpoint: 'https://www.linkedin.com/uas/oauth2/authorization',
+  redirectUri: window.location.origin,
+  requiredUrlParams: ['state'],
+  scope: [],
+  scopeDelimiter: ' ',
+  state: 'STATE',
+  type: '2.0',
+  popupOptions: {
+    width: 527,
+    height: 582
+  }
+});
+
+// OAuth 2.0
+$authProvider.oauth1({
+  url: null,
+  name: null,
+  scope: null,
+  scopeDelimiter: null,
+  clientId: null,
+  redirectUri: null,
+  popupOptions: null,
+  authorizationEndpoint: null,
+  requiredUrlParams: null,
+  optionalUrlParams: null,
+  defaultUrlParams: ['response_type', 'client_id', 'redirect_uri'],
+  responseType: 'code'
+});
+
+// OAuth 1.0
+$authProvider.oauth1({
+  url: null,
+  name: null,
+  popupOptions: null
+});
+
+
   ```
 
 ## How It Works
