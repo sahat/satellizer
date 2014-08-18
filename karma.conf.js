@@ -3,7 +3,7 @@ module.exports = function(config) {
     files: [
       'bower_components/angular/angular.js',
       'bower_components/angular-mocks/angular-mocks.js',
-      'lib/satellizer.js',
+      'satellizer.js',
       'test/*Spec.js'
     ],
 
@@ -22,7 +22,7 @@ module.exports = function(config) {
     reporters: ['progress', 'coverage'],
 
     preprocessors: {
-      'lib/satellizer.js': ['coverage']
+      'satellizer.js': ['coverage']
     },
 
     coverageReporter: {

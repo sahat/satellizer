@@ -5,14 +5,14 @@ var uglify = require('gulp-uglify');
 var complexity = require('gulp-complexity');
 
 gulp.task('default', function() {
-  return gulp.src('lib/satellizer.js')
+  return gulp.src('satellizer.js')
     .pipe(ngAnnotate())
     .pipe(uglify())
     .pipe(rename('satellizer.min.js'))
-    .pipe(gulp.dest('lib'));
+    .pipe(gulp.dest('.'));
 });
 
 gulp.task('complexity', function() {
-  return gulp.src('lib/satellizer.js')
+  return gulp.src('satellizer.js')
     .pipe(complexity());
 });
