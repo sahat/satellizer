@@ -91,6 +91,8 @@ angular.module('MyApp')
 For server-side usage please refer to the [examples](https://github.com/sahat/satellizer/tree/master/examples/server)
 directory.
 
+**Note:** List of popular [OAuth service providers](http://en.wikipedia.org/wiki/OAuth#List_of_OAuth_service_providers).
+
 ## Configuration
 
 Below is a complete listing of all default configuration options.

@@ -392,7 +392,7 @@
           $window.close();
         }
       }
-    }
+    };
   }
 
   function Utils() {
@@ -415,12 +415,14 @@
     this.buildQueryString = function(obj) {
       var str = [];
       for (var p in obj) {
-        var k = p,
-          v = obj[k];
-        str.push(angular.isObject(v) ? this.buildQueryString(v, k) : (k) + "=" + encodeURIComponent(v));
+        if (obj.hasOwnProperty(p)) {
+          var k = p;
+          var v = obj[k];
+          str.push(angular.isObject(v) ? this.buildQueryString(v, k) : (k) + "=" + encodeURIComponent(v));
+        }
       }
       return str.join('&');
-    }
+    };
   }
 
 
