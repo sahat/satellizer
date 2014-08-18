@@ -281,13 +281,9 @@
 
     oauth1.buildQueryString = function(obj) {
       var str = [];
-      for (var p in obj) {
-        if (obj.hasOwnProperty(p)) {
-          var k = p;
-          var v = obj[k];
-          str.push(angular.isObject(v) ? this.buildQueryString(v, k) : (k) + "=" + encodeURIComponent(v));
-        }
-      }
+      angular.forEach(obj, function(value, key) {
+        str.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+      });
       return str.join('&');
     };
 
