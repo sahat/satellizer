@@ -179,7 +179,7 @@ $authProvider.oauth2({
 });
 
 // OAuth 2.0
-$authProvider.oauth1({
+$authProvider.oauth2({
   url: null,
   name: null,
   scope: null,
