@@ -2,7 +2,7 @@
 
 # [Satellizer](https://github.com/sahat/satellizer/) 
 [![Build Status](http://img.shields.io/travis/sahat/satellizer.svg?style=flat)](https://travis-ci.org/sahat/satellizer) 
-[![Code Climate](http://img.shields.io/codeclimate/github/kabisaict/flow.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer) 
+[![Code Climate](http://img.shields.io/codeclimate/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer) 
 [![Test Coverage](http://img.shields.io/codeclimate/coverage/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
 [![Version](http://img.shields.io/badge/version-0.2.0-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
 
