@@ -31,7 +31,7 @@ npm install satellizer --save
 ```
 
 **Note:** Alternatively, you may download the [latest release](https://github.com/sahat/satellizer/releases)
-for this repository.
+from this repository.
 
 ## Usage
 

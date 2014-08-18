@@ -1,6 +1,6 @@
 {
   "name": "satellizer",
-  "description": "Token-based AngularJS authentication module",
+  "description": "Token-based AngularJS Authentication",
   "version": "0.2.0",
   "scripts": {
     "start": "node ./examples/server/node/server.js",
@@ -16,23 +16,6 @@
     "email": "sahat@me.com",
     "url": "http://sahatyalkabov.com"
   },
-  "tags": [
-    "authentication",
-    "login",
-    "token",
-    "jwt",
-    "angularjs",
-    "angular",
-    "auth",
-    "facebook",
-    "google",
-    "linkedin",
-    "twitter",
-    "oauth",
-    "oauth 1.0",
-    "oauth 2.0",
-    "user management"
-  ],
   "dependencies": {
     "bcryptjs": "^0.7.12",
     "body-parser": "^1.6.2",
@@ -58,5 +41,25 @@
   "bugs": {
     "url": "https://github.com/sahat/satellizer/issues"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "tags": [
+    "authentication",
+    "login",
+    "token",
+    "jwt",
+    "angularjs",
+    "angular",
+    "auth",
+    "facebook",
+    "google",
+    "linkedin",
+    "twitter",
+    "oauth",
+    "oauth 1.0",
+    "oauth 2.0",
+    "oauth2",
+    "oauth1",
+    "sign-in",
+    "social"
+  ],
 }
