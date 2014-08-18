@@ -4,7 +4,7 @@
 [![Build Status](http://img.shields.io/travis/sahat/satellizer.svg?style=flat)](https://travis-ci.org/sahat/satellizer) 
 [![Code Climate](http://img.shields.io/codeclimate/github/kabisaict/flow.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer) 
 [![Test Coverage](http://img.shields.io/codeclimate/coverage/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
-[![GitHub Release](http://img.shields.io/github/release/sahat/satellizer.svg?style=flat)](https://github.com/sahat/satellizer/releases)
+[![NPM status](http://img.shields.io/npm/v/satellizer.svg?style=flat)](https://www.npmjs.org/package/satellizer)
 
 **:clapper: Live Demo:** [http://satellizer.herokuapp.com](http://satellizer.herokuapp.com)
 
@@ -36,31 +36,31 @@ directory.
 
 ## Usage
 
-**app.js**
+**Step 1. App Module**
 ```js
 angular.module('MyApp', ['Satellizer'])
   .config(function($authProvider) {
     
-    $authProvider.setProvider({
-      name: 'facebook',
+    $authProvider.facebook({
       clientId: '624059410963642',
-      url: '/auth/facebook'
     });
     
   });
 ```
 
-**loginCtrl.js**
+**Step 2. Controller**
 ```js
 angular.module('MyApp')
   .controller('LoginCtrl', function($scope, $auth) {
+    
     $scope.authenticate = function(provider) {
       $auth.authenticate(provider);
     };
+    
   });
 ```
 
-**login.html**
+**Step 3. Template**
 ```html
 <button ng-click="authenticate('facebook')">Sign in with Facebook</button>
 ```
