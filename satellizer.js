@@ -82,6 +82,7 @@
   function $auth() {
 
     this.config = config;
+    this.providers = providers;
 
     this.facebook = function(params) {
       angular.extend(providers.facebook, params);

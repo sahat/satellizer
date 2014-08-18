@@ -19,33 +19,75 @@ describe('Configuration', function() {
     expect(auth).toBeDefined();
   });
 
-  it('should have setProvider method', function() {
-    expect(authProvider.setProvider).toBeDefined();
+  it('should have facebook method', function() {
+    expect(authProvider.facebook).toBeDefined();
   });
 
-  it('should update provider with new params', function() {
-    authProvider.setProvider({
-      name: 'facebook',
+  it('should have google method', function() {
+    expect(authProvider.google).toBeDefined();
+  });
+
+  it('should have linkedin method', function() {
+    expect(authProvider.linkedin).toBeDefined();
+  });
+
+  it('should have twitter method', function() {
+    expect(authProvider.twitter).toBeDefined();
+  });
+
+  it('should have oauth1', function() {
+    expect(authProvider.oauth1).toBeDefined();
+  });
+
+  it('should have oauth2 method', function() {
+    expect(authProvider.oauth2).toBeDefined();
+  });
+
+  it('should update a facebook provider with new params', function() {
+    authProvider.facebook({
       scope: 'profile'
     });
-    var facebook = authProvider.getProvider('facebook');
-    expect(facebook.scope).toBe('profile');
+    expect(authProvider.providers.facebook.scope).toBe('profile');
   });
 
-  it('should have addProvider method', function() {
-    expect(authProvider.addProvider).toBeDefined();
+  it('should update a google provider with new params', function() {
+    authProvider.google({
+      state: 'secret'
+    });
+    expect(authProvider.providers.google.state).toBe('secret');
   });
 
-  it('should add a new provider', function() {
-    authProvider.addProvider({
+  it('should update a linkedin provider with new params', function() {
+    authProvider.linkedin({
+      state: 'secret'
+    });
+    expect(authProvider.providers.linkedin.state).toBe('secret');
+  });
+
+  it('should update a twitter provider with new params', function() {
+    authProvider.twitter({
+      url: '/oauth/twitter'
+    });
+    expect(authProvider.providers.twitter.url).toBe('/oauth/twitter');
+  });
+
+  it('should add a new oauth2 provider', function() {
+    authProvider.oauth2({
       name: 'github',
       url: '/auth/github',
       authorizationEndpoint: 'https://github.com/login/oauth/authorize'
     });
-    var github = authProvider.getProvider('github');
-    expect(github).toBeDefined();
-    expect(angular.isObject(github)).toBe(true);
-    expect(github.name).toBe('github');
+    expect(angular.isObject(authProvider.providers['github'])).toBe(true);
+    expect(authProvider.providers['github'].name).toBe('github');
+  });
+
+  it('should add a new oauth1 provider', function() {
+    authProvider.oauth1({
+      name: 'goodreads',
+      url: '/auth/goodreads',
+    });
+    expect(angular.isObject(authProvider.providers['goodreads'])).toBe(true);
+    expect(authProvider.providers['goodreads'].url).toBe('/auth/goodreads');
   });
 
 });
