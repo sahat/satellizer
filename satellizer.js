@@ -111,19 +111,6 @@
       angular.extend(providers[params.name], params);
     };
 
-    this.setProvider = function(params) {
-      angular.extend(providers[params.name], params);
-    };
-
-    this.addProvider = function(params) {
-      providers[params.name] = {};
-      angular.extend(providers[params.name], params);
-    };
-
-    this.getProvider = function(name) {
-      return providers[name];
-    };
-
     this.$get = function($q, $http, Oauth1, Oauth2, Local) {
 
       var $auth = {};
