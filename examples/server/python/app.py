@@ -20,7 +20,7 @@ from requests_oauthlib import OAuth1
 current_path = os.path.dirname(__file__)
 client_path = os.path.abspath(os.path.join(current_path, '..', '..', 'client'))
 
-app = Flask(__name__, static_url_path='', static_folder=client_dir)
+app = Flask(__name__, static_url_path='', static_folder=client_path)
 app.config.from_object('config')
 
 # Database and User Model
