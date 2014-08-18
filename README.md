@@ -30,8 +30,8 @@ bower install satellizer --save
 npm install satellizer --save
 ```
 
-**Note:** Alternatively, you may download the latest release for this GitHub
-repository.
+**Note:** Alternatively, you may download the [latest release](https://github.com/sahat/satellizer/releases)
+for this repository.
 
 ## Usage
 
@@ -42,6 +42,26 @@ angular.module('MyApp', ['Satellizer'])
     
     $authProvider.facebook({
       clientId: '624059410963642',
+    });
+    
+    $authProvider.google({
+      clientId: '631036554609-v5hm2amv4pvico3asfi97f54sc51ji4o.apps.googleusercontent.com'
+    });
+    
+    $authProvider.linkedin({
+      clientId: '77cw786yignpzj'
+    });
+
+    $authProvider.twitter({
+      url: '/auth/twitter'
+    });
+
+    $authProvider.oauth2({
+      name: 'foursquare',
+      url: '/auth/foursquare',
+      redirectUri: window.location.origin
+      clientId: 'MTCEJ3NGW2PNNB31WOSBFDSAD4MTHYVAZ1UKIULXZ2CVFC2K',
+      authorizationEndpoint: 'https://foursquare.com/oauth2/authenticate',
     });
     
   });
@@ -62,9 +82,13 @@ angular.module('MyApp')
 **Step 3. Template**
 ```html
 <button ng-click="authenticate('facebook')">Sign in with Facebook</button>
+<button ng-click="authenticate('google')">Sign in with Google</button>
+<button ng-click="authenticate('linkedin')">Sign in with LinkedIn</button>
+<button ng-click="authenticate('twitter')">Sign in with Twitter</button>
+<button ng-click="authenticate('foursquare')">Sign in with Foursquare</button>
 ```
 
-For server-side usage please refer to the [examples](https://github.com/sahat/satellizer/tree/master/examples)
+For server-side usage please refer to the [examples](https://github.com/sahat/satellizer/tree/master/examples/server)
 directory.
 
 ## Configuration
@@ -371,8 +395,9 @@ authentication state.
 
 ## Contributing
 
-Found a typo or a bug? Send a pull request! I would especially appreciate pull
-requests for server-side examples in languages other than JavaScript.
+Found a typo or a bug? Send a pull request. I would especially appreciate pull
+requests for server-side examples since I do not have much experience with any
+of the languages on the *TODO* list.
 
 ## License
 
