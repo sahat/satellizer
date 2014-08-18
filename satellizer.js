@@ -100,19 +100,19 @@
       angular.extend(providers.twitter, params);
     };
 
-    this.oauth = function(params) {
+    this.oauthBase = function(params) {
       providers[params.name] = providers[params.name] || {};
       angular.extend(providers[params.name], params);
-    }
-    
-    this.oauth2 = function(params) {
-      this.oauth(params);
-      providers[params.name].type = '2.0';
     };
 
     this.oauth1 = function(params) {
-      this.oauth(params);
+      this.oauthBase(params);
       providers[params.name].type = '1.0';
+    };
+
+    this.oauth2 = function(params) {
+      this.oauthBase(params);
+      providers[params.name].type = '2.0';
     };
 
     this.$get = function($q, $http, Oauth1, Oauth2, Local) {
