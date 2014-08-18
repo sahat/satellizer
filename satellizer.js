@@ -199,7 +199,7 @@
 
     popup.open = function(url, options) {
       var deferred = $q.defer();
-      var optionsString = popup.stringifyOptions(popup.prepareOptions(options));
+      var optionsString = popup.stringifyOptions(popup.prepareOptions(options || {}));
 
       popupWindow = $window.open(url, 'Satellizer', optionsString);
       popupWindow.focus();
@@ -228,16 +228,14 @@
     };
 
     popup.prepareOptions = function(options) {
-      options = options || {};
       var width = options.width || 500;
       var height = options.height || 500;
-      var defaults = {
+      return angular.extend({
         width: width,
         height: height,
         left: $window.screenX + (($window.outerWidth - width) / 2),
         top: $window.screenY + (($window.outerHeight - height) / 2.5)
-      };
-      return angular.extend(defaults, options);
+      }, options);
     };
 
     popup.stringifyOptions = function(options) {
