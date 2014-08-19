@@ -140,7 +140,7 @@
         };
 
         $auth.login = function(user) {
-          Local.login(user);
+          return Local.login(user);
         };
 
         $auth.signup = function(user) {
@@ -177,16 +177,23 @@
           .success(function(response) {
             local.parseUser(response.token, deferred);
           })
-          .error(function(error) {
-            deferred.reject(error);
+          .error(function(response) {
+            deferred.reject(response);
           });
         return deferred.promise;
       };
 
       local.signup = function(user) {
-        $http.post(config.signupUrl, user).then(function() {
-          $location.path(config.signupRedirect);
-        });
+        var deferred = $q.defer();
+        $http.post(config.signupUrl, user)
+          .then(function() {
+            $location.path(config.signupRedirect);
+            deferred.resolve();
+          })
+          .catch(function(response) {
+            deferred.reject(response);
+          });
+        return deferred.promise;
       };
 
       local.logout = function() {
