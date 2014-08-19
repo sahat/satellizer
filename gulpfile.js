@@ -13,13 +13,7 @@ gulp.task('default', function() {
     .pipe(gulp.dest('examples/client/vendor'));
 });
 
-gulp.task('copy', function() {
-  return gulp.src('./satellizer.js')
-    .pipe(gulp.dest('./examples/client/vendor'));
-});
-
 gulp.task('complexity', function() {
   return gulp.src('satellizer.js')
     .pipe(complexity());
 });
-
