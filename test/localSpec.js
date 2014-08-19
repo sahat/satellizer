@@ -38,7 +38,7 @@ describe('Email and password flow', function() {
     $httpBackend.expectPOST('/auth/login').respond(401, 'Wrong email or password');
 
     Local.login(user).catch(function(response) {
-      result = response.data;
+      result = response;
     });
 
     $httpBackend.flush();
