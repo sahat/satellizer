@@ -101,3 +101,70 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0;
   padding: 8px;
 }
+
+
+.alert-material {
+  font-family: 'Roboto', sans-serif;
+  outline: none;
+  display: inline-block;
+  background: #323232;
+  color: #f1f1f1;
+  min-height: 48px;
+  padding: 13px 24px 12px;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .26);
+  z-index: 1;
+  border-radius: 2px;
+  cursor: default;
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
+}
+
+.fade-repeat.ng-enter {
+  -webkit-animation: fadeIn 0.2s;
+  animation: fadeIn 0.2s;
+}
+
+.fadeZoom.ng-enter {
+  -webkit-animation-name: fadeIn, zoomIn;
+  -webkit-animation-duration: 0.6s, 0.2s;
+  animation-name: fadeIn, zoomIn;
+  animation-duration: 0.6s, 0.2s;
+}
+
+.fadeZoomFadeDown.ng-enter {
+  -webkit-animation-name: fadeIn, zoomIn;
+  -webkit-animation-duration: 0.6s, 0.2s;
+  animation-name: fadeIn, zoomIn;
+  animation-duration: 0.6s, 0.2s;
+}
+
+.fadeZoomFadeDown.ng-leave {
+  -webkit-animation: fadeOutDown 0.6s;
+  animation: fadeOutDown 0.6s;
+}
+
+@-webkit-keyframes zoomIn {
+  0% {
+    opacity: 0;
+    -webkit-transform: scale3d(.8, .8, .8);
+    transform: scale3d(.8, .8, .8);
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes zoomIn {
+  0% {
+    opacity: 0;
+    -webkit-transform: scale3d(.8, .8, .8);
+    -ms-transform: scale3d(.8, .8, .8);
+    transform: scale3d(.8, .8, .8);
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
