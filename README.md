@@ -1,3 +1,4 @@
+
 ![Project Logo](https://lh6.googleusercontent.com/-YmfKZZLZKL0/U-KVPFSbiOI/AAAAAAAAEZA/maoYT8iJCnA/w1089-h513-no/sshot-1.png)
 
 # [Satellizer](https://github.com/sahat/satellizer/) 
@@ -48,6 +49,10 @@ angular.module('MyApp', ['Satellizer'])
       clientId: '631036554609-v5hm2amv4pvico3asfi97f54sc51ji4o.apps.googleusercontent.com'
     });
     
+    $authProvider.github({
+      clientId: '0ba2600b1dbdb756688b'
+    });
+    
     $authProvider.linkedin({
       clientId: '77cw786yignpzj'
     });
@@ -83,6 +88,7 @@ angular.module('MyApp')
 ```html
 <button ng-click="authenticate('facebook')">Sign in with Facebook</button>
 <button ng-click="authenticate('google')">Sign in with Google</button>
+<button ng-click="authenticate('github')">Sign in with GitHub</button>
 <button ng-click="authenticate('linkedin')">Sign in with LinkedIn</button>
 <button ng-click="authenticate('twitter')">Sign in with Twitter</button>
 <button ng-click="authenticate('foursquare')">Sign in with Foursquare</button>
@@ -121,6 +127,21 @@ $authProvider.google({
   popupOptions: {
     width: 452,
     height: 633
+  }
+});
+
+// GitHub
+$authProvider.github({
+  name: 'github',
+  url: '/auth/github',
+  authorizationEndpoint: 'https://github.com/login/oauth/authorize',
+  redirectUri: window.location.origin,
+  scope: [],
+  scopeDelimiter: ' ',
+  type: '2.0',
+  popupOptions: {
+    width: 1020,
+    height: 618
   }
 });
 
@@ -423,3 +444,16 @@ FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER 
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+
+
+
+
+
+
+
+
+
+
+
