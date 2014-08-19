@@ -137,20 +137,18 @@
       var $auth = {};
 
       $auth.authenticate = function(name) {
-        var deferred = $q.defer();
         var provider = (providers[name].type === '1.0') ? Oauth1 : Oauth2;
-        provider.open(providers[name]).then(function(response) {
-          Local.parseUser(response.token, deferred);
+        return provider.open(providers[name]).then(function(response) {
+          return Local.parseUser(response.token);
         });
-        return deferred.promise;
       };
 
       $auth.login = function(user) {
-        Local.login(user);
+        return Local.login(user);
       };
 
       $auth.signup = function(user) {
-        Local.signup(user);
+        return Local.signup(user);
       };
 
       $auth.logout = function() {
@@ -158,7 +156,7 @@
       };
 
       $auth.isAuthenticated = function() {
-        Local.isAuthenticated();
+        return Local.isAuthenticated();
       };
 
       return $auth;
@@ -170,28 +168,24 @@
 
     var local = {};
 
-    local.parseUser = function(token, deferred) {
+    local.parseUser = function(token) {
       var payload = JSON.parse(window.atob(token.split('.')[1]));
       localStorage.setItem('jwtToken', token);
       $rootScope[config.user] = payload.user;
       $location.path(config.loginRedirect);
-      deferred.resolve(payload.user);
+      return payload.user;
     };
 
     local.login = function(user) {
-      var deferred = $q.defer();
-      $http.post(config.loginUrl, user)
-        .success(function(response) {
-          local.parseUser(response.token, deferred);
-        })
-        .error(function(error) {
-          deferred.reject(error);
-        });
-      return deferred.promise;
+      return $http.post(config.loginUrl, user).then(
+        function(response) {
+          return local.parseUser(response.data.token);
+        }
+      );
     };
 
     local.signup = function(user) {
-      $http.post(config.signupUrl, user).then(function() {
+      return $http.post(config.signupUrl, user).then(function() {
         $location.path(config.signupRedirect);
       });
     };
@@ -281,15 +275,11 @@
     oauth1.open = function(options) {
       angular.extend(defaults, options);
 
-      var deferred = $q.defer();
-
-      Popup.open(defaults.url).then(function(oauthData) {
-        oauth1.exchangeForToken(oauthData).then(function(response) {
-          deferred.resolve(response.data);
+      return Popup.open(defaults.url).then(function(oauthData) {
+        return oauth1.exchangeForToken(oauthData).then(function(response) {
+          return response.data;
         });
       });
-
-      return deferred.promise;
     };
 
     oauth1.exchangeForToken = function(oauthData) {
@@ -328,16 +318,13 @@
 
     oauth2.open = function(options) {
       angular.extend(defaults, options);
-      var deferred = $q.defer();
       var url = oauth2.buildUrl();
 
-      Popup.open(url, defaults.popupOptions).then(function(oauthData) {
+      return Popup.open(url, defaults.popupOptions).then(function(oauthData) {
         oauth2.exchangeForToken(oauthData).then(function(response) {
-          deferred.resolve(response.data);
+          return response.data;
         });
       });
-
-      return deferred.promise;
     };
 
     oauth2.exchangeForToken = function(oauthData) {

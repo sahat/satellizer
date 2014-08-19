@@ -17,6 +17,24 @@ describe('$auth provider', function() {
     expect(angular.isFunction($auth.login)).toBe(true);
   }));
 
+  it('should be able to handle login errors', inject(function($auth, $httpBackend) {
+    var user = {
+      email: 'foo@bar.com',
+      password: '1234'
+    };
+    var rejected = false;
+
+    $httpBackend.expectPOST('/auth/login').respond(404);
+
+    $auth.login(user).then(angular.noop, function() {
+      rejected = true;
+    });
+
+    $httpBackend.flush();
+
+    expect(rejected).toBe(true);
+  }));
+
   it('should be able to call signup', inject(function($auth, $httpBackend, $location) {
     var user = {
       email: 'foo@bar.com',
@@ -31,6 +49,24 @@ describe('$auth provider', function() {
 
     expect(angular.isFunction($auth.signup)).toBe(true);
     expect($location.path()).toEqual('/login');
+  }));
+
+  it('should be able to handle signup errors', inject(function($auth, $httpBackend) {
+    var user = {
+      email: 'foo@bar.com',
+      password: '1234'
+    };
+    var rejected = false;
+
+    $httpBackend.expectPOST('/auth/signup').respond(404);
+
+    $auth.signup(user).then(angular.noop, function() {
+      rejected = true;
+    });
+
+    $httpBackend.flush();
+
+    expect(rejected).toBe(true);
   }));
 
   it('should log out a user', inject(function($window, $location, $auth) {
@@ -60,8 +96,9 @@ describe('$auth provider', function() {
   }));
 
   it('should have a isAuthenticated function', inject(function($auth) {
-    $auth.isAuthenticated();
+    var isAuthed = $auth.isAuthenticated();
     expect($auth.isAuthenticated).toBeDefined();
+    expect(isAuthed).toBe(false);
   }));
 });
 
