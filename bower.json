@@ -15,5 +15,9 @@
     "karma.conf.js",
     "examples",
     "coverage"
-  ]
+  ],
+  "devDependencies": {
+    "angular": "~1.2.22",
+    "angular-mocks": "~1.2.22"
+  }
 }
