@@ -73,11 +73,11 @@ app.get('/api/me', ensureAuthenticated, function(req, res) {
 app.post('/auth/login', function(req, res) {
   User.findOne({ email: req.body.email }, function(err, user) {
     if (!user) {
-      return res.send(401, 'Wrong email and/or password');
+      return res.status(401).send({ message: 'Wrong email and/or password' });
     }
     user.comparePassword(req.body.password, function(err, isMatch) {
       if (!isMatch) {
-        return res.send(401, 'Wrong email and/or password');
+        return res.status(401).send({ message: 'Wrong email and/or password' });
       }
       user = user.toObject();
       delete user.password;
