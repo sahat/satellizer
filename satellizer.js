@@ -174,10 +174,10 @@
       local.login = function(user) {
         var deferred = $q.defer();
         $http.post(config.loginUrl, user)
-          .success(function(response) {
-            local.parseUser(response.token, deferred);
+          .then(function(response) {
+            local.parseUser(response.data.token, deferred);
           })
-          .error(function(response) {
+          .catch(function(response) {
             deferred.reject(response);
           });
         return deferred.promise;
