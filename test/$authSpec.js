@@ -51,16 +51,16 @@ describe('$auth provider', function() {
     expect($location.path()).toEqual('/login');
   }));
 
-  it('should be able to handle signup errors', inject(function($auth, $httpBackend) {
+  it('should be able to handle signup errors', inject(function(Local, $httpBackend) {
     var user = {
       email: 'foo@bar.com',
       password: '1234'
     };
     var rejected = false;
 
-    $httpBackend.expectPOST('/auth/signup').respond(404);
+    $httpBackend.expectPOST('/auth/signup').respond(400);
 
-    $auth.signup(user).then(angular.noop, function() {
+    Local.signup(user).catch(function() {
       rejected = true;
     });
 
@@ -95,9 +95,9 @@ describe('$auth provider', function() {
     expect($location.path()).toEqual('/login');
   }));
 
-  it('should have a isAuthenticated function', inject(function($auth) {
-    var isAuthed = $auth.isAuthenticated();
-    expect($auth.isAuthenticated).toBeDefined();
+  it('should have a isAuthenticated function', inject(function(Local) {
+    var isAuthed = Local.isAuthenticated();
+    expect(Local.isAuthenticated).toBeDefined();
     expect(isAuthed).toBe(false);
   }));
 });

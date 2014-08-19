@@ -38,7 +38,7 @@ describe('Email and password flow', function() {
     $httpBackend.expectPOST('/auth/login').respond(401, 'Wrong email or password');
 
     Local.login(user).catch(function(response) {
-      result = response;
+      result = response.data;
     });
 
     $httpBackend.flush();
@@ -80,10 +80,6 @@ describe('Email and password flow', function() {
   it('should have a isAuthenticated function', inject(function(Local) {
     expect(Local.isAuthenticated).toBeDefined();
     expect(angular.isFunction(Local.isAuthenticated)).toBe(true);
-  }));
-
-  it('should have a isAuthenticated function', inject(function(Local) {
-    expect(Local.isAuthenticated()).toBe(false);
   }));
 });
 
