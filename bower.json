@@ -15,5 +15,12 @@
     "karma.conf.js",
     "examples",
     "coverage"
-  ]
+  ],
+  "dependencies": {
+    "angular-local-storage": "~0.0.7"
+  },
+  "devDependencies": {
+    "angular": "~1.2.22",
+    "angular-mocks": "~1.2.22"
+  }
 }
