@@ -115,7 +115,7 @@
       providers[params.name].type = '2.0';
     };
 
-    this.$get = function($q, $http, Oauth1, Oauth2, Local) {
+    this.$get = function($q, Oauth1, Oauth2, Local) {
 
       var $auth = {};
 
@@ -149,13 +149,13 @@
 
   }
 
-  function Local($q, $http, $window, $rootScope, $location) {
+  function Local($q, $http, $rootScope, $location) {
 
     var local = {};
 
     local.parseUser = function(token, deferred) {
-      var payload = JSON.parse($window.atob(token.split('.')[1]));
-      $window.localStorage.jwtToken = token;
+      var payload = JSON.parse(window.atob(token.split('.')[1]));
+      localStorage.setItem('jwtToken', token);
       $rootScope[config.user] = payload.user;
       $location.path(config.loginRedirect);
       deferred.resolve(payload.user);
@@ -181,7 +181,7 @@
 
     local.logout = function() {
       delete $rootScope[config.user];
-      delete $window.localStorage.jwtToken;
+      localStorage.removeItem('jwtToken');
       $location.path(config.logoutRedirect);
     };
 
