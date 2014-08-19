@@ -27,6 +27,7 @@ var userSchema = new mongoose.Schema({
   facebook: String,
   foursquare: String,
   google: String,
+  github: String,
   linkedin: String,
   twitter: String
 });
@@ -135,6 +136,47 @@ app.post('/auth/google', function(req, res) {
           google: profile.sub,
           firstName: profile.given_name,
           lastName: profile.family_name
+        });
+        user.save(function() {
+          var token = createJwtToken(user);
+          res.send({ token: token });
+        });
+      });
+    });
+  });
+});
+
+////////////////////////////////////////////////////////////////////////////////
+// Log in with Facebook ////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+app.post('/auth/github', function(req, res) {
+  var accessTokenUrl = 'https://github.com/login/oauth/access_token';
+  var userApiUrl = 'https://api.github.com/user';
+
+  var params = {
+    client_id: req.body.clientId,
+    redirect_uri: req.body.redirectUri,
+    client_secret: config.GITHUB_SECRET,
+    code: req.body.code
+  };
+
+  // Step 1. Exchange authorization code for access token.
+  request.get({ url: accessTokenUrl, qs: params }, function(error, response, accessToken) {
+    accessToken = qs.parse(accessToken);
+
+    var headers = { 'User-Agent': 'Satellizer' };
+
+    // Step 2. Retrieve information about the current user.
+    request.get({ url: userApiUrl, qs: accessToken, headers: headers, json: true }, function(error, response, profile) {
+      User.findOne({ github: profile.id }, function(err, user) {
+        if (user) {
+          var token = createJwtToken(user);
+          return res.send({ token: token });
+        }
+        user = new User({
+          github: profile.id,
+          firstName: profile.name,
         });
         user.save(function() {
           var token = createJwtToken(user);
