@@ -5,7 +5,7 @@
 [![Build Status](http://img.shields.io/travis/sahat/satellizer.svg?style=flat)](https://travis-ci.org/sahat/satellizer) 
 [![Code Climate](http://img.shields.io/codeclimate/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer) 
 [![Test Coverage](http://img.shields.io/codeclimate/coverage/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
-[![Version](http://img.shields.io/badge/version-0.2.0-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
+[![Version](http://img.shields.io/badge/version-0.3.0-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
 
 **:clapper: Live Demo:** [http://satellizer.herokuapp.com](http://satellizer.herokuapp.com)
 
@@ -221,9 +221,7 @@ $authProvider.oauth1({
   name: null,
   popupOptions: null
 });
-
-
-  ```
+```
 
 ## How It Works
 **Satellizer** relies on *Token-Based Authentication* with
