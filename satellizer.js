@@ -321,7 +321,7 @@
       var url = oauth2.buildUrl();
 
       return Popup.open(url, defaults.popupOptions).then(function(oauthData) {
-        oauth2.exchangeForToken(oauthData).then(function(response) {
+        return oauth2.exchangeForToken(oauthData).then(function(response) {
           return response.data;
         });
       });
