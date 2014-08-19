@@ -24,7 +24,7 @@ commands:
 
 ```bash
 # Bower
-bower install satellizer --save
+bower install angular-local-storage satellizer --save
 
 # NPM
 npm install satellizer --save
@@ -98,14 +98,16 @@ directory.
 Below is a complete listing of all default configuration options.
 
 ```js
-$authProvider.logoutRedirect = '/';
-$authProvider.loginRedirect = '/';
-$authProvider.loginUrl = '/auth/login';
-$authProvider.signupUrl = '/auth/signup';
-$authProvider.signupRedirect = '/login';
-$authProvider.loginRoute = '/login';
-$authProvider.signupRoute = '/signup';
-$authProvider.user = 'currentUser';
+$authProvider.config.logoutRedirect = '/';
+$authProvider.config.loginRedirect = '/';
+$authProvider.config.loginUrl = '/auth/login';
+$authProvider.config.signupUrl = '/auth/signup';
+$authProvider.config.signupRedirect = '/login';
+$authProvider.config.loginRoute = '/login';
+$authProvider.config.signupRoute = '/signup';
+$authProvider.config.user = 'currentUser';
+$authProvider.config.tokenPrefix = 'satellizer';
+$authProvider.config.tokenKey = 'jwtToken';
 
 // Google
 $authProvider.google({

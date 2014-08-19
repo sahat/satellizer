@@ -7,14 +7,16 @@
 (function(window, angular, undefined) {
   'use strict';
 
-  angular.module('Satellizer', [])
+  angular.module('Satellizer', ['LocalStorageModule'])
     .provider('$auth', $auth)
     .factory('RunBlock', RunBlock)
     .factory('Local', Local)
     .factory('Oauth2', Oauth2)
     .factory('Oauth1', Oauth1)
     .factory('Popup', Popup)
+    .factory('HttpInterceptor', HttpInterceptor)
     .service('Utils', Utils)
+    .config(localStorage)
     .config(httpInterceptor)
     .run(onRun);
 
@@ -26,7 +28,9 @@
     signupRedirect: '/login',
     loginRoute: '/login',
     signupRoute: '/signup',
-    user: 'currentUser'
+    user: 'currentUser',
+    tokenPrefix: 'satellizer',
+    tokenKey: 'jwtToken'
   };
 
   var providers = {
@@ -149,13 +153,13 @@
 
   }
 
-  function Local($q, $http, $window, $rootScope, $location) {
+  function Local($q, $http, $window, $rootScope, $location, localStorageService) {
 
     var local = {};
 
     local.parseUser = function(token, deferred) {
       var payload = JSON.parse($window.atob(token.split('.')[1]));
-      $window.localStorage.jwtToken = token;
+      localStorageService.set(config.tokenKey, token);
       $rootScope[config.user] = payload.user;
       $location.path(config.loginRedirect);
       deferred.resolve(payload.user);
@@ -181,12 +185,12 @@
 
     local.logout = function() {
       delete $rootScope[config.user];
-      delete $window.localStorage.jwtToken;
+      localStorageService.remove(config.tokenKey);
       $location.path(config.logoutRedirect);
     };
 
     local.isAuthenticated = function() {
-      return Boolean($rootScope.currentUser);
+      return Boolean($rootScope[config.user]);
     };
 
     return local;
@@ -357,37 +361,43 @@
     return oauth2;
   }
 
-  function httpInterceptor($httpProvider) {
-    $httpProvider.interceptors.push(function($q, $window, $location) {
-      return {
-        request: function(config) {
-          if ($window.localStorage.jwtToken) {
-            config.headers.Authorization = 'Bearer ' + $window.localStorage.jwtToken;
-          }
-          return config;
-        },
-        responseError: function(response) {
-          if (response.status === 401 || response.status === 403) {
-            delete $window.localStorage.jwtToken;
-            $location.path('/login');
-          }
-          return $q.reject(response);
+  function HttpInterceptor($q, $location, localStorageService) {
+    return {
+      request: function(request) {
+        if (localStorageService.get(config.tokenKey)) {
+          request.headers.Authorization = 'Bearer ' + localStorageService.get(config.tokenKey);
         }
-      };
-    });
+        return request;
+      },
+      responseError: function(response) {
+        if (response.status === 401 || response.status === 403) {
+          localStorageService.remove(config.tokenKey);
+          $location.path('/login');
+        }
+        return $q.reject(response);
+      }
+    };
+  }
+
+  function localStorage(localStorageServiceProvider) {
+    localStorageServiceProvider.setPrefix(config.tokenPrefix);
+  }
+
+  function httpInterceptor($httpProvider) {
+    $httpProvider.interceptors.push('HttpInterceptor');
   }
 
   function onRun(RunBlock) {
     RunBlock.run();
   }
 
-  function RunBlock($rootScope, $window, $location, Utils) {
+  function RunBlock($rootScope, $window, $location, localStorageService, Utils) {
     return {
       run: function() {
-        var token = $window.localStorage.jwtToken;
+        var token = localStorageService.get(config.tokenKey);
         if (token) {
           var payload = JSON.parse($window.atob(token.split('.')[1]));
-          $rootScope.currentUser = payload.user;
+          $rootScope[config.user] = payload.user;
         }
 
         var params = $window.location.search.substring(1);

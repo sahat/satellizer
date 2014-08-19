@@ -9,7 +9,7 @@ script:
 before_script:
   - npm install -g bower codeclimate-test-reporter
   - npm install
-  - bower install angular angular-mocks
+  - bower install
 
 after_script:
   - cat coverage/lcov.info | codeclimate
