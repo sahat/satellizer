@@ -129,9 +129,13 @@
         $auth.authenticate = function(name) {
           var deferred = $q.defer();
           var provider = (providers[name].type === '1.0') ? Oauth1 : Oauth2;
-          provider.open(providers[name]).then(function(response) {
-            Local.parseUser(response.token, deferred);
-          });
+          provider.open(providers[name])
+            .then(function(response) {
+              Local.parseUser(response.token, deferred);
+            })
+            .catch(function(response) {
+              deferred.reject(response.data);
+            });
           return deferred.promise;
         };
 
@@ -221,9 +225,13 @@
         var url = oauth2.buildUrl();
 
         Popup.open(url, defaults.popupOptions).then(function(oauthData) {
-          oauth2.exchangeForToken(oauthData).then(function(response) {
-            deferred.resolve(response.data);
-          });
+          oauth2.exchangeForToken(oauthData)
+            .then(function(response) {
+              deferred.resolve(response.data);
+            })
+            .catch(function(response) {
+              deferred.reject(response);
+            });
         });
 
         return deferred.promise;

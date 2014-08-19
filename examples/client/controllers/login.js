@@ -9,8 +9,12 @@ angular.module('MyApp')
       });
     };
     $scope.authenticate = function(provider) {
-      $auth.authenticate(provider).then(function() {
-        console.log('authenticated!');
-      });
-    }
+      $auth.authenticate(provider)
+        .then(function() {
+          console.log('authenticated!');
+        })
+        .catch(function(err) {
+          console.log(err);
+        });
+    };
   });
