@@ -134,7 +134,7 @@
               Local.parseUser(response.token, deferred);
             })
             .catch(function(response) {
-              deferred.reject(response.data);
+              deferred.reject(response);
             });
           return deferred.promise;
         };

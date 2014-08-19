@@ -13,8 +13,8 @@ angular.module('MyApp')
         .then(function() {
           console.log('authenticated!');
         })
-        .catch(function(err) {
-          console.log(err);
+        .catch(function(response) {
+          console.log(response.data);
         });
     };
   });
