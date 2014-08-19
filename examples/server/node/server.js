@@ -175,7 +175,7 @@ app.post('/auth/github', function(req, res) {
         }
         user = new User({
           github: profile.id,
-          firstName: profile.name,
+          firstName: profile.name
         });
         user.save(function() {
           var token = createJwtToken(user);
@@ -203,10 +203,14 @@ app.post('/auth/linkedin', function(req, res) {
   };
 
   // Step 1. Exchange authorization code for access token.
-  request.post(accessTokenUrl, { form: params, json: true }, function(err, response, accessToken) {
+  request.post(accessTokenUrl, { form: params, json: true }, function(error, response, body) {
+
+    if (response.statusCode !== 200) {
+      return res.status(response.statusCode).send({ message: body.error_description });
+    }
 
     var params = {
-      oauth2_access_token: accessToken.access_token,
+      oauth2_access_token: body.access_token,
       format: 'json'
     };
 
