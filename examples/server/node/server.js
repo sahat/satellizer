@@ -4,7 +4,6 @@
  * License: MIT
  */
 
-var crypto = require('crypto');
 var path = require('path');
 var qs = require('querystring');
 
