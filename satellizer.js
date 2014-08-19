@@ -73,6 +73,19 @@
         height: 582
       }
     },
+    github: {
+      name: 'github',
+      url: '/auth/github',
+      authorizationEndpoint: 'https://github.com/login/oauth/authorize',
+      redirectUri: window.location.origin,
+      scope: [],
+      scopeDelimiter: ' ',
+      type: '2.0',
+      popupOptions: {
+        width: 1020,
+        height: 618
+      }
+    },
     twitter: {
       url: '/auth/twitter',
       type: '1.0'
@@ -94,6 +107,10 @@
 
     this.linkedin = function(params) {
       angular.extend(providers.linkedin, params);
+    };
+
+    this.github = function(params) {
+      angular.extend(providers.github, params);
     };
 
     this.twitter = function(params) {

@@ -37,9 +37,15 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'Satellizer'])
       clientId: '77cw786yignpzj'
     });
 
+    $authProvider.github({
+      clientId: '0ba2600b1dbdb756688b'
+    });
+
     $authProvider.twitter({
       url: '/auth/twitter'
     });
+
+
 
     $authProvider.oauth2({
       name: 'foursquare',
