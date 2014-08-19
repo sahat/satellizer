@@ -9,10 +9,17 @@ gulp.task('default', function() {
     .pipe(ngAnnotate())
     .pipe(uglify())
     .pipe(rename('satellizer.min.js'))
-    .pipe(gulp.dest('.'));
+    .pipe(gulp.dest('.'))
+    .pipe(gulp.dest('examples/client/vendor'));
+});
+
+gulp.task('copy', function() {
+  return gulp.src('./satellizer.js')
+    .pipe(gulp.dest('./examples/client/vendor'));
 });
 
 gulp.task('complexity', function() {
   return gulp.src('satellizer.js')
     .pipe(complexity());
 });
+
