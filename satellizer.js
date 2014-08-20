@@ -128,7 +128,9 @@
 
         $auth.authenticate = function(name) {
           var deferred = $q.defer();
+
           var provider = (providers[name].type === '1.0') ? Oauth1 : Oauth2;
+
           provider.open(providers[name])
             .then(function(response) {
               Local.parseUser(response.token, deferred);
@@ -136,6 +138,7 @@
             .catch(function(response) {
               deferred.reject(response);
             });
+
           return deferred.promise;
         };
 
@@ -143,12 +146,12 @@
           return Local.login(user);
         };
 
-        $auth.signup = function(user) {
-          Local.signup(user);
+        $auth.signupreturn  = function(user) {
+          return Local.signup(user);
         };
 
         $auth.logout = function() {
-          Local.logout();
+          return Local.logout();
         };
 
         $auth.isAuthenticated = function() {
@@ -173,6 +176,7 @@
 
       local.login = function(user) {
         var deferred = $q.defer();
+
         $http.post(config.loginUrl, user)
           .then(function(response) {
             local.parseUser(response.data.token, deferred);
@@ -180,11 +184,13 @@
           .catch(function(response) {
             deferred.reject(response);
           });
+
         return deferred.promise;
       };
 
       local.signup = function(user) {
         var deferred = $q.defer();
+
         $http.post(config.signupUrl, user)
           .then(function() {
             $location.path(config.signupRedirect);
@@ -193,13 +199,19 @@
           .catch(function(response) {
             deferred.reject(response);
           });
+
         return deferred.promise;
       };
 
       local.logout = function() {
+        var deferred = $q.defer();
+
         delete $rootScope[config.user];
         localStorage.removeItem('jwtToken');
         $location.path(config.logoutRedirect);
+        deferred.resolve();
+
+        return deferred.promise;
       };
 
       local.isAuthenticated = function() {
