@@ -439,7 +439,7 @@
           responseError: function(response) {
             if (response.status === 401 || response.status === 403) {
               delete $window.localStorage.jwtToken;
-              $location.path('/login');
+              $location.path(config.loginRoute);
             }
             return $q.reject(response);
           }
