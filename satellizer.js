@@ -437,7 +437,7 @@
             return config;
           },
           responseError: function(response) {
-            if (response.status === 401 || response.status === 403) {
+            if (response.status === 401) {
               delete $window.localStorage.jwtToken;
               $location.path(config.loginRoute);
             }
