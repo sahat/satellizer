@@ -146,7 +146,7 @@
           return Local.login(user);
         };
 
-        $auth.signupreturn  = function(user) {
+        $auth.signup  = function(user) {
           return Local.signup(user);
         };
 
