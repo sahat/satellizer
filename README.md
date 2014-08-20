@@ -389,9 +389,9 @@ authentication state.
 
 ## TODO
 
-- [ ] ASP.NET vNext implementation
+- [ ] C# (ASP.NET vNext) implementation
 - [ ] Elixir (Phoenix) implementation
-- [ ] Ruby on Rails implementation
+- [ ] Ruby (Sinatra) implementation
 - [ ] Go (Martini) implementation
 - [ ] Java (Spring) implementation
 - [ ] Scala (Play!) implementation
