@@ -185,7 +185,8 @@ a {
   border: 1px solid #d54331;
 }
 
-.btn-google-plus:hover {
+.btn-google-plus:hover,
+.btn-google-plus:focus {
   color: #fff;
   background-color: #cb3927;
 }
@@ -196,7 +197,8 @@ a {
   border: 1px solid #335190;
 }
 
-.btn-facebook:hover {
+.btn-facebook:hover,
+.btn-facebook:focus {
   color: #fff;
   background-color: #294786;
 }
@@ -207,7 +209,8 @@ a {
   border: 1px solid #0073ae;
 }
 
-.btn-linkedin:hover {
+.btn-linkedin:hover,
+.btn-linkedin:focus {
   color: #fff;
   background-color: #0069a4;
 }
@@ -218,7 +221,8 @@ a {
   border: 1px solid #009fdb;
 }
 
-.btn-twitter:hover {
+.btn-twitter:hover,
+.btn-twitter:focus {
   color: #fff;
   background-color: #0090c7;
 }
@@ -229,7 +233,8 @@ a {
   border: 1px solid #00669e;
 }
 
-.btn-foursquare:hover {
+.btn-foursquare:hover,
+.btn-foursquare:focus {
   color: #fff;
   background-color: #00598a;
 }
@@ -240,10 +245,15 @@ a {
   border: 1px solid #3b3b3b;
 }
 
-.btn-github:hover {
+.btn-github:hover,
+.btn-github:focus {
   color: #fff;
   background-color: #303030;
 }
+
+/*********************
+* Animations
+*********************/
 
 .fade-repeat.ng-enter {
   -webkit-animation: fadeIn 0.2s;
