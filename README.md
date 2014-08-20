@@ -183,22 +183,6 @@ $authProvider.twitter({
   type: '1.0'
 });
 
-// LinkedIn
-$authProvider.oauth2({
-  url: '/auth/linkedin',
-  authorizationEndpoint: 'https://www.linkedin.com/uas/oauth2/authorization',
-  redirectUri: window.location.origin,
-  requiredUrlParams: ['state'],
-  scope: [],
-  scopeDelimiter: ' ',
-  state: 'STATE',
-  type: '2.0',
-  popupOptions: {
-    width: 527,
-    height: 582
-  }
-});
-
 // OAuth 2.0
 $authProvider.oauth2({
   url: null,
