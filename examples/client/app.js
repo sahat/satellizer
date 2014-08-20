@@ -2,8 +2,7 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'Satellizer', 'm
   .config(function($routeProvider, $authProvider) {
     $routeProvider
       .when('/', {
-        templateUrl: 'views/home.html',
-        controller: 'HomeCtrl'
+        templateUrl: 'views/home.html'
       })
       .when('/login', {
         templateUrl: 'views/login.html',
@@ -33,25 +32,23 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'Satellizer', 'm
       clientId: '631036554609-v5hm2amv4pvico3asfi97f54sc51ji4o.apps.googleusercontent.com'
     });
 
-    $authProvider.linkedin({
-      clientId: '77cw786yignpzj'
-    });
-
     $authProvider.github({
       clientId: '0ba2600b1dbdb756688b'
+    });
+
+    $authProvider.linkedin({
+      clientId: '77cw786yignpzj'
     });
 
     $authProvider.twitter({
       url: '/auth/twitter'
     });
 
-
-
     $authProvider.oauth2({
       name: 'foursquare',
-      clientId: 'MTCEJ3NGW2PNNB31WOSBFDSAD4MTHYVAZ1UKIULXZ2CVFC2K',
       url: '/auth/foursquare',
-      authorizationEndpoint: 'https://foursquare.com/oauth2/authenticate',
-      redirectUri: window.location.origin
+      clientId: 'MTCEJ3NGW2PNNB31WOSBFDSAD4MTHYVAZ1UKIULXZ2CVFC2K',
+      redirectUri: window.location.origin,
+      authorizationEndpoint: 'https://foursquare.com/oauth2/authenticate'
     });
   });
