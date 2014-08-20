@@ -1,36 +1,44 @@
 <div class="container">
   <div class="row">
     <div class="center-form panel">
-      <form method="post" ng-submit="signup()" name="signupForm">
-        <div class="panel-body">
+      <div class="panel-body">
+        <form method="post" ng-submit="signup()" name="signupForm">
           <h2 class="text-center">Sign up</h2>
 
-          <div class="form-group" ng-class="{ 'has-success' : signupForm.email.$valid && signupForm.email.$dirty, 'has-error' : signupForm.email.$invalid && signupForm.email.$dirty }">
+          <div class="form-group has-feedback" ng-class="{ 'has-error' : signupForm.fullName.$invalid && signupForm.fullName.$dirty }">
+            <input class="form-control input-lg" type="text" name="displayName" ng-model="displayName" placeholder="Name" required>
+            <span class="ion-person form-control-feedback"></span>
+            <div class="help-block text-danger" ng-if="signupForm.fullName.$dirty" ng-messages="signupForm.fullName.$error">
+              <div ng-message="required">You must enter your name.</div>
+            </div>
+          </div>
+
+          <div class="form-group has-feedback" ng-class="{ 'has-error' : signupForm.email.$invalid && signupForm.email.$dirty }">
             <input class="form-control input-lg" type="email" id="email" name="email" ng-model="email" placeholder="Email" required autofocus>
+            <span class="ion-at form-control-feedback"></span>
             <div class="help-block text-danger" ng-if="signupForm.email.$dirty" ng-messages="signupForm.email.$error">
               <div ng-message="required">Your email address is required.</div>
               <div ng-message="email">Your email address is invalid.</div>
             </div>
           </div>
 
-          <div class="form-group" ng-class="{ 'has-success' : signupForm.password.$valid && signupForm.password.$dirty, 'has-error' : signupForm.password.$invalid && signupForm.password.$dirty }">
-            <input class="form-control input-lg" type="password" name="password" ng-model="password" placeholder="Password" required>
+          <div class="form-group has-feedback" ng-class="{ 'has-error' : signupForm.password.$invalid && signupForm.password.$dirty }">
+            <input password-strength class="form-control input-lg" type="password" name="password" ng-model="password" placeholder="Password" required>
+            <span class="ion-key form-control-feedback"></span>
             <div class="help-block text-danger" ng-if="signupForm.password.$dirty" ng-messages="signupForm.password.$error">
               <div ng-message="required">Password is required.</div>
             </div>
           </div>
 
-          <div class="form-group" ng-class="{ 'has-success' : signupForm.confirmPassword.$valid && signupForm.confirmPassword.$dirty, 'has-error' : signupForm.confirmPassword.$invalid && signupForm.confirmPassword.$dirty }">
-            <input class="form-control input-lg" type="password" name="confirmPassword" ng-model="confirmPassword" repeat-password="password" placeholder="Confirm Password" required>
-            <div class="help-block text-danger my-special-animation" ng-if="signupForm.confirmPassword.$dirty" ng-messages="signupForm.confirmPassword.$error">
-              <div ng-message="required">You must confirm password.</div>
-              <div ng-message="repeat">Passwords do not match.</div>
-            </div>
-          </div>
+          <p class="text-center text-muted"><small>By clicking on Sign up, you agree to <a href="#">terms & conditions</a> and <a href="#">privacy policy</a></small></p>
 
-          <button type="submit" ng-disabled="signupForm.$invalid" class="btn btn-lg btn-block btn-primary">Create Account</button>
-        </div>
-      </form>
+          <button type="submit" ng-disabled="signupForm.$invalid" class="btn btn-lg btn-block btn-primary">Sign up</button>
+          <br/>
+
+          <p class="text-center text-muted">Already have an account? <a href="/#/login">Log in now</a></p>
+        </form>
+      </div>
     </div>
   </div>
 </div>
+

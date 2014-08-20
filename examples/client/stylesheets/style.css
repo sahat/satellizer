@@ -120,6 +120,23 @@ a {
   color: #555;
 }
 
+.password-strength-indicator {
+  position: absolute;
+  right: 0;
+  top: 10px;
+  width: 5px;
+  padding: 0 15px;
+}
+
+.password-strength-indicator span {
+  display: block;
+  height: 5px;
+  margin-bottom: 2px;
+  width: 5px;
+  border-radius: 5px;
+  background: #ebeef1;
+}
+
 [class^='ion-'] {
   font-size: 1.2em;
 }
