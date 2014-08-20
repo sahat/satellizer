@@ -97,7 +97,7 @@ app.post('/auth/signup', function(req, res) {
     password: req.body.password
   });
   user.save(function() {
-    res.send(200);
+    res.status(200).end();
   });
 });
 
@@ -378,14 +378,14 @@ app.post('/auth/foursquare', function(req, res) {
 
 function ensureAuthenticated(req, res, next) {
   if (!req.headers.authorization) {
-    return res.send(401);
+    return res.status(401).end();
   }
 
   var token = req.headers.authorization.split(' ')[1];
   var payload = jwt.decode(token, config.TOKEN_SECRET);
 
   if (payload.exp <= Date.now()) {
-    return res.send(401, 'Token has expired');
+    return res.status(401).send({ message: 'Token has expired' });
   }
 
   req.user = payload.user;
