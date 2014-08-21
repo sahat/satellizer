@@ -5,7 +5,7 @@
 [![Build Status](http://img.shields.io/travis/sahat/satellizer.svg?style=flat)](https://travis-ci.org/sahat/satellizer) 
 [![Code Climate](http://img.shields.io/codeclimate/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer) 
 [![Test Coverage](http://img.shields.io/codeclimate/coverage/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
-[![Version](http://img.shields.io/badge/version-0.3.1-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
+[![Version](http://img.shields.io/badge/version-0.3.2-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
 
 **:clapper: Live Demo:** [http://satellizer.herokuapp.com](http://satellizer.herokuapp.com)
 
@@ -181,22 +181,6 @@ $authProvider.linkedin({
 $authProvider.twitter({
   url: '/auth/twitter',
   type: '1.0'
-});
-
-// LinkedIn
-$authProvider.oauth2({
-  url: '/auth/linkedin',
-  authorizationEndpoint: 'https://www.linkedin.com/uas/oauth2/authorization',
-  redirectUri: window.location.origin,
-  requiredUrlParams: ['state'],
-  scope: [],
-  scopeDelimiter: ' ',
-  state: 'STATE',
-  type: '2.0',
-  popupOptions: {
-    width: 527,
-    height: 582
-  }
 });
 
 // OAuth 2.0
@@ -405,9 +389,9 @@ authentication state.
 
 ## TODO
 
-- [ ] ASP.NET vNext implementation
+- [ ] C# (ASP.NET vNext) implementation
 - [ ] Elixir (Phoenix) implementation
-- [ ] Ruby on Rails implementation
+- [ ] Ruby (Sinatra) implementation
 - [ ] Go (Martini) implementation
 - [ ] Java (Spring) implementation
 - [ ] Scala (Play!) implementation
