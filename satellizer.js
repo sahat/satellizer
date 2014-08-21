@@ -40,7 +40,7 @@
       redirectUri: window.location.origin + '/',
       scope: 'email',
       scopeDelimiter: ',',
-      requiredUrlParams: ['display'],
+      requiredUrlParams: ['display', 'scope',],
       display: 'popup',
       type: '2.0',
       popupOptions: {
