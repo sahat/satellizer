@@ -1,13 +1,5 @@
 <?php
 
-
-/** ------------------------------------------
- *  Route model binding
- *  ------------------------------------------
- *	Models are bson encoded objects (mongoDB)
- */
-Route::model('users', 'User');
-
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -18,35 +10,43 @@ Route::model('users', 'User');
 | and give it the Closure to execute when that URI is requested.
 |
 */
-
+//
 Route::get('/', function()
 {
-	return View::make('hello');
+    return View::make('index');
 });
 
-Route::group(array('prefix' => 'v1'), function(){
-    
+Route::get('api/me', function()
+{
+	return 'Not implemented';
+});
 
-    Route::post('users/auth',           array('as' => 'v1.users.auth',          'uses' => 'UserController@authenticate') );
-    Route::post('users/auth/facebook',  array('as' => 'v1.users.auth.facebook', 'uses' => 'UserController@authenticateFacebook') );
-    // Route::post('users/forgot',         array('as' => 'v1.users.forgot',    'uses' => 'UserController@forgot') );
-    // Route::post('users/reset',          array('as' => 'v1.users.reset',     'uses' => 'UserController@resetPassword') );
+Route::post('auth/facebook', function()
+{
+	return 'Not implemented';
+});
 
-    Route::resource('users', 'UserController', array('only' => array('index', 'store')) );
+Route::post('auth/google', function()
+{
+	return 'Not implemented';
+});
 
-    //	user needs to have a registered and active token
-    Route::group(array('before' => 'logged_in'), function() {
+Route::post('auth/github', function()
+{
+	return 'Not implemented';
+});
 
-        Route::get('users/sessions',    array('as' => 'v1.users.sessions',      'uses' => 'UserController@sessions') );
+Route::post('auth/linkedin', function()
+{
+	return 'Not implemented';
+});
 
-        Route::group(array('prefix' => 'users/{users}'), function() {
+Route::post('auth/foursquare', function()
+{
+	return 'Not implemented';
+});
 
-            Route::get('show',          array('as' => 'v1.users.show',      'uses' => 'UserController@show') );
-            Route::post('logout',       array('as' => 'v1.users.logout',    'uses' => 'UserController@logout') );
-
-        });
-
-    });
-    
-
+Route::get('auth/twitter', function()
+{
+	return 'Not implemented';
 });

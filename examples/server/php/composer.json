@@ -1,23 +1,11 @@
 {
-	"name": "merlosy/laravel-restful-api_starter",
-	"description": "Starter for RESTful API with Laravel and MongoDB",
-	"keywords": [ "laravel", "restful", "api", "starter", "mongodb"],
+	"name": "laravel/laravel",
+	"description": "The Laravel Framework.",
+	"keywords": ["framework", "laravel"],
 	"license": "MIT",
 	"require": {
-		"laravel/framework": "4.2.*",
-		"jenssegers/mongodb": "*",
-		"jenssegers/mongodb-session": "*",
-		"intervention/image": "1.*",
-		"facebook/php-sdk-v4" : "~4.0.0",
-		"iron-io/iron_mq" : "*"
+		"laravel/framework": "4.2.*"
 	},
-	"require-dev": {
-        "way/generators": "2.*",
-        "phpunit/phpunit": "4.*",
-        "mockery/mockery": "0.*",
-        "summerstreet/woodling": "0.1.*",
-        "barryvdh/laravel-ide-helper": "1.*"
-    },
 	"autoload": {
 		"classmap": [
 			"app/commands",

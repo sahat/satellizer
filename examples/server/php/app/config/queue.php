@@ -11,7 +11,7 @@ return array(
 	| API, giving you convenient access to each back-end using the same
 	| syntax for each one. Here you may set the default queue driver.
 	|
-	| Supported: "sync", "beanstalkd", "sqs", "iron"
+	| Supported: "sync", "beanstalkd", "sqs", "iron", "redis"
 	|
 	*/
 
@@ -78,7 +78,7 @@ return array(
 
 	'failed' => array(
 
-		'database' => 'mongodb', 'table' => 'failed_jobs',
+		'database' => 'mysql', 'table' => 'failed_jobs',
 
 	),
 

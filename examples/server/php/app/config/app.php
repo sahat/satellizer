@@ -13,7 +13,7 @@ return array(
 	|
 	*/
 
-	'debug' => true,
+	'debug' => false,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -78,7 +78,7 @@ return array(
 	|
 	*/
 
-	'key' => 'DGebeDjAWBTW3pFlJbSoe29qdqaxBhaW',
+	'key' => 'Hvh561YmVTJFL0xkFs5SmmjkHC1R40eo',
 
 	'cipher' => MCRYPT_RIJNDAEL_128,
 
@@ -121,13 +121,6 @@ return array(
 		'Illuminate\Validation\ValidationServiceProvider',
 		'Illuminate\View\ViewServiceProvider',
 		'Illuminate\Workbench\WorkbenchServiceProvider',
-
-		// additional providers
-		'Jenssegers\Mongodb\Session\SessionServiceProvider',
-		'Jenssegers\Mongodb\MongodbServiceProvider',
-		'Intervention\Image\ImageServiceProvider',
-		'Way\Generators\GeneratorsServiceProvider', // Generators
-        'Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider', // IDE Helpers
 
 	),
 
@@ -195,10 +188,6 @@ return array(
 		'URL'             => 'Illuminate\Support\Facades\URL',
 		'Validator'       => 'Illuminate\Support\Facades\Validator',
 		'View'            => 'Illuminate\Support\Facades\View',
-
-		// additional aliases
-		'Image' 		  => 'Intervention\Image\Facades\Image',
-		'Moloquent'       => 'Jenssegers\Mongodb\Model',
 
 	),
 

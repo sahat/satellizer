@@ -31,8 +31,7 @@ ClassLoader::addDirectories(array(
 |
 */
 
-$logFile = 'laravel.log';
-Log::useDailyFiles(storage_path().'/logs/'.$logFile);
+Log::useFiles(storage_path().'/logs/laravel.log');
 
 /*
 |--------------------------------------------------------------------------
@@ -50,14 +49,6 @@ Log::useDailyFiles(storage_path().'/logs/'.$logFile);
 App::error(function(Exception $exception, $code)
 {
 	Log::error($exception);
-	$message = $exception->getMessage();
-	return json_encode( 
-		array('error' => array(	'code'		=> $code, 
-								'message'	=> empty($message)? 'The resource or path you are looking for does not exist.' : $message,
-								'file'		=> $exception->getFile(), 
-								'line'		=> $exception->getLine() )
-			) 
-		);
 });
 
 /*
@@ -73,11 +64,7 @@ App::error(function(Exception $exception, $code)
 
 App::down(function()
 {
-	return json_encode( 
-		array('error' => array(	'code'		=> '503', 
-								'message'	=> 'Sorry, server is in maintenance.' )
-			) 
-		);
+	return Response::make("Be right back!", 503);
 });
 
 /*
