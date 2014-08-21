@@ -112,6 +112,7 @@ $authProvider.signupRedirect = '/login';
 $authProvider.loginRoute = '/login';
 $authProvider.signupRoute = '/signup';
 $authProvider.user = 'currentUser';
+$authProvider.tokenName = 'satellizerToken';
 
 // Google
 $authProvider.google({
