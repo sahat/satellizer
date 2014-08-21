@@ -15,7 +15,8 @@
     signupRedirect: '/login',
     loginRoute: '/login',
     signupRoute: '/signup',
-    user: 'currentUser'
+    user: 'currentUser',
+    tokenName: 'satellizerToken'
   };
 
   var providers = {
@@ -168,7 +169,7 @@
 
       local.parseUser = function(token, deferred) {
         var payload = JSON.parse(window.atob(token.split('.')[1]));
-        localStorage.setItem('jwtToken', token);
+        localStorage.setItem(config.tokenName, token);
         $rootScope[config.user] = payload.user;
         $location.path(config.loginRedirect);
         deferred.resolve(payload.user);
@@ -207,7 +208,7 @@
         var deferred = $q.defer();
 
         delete $rootScope[config.user];
-        localStorage.removeItem('jwtToken');
+        localStorage.removeItem(config.tokenName);
         $location.path(config.logoutRedirect);
         deferred.resolve();
 
@@ -399,7 +400,7 @@
     .factory('RunBlock', function RunBlock($rootScope, $window, $location, Utils) {
       return {
         run: function() {
-          var token = $window.localStorage.jwtToken;
+          var token = $window.localStorage[config.tokenName];
           if (token) {
             var payload = JSON.parse($window.atob(token.split('.')[1]));
             $rootScope.currentUser = payload.user;
@@ -440,14 +441,14 @@
       $httpProvider.interceptors.push(function($q, $window, $location) {
         return {
           request: function(config) {
-            if ($window.localStorage.jwtToken) {
-              config.headers.Authorization = 'Bearer ' + $window.localStorage.jwtToken;
+            if ($window.localStorage[config.tokenName]) {
+              config.headers.Authorization = 'Bearer ' + $window.localStorage[config.tokenName];
             }
             return config;
           },
           responseError: function(response) {
             if (response.status === 401) {
-              delete $window.localStorage.jwtToken;
+              delete $window.localStorage[config.tokenName];
               $location.path(config.loginRoute);
             }
             return $q.reject(response);
