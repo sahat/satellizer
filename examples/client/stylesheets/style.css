@@ -1,6 +1,6 @@
 body {
-  background: #e4e7ec;
   font-family: 'Open Sans', sans-serif;
+  background: #e4e7ec;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -40,8 +40,8 @@ a {
 }
 
 .navbar-default {
-  background: #fff;
   color: #fff;
+  background: #fff;
 }
 
 .navbar-default .navbar-brand {
@@ -55,8 +55,8 @@ a {
 }
 
 .navbar-brand {
-  transition: 0.25s all;
   margin-left: -15px;
+  transition: 0.25s all;
 }
 
 .panel {
@@ -66,12 +66,12 @@ a {
 }
 
 .panel-default > .panel-heading {
-  color: #444;
-  border-color: #cfd9db;
-  font-weight: bold;
   font-size: 85%;
+  font-weight: bold;
+  color: #444;
   text-transform: uppercase;
   background-color: #f6f6f6;
+  border-color: #cfd9db;
 }
 
 .btn-primary {
@@ -92,23 +92,23 @@ a {
 }
 
 .signup-or-separator {
-  background: none;
-  height: 34px;
   position: relative;
+  height: 34px;
   text-align: center;
+  background: none;
 }
 
 .signup-or-separator hr {
-  border-top: 1px solid #dce0e0;
-  margin: -16px auto 10px auto;
   width: 90%;
+  margin: -16px auto 10px auto;
+  border-top: 1px solid #dce0e0;
 }
 
 .signup-or-separator .text {
-  background-color: #fff;
   display: inline-block;
-  margin: 0;
   padding: 8px;
+  margin: 0;
+  background-color: #fff;
 }
 
 .has-feedback .form-control-feedback {
@@ -122,19 +122,19 @@ a {
 
 .password-strength-indicator {
   position: absolute;
-  right: 0;
   top: 10px;
+  right: 0;
   width: 5px;
   padding: 0 15px;
 }
 
 .password-strength-indicator span {
   display: block;
+  width: 5px;
   height: 5px;
   margin-bottom: 2px;
-  width: 5px;
-  border-radius: 5px;
   background: #ebeef1;
+  border-radius: 5px;
 }
 
 [class^='ion-'] {
@@ -146,25 +146,25 @@ a {
 }
 
 .alert-material {
-  font-family: 'Roboto', sans-serif;
-  outline: none;
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  z-index: 1;
   display: inline-block;
-  background: #323232;
-  color: #f1f1f1;
   min-height: 48px;
   padding: 13px 24px 12px;
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .26);
-  z-index: 1;
-  border-radius: 2px;
+  font-family: 'Roboto', sans-serif;
+  color: #f1f1f1;
   cursor: default;
-  position: fixed;
-  bottom: 12px;
-  right: 12px;
+  background: #323232;
+  border-radius: 2px;
+  outline: none;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
 }
 
 .btn {
+  font-weight: bold;
   border-radius: 2px;
-  font-weight: bold
 }
 
 .btn-lg {
@@ -255,35 +255,42 @@ a {
 * Animations
 *********************/
 
-.fade-repeat.ng-enter {
-  -webkit-animation: fadeIn 0.2s;
-  animation: fadeIn 0.2s;
-}
-
 .fadeZoom.ng-enter {
-  -webkit-animation-name: fadeIn, zoomIn;
   -webkit-animation-duration: 0.6s, 0.2s;
+  -moz-animation-duration: 0.2s, 0.2s;
+  -ms-animation-duration: 0.2s, 0.2s;
+  animation-duration: 0.2, 0.2s;
+  -webkit-animation-name: fadeIn, zoomIn;
+  -moz-animation-name: fadeIn, zoomIn;
+  -ms-animation-name: fadeIn, zoomIn;
   animation-name: fadeIn, zoomIn;
-  animation-duration: 0.6s, 0.2s;
 }
 
 .fadeZoomFadeDown.ng-enter {
+  -webkit-animation-duration: 0.2s, 0.2s;
+  -moz-animation-duration: 0.2s, 0.2s;
+  -ms-animation-duration: 0.2s, 0.2s;
+  animation-duration: 0.2s, 0.2s;
   -webkit-animation-name: fadeIn, zoomIn;
-  -webkit-animation-duration: 0.6s, 0.2s;
+  -moz-animation-name: fadeIn, zoomIn;
+  -ms-animation-name: fadeIn, zoomIn;
   animation-name: fadeIn, zoomIn;
-  animation-duration: 0.6s, 0.2s;
 }
 
 .fadeZoomFadeDown.ng-leave {
   -webkit-animation: fadeOutDown 0.6s;
+  -moz-animation: fadeOutDown 0.6s;
+  -ms-animation: fadeOutDown 0.6s;
   animation: fadeOutDown 0.6s;
 }
 
 @-webkit-keyframes zoomIn {
   0% {
     opacity: 0;
-    -webkit-transform: scale3d(.8, .8, .8);
-    transform: scale3d(.8, .8, .8);
+    -webkit-transform: scale3d(0.8, 0.8, 0.8);
+    -moz-transform: scale3d(0.8, 0.8, 0.8);
+    -ms-transform: scale3d(0.8, 0.8, 0.8);
+    transform: scale3d(0.8, 0.8, 0.8);
   }
 
   50% {
@@ -294,9 +301,10 @@ a {
 @keyframes zoomIn {
   0% {
     opacity: 0;
-    -webkit-transform: scale3d(.8, .8, .8);
-    -ms-transform: scale3d(.8, .8, .8);
-    transform: scale3d(.8, .8, .8);
+    -webkit-transform: scale3d(0.8, 0.8, 0.8);
+    -moz-transform: scale3d(0.8, 0.8, 0.8);
+    -ms-transform: scale3d(0.8, 0.8, 0.8);
+    transform: scale3d(0.8, 0.8, 0.8);
   }
 
   50% {
