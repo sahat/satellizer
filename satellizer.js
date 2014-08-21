@@ -133,7 +133,7 @@
 
           provider.open(providers[name])
             .then(function(response) {
-              Local.parseUser(response.token, deferred);
+              Local.parseUser(response.data.token, deferred);
             })
             .catch(function(response) {
               deferred.reject(response);
@@ -146,7 +146,7 @@
           return Local.login(user);
         };
 
-        $auth.signup  = function(user) {
+        $auth.signup = function(user) {
           return Local.signup(user);
         };
 
@@ -243,15 +243,16 @@
         var deferred = $q.defer();
         var url = oauth2.buildUrl();
 
-        Popup.open(url, defaults.popupOptions).then(function(oauthData) {
-          oauth2.exchangeForToken(oauthData)
-            .then(function(response) {
-              deferred.resolve(response.data);
-            })
-            .catch(function(response) {
-              deferred.reject(response);
-            });
-        });
+        Popup.open(url, defaults.popupOptions)
+          .then(function(oauthData) {
+            oauth2.exchangeForToken(oauthData)
+              .then(function(response) {
+                deferred.resolve(response);
+              })
+              .catch(function(response) {
+                deferred.reject(response);
+              });
+          });
 
         return deferred.promise;
       };
@@ -336,11 +337,19 @@
       popup.popupWindow = popupWindow;
 
       popup.open = function(url, options) {
+
         var deferred = $q.defer();
         var optionsString = popup.stringifyOptions(popup.prepareOptions(options || {}));
 
-        popupWindow = $window.open(url, 'Satellizer', optionsString);
-        popupWindow.focus();
+        // Internet Explorer
+//        if (navigator.userAgent.indexOf('MSIE') !== -1 || navigator.appVersion.indexOf('Trident/') > 0) {
+//          console.log('using IE');
+//          popupWindow = window.open(url, '_blank', optionsString);
+//        } else {
+//          console.log('Chrome or FF');
+          popupWindow = window.open(url, '_blank', optionsString);
+          popupWindow.focus();
+//        }
 
         popup.postMessageHandler(deferred);
         popup.pollPopup(deferred);
