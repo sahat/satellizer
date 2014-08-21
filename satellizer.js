@@ -155,7 +155,7 @@
         };
 
         $auth.isAuthenticated = function() {
-          Local.isAuthenticated();
+          return Local.isAuthenticated();
         };
 
         return $auth;
