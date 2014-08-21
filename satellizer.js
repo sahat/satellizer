@@ -360,6 +360,7 @@
       popup.postMessageHandler = function(deferred) {
         $window.addEventListener('message', function(event) {
           if (event.origin === $window.location.origin) {
+            popupWindow.close();
             deferred.resolve(event.data);
           }
         }, false);
@@ -403,7 +404,6 @@
             } else if (qs.code) {
               $window.opener.postMessage({ code: qs.code }, '*');
             }
-            $window.close();
           }
         }
       };

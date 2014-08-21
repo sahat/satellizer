@@ -40,7 +40,7 @@
       redirectUri: window.location.origin + '/',
       scope: 'email',
       scopeDelimiter: ',',
-      requiredUrlParams: ['display'],
+      requiredUrlParams: ['display', 'scope',],
       display: 'popup',
       type: '2.0',
       popupOptions: {
@@ -155,7 +155,7 @@
         };
 
         $auth.isAuthenticated = function() {
-          Local.isAuthenticated();
+          return Local.isAuthenticated();
         };
 
         return $auth;
@@ -360,6 +360,7 @@
       popup.postMessageHandler = function(deferred) {
         $window.addEventListener('message', function(event) {
           if (event.origin === $window.location.origin) {
+            popupWindow.close();
             deferred.resolve(event.data);
           }
         }, false);
@@ -403,7 +404,6 @@
             } else if (qs.code) {
               $window.opener.postMessage({ code: qs.code }, '*');
             }
-            $window.close();
           }
         }
       };
