@@ -409,9 +409,9 @@
           var qs = Object.keys($location.search()).length ? $location.search() : Utils.parseQueryString(params);
           if ($window.opener && $window.opener.location.origin === $window.location.origin) {
             if (qs.oauth_token && qs.oauth_verifier) {
-              $window.opener.postMessage({ oauth_token: qs.oauth_token, oauth_verifier: qs.oauth_verifier }, '*');
+              $window.opener.postMessage({ oauth_token: qs.oauth_token, oauth_verifier: qs.oauth_verifier }, $window.location.origin);
             } else if (qs.code) {
-              $window.opener.postMessage({ code: qs.code }, '*');
+              $window.opener.postMessage({ code: qs.code }, $window.location.origin);
             }
           }
         }
