@@ -123,7 +123,7 @@
         providers[params.name].type = '2.0';
       };
 
-      this.$get = function($q, Oauth1, Oauth2, Local) {
+      this.$get = function($q, $http, Oauth1, Oauth2, Local) {
 
         var $auth = {};
 
@@ -157,6 +157,14 @@
 
         $auth.isAuthenticated = function() {
           return Local.isAuthenticated();
+        };
+
+        $auth.link = function(provider) {
+          return Local.link(provider);
+        };
+
+        $auth.unlink = function(provider) {
+          return Local.unlink(provider);
         };
 
         return $auth;
@@ -217,6 +225,14 @@
 
       local.isAuthenticated = function() {
         return Boolean($rootScope.currentUser);
+      };
+
+      local.link = function(provider) {
+        return $http.get('/auth/link/' + provider);
+      };
+
+      local.unlink = function(provider) {
+        return $http.get('/auth/unlink/' + provider);
       };
 
       return local;
