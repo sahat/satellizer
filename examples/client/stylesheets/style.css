@@ -74,14 +74,6 @@ a {
   border-color: #cfd9db;
 }
 
-.btn-primary {
-  background-color: #1d7cf4;
-}
-
-.btn-success {
-  background-color: #22ae5f;
-}
-
 .form-control {
   border-radius: 0;
 }
@@ -165,21 +157,46 @@ a {
 .btn {
   font-weight: bold;
   border-radius: 2px;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .26);
+}
+
+.btn-primary {
+  background-color: #4285f4;
+}
+
+.btn-primary:hover {
+  background-color: #3367d6;
+}
+
+.btn-success {
+  background-color: #0f9d58;
+}
+
+.btn-success:hover {
+  background-color: #196c4a;
+}
+
+.btn-danger {
+  background-color: #db4437;
+}
+
+.btn-danger:hover {
+  background-color: #b04c3b;
 }
 
 .btn-group-vertical .btn {
-  margin-bottom: 5px;
+  margin-bottom: 10px;
 }
 
-.btn-group-vertical>.btn:first-child:not(:last-child) {
+.btn-group-vertical > .btn:first-child:not(:last-child) {
   border-radius: 2px;
 }
 
-.btn-group-vertical>.btn:not(:first-child):not(:last-child) {
+.btn-group-vertical > .btn:not(:first-child):not(:last-child) {
   border-radius: 2px;
 }
 
-.btn-group-vertical>.btn:last-child:not(:first-child) {
+.btn-group-vertical > .btn:last-child:not(:first-child) {
   border-radius: 2px;
 }
 
