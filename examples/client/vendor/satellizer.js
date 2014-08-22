@@ -367,7 +367,11 @@
         $window.addEventListener('message', function(event) {
           if (event.origin === $window.location.origin) {
             popupWindow.close();
-            deferred.resolve(event.data);
+            if (event.data.error) {
+              deferred.reject({ data: event.data.error });
+            } else {
+              deferred.resolve(event.data);
+            }
           }
         }, false);
       };
@@ -410,6 +414,8 @@
               $window.opener.postMessage({ oauth_token: qs.oauth_token, oauth_verifier: qs.oauth_verifier }, $window.location.origin);
             } else if (qs.code) {
               $window.opener.postMessage({ code: qs.code }, $window.location.origin);
+            } else if (qs.error) {
+              $window.opener.postMessage({ error: qs.error }, $window.location.origin);
             }
           }
         }
