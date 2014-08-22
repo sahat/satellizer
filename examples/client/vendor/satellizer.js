@@ -403,7 +403,7 @@
           var token = $window.localStorage[config.tokenName];
           if (token) {
             var payload = JSON.parse($window.atob(token.split('.')[1]));
-            $rootScope.currentUser = payload.user;
+            $rootScope[config.user] = payload.user;
           }
 
           var params = $window.location.search.substring(1);
