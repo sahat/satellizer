@@ -185,10 +185,23 @@ app.post('/auth/github', function(req, res) {
   });
 });
 
-////////////////////////////////////////////////////////////////////////////////
-// Log in with LinkedIn ////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+/*
+ |--------------------------------------------------------------------------
+ | Login with LinkedIn
+ |--------------------------------------------------------------------------
+ |
+ | Step 1. Exchange authorization code for access token.
+ | Step 2. Retrieve profile information about the current user.
+ | Step 3a. If user is already signed in then link accounts.
+ | Step 3b. Otherwise, create a new user account or return an existing one.
+ |
+ */
 
+/*
+ --------------------------------------------------------------------------
+ Login with LinkedIn
+ --------------------------------------------------------------------------
+ */
 app.post('/auth/linkedin', function(req, res) {
   var accessTokenUrl = 'https://www.linkedin.com/uas/oauth2/accessToken';
   var peopleApiUrl = 'https://api.linkedin.com/v1/people/~:(id,first-name,last-name)';
@@ -213,37 +226,55 @@ app.post('/auth/linkedin', function(req, res) {
       format: 'json'
     };
 
-    // Step 2. Retrieve information about the current user.
+    // Step 2. Retrieve profile information about the current user.
     request.get({ url: peopleApiUrl, qs: params, json: true }, function(error, response, profile) {
-      User.findOne({ linkedin: profile.id }, function(err, user) {
-        if (user) {
-          var token = createToken(user);
-          return res.send({ token: token });
-        }
-        user = new User({
-          linkedin: profile.id,
-          firstName: profile.firstName,
-          lastName: profile.lastName
+
+      // Step 3a. If user is already signed in then link accounts.
+      if (req.headers.authorization) {
+        User.findOne({ facebook: profile.id }, function(err, existingUser) {
+          if (existingUser) {
+            return res.status(409).send({ message: 'There is already a LinkedIn account that belongs to you' });
+          }
+
+          var token = req.headers.authorization.split(' ')[1];
+          var payload = jwt.decode(token, config.TOKEN_SECRET);
+
+          User.findById(payload.user._id, function(err, user) {
+            user.linkedin = profile.id;
+            user.displayName = user.displayName || profile.firstName + ' ' + profile.lastName;
+
+            user.save(function(err) {
+              var token = createToken(user);
+              res.send({ token: token });
+            });
+          });
         });
-        user.save(function() {
-          var token = createToken(user);
-          res.send({ token: token });
+      } else {
+        // Step 3b. Create a new user account or return an existing one.
+        User.findOne({ linkedin: profile.id }, function(err, user) {
+          if (user) {
+            var token = createToken(user);
+            return res.send({ token: token });
+          }
+
+          user = new User();
+          user.linkedin = profile.id;
+          user.displayName = profile.firstName + ' ' + profile.lastName;
+
+          user.save(function() {
+            var token = createToken(user);
+            res.send({ token: token });
+          });
         });
-      });
+      }
     });
   });
 });
 
 /*
- |--------------------------------------------------------------------------
- | Login with Facebook
- |--------------------------------------------------------------------------
- |
- | Step 1. Exchange authorization code for access token.
- | Step 2. Retrieve profile information about the current user.
- | Step 3a. If user is already signed in then link accounts.
- | Step 3b. Otherwise, create a new user account or return an existing one.
- |
+ --------------------------------------------------------------------------
+ Login with Facebook
+ --------------------------------------------------------------------------
  */
 app.post('/auth/facebook', function(req, res) {
   var accessTokenUrl = 'https://graph.facebook.com/oauth/access_token';
@@ -256,11 +287,14 @@ app.post('/auth/facebook', function(req, res) {
     code: req.body.code
   };
 
+  // Step 1. Exchange authorization code for access token.
   request.get({ url: accessTokenUrl, qs: params }, function(err, response, accessToken) {
     accessToken = qs.parse(accessToken);
 
+    // Step 2. Retrieve profile information about the current user.
     request.get({ url: graphApiUrl, qs: accessToken, json: true }, function(err, response, profile) {
 
+      // Step 3a. If user is already signed in then link accounts.
       if (req.headers.authorization) {
         User.findOne({ facebook: profile.id }, function(err, existingUser) {
           if (existingUser) {
@@ -281,6 +315,7 @@ app.post('/auth/facebook', function(req, res) {
           });
         });
       } else {
+        // Step 3b. Create a new user account or return an existing one.
         User.findOne({ facebook: profile.id }, function(err, user) {
           if (user) {
             var token = createToken(user);
