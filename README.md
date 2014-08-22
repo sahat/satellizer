@@ -394,7 +394,7 @@ authentication state.
 - [ ] Elixir (Phoenix) implementation
 - [ ] Ruby (Sinatra) implementation
 - [ ] Go (Martini) implementation
-- [ ] Java (Spring) implementation
+- [ ] Java (Dropwizard) implementation
 - [ ] Scala (Play!) implementation
 - [ ] PHP (Laravel) implementation
 - [x] Python (Flask) implementation
