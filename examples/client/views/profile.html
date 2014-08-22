@@ -23,45 +23,45 @@
       <legend><i class="ion-link"></i> Linked Accounts</legend>
       <div class="btn-group-vertical">
 
-        <button class="btn btn-sm btn-danger" ng-if="currentUser.facebook" ng-click="authenticate('facebook')">
+        <button class="btn btn-sm btn-danger" ng-if="currentUser.facebook" ng-click="unlink('facebook')">
           <i class="ion-social-facebook"></i> Unlink Facebook Account
         </button>
-        <button class="btn btn-sm btn-default" ng-if="!currentUser.facebook" ng-click="authenticate('facebook')">
+        <button class="btn btn-sm btn-default" ng-if="!currentUser.facebook" ng-click="link('facebook')">
           <i class="ion-social-facebook"></i> Link Facebook Account
         </button>
 
-        <button class="btn btn-sm btn-danger" ng-if="currentUser.google" ng-click="authenticate('google')">
+        <button class="btn btn-sm btn-danger" ng-if="currentUser.google" ng-click="unlink('google')">
           <i class="ion-social-googleplus"></i> Unlink Google Account
         </button>
-        <button class="btn btn-sm btn-default" ng-if="!currentUser.google" ng-click="authenticate('google')">
+        <button class="btn btn-sm btn-default" ng-if="!currentUser.google" ng-click="link('google')">
           <i class="ion-social-googleplus"></i> Link Google Account
         </button>
 
-        <button class="btn btn-sm btn-default" ng-if="currentUser.linkedin" ng-click="authenticate('linkedin')">
+        <button class="btn btn-sm btn-default" ng-if="currentUser.linkedin" ng-click="unlink('linkedin')">
           <i class="ion-social-linkedin"></i> Unlink LinkedIn Account
         </button>
-        <button class="btn btn-sm btn-default" ng-if="!currentUser.linkedin" ng-click="authenticate('linkedin')">
+        <button class="btn btn-sm btn-default" ng-if="!currentUser.linkedin" ng-click="link('linkedin')">
           <i class="ion-social-linkedin"></i> Link LinkedIn Account
         </button>
 
-        <button class="btn btn-sm btn-default" ng-if="currentUser.twitter" ng-click="authenticate('twitter')">
+        <button class="btn btn-sm btn-default" ng-if="currentUser.twitter" ng-click="unlink('twitter')">
           <i class="ion-social-twitter"></i> Unlink Twitter Account
         </button>
-        <button class="btn btn-sm btn-default" ng-if="!currentUser.twitter" ng-click="authenticate('twitter')">
+        <button class="btn btn-sm btn-default" ng-if="!currentUser.twitter" ng-click="link('twitter')">
           <i class="ion-social-twitter"></i> Link Twitter Account
         </button>
 
-        <button class="btn btn-sm btn-default" ng-if="currentUser.github" ng-click="authenticate('github')">
+        <button class="btn btn-sm btn-default" ng-if="currentUser.github" ng-click="unlink('github')">
           <i class="ion-social-github"></i> Unlink GitHub Account
         </button>
-        <button class="btn btn-sm btn-default" ng-if="!currentUser.github" ng-click="authenticate('github')">
+        <button class="btn btn-sm btn-default" ng-if="!currentUser.github" ng-click="link('github')">
           <i class="ion-social-github"></i> Link GitHub Account
         </button>
 
-        <button class="btn btn-sm btn-default" ng-if="currentUser.foursquare" ng-click="authenticate('foursquare')">
+        <button class="btn btn-sm btn-default" ng-if="currentUser.foursquare" ng-click="unlink('foursquare')">
           <i class="ion-social-foursquare"></i> Unlink Foursquare Account
         </button>
-        <button class="btn btn-sm btn-default" ng-if="!currentUser.foursquare" ng-click="authenticate('foursquare')">
+        <button class="btn btn-sm btn-default" ng-if="!currentUser.foursquare" ng-click="link('foursquare')">
           <i class="ion-social-foursquare"></i> Link Foursquare Account
         </button>
       </div>

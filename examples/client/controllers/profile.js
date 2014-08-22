@@ -1,6 +1,10 @@
 angular.module('MyApp')
-  .controller('ProfileCtrl', function($scope, Account) {
-    Account.getUserInfo().success(function(data) {
-      $scope.userInfo = data;
-    });
+  .controller('ProfileCtrl', function($scope, $auth) {
+    $scope.link = function(provider) {
+      $auth.link(provider);
+    };
+
+    $scope.unlink = function(provider) {
+      $auth.unlink(provider);
+    };
   });
