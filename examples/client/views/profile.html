@@ -1,0 +1,29 @@
+<div class="container">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      Protected Route
+    </div>
+    <div class="panel-body">
+
+      <form method="post" ng-submit="updateProfile()">
+        <legend><i class="ion-clipboard"></i> Edit My Profile</legend>
+        <div class="form-group">
+          <label class="control-label" for="id"><i class="ion-pound"></i> User ID</label>
+          <input class="form-control" type="text" ng-model="id" disabled/>
+        </div>
+        <div class="form-group">
+          <label class="control-label" for="displayName"><i class="ion-person"></i> Display Name</label>
+          <input class="form-control" type="text" ng-model="displayName" />
+        </div>
+        <div class="form-group">
+          <label class="control-label" for="email"><i class="ion-at"></i> Email Address</label>
+          <input class="form-control" type="email" ng-model="email" />
+        </div>
+        <button class="btn btn-lg btn-success">Update Information</button>
+      </form>
+
+      <h2>Welcome, {{currentUser.firstName || currentUser.email}}!</h2>
+      <pre ng-bind="currentUser | json"></pre>
+    </div>
+  </div>
+</div>
