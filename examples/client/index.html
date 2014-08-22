@@ -18,7 +18,7 @@
   </div>
   <ul class="nav navbar-nav">
     <li><a href="/">Home</a></li>
-    <li ng-if="currentUser"><a href="/#/protected">Protected</a></li>
+    <li ng-if="currentUser"><a href="/#/profile">Profile</a></li>
   </ul>
   <ul class="nav navbar-nav pull-right" ng-if="!currentUser">
     <li><a href="/#/login">Login</a></li>
@@ -45,7 +45,7 @@
 <script src="controllers/login.js"></script>
 <script src="controllers/signup.js"></script>
 <script src="controllers/logout.js"></script>
-<script src="controllers/protected.js"></script>
+<script src="controllers/profile.js"></script>
 <script src="services/account.js"></script>
 </body>
 </html>

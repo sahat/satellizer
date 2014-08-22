@@ -16,16 +16,16 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'Satellizer', 'm
         template: null,
         controller: 'LogoutCtrl'
       })
-      .when('/protected', {
-        templateUrl: 'views/protected.html',
-        controller: 'ProtectedCtrl'
+      .when('/profile', {
+        templateUrl: 'views/profile.html',
+        controller: 'ProfileCtrl'
       })
       .otherwise({
         redirectTo: '/'
       });
 
     $authProvider.facebook({
-      clientId: '657854390977827'
+      clientId: ''
     });
 
     $authProvider.google({
