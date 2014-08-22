@@ -234,10 +234,17 @@ app.post('/auth/linkedin', function(req, res) {
   });
 });
 
-////////////////////////////////////////////////////////////////////////////////
-// Log in with Facebook ////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
+/*
+ |--------------------------------------------------------------------------
+ | Login with Facebook
+ |--------------------------------------------------------------------------
+ |
+ | Step 1. Exchange authorization code for access token.
+ | Step 2. Retrieve profile information about the current user.
+ | Step 3a. If user is already signed in then link accounts.
+ | Step 3b. Otherwise, create a new user account or return an existing one.
+ |
+ */
 app.post('/auth/facebook', function(req, res) {
   var accessTokenUrl = 'https://graph.facebook.com/oauth/access_token';
   var graphApiUrl = 'https://graph.facebook.com/me';
@@ -249,22 +256,28 @@ app.post('/auth/facebook', function(req, res) {
     code: req.body.code
   };
 
-  // Step 1. Exchange authorization code for access token.
-  request.get({ url: accessTokenUrl, qs: params }, function(error, response, accessToken) {
+  request.get({ url: accessTokenUrl, qs: params }, function(err, response, accessToken) {
     accessToken = qs.parse(accessToken);
 
-    // Step 2. Retrieve information about the current user.
-    request.get({ url: graphApiUrl, qs: accessToken, json: true }, function(error, response, profile) {
-      if (req.headers.authorization) {
-        var token = req.headers.authorization.split(' ')[1];
-        var payload = jwt.decode(token, config.TOKEN_SECRET);
+    request.get({ url: graphApiUrl, qs: accessToken, json: true }, function(err, response, profile) {
 
-        User.findById(payload.user._id, function(err, user) {
-          user.facebook = profile.id;
-          user.displayName = user.displayName || profile.name;
-          user.save(function(err) {
-            var token = createToken(user);
-            res.send({ token: token });
+      if (req.headers.authorization) {
+        User.findOne({ facebook: profile.id }, function(err, existingUser) {
+          if (existingUser) {
+            return res.status(409).send({ message: 'There is already a Facebook account that belongs to you' });
+          }
+
+          var token = req.headers.authorization.split(' ')[1];
+          var payload = jwt.decode(token, config.TOKEN_SECRET);
+
+          User.findById(payload.user._id, function(err, user) {
+            user.facebook = profile.id;
+            user.displayName = user.displayName || profile.name;
+
+            user.save(function(err) {
+              var token = createToken(user);
+              res.send({ token: token });
+            });
           });
         });
       } else {
@@ -274,10 +287,9 @@ app.post('/auth/facebook', function(req, res) {
             return res.send({ token: token });
           }
 
-          user = new User({
-            facebook: profile.id,
-            displayName: profile.name
-          });
+          user = new User();
+          user.facebook = profile.id;
+          user.displayName = profile.name;
 
           user.save(function() {
             var token = createToken(user);
