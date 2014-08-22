@@ -443,11 +443,11 @@
     .config(function httpInterceptor($httpProvider) {
       $httpProvider.interceptors.push(function($q, $window, $location) {
         return {
-          request: function(config) {
+          request: function(http_config) {
             if ($window.localStorage[config.tokenName]) {
               config.headers.Authorization = 'Bearer ' + $window.localStorage[config.tokenName];
             }
-            return config;
+            return http_config;
           },
           responseError: function(response) {
             if (response.status === 401) {
