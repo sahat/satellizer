@@ -21,8 +21,7 @@ var config = require('./config');
 var userSchema = new mongoose.Schema({
   email: { type: String, unique: true, lowercase: true },
   password: String,
-  firstName: String,
-  lastName: String,
+  displayName: String,
   facebook: String,
   foursquare: String,
   google: String,
@@ -81,7 +80,7 @@ app.post('/auth/login', function(req, res) {
       }
       user = user.toObject();
       delete user.password;
-      var token = createJwtToken(user);
+      var token = createToken(user);
       res.send({ token: token });
     });
   });
@@ -93,6 +92,7 @@ app.post('/auth/login', function(req, res) {
 
 app.post('/auth/signup', function(req, res) {
   var user = new User({
+    displayName: req.body.displayName,
     email: req.body.email,
     password: req.body.password
   });
@@ -127,7 +127,7 @@ app.post('/auth/google', function(req, res) {
     request.get({ url: peopleApiUrl, headers: headers, json: true }, function(error, response, profile) {
       User.findOne({ google: profile.sub }, function(err, user) {
         if (user) {
-          var token = createJwtToken(user);
+          var token = createToken(user);
           return res.send({ token: token });
         }
         user = new User({
@@ -136,7 +136,7 @@ app.post('/auth/google', function(req, res) {
           lastName: profile.family_name
         });
         user.save(function() {
-          var token = createJwtToken(user);
+          var token = createToken(user);
           res.send({ token: token });
         });
       });
@@ -169,7 +169,7 @@ app.post('/auth/github', function(req, res) {
     request.get({ url: userApiUrl, qs: accessToken, headers: headers, json: true }, function(error, response, profile) {
       User.findOne({ github: profile.id }, function(err, user) {
         if (user) {
-          var token = createJwtToken(user);
+          var token = createToken(user);
           return res.send({ token: token });
         }
         user = new User({
@@ -177,7 +177,7 @@ app.post('/auth/github', function(req, res) {
           firstName: profile.name
         });
         user.save(function() {
-          var token = createJwtToken(user);
+          var token = createToken(user);
           res.send({ token: token });
         });
       });
@@ -217,7 +217,7 @@ app.post('/auth/linkedin', function(req, res) {
     request.get({ url: peopleApiUrl, qs: params, json: true }, function(error, response, profile) {
       User.findOne({ linkedin: profile.id }, function(err, user) {
         if (user) {
-          var token = createJwtToken(user);
+          var token = createToken(user);
           return res.send({ token: token });
         }
         user = new User({
@@ -226,7 +226,7 @@ app.post('/auth/linkedin', function(req, res) {
           lastName: profile.lastName
         });
         user.save(function() {
-          var token = createJwtToken(user);
+          var token = createToken(user);
           res.send({ token: token });
         });
       });
@@ -255,21 +255,36 @@ app.post('/auth/facebook', function(req, res) {
 
     // Step 2. Retrieve information about the current user.
     request.get({ url: graphApiUrl, qs: accessToken, json: true }, function(error, response, profile) {
-      User.findOne({ facebook: profile.id }, function(err, user) {
-        if (user) {
-          var token = createJwtToken(user);
-          return res.send({ token: token });
-        }
-        user = new User({
-          facebook: profile.id,
-          firstName: profile.first_name,
-          lastName: profile.last_name
+      if (req.headers.authorization) {
+        var token = req.headers.authorization.split(' ')[1];
+        var payload = jwt.decode(token, config.TOKEN_SECRET);
+
+        User.findById(payload.user._id, function(err, user) {
+          user.facebook = profile.id;
+          user.displayName = user.displayName || profile.name;
+          user.save(function(err) {
+            var token = createToken(user);
+            res.send({ token: token });
+          });
         });
-        user.save(function() {
-          var token = createJwtToken(user);
-          res.send({ token: token });
+      } else {
+        User.findOne({ facebook: profile.id }, function(err, user) {
+          if (user) {
+            var token = createToken(user);
+            return res.send({ token: token });
+          }
+
+          user = new User({
+            facebook: profile.id,
+            displayName: profile.name
+          });
+
+          user.save(function() {
+            var token = createToken(user);
+            res.send({ token: token });
+          });
         });
-      });
+      }
     });
   });
 });
@@ -296,7 +311,7 @@ app.get('/auth/twitter', function(req, res) {
       profile = qs.parse(profile);
       User.findOne({ twitter: profile.user_id }, function(err, user) {
         if (user) {
-          var token = createJwtToken(user);
+          var token = createToken(user);
           return res.send({ token: token });
         }
         user = new User({
@@ -304,7 +319,7 @@ app.get('/auth/twitter', function(req, res) {
           firstName: profile.screen_name
         });
         user.save(function() {
-          var token = createJwtToken(user);
+          var token = createToken(user);
           res.send({ token: token });
         });
       });
@@ -355,7 +370,7 @@ app.post('/auth/foursquare', function(req, res) {
       profile = profile.response.user;
       User.findOne({ foursquare: profile.id }, function(err, user) {
         if (user) {
-          var token = createJwtToken(user);
+          var token = createToken(user);
           return res.send({ token: token });
         }
         user = new User({
@@ -364,12 +379,28 @@ app.post('/auth/foursquare', function(req, res) {
           lastName: profile.lastName
         });
         user.save(function() {
-          var token = createJwtToken(user);
+          var token = createToken(user);
           res.send({ token: token });
         });
       });
     });
   });
+});
+
+app.get('/auth/link/:provider', ensureAuthenticated, function(req, res, next) {
+  var provider = req.params.provider;
+
+  User.findById(req.user._id, function(err, user) {
+    if (user[provider]) {
+      return res.status(409).send({ message: 'There is already an account that belongs to you. Account merging is not supported.' })
+    }
+
+
+  });
+});
+
+app.get('/auth/unlink/:provider', ensureAuthenticated, function(req, res, next) {
+  res.send(500);
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -396,7 +427,7 @@ function ensureAuthenticated(req, res, next) {
 // Generate JSON Web Token /////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-function createJwtToken(user) {
+function createToken(user) {
   var payload = {
     user: user,
     iat: moment().valueOf(),
