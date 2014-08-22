@@ -1,6 +1,6 @@
 {
   "name": "satellizer",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "main": "satellizer.js",
   "homepage": "https://github.com/sahat/satellizer",
   "ignore": [
