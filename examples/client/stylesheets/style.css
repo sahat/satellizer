@@ -278,10 +278,10 @@ a {
 }
 
 .fadeZoomFadeDown.ng-leave {
-  -webkit-animation: fadeOutDown 0.6s;
-  -moz-animation: fadeOutDown 0.6s;
-  -ms-animation: fadeOutDown 0.6s;
-  animation: fadeOutDown 0.6s;
+  -webkit-animation: fadeOutDown 0.2s;
+  -moz-animation: fadeOutDown 0.2s;
+  -ms-animation: fadeOutDown 0.2s;
+  animation: fadeOutDown 0.2s;
 }
 
 @-webkit-keyframes zoomIn {
