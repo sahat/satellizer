@@ -16,7 +16,9 @@
     loginRoute: '/login',
     signupRoute: '/signup',
     user: 'currentUser',
-    tokenName: 'satellizerToken'
+    tokenName: 'satellizerToken',
+    linkUrl: '/auth/link/',
+    unlinkUrl: '/auth/unlink/'
   };
 
   var providers = {
@@ -228,11 +230,11 @@
       };
 
       local.link = function(provider) {
-        return $http.get('/auth/link/' + provider);
+        return $http.get(config.linkUrl + provider);
       };
 
       local.unlink = function(provider) {
-        return $http.get('/auth/unlink/' + provider);
+        return $http.get(config.unlinkUrl + provider);
       };
 
       return local;
