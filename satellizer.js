@@ -445,7 +445,7 @@
         return {
           request: function(http_config) {
             if ($window.localStorage[config.tokenName]) {
-              config.headers.Authorization = 'Bearer ' + $window.localStorage[config.tokenName];
+              http_config.headers.Authorization = 'Bearer ' + $window.localStorage[config.tokenName];
             }
             return http_config;
           },
