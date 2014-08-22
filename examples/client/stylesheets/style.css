@@ -167,6 +167,22 @@ a {
   border-radius: 2px;
 }
 
+.btn-group-vertical .btn {
+  margin-bottom: 5px;
+}
+
+.btn-group-vertical>.btn:first-child:not(:last-child) {
+  border-radius: 2px;
+}
+
+.btn-group-vertical>.btn:not(:first-child):not(:last-child) {
+  border-radius: 2px;
+}
+
+.btn-group-vertical>.btn:last-child:not(:first-child) {
+  border-radius: 2px;
+}
+
 .btn-lg {
   font-size: 14px;
 }
