@@ -15,7 +15,8 @@
     signupRedirect: '/login',
     loginRoute: '/login',
     signupRoute: '/signup',
-    user: 'currentUser'
+    user: 'currentUser',
+    tokenName: 'satellizerToken'
   };
 
   var providers = {
@@ -40,7 +41,7 @@
       redirectUri: window.location.origin + '/',
       scope: 'email',
       scopeDelimiter: ',',
-      requiredUrlParams: ['display', 'scope',],
+      requiredUrlParams: ['display', 'scope'],
       display: 'popup',
       type: '2.0',
       popupOptions: {
@@ -133,7 +134,7 @@
 
           provider.open(providers[name])
             .then(function(response) {
-              Local.parseUser(response.token, deferred);
+              Local.parseUser(response.data.token, deferred);
             })
             .catch(function(response) {
               deferred.reject(response);
@@ -146,7 +147,7 @@
           return Local.login(user);
         };
 
-        $auth.signup  = function(user) {
+        $auth.signup = function(user) {
           return Local.signup(user);
         };
 
@@ -168,7 +169,7 @@
 
       local.parseUser = function(token, deferred) {
         var payload = JSON.parse(window.atob(token.split('.')[1]));
-        localStorage.setItem('jwtToken', token);
+        localStorage.setItem(config.tokenName, token);
         $rootScope[config.user] = payload.user;
         $location.path(config.loginRedirect);
         deferred.resolve(payload.user);
@@ -207,7 +208,7 @@
         var deferred = $q.defer();
 
         delete $rootScope[config.user];
-        localStorage.removeItem('jwtToken');
+        localStorage.removeItem(config.tokenName);
         $location.path(config.logoutRedirect);
         deferred.resolve();
 
@@ -243,15 +244,19 @@
         var deferred = $q.defer();
         var url = oauth2.buildUrl();
 
-        Popup.open(url, defaults.popupOptions).then(function(oauthData) {
-          oauth2.exchangeForToken(oauthData)
-            .then(function(response) {
-              deferred.resolve(response.data);
-            })
-            .catch(function(response) {
-              deferred.reject(response);
-            });
-        });
+        Popup.open(url, defaults.popupOptions)
+          .then(function(oauthData) {
+            oauth2.exchangeForToken(oauthData)
+              .then(function(response) {
+                deferred.resolve(response);
+              })
+              .catch(function(response) {
+                deferred.reject(response);
+              });
+          })
+          .catch(function(error) {
+            deferred.reject(error);
+          });
 
         return deferred.promise;
       };
@@ -336,10 +341,11 @@
       popup.popupWindow = popupWindow;
 
       popup.open = function(url, options) {
+
         var deferred = $q.defer();
         var optionsString = popup.stringifyOptions(popup.prepareOptions(options || {}));
 
-        popupWindow = $window.open(url, 'Satellizer', optionsString);
+        popupWindow = $window.open(url, '_blank', optionsString);
         popupWindow.focus();
 
         popup.postMessageHandler(deferred);
@@ -352,7 +358,7 @@
         polling = $interval(function() {
           if (popupWindow.closed) {
             $interval.cancel(polling);
-            deferred.reject('Popup was closed by the user');
+            deferred.reject({ data: 'Authorization Failed' });
           }
         }, 35);
       };
@@ -390,7 +396,7 @@
     .factory('RunBlock', function RunBlock($rootScope, $window, $location, Utils) {
       return {
         run: function() {
-          var token = $window.localStorage.jwtToken;
+          var token = $window.localStorage[config.tokenName];
           if (token) {
             var payload = JSON.parse($window.atob(token.split('.')[1]));
             $rootScope.currentUser = payload.user;
@@ -398,11 +404,12 @@
 
           var params = $window.location.search.substring(1);
           var qs = Object.keys($location.search()).length ? $location.search() : Utils.parseQueryString(params);
+
           if ($window.opener && $window.opener.location.origin === $window.location.origin) {
             if (qs.oauth_token && qs.oauth_verifier) {
-              $window.opener.postMessage({ oauth_token: qs.oauth_token, oauth_verifier: qs.oauth_verifier }, '*');
+              $window.opener.postMessage({ oauth_token: qs.oauth_token, oauth_verifier: qs.oauth_verifier }, $window.location.origin);
             } else if (qs.code) {
-              $window.opener.postMessage({ code: qs.code }, '*');
+              $window.opener.postMessage({ code: qs.code }, $window.location.origin);
             }
           }
         }
@@ -431,14 +438,14 @@
       $httpProvider.interceptors.push(function($q, $window, $location) {
         return {
           request: function(config) {
-            if ($window.localStorage.jwtToken) {
-              config.headers.Authorization = 'Bearer ' + $window.localStorage.jwtToken;
+            if ($window.localStorage[config.tokenName]) {
+              config.headers.Authorization = 'Bearer ' + $window.localStorage[config.tokenName];
             }
             return config;
           },
           responseError: function(response) {
             if (response.status === 401) {
-              delete $window.localStorage.jwtToken;
+              delete $window.localStorage[config.tokenName];
               $location.path(config.loginRoute);
             }
             return $q.reject(response);

@@ -253,6 +253,9 @@
               .catch(function(response) {
                 deferred.reject(response);
               });
+          })
+          .catch(function(error) {
+            deferred.reject(error);
           });
 
         return deferred.promise;
@@ -342,15 +345,8 @@
         var deferred = $q.defer();
         var optionsString = popup.stringifyOptions(popup.prepareOptions(options || {}));
 
-        // Internet Explorer
-//        if (navigator.userAgent.indexOf('MSIE') !== -1 || navigator.appVersion.indexOf('Trident/') > 0) {
-//          console.log('using IE');
-//          popupWindow = window.open(url, '_blank', optionsString);
-//        } else {
-//          console.log('Chrome or FF');
-          popupWindow = window.open(url, '_blank', optionsString);
-          popupWindow.focus();
-//        }
+        popupWindow = $window.open(url, '_blank', optionsString);
+        popupWindow.focus();
 
         popup.postMessageHandler(deferred);
         popup.pollPopup(deferred);
@@ -362,7 +358,7 @@
         polling = $interval(function() {
           if (popupWindow.closed) {
             $interval.cancel(polling);
-            deferred.reject('Popup was closed by the user');
+            deferred.reject({ data: 'Authorization Failed' });
           }
         }, 35);
       };
@@ -408,6 +404,7 @@
 
           var params = $window.location.search.substring(1);
           var qs = Object.keys($location.search()).length ? $location.search() : Utils.parseQueryString(params);
+
           if ($window.opener && $window.opener.location.origin === $window.location.origin) {
             if (qs.oauth_token && qs.oauth_verifier) {
               $window.opener.postMessage({ oauth_token: qs.oauth_token, oauth_verifier: qs.oauth_verifier }, $window.location.origin);
