@@ -31,6 +31,7 @@
     "gulp": "^3.8.7",
     "gulp-complexity": "^0.2.1",
     "gulp-ng-annotate": "^0.3.0",
+    "gulp-plumber": "^0.6.4",
     "gulp-rename": "^1.2.0",
     "gulp-uglify": "^0.3.1",
     "karma": "^0.12.21",
