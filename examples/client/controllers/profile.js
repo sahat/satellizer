@@ -1,25 +1,19 @@
 angular.module('MyApp')
-  .controller('ProfileCtrl', function($scope, $http, $auth, $alert) {
-
-    console.log($scope.currentUser);
-
-
+  .controller('ProfileCtrl', function($scope, $auth, $alert, Account) {
     $scope.updateProfile = function() {
       var profileData = {
         displayName: $scope.currentUser.displayName,
         email: $scope.currentUser.email
       };
 
-      $http.put('/api/me', profileData)
-        .then(function(response) {
-          $auth.updateToken(response.data.token);
-          $alert({
-            content: 'Profile has been updated',
-            animation: 'fadeZoomFadeDown',
-            type: 'material',
-            duration: 3
-          });
+      Account.updateProfile(profileData).then(function() {
+        $alert({
+          content: 'Profile has been updated',
+          animation: 'fadeZoomFadeDown',
+          type: 'material',
+          duration: 3
         });
+      })
     };
 
     $scope.link = function(provider) {
