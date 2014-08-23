@@ -528,7 +528,13 @@ app.post('/auth/foursquare', function(req, res) {
  */
 
 app.get('/auth/unlink/:provider', ensureAuthenticated, function(req, res, next) {
-  res.send(500);
+  var provider = req.params.provider;
+  User.findById(req.user._id, function(err, user) {
+    user[provider] = undefined;
+    user.save(function(err) {
+      res.status(200).end();
+    });
+  });
 });
 
 /*
