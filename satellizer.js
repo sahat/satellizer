@@ -529,7 +529,7 @@
         run: function() {
           var token = $window.localStorage[config.tokenName];
           if (token) {
-            $rootScope[config.user] = Utils.userFromToken(token).user;
+            $rootScope[config.user] = Utils.userFromToken(token);
           }
 
           var params = $window.location.search.substring(1);
@@ -600,9 +600,8 @@
       };
 
       this.userFromToken = function(token) {
-        var base64url = token.split('.')[1];
-        var base64 = base64url.replace('-', '+').replace('_', '/');
-        return JSON.parse(window.atob(base64));
+        var payload = JSON.parse(window.atob(token.split('.')[1]));
+        return payload.user;
       };
     })
     .config(function httpInterceptor($httpProvider) {
