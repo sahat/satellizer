@@ -65,10 +65,11 @@ app.get('/api/me', ensureAuthenticated, function(req, res) {
   res.send(req.user);
 });
 
-////////////////////////////////////////////////////////////////////////////////
-// Log in with Email ///////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
+/*
+ |--------------------------------------------------------------------------
+ | Log in with Email
+ |--------------------------------------------------------------------------
+ */
 app.post('/auth/login', function(req, res) {
   User.findOne({ email: req.body.email }, function(err, user) {
     if (!user) {
@@ -86,10 +87,11 @@ app.post('/auth/login', function(req, res) {
   });
 });
 
-////////////////////////////////////////////////////////////////////////////////
-// Create Email and Password Account ///////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
+/*
+ |--------------------------------------------------------------------------
+ | Create Email and Password Account
+ |--------------------------------------------------------------------------
+ */
 app.post('/auth/signup', function(req, res) {
   var user = new User({
     displayName: req.body.displayName,
@@ -119,13 +121,13 @@ app.post('/auth/google', function(req, res) {
   };
 
   // Step 1. Exchange authorization code for access token.
-  request.post(accessTokenUrl, { json: true, form: params }, function(error, response, token) {
+  request.post(accessTokenUrl, { json: true, form: params }, function(err, response, token) {
 
     var accessToken = token.access_token;
     var headers = { Authorization: 'Bearer ' + accessToken };
 
     // Step 2. Retrieve profile information about the current user.
-    request.get({ url: peopleApiUrl, headers: headers, json: true }, function(error, response, profile) {
+    request.get({ url: peopleApiUrl, headers: headers, json: true }, function(err, response, profile) {
 
       // Step 3a. If user is already signed in then link accounts.
       if (req.headers.authorization) {
@@ -185,13 +187,13 @@ app.post('/auth/github', function(req, res) {
   };
 
   // Step 1. Exchange authorization code for access token.
-  request.get({ url: accessTokenUrl, qs: params }, function(error, response, accessToken) {
+  request.get({ url: accessTokenUrl, qs: params }, function(err, response, accessToken) {
     accessToken = qs.parse(accessToken);
 
     var headers = { 'User-Agent': 'Satellizer' };
 
     // Step 2. Retrieve profile information about the current user.
-    request.get({ url: userApiUrl, qs: accessToken, headers: headers, json: true }, function(error, response, profile) {
+    request.get({ url: userApiUrl, qs: accessToken, headers: headers, json: true }, function(err, response, profile) {
 
       // Step 3a. If user is already signed in then link accounts.
       if (req.headers.authorization) {
@@ -253,7 +255,7 @@ app.post('/auth/linkedin', function(req, res) {
   };
 
   // Step 1. Exchange authorization code for access token.
-  request.post(accessTokenUrl, { form: params, json: true }, function(error, response, body) {
+  request.post(accessTokenUrl, { form: params, json: true }, function(err, response, body) {
 
     if (response.statusCode !== 200) {
       return res.status(response.statusCode).send({ message: body.error_description });
@@ -265,7 +267,7 @@ app.post('/auth/linkedin', function(req, res) {
     };
 
     // Step 2. Retrieve profile information about the current user.
-    request.get({ url: peopleApiUrl, qs: params, json: true }, function(error, response, profile) {
+    request.get({ url: peopleApiUrl, qs: params, json: true }, function(err, response, profile) {
 
       // Step 3a. If user is already signed in then link accounts.
       if (req.headers.authorization) {
@@ -374,16 +376,32 @@ app.post('/auth/facebook', function(req, res) {
   });
 });
 
-////////////////////////////////////////////////////////////////////////////////
-// Log in with Twitter /////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
+/*
+ |--------------------------------------------------------------------------
+ | Login with Twitter
+ |--------------------------------------------------------------------------
+ */
 app.get('/auth/twitter', function(req, res) {
   var requestTokenUrl = 'https://api.twitter.com/oauth/request_token';
   var accessTokenUrl = 'https://api.twitter.com/oauth/access_token';
   var authenticateUrl = 'https://api.twitter.com/oauth/authenticate';
 
-  if (req.query.oauth_token && req.query.oauth_verifier) {
+  if (!req.query.oauth_token || !req.query.oauth_verifier) {
+    var requestTokenOauth = {
+      consumer_key: config.TWITTER_KEY,
+      consumer_secret: config.TWITTER_SECRET,
+      callback: config.TWITTER_CALLBACK
+    };
+
+    // Step 1. Obtain request token for the authorization popup.
+    request.post({ url: requestTokenUrl, oauth: requestTokenOauth }, function(err, response, body) {
+      var oauthToken = qs.parse(body);
+      var params = qs.stringify({ oauth_token: oauthToken.oauth_token });
+
+      // Step 2. Redirect to the authorization screen.
+      res.redirect(authenticateUrl + '?' + params);
+    });
+  } else {
     var accessTokenOauth = {
       consumer_key: config.TWITTER_KEY,
       consumer_secret: config.TWITTER_SECRET,
@@ -392,37 +410,46 @@ app.get('/auth/twitter', function(req, res) {
     };
 
     // Step 3. Exchange oauth token and oauth verifier for access token.
-    request.post({ url: accessTokenUrl, oauth: accessTokenOauth }, function(error, response, profile) {
+    request.post({ url: accessTokenUrl, oauth: accessTokenOauth }, function(err, response, profile) {
       profile = qs.parse(profile);
-      User.findOne({ twitter: profile.user_id }, function(err, user) {
-        if (user) {
-          var token = createToken(user);
-          return res.send({ token: token });
-        }
-        user = new User({
-          twitter: profile.user_id,
-          firstName: profile.screen_name
-        });
-        user.save(function() {
-          var token = createToken(user);
-          res.send({ token: token });
-        });
-      });
-    });
-  } else {
-    var requestTokenOauth = {
-      consumer_key: config.TWITTER_KEY,
-      consumer_secret: config.TWITTER_SECRET,
-      callback: config.TWITTER_CALLBACK
-    };
 
-    // Step 1. Obtain request token.
-    request.post({ url: requestTokenUrl, oauth: requestTokenOauth }, function(error, response, body) {
-      var oauthToken = qs.parse(body);
-      var params = qs.stringify({ oauth_token: oauthToken.oauth_token });
+      // Step 4a. If user is already signed in then link accounts.
+      if (req.headers.authorization) {
+        User.findOne({ twitter: profile.user_id }, function(err, existingUser) {
+          if (existingUser) {
+            return res.status(409).send({ message: 'There is already a Twitter account that belongs to you' });
+          }
 
-      // Step 2. Redirect to the authorization screen.
-      res.redirect(authenticateUrl + '?' + params);
+          var token = req.headers.authorization.split(' ')[1];
+          var payload = jwt.decode(token, config.TOKEN_SECRET);
+
+          User.findById(payload.user._id, function(err, user) {
+            user.twitter = profile.user_id;
+            user.displayName = user.displayName || profile.screen_name;
+            user.save(function(err) {
+              var token = createToken(user);
+              res.send({ token: token });
+            });
+          });
+        });
+      } else {
+        // Step 4b. Create a new user account or return an existing one.
+        User.findOne({ twitter: profile.user_id }, function(err, user) {
+          if (user) {
+            var token = createToken(user);
+            return res.send({ token: token });
+          }
+
+          user = new User();
+          user.twitter = profile.user_id;
+          user.displayName = profile.screen_name;
+
+          user.save(function() {
+            var token = createToken(user);
+            res.send({ token: token });
+          });
+        });
+      }
     });
   }
 });
