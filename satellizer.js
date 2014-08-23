@@ -124,7 +124,7 @@
         providers[params.name].type = '2.0';
       };
 
-      this.$get = function($q, $http, $rootScope, Oauth1, Oauth2, Local) {
+      this.$get = function($q, $http, $rootScope, Oauth1, Oauth2, Local, Utils) {
 
         var $auth = {};
 
@@ -171,24 +171,23 @@
         // TODO: call from parseUser
         $auth.updateToken = function(token) {
           localStorage.setItem(config.tokenName, token);
-          var payload = JSON.parse(window.atob(token.split('.')[1]));
-          $rootScope[config.user] = payload.user;
+          $rootScope[config.user] = Utils.userFromToken(token);
         };
 
         return $auth;
       };
 
     })
-    .factory('Local', function Local($q, $http, $rootScope, $location) {
+    .factory('Local', function Local($q, $http, $rootScope, $location, Utils) {
 
       var local = {};
 
       local.parseUser = function(token, deferred) {
-        var payload = JSON.parse(window.atob(token.split('.')[1]));
+        var user = Utils.userFromToken(token);
         localStorage.setItem(config.tokenName, token);
-        $rootScope[config.user] = payload.user;
+        $rootScope[config.user] = user;
         $location.path(config.loginRedirect);
-        deferred.resolve(payload.user);
+        deferred.resolve(user);
       };
 
       local.login = function(user) {
@@ -440,8 +439,7 @@
         run: function() {
           var token = $window.localStorage[config.tokenName];
           if (token) {
-            var payload = JSON.parse($window.atob(token.split('.')[1]));
-            $rootScope[config.user] = payload.user;
+            $rootScope[config.user] = Utils.payload(token).user;
           }
 
           var params = $window.location.search.substring(1);
@@ -476,6 +474,12 @@
           }
         });
         return obj;
+      };
+
+      this.userFromToken = function(token) {
+        var base64url = token.split('.')[1];
+        var base64 = base64url.replace('-', '+').replace('_', '/');
+        return JSON.parse(window.atob(base64));
       };
     })
     .config(function httpInterceptor($httpProvider) {
