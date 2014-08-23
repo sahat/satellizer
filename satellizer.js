@@ -161,8 +161,9 @@
           return Local.isAuthenticated();
         };
 
-        $auth.link = function(provider) {
-          return Local.link(provider);
+        $auth.link = function(name) {
+          return $auth.authenticate(name);
+//          return Local.link(provider);
         };
 
         $auth.unlink = function(provider) {
@@ -328,7 +329,7 @@
 
         Popup.open(defaults.url).then(function(oauthData) {
           oauth1.exchangeForToken(oauthData).then(function(response) {
-            deferred.resolve(response.data);
+            deferred.resolve(response);
           });
         });
 

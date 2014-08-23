@@ -16,7 +16,9 @@
     loginRoute: '/login',
     signupRoute: '/signup',
     user: 'currentUser',
-    tokenName: 'satellizerToken'
+    tokenName: 'satellizerToken',
+    linkUrl: '/auth/link/',
+    unlinkUrl: '/auth/unlink/'
   };
 
   var providers = {
@@ -159,8 +161,9 @@
           return Local.isAuthenticated();
         };
 
-        $auth.link = function(provider) {
-          return Local.link(provider);
+        $auth.link = function(name) {
+          return $auth.authenticate(name);
+//          return Local.link(provider);
         };
 
         $auth.unlink = function(provider) {
@@ -228,11 +231,11 @@
       };
 
       local.link = function(provider) {
-        return $http.get('/auth/link/' + provider);
+        return $http.get(config.linkUrl + provider);
       };
 
       local.unlink = function(provider) {
-        return $http.get('/auth/unlink/' + provider);
+        return $http.get(config.unlinkUrl + provider);
       };
 
       return local;
@@ -326,7 +329,7 @@
 
         Popup.open(defaults.url).then(function(oauthData) {
           oauth1.exchangeForToken(oauthData).then(function(response) {
-            deferred.resolve(response.data);
+            deferred.resolve(response);
           });
         });
 
