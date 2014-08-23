@@ -458,7 +458,6 @@
           }
         },
         routeChangeListener: function() {
-
           // ngRoute
           try {
             angular.module('ngRoute');
@@ -478,7 +477,15 @@
           // UI-Router
           try {
             angular.module('ui.router');
-
+            $rootScope.$on('$stateChangeStart', function(event, toState) {
+              if ($rootScope[config.user] &&
+                (toState.url === config.loginRoute || toState.url === config.signupRoute)) {
+                $location.path('/');
+              }
+              if (toState.protected && !$rootScope[config.user]) {
+                $location.path(config.loginRoute);
+              }
+            });
           } catch (error) {
 
           }
