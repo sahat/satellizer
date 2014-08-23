@@ -125,7 +125,7 @@
         providers[params.name].type = '2.0';
       };
 
-      this.$get = function($q, $http, Oauth1, Oauth2, Local) {
+      this.$get = function($q, $http, $rootScope, Oauth1, Oauth2, Local) {
 
         var $auth = {};
 
@@ -167,6 +167,12 @@
 
         $auth.unlink = function(provider) {
           return Local.unlink(provider);
+        };
+
+        $auth.updateToken = function(token) {
+          localStorage.setItem(config.tokenName, token);
+          var payload = JSON.parse(window.atob(token.split('.')[1]));
+          $rootScope[config.user] = payload.user;
         };
 
         return $auth;
