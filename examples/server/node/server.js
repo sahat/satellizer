@@ -72,6 +72,27 @@ app.get('/api/me', ensureAuthenticated, function(req, res) {
 
 /*
  |--------------------------------------------------------------------------
+ | PUT /api/me
+ |--------------------------------------------------------------------------
+ */
+app.put('/api/me', ensureAuthenticated, function(req, res) {
+  var displayName = req.body.displayName;
+  var email = req.body.email;
+console.log(displayName)
+  User.findById(req.user._id, function(err, user) {
+    user.displayName = displayName ? displayName : user.displayName;
+    user.email = email ? email : user.email;
+    user.save(function(err) {
+      var token = createToken(user);
+      console.log(user);
+      res.send({ token: token });
+    });
+  });
+});
+
+
+/*
+ |--------------------------------------------------------------------------
  | Log in with Email
  |--------------------------------------------------------------------------
  */
@@ -303,6 +324,7 @@ app.post('/auth/linkedin', function(req, res) {
           user.linkedin = profile.id;
           user.displayName = profile.firstName + ' ' + profile.lastName;
           user.save(function(err) {
+            console.log(err);
             var token = createToken(user);
             res.send({ token: token });
           });

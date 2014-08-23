@@ -1,5 +1,27 @@
 angular.module('MyApp')
-  .controller('ProfileCtrl', function($scope, $auth, $alert) {
+  .controller('ProfileCtrl', function($scope, $http, $auth, $alert) {
+
+    console.log($scope.currentUser);
+
+
+    $scope.updateProfile = function() {
+      var profileData = {
+        displayName: $scope.currentUser.displayName,
+        email: $scope.currentUser.email
+      };
+
+      $http.put('/api/me', profileData)
+        .then(function(response) {
+          $auth.updateToken(response.data.token);
+          $alert({
+            content: 'Profile has been updated',
+            animation: 'fadeZoomFadeDown',
+            type: 'material',
+            duration: 3
+          });
+        });
+    };
+
     $scope.link = function(provider) {
       $auth.link(provider)
         .then(function() {
@@ -10,9 +32,9 @@ angular.module('MyApp')
             duration: 3
           });
         })
-        .catch(function() {
+        .catch(function(response) {
           $alert({
-            content: 'Could not link ' + provider + ' account',
+            content: response.data.message,
             animation: 'fadeZoomFadeDown',
             type: 'material',
             duration: 3
