@@ -61,6 +61,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../../client')));
 
+/*
+ |--------------------------------------------------------------------------
+ | GET /api/me
+ |--------------------------------------------------------------------------
+ */
 app.get('/api/me', ensureAuthenticated, function(req, res) {
   res.send(req.user);
 });
@@ -75,10 +80,12 @@ app.post('/auth/login', function(req, res) {
     if (!user) {
       return res.status(401).send({ message: 'Wrong email and/or password' });
     }
+
     user.comparePassword(req.body.password, function(err, isMatch) {
       if (!isMatch) {
         return res.status(401).send({ message: 'Wrong email and/or password' });
       }
+
       user = user.toObject();
       delete user.password;
       var token = createToken(user);
@@ -93,11 +100,10 @@ app.post('/auth/login', function(req, res) {
  |--------------------------------------------------------------------------
  */
 app.post('/auth/signup', function(req, res) {
-  var user = new User({
-    displayName: req.body.displayName,
-    email: req.body.email,
-    password: req.body.password
-  });
+  var user = new User();
+  user.displayName = req.body.displayName;
+  user.email = req.body.email;
+  user.password = req.body.password;
   user.save(function() {
     res.status(200).end();
   });
@@ -142,7 +148,6 @@ app.post('/auth/google', function(req, res) {
           User.findById(payload.user._id, function(err, user) {
             user.github = profile.id;
             user.displayName = user.displayName || profile.name;
-
             user.save(function(err) {
               var token = createToken(user);
               res.send({ token: token });
@@ -159,7 +164,6 @@ app.post('/auth/google', function(req, res) {
           user = new User();
           user.google = profile.sub;
           user.displayName = profile.name;
-
           user.save(function() {
             var token = createToken(user);
             res.send({ token: token });
@@ -208,7 +212,6 @@ app.post('/auth/github', function(req, res) {
           User.findById(payload.user._id, function(err, user) {
             user.github = profile.id;
             user.displayName = user.displayName || profile.name;
-
             user.save(function(err) {
               var token = createToken(user);
               res.send({ token: token });
@@ -226,7 +229,6 @@ app.post('/auth/github', function(req, res) {
           user = new User();
           user.github = profile.id;
           user.displayName = profile.name;
-
           user.save(function() {
             var token = createToken(user);
             res.send({ token: token });
@@ -282,7 +284,6 @@ app.post('/auth/linkedin', function(req, res) {
           User.findById(payload.user._id, function(err, user) {
             user.linkedin = profile.id;
             user.displayName = user.displayName || profile.firstName + ' ' + profile.lastName;
-
             user.save(function(err) {
               var token = createToken(user);
               res.send({ token: token });
@@ -300,7 +301,6 @@ app.post('/auth/linkedin', function(req, res) {
           user = new User();
           user.linkedin = profile.id;
           user.displayName = profile.firstName + ' ' + profile.lastName;
-
           user.save(function() {
             var token = createToken(user);
             res.send({ token: token });
@@ -347,7 +347,6 @@ app.post('/auth/facebook', function(req, res) {
           User.findById(payload.user._id, function(err, user) {
             user.facebook = profile.id;
             user.displayName = user.displayName || profile.name;
-
             user.save(function(err) {
               var token = createToken(user);
               res.send({ token: token });
@@ -365,7 +364,6 @@ app.post('/auth/facebook', function(req, res) {
           user = new User();
           user.facebook = profile.id;
           user.displayName = profile.name;
-
           user.save(function() {
             var token = createToken(user);
             res.send({ token: token });
@@ -454,10 +452,11 @@ app.get('/auth/twitter', function(req, res) {
   }
 });
 
-////////////////////////////////////////////////////////////////////////////////
-// Log in with Foursquare //////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
+/*
+ |--------------------------------------------------------------------------
+ | Login with Foursquare
+ |--------------------------------------------------------------------------
+ */
 app.post('/auth/foursquare', function(req, res) {
   var accessTokenUrl = 'https://foursquare.com/oauth2/access_token';
   var userProfileUrl = 'https://api.foursquare.com/v2/users/self';
@@ -471,54 +470,72 @@ app.post('/auth/foursquare', function(req, res) {
   };
 
   // Step 1. Exchange authorization code for access token.
-  request.post(accessTokenUrl, { json: true, form: payload }, function(error, response, body) {
+  request.post(accessTokenUrl, { json: true, form: payload }, function(err, response, body) {
     var params = {
       v: '20140806',
       oauth_token: body.access_token
     };
 
     // Step 2. Retrieve information about the current user.
-    request.get({ url: userProfileUrl, qs: params, json: true }, function(error, response, profile) {
+    request.get({ url: userProfileUrl, qs: params, json: true }, function(err, response, profile) {
       profile = profile.response.user;
-      User.findOne({ foursquare: profile.id }, function(err, user) {
-        if (user) {
-          var token = createToken(user);
-          return res.send({ token: token });
-        }
-        user = new User({
-          foursquare: profile.id,
-          firstName: profile.firstName,
-          lastName: profile.lastName
+
+      // Step 3a. If user is already signed in then link accounts.
+      if (req.headers.authorization) {
+        User.findOne({ foursquare: profile.id }, function(err, existingUser) {
+          if (existingUser) {
+            return res.status(409).send({ message: 'There is already a Foursquare account that belongs to you' });
+          }
+
+          var token = req.headers.authorization.split(' ')[1];
+          var payload = jwt.decode(token, config.TOKEN_SECRET);
+
+          User.findById(payload.user._id, function(err, user) {
+            user.foursquare = profile.id;
+            user.displayName = user.displayName || profile.firstName + ' ' + profile.lastName;
+            user.save(function(err) {
+              var token = createToken(user);
+              res.send({ token: token });
+            });
+          });
         });
-        user.save(function() {
-          var token = createToken(user);
-          res.send({ token: token });
+      } else {
+        // Step 3b. Create a new user account or return an existing one.
+        User.findOne({ foursquare: profile.id }, function(err, user) {
+          if (user) {
+            var token = createToken(user);
+            return res.send({ token: token });
+          }
+
+          user = new User();
+          user.foursquare = profile.id;
+          user.displayName = profile.firstName + ' ' + profile.lastName;
+          user.save(function() {
+            var token = createToken(user);
+            res.send({ token: token });
+          });
         });
-      });
+      }
     });
   });
 });
 
-app.get('/auth/link/:provider', ensureAuthenticated, function(req, res, next) {
-  var provider = req.params.provider;
 
-  User.findById(req.user._id, function(err, user) {
-    if (user[provider]) {
-      return res.status(409).send({ message: 'There is already an account that belongs to you. Account merging is not supported.' })
-    }
-
-
-  });
-});
+/*
+ |--------------------------------------------------------------------------
+ | Unlink Provider
+ |--------------------------------------------------------------------------
+ */
 
 app.get('/auth/unlink/:provider', ensureAuthenticated, function(req, res, next) {
   res.send(500);
 });
 
-////////////////////////////////////////////////////////////////////////////////
-// Login Required Middleware ///////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
+/*
+ |--------------------------------------------------------------------------
+ | Loging Required Middleware
+ |--------------------------------------------------------------------------
+ */
 function ensureAuthenticated(req, res, next) {
   if (!req.headers.authorization) {
     return res.status(401).end();
@@ -535,10 +552,11 @@ function ensureAuthenticated(req, res, next) {
   next();
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// Generate JSON Web Token /////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
+/*
+ |--------------------------------------------------------------------------
+ | Generate JSON Web Token
+ |--------------------------------------------------------------------------
+ */
 function createToken(user) {
   var payload = {
     user: user,
@@ -548,6 +566,11 @@ function createToken(user) {
   return jwt.encode(payload, config.TOKEN_SECRET);
 }
 
+/*
+ |--------------------------------------------------------------------------
+ | Start the Server
+ |--------------------------------------------------------------------------
+ */
 app.listen(app.get('port'), function() {
   console.log('Express server listening on port ' + app.get('port'));
 });
