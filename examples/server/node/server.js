@@ -20,7 +20,7 @@ var config = require('./config');
 
 var userSchema = new mongoose.Schema({
   email: { type: String, unique: true, lowercase: true },
-  password: String,
+  password: { type: String, select: false },
   displayName: String,
   facebook: String,
   foursquare: String,
@@ -78,13 +78,12 @@ app.get('/api/me', ensureAuthenticated, function(req, res) {
 app.put('/api/me', ensureAuthenticated, function(req, res) {
   var displayName = req.body.displayName;
   var email = req.body.email;
-console.log(displayName)
+
   User.findById(req.user._id, function(err, user) {
     user.displayName = displayName ? displayName : user.displayName;
     user.email = email ? email : user.email;
     user.save(function(err) {
       var token = createToken(user);
-      console.log(user);
       res.send({ token: token });
     });
   });
@@ -97,7 +96,7 @@ console.log(displayName)
  |--------------------------------------------------------------------------
  */
 app.post('/auth/login', function(req, res) {
-  User.findOne({ email: req.body.email }, function(err, user) {
+  User.findOne({ email: req.body.email }, '+password', function(err, user) {
     if (!user) {
       return res.status(401).send({ message: 'Wrong email and/or password' });
     }
@@ -324,7 +323,6 @@ app.post('/auth/linkedin', function(req, res) {
           user.linkedin = profile.id;
           user.displayName = profile.firstName + ' ' + profile.lastName;
           user.save(function(err) {
-            console.log(err);
             var token = createToken(user);
             res.send({ token: token });
           });
