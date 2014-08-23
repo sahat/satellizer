@@ -129,7 +129,7 @@ app.post('/auth/google', function(req, res) {
 
       // Step 3a. If user is already signed in then link accounts.
       if (req.headers.authorization) {
-        User.findOne({ facebook: profile.id }, function(err, existingUser) {
+        User.findOne({ google: profile.id }, function(err, existingUser) {
           if (existingUser) {
             return res.status(409).send({ message: 'There is already a Google account that belongs to you' });
           }
@@ -195,7 +195,7 @@ app.post('/auth/github', function(req, res) {
 
       // Step 3a. If user is already signed in then link accounts.
       if (req.headers.authorization) {
-        User.findOne({ facebook: profile.id }, function(err, existingUser) {
+        User.findOne({ github: profile.id }, function(err, existingUser) {
           if (existingUser) {
             return res.status(409).send({ message: 'There is already a GitHub account that belongs to you' });
           }
@@ -269,7 +269,7 @@ app.post('/auth/linkedin', function(req, res) {
 
       // Step 3a. If user is already signed in then link accounts.
       if (req.headers.authorization) {
-        User.findOne({ facebook: profile.id }, function(err, existingUser) {
+        User.findOne({ linkedin: profile.id }, function(err, existingUser) {
           if (existingUser) {
             return res.status(409).send({ message: 'There is already a LinkedIn account that belongs to you' });
           }
