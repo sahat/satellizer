@@ -17,7 +17,6 @@
     signupRoute: '/signup',
     user: 'currentUser',
     tokenName: 'satellizerToken',
-    linkUrl: '/auth/link/',
     unlinkUrl: '/auth/unlink/'
   };
 
@@ -169,6 +168,7 @@
           return Local.unlink(provider);
         };
 
+        // TODO: call from parseUser
         $auth.updateToken = function(token) {
           localStorage.setItem(config.tokenName, token);
           var payload = JSON.parse(window.atob(token.split('.')[1]));
@@ -233,10 +233,6 @@
 
       local.isAuthenticated = function() {
         return Boolean($rootScope.currentUser);
-      };
-
-      local.link = function(provider) {
-        return $http.get(config.linkUrl + provider);
       };
 
       local.unlink = function(provider) {
