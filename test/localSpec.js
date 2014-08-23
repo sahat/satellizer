@@ -1,4 +1,4 @@
-describe('Email and password flow', function() {
+describe('Local', function() {
   beforeEach(module('Satellizer'));
 
   it('should have a login function', inject(function(Local) {
@@ -21,7 +21,7 @@ describe('Email and password flow', function() {
 
     $httpBackend.flush();
 
-    expect(result.user).toEqual({
+    expect(result).toEqual({
       _id: '53f61e106fc61a6c13b5278d',
       email: 'sahat@me.com',
       __v: 0
