@@ -439,7 +439,7 @@
         run: function() {
           var token = $window.localStorage[config.tokenName];
           if (token) {
-            $rootScope[config.user] = Utils.payload(token).user;
+            $rootScope[config.user] = Utils.userFromToken(token);
           }
 
           var params = $window.location.search.substring(1);
