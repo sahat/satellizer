@@ -479,7 +479,7 @@
       this.userFromToken = function(token) {
         var base64url = token.split('.')[1];
         var base64 = base64url.replace('-', '+').replace('_', '/');
-        return JSON.parse(window.atob(base64));
+        return JSON.parse(window.atob(base64)).user;
       };
     })
     .config(function httpInterceptor($httpProvider) {
