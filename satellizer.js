@@ -327,11 +327,19 @@
 
         var deferred = $q.defer();
 
-        Popup.open(defaults.url).then(function(oauthData) {
-          oauth1.exchangeForToken(oauthData).then(function(response) {
-            deferred.resolve(response);
+        Popup.open(defaults.url)
+          .then(function(response) {
+            oauth1.exchangeForToken(response)
+              .then(function(response) {
+                deferred.resolve(response);
+              })
+              .catch(function(response) {
+                deferred.reject(response);
+              });
+          })
+          .catch(function(response) {
+            deferred.reject(response);
           });
-        });
 
         return deferred.promise;
       };
