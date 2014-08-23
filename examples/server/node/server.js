@@ -101,10 +101,11 @@ app.post('/auth/signup', function(req, res) {
   });
 });
 
-////////////////////////////////////////////////////////////////////////////////
-// Log in with Google //////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
+/*
+ |--------------------------------------------------------------------------
+ | Login with Google
+ |--------------------------------------------------------------------------
+ */
 app.post('/auth/google', function(req, res) {
   var accessTokenUrl = 'https://accounts.google.com/o/oauth2/token';
   var peopleApiUrl = 'https://www.googleapis.com/plus/v1/people/me/openIdConnect';
@@ -123,23 +124,46 @@ app.post('/auth/google', function(req, res) {
     var accessToken = token.access_token;
     var headers = { Authorization: 'Bearer ' + accessToken };
 
-    // Step 2. Retrieve information about the current user.
+    // Step 2. Retrieve profile information about the current user.
     request.get({ url: peopleApiUrl, headers: headers, json: true }, function(error, response, profile) {
-      User.findOne({ google: profile.sub }, function(err, user) {
-        if (user) {
-          var token = createToken(user);
-          return res.send({ token: token });
-        }
-        user = new User({
-          google: profile.sub,
-          firstName: profile.given_name,
-          lastName: profile.family_name
+
+      // Step 3a. If user is already signed in then link accounts.
+      if (req.headers.authorization) {
+        User.findOne({ facebook: profile.id }, function(err, existingUser) {
+          if (existingUser) {
+            return res.status(409).send({ message: 'There is already a Google account that belongs to you' });
+          }
+
+          var token = req.headers.authorization.split(' ')[1];
+          var payload = jwt.decode(token, config.TOKEN_SECRET);
+
+          User.findById(payload.user._id, function(err, user) {
+            user.github = profile.id;
+            user.displayName = user.displayName || profile.name;
+
+            user.save(function(err) {
+              var token = createToken(user);
+              res.send({ token: token });
+            });
+          });
         });
-        user.save(function() {
-          var token = createToken(user);
-          res.send({ token: token });
+      } else {
+        // Step 3b. Create a new user account or return an existing one.
+        User.findOne({ google: profile.sub }, function(err, user) {
+          if (user) {
+            var token = createToken(user);
+            return res.send({ token: token });
+          }
+          user = new User();
+          user.google = profile.sub;
+          user.displayName = profile.name;
+
+          user.save(function() {
+            var token = createToken(user);
+            res.send({ token: token });
+          });
         });
-      });
+      }
     });
   });
 });
