@@ -25,7 +25,7 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'Satellizer', 'm
       });
 
     $authProvider.facebook({
-      clientId: ''
+      clientId: '657854390977827'
     });
 
     $authProvider.google({

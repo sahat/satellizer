@@ -113,6 +113,7 @@ $authProvider.loginRoute = '/login';
 $authProvider.signupRoute = '/signup';
 $authProvider.user = 'currentUser';
 $authProvider.tokenName = 'satellizerToken';
+$authProvider.unlinkUrl: '/auth/unlink/'
 
 // Google
 $authProvider.google({
@@ -320,6 +321,9 @@ payload and save it to Local Storage for subsequent use after page reload.
 - [`$auth.authenticate(name)`](#authauthenticate)
 - [`$auth.logout()`](#authlogout)
 - [`$auth.isAuthenticated()`](#authisauthenticated)
+- [`$auth.link(provider)`](#authlink)
+- [`$auth.unlink(provider)`](#authunlink)
+- [`$auth.updateToken(token)`](#authupdatetoken)
 
 #### `$auth.login(user)`
 
@@ -386,6 +390,34 @@ authentication state.
 <ul class="nav navbar-nav pull-right" ng-if="currentUser">
   <li><a href="/#/logout">Logout</a></li>
 </ul>
+```
+
+#### `$auth.link(provider)`
+
+Links an OAuth provider to the account. *It's an alias for the `$auth.authenticate(provider)`*.
+
+
+```js
+$auth.unlink('github');
+```
+
+#### `$auth.unlink(provider)`
+
+Unlinks an OAuth provider from the account.
+
+```js
+$auth.unlink('github');
+```
+
+#### `$auth.updateToken(token)`
+
+Updates existing *JSON Web Token* stored in Local Storage with the new one.
+
+```js
+// Update user information
+$http.put('/api/me', profileData).then(function(response) {
+  $auth.updateToken(response.data.token);
+});
 ```
 
 ## TODO
