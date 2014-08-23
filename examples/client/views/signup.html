@@ -2,9 +2,8 @@
   <div class="row">
     <div class="center-form panel">
       <div class="panel-body">
+        <h2 class="text-center">Sign up</h2>
         <form method="post" ng-submit="signup()" name="signupForm">
-          <h2 class="text-center">Sign up</h2>
-
           <div class="form-group has-feedback" ng-class="{ 'has-error' : signupForm.fullName.$invalid && signupForm.fullName.$dirty }">
             <input class="form-control input-lg" type="text" name="displayName" ng-model="displayName" placeholder="Name" required>
             <span class="ion-person form-control-feedback"></span>
