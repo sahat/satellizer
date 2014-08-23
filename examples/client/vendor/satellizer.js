@@ -456,6 +456,32 @@
               $window.opener.postMessage({ error: qs.error }, $window.location.origin);
             }
           }
+        },
+        routeChangeListener: function() {
+
+          // ngRoute
+          try {
+            angular.module('ngRoute');
+            $rootScope.$on('$routeChangeStart', function(event, current) {
+              if ($rootScope[config.user] &&
+                (current.originalPath === config.loginRoute || current.originalPath === config.signupRoute)) {
+                $location.path('/');
+              }
+              if (current.protected && !$rootScope[config.user]) {
+                $location.path(config.loginRoute);
+              }
+            });
+          } catch (error) {
+
+          }
+
+          // UI-Router
+          try {
+            angular.module('ui.router');
+
+          } catch (error) {
+
+          }
         }
       };
     })
@@ -499,6 +525,7 @@
     })
     .run(function onRun(RunBlock) {
       RunBlock.run();
+      RunBlock.routeChangeListener();
     });
 
 })(window, window.angular);
