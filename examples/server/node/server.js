@@ -532,7 +532,8 @@ app.get('/auth/unlink/:provider', ensureAuthenticated, function(req, res, next) 
   User.findById(req.user._id, function(err, user) {
     user[provider] = undefined;
     user.save(function(err) {
-      res.status(200).end();
+      var token = createToken(user);
+      res.send({ token: token });
     });
   });
 });

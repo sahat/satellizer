@@ -163,7 +163,6 @@
 
         $auth.link = function(name) {
           return $auth.authenticate(name);
-//          return Local.link(provider);
         };
 
         $auth.unlink = function(provider) {
@@ -235,7 +234,17 @@
       };
 
       local.unlink = function(provider) {
-        return $http.get(config.unlinkUrl + provider);
+        var deferred = $q.defer();
+
+        $http.get(config.unlinkUrl + provider)
+          .then(function(response) {
+            local.parseUser(response.data.token, deferred);
+          })
+          .catch(function(response) {
+            deferred.reject(response);
+          });
+
+        return deferred.promise;
       };
 
       return local;
