@@ -321,9 +321,9 @@ payload and save it to Local Storage for subsequent use after page reload.
 - [`$auth.authenticate(name)`](#authauthenticate)
 - [`$auth.logout()`](#authlogout)
 - [`$auth.isAuthenticated()`](#authisauthenticated)
-- [`$auth.link(provider)`](#authlink)
-- [`$auth.unlink(provider)`](#authunlink)
-- [`$auth.updateToken(token)`](#authupdatetoken)
+- [`$auth.link(provider)`](#authlinkprovider)
+- [`$auth.unlink(provider)`](#authunlinkprovider)
+- [`$auth.updateToken(token)`](#authupdatetokentoken)
 
 #### `$auth.login(user)`
 
