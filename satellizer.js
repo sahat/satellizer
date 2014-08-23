@@ -88,51 +88,81 @@
 
       Object.defineProperties(this, {
         loginRedirect: {
+          get: function() {
+            return config.loginRedirect;
+          },
           set: function(value) {
             config.loginRedirect = value;
           }
         },
         logoutRedirect: {
+          get: function() {
+            return config.logoutRedirect;
+          },
           set: function(value) {
             config.logoutRedirect = value;
           }
         },
         loginUrl: {
+          get: function() {
+            return config.loginUrl;
+          },
           set: function(value) {
             config.loginUrl = value;
           }
         },
         signupUrl: {
+          get: function() {
+            return config.signupUrl;
+          },
           set: function(value) {
             config.signupUrl = value;
           }
         },
         signupRedirect: {
+          get: function() {
+            return config.signupRedirect;
+          },
           set: function(value) {
             config.signupRedirect = value;
           }
         },
         loginRoute: {
+          get: function() {
+            return config.loginRoute;
+          },
           set: function(value) {
             config.loginRoute = value;
           }
         },
         signupRoute: {
+          get: function() {
+            return config.signupRoute;
+          },
           set: function(value) {
             config.signupRoute = value;
           }
         },
         user: {
+          get: function() {
+            return config.user;
+          },
           set: function(value) {
             config.user = value;
           }
         },
         tokenName: {
+          get: function() {
+            return config.tokenName;
+          },
           set: function(value) {
             config.tokenName = value;
           }
         },
         unlinkUrl: {
+          get: function() {
+            return config.unlinkUrl;
+          },
           set: function(value) {
             config.unlinkUrl = value;
           }
