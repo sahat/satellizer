@@ -73,8 +73,9 @@ describe('Configuration', function() {
   });
 
   it('should allow overriding unlinkUrl', function() {
-    authProvider.unlinkUrl = '/disconnect';
-    expect(authProvider.unlinkUrl).toEqual('/disconnect');
+    authProvider.unlinkUrl = '/disconnect/';
+    expect(authProvider.unlinkUrl).toEqual('/disconnect/');
+    authProvider.unlinkUrl = '/auth/unlink/';
   });
 
   it('should have facebook method', function() {
@@ -114,6 +115,13 @@ describe('Configuration', function() {
       state: 'secret'
     });
     expect(authProvider.providers.google.state).toBe('secret');
+  });
+
+  it('should update a github provider with new params', function() {
+    authProvider.github({
+      scope: 'email'
+    });
+    expect(authProvider.providers.github.scope).toBe('email');
   });
 
   it('should update a linkedin provider with new params', function() {

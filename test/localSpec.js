@@ -62,6 +62,37 @@ describe('Email and password flow', function() {
     expect(angular.isFunction(Local.signup)).toBe(true);
   }));
 
+  it('should unlink a provider successfully', inject(function($window, $httpBackend, Local) {
+    var result = null;
+    var provider = 'google';
+    var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7Il9pZCI6IjUzZjYxZTEwNmZjNjFhNmMxM2I1Mjc4ZCIsImVtYWlsIjoic2FoYXRAbWUuY29tIiwiX192IjowfSwiaWF0IjoxNDA4ODIxMDkxNjc2LCJleHAiOjE0MDk0MjU4OTE2NzZ9.0l-ql-ZVjHiILMcMegNb3bNqapt3TZwjHy_ieduioiQ';
+
+    $httpBackend.expectGET('/auth/unlink/google').respond(200, { token: token });
+
+    Local.unlink(provider).then(function(response) {
+      result = response;
+    });
+
+    $httpBackend.flush();
+
+    expect(Local.unlink()).toBeDefined();
+  }));
+
+  it('should unlink a provider and get an error', inject(function($window, $httpBackend, Local) {
+    var result = null;
+    var provider = 'google';
+
+    $httpBackend.expectGET('/auth/unlink/google').respond(400);
+
+    Local.unlink(provider).catch(function(response) {
+      result = response;
+    });
+
+    $httpBackend.flush();
+
+    expect(result.status).toEqual(400);
+  }));
+
   it('should create a new user', inject(function($httpBackend, $location, Local) {
     var user = {
       email: 'john@email.com',
