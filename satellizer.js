@@ -583,7 +583,6 @@
           responseError: function(response) {
             if (response.status === 401) {
               delete $window.localStorage[config.tokenName];
-              $location.path(config.loginRoute);
             }
             return $q.reject(response);
           }
