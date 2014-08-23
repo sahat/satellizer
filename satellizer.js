@@ -86,7 +86,59 @@
   angular.module('Satellizer', [])
     .provider('$auth', function $auth() {
 
-      this.config = config;
+      Object.defineProperties(this, {
+        loginRedirect: {
+          set: function(value) {
+            config.loginRedirect = value;
+          }
+        },
+        logoutRedirect: {
+          set: function(value) {
+            config.logoutRedirect = value;
+          }
+        },
+        loginUrl: {
+          set: function(value) {
+            config.loginUrl = value;
+          }
+        },
+        signupUrl: {
+          set: function(value) {
+            config.signupUrl = value;
+          }
+        },
+        signupRedirect: {
+          set: function(value) {
+            config.signupRedirect = value;
+          }
+        },
+        loginRoute: {
+          set: function(value) {
+            config.loginRoute = value;
+          }
+        },
+        signupRoute: {
+          set: function(value) {
+            config.signupRoute = value;
+          }
+        },
+        user: {
+          set: function(value) {
+            config.user = value;
+          }
+        },
+        tokenName: {
+          set: function(value) {
+            config.tokenName = value;
+          }
+        },
+        unlinkUrl: {
+          set: function(value) {
+            config.unlinkUrl = value;
+          }
+        }
+      });
+
       this.providers = providers;
 
       this.facebook = function(params) {
@@ -187,7 +239,11 @@
         var payload = JSON.parse(window.atob(token.split('.')[1]));
         localStorage.setItem(config.tokenName, token);
         $rootScope[config.user] = payload.user;
-        $location.path(config.loginRedirect);
+
+        if (config.loginRedirect) {
+          $location.path(config.loginRedirect);
+        }
+
         deferred.resolve(payload.user);
       };
 
@@ -225,7 +281,11 @@
 
         delete $rootScope[config.user];
         localStorage.removeItem(config.tokenName);
-        $location.path(config.logoutRedirect);
+
+        if (config.logoutRedirect) {
+          $location.path(config.logoutRedirect);
+        }
+
         deferred.resolve();
 
         return deferred.promise;
