@@ -33,4 +33,9 @@ gulp.task('php', function() {
     .pipe(gulp.dest('examples/server/php/public'))
 });
 
+gulp.task('ror', function() {
+  return gulp.src('examples/client/**/*.*')
+    .pipe(gulp.dest('examples/server/ror/public'))
+});
+
 gulp.task('default', ['copy', 'minify', 'watch']);
