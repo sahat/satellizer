@@ -1,9 +1,14 @@
 <?php
 
-class AuthController extends BaseController {
+class AuthController extends \BaseController {
 
     private function createToken($user) {
-        return $user;
+        $payload = array(
+            'user' => $user,
+            'iat' => 'today',
+            'exp' => '14days'
+        );
+        return JWT::encode($payload, Config::get('secrets.TOKEN_SECRET'));
     }
 
     public function login()
@@ -42,20 +47,61 @@ class AuthController extends BaseController {
         $response2 = $client->get($graphApiUrl, ['query' => $accessToken]);
         $profile = $response2->json();
 
-        $user = User::where('facebook', $profile->id);
+        if (Request::header('Authorization'))
+        {
+            $user = User::where('facebook', $profile->id);
 
-        if ($user->exists) {
+            if ($user->exists)
+            {
+                return Response::json(array('message' => 'There is already a Google account that belongs to you'));
+            }
+
+            $token = explode(' ', Request::header('Authorization'))[1];
+            $payload = JWT::decode($token, Config::get('secrets.TOKEN_SECRET'));
+
+            $user = User::find($payload->id);
+            $user->facebook = $profile->id;
+            $user->displayName = $user->displayName || $profile.name;
+            $user->save();
+
+            return Response::json(array('token' => $this->createToken($user)));
+        } else
+        {
+            $user = User::where('facebook', $profile->id);
+
+            if ($user->exists)
+            {
+                return Response::json(array('token' => $this->createToken($user)));
+            }
+
+            $user = new User;
+            $user->facebook = profile.id;
+            $user->displayName = profile.name;
+            $user->save();
+
             return Response::json(array('token' => $this->createToken($user)));
         }
-
-        $user = new User;
-        $user->facebook = profile.id;
-        $user->displayName = profile.name;
-        $user->save();
-
-        return Response::json(array('token' => $this->createToken($user)));
     }
 
+    public function google() {
+
+    }
+
+    public function linkedin() {
+
+    }
+
+    public function twitter() {
+
+    }
+
+    public function foursquare() {
+
+    }
+
+    public function github() {
+
+    }
 
 
 }

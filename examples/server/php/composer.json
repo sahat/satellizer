@@ -5,7 +5,8 @@
   "license": "MIT",
   "require": {
     "laravel/framework": "4.2.*",
-    "guzzlehttp/guzzle": "4.2.1"
+    "guzzlehttp/guzzle": "4.2.1",
+    "firebase/php-jwt": "dev-master"
   },
   "autoload": {
     "classmap": [
