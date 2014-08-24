@@ -10,15 +10,30 @@
 | and give it the Closure to execute when that URI is requested.
 |
 */
-//
+
 Route::get('/', function()
 {
-    return View::make('index');
+    return View::make('hello');
 });
 
 Route::get('api/me', function()
 {
 	return 'Not implemented';
+});
+
+Route::put('api/me', function()
+{
+  return 'Not implemented';
+});
+
+Route::post('auth/login', function()
+{
+  return 'Not implemented';
+});
+
+Route::post('auth/signup', function()
+{
+  return 'Not implemented';
 });
 
 Route::post('auth/facebook', function()
@@ -49,4 +64,9 @@ Route::post('auth/foursquare', function()
 Route::get('auth/twitter', function()
 {
 	return 'Not implemented';
+});
+
+Route::get('auth/unlink/{provider}', function($provider)
+{
+  return $provider.' conteent goes here.';
 });
