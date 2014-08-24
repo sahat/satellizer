@@ -11,7 +11,6 @@
 |
 */
 
-
 Route::get('/', function()
 {
     return File::get(public_path().'/index.html');
@@ -24,17 +23,30 @@ Route::get('api/me', function()
 
 Route::put('api/me', function()
 {
-  return 'Not implemented';
+    $user = User::find();
+    $user->display_name = Input::get('displayName', $user->display_name);
+    $user->email = Input::get('email', $user->email);
+    $user->save();
+
+    $token = create_token($user);
+
+    return Response::json(array('token' => $token));
 });
 
 Route::post('auth/login', function()
 {
-  return 'Not implemented';
+    return 'Not implemented';
 });
 
 Route::post('auth/signup', function()
 {
-  return 'Not implemented';
+    $user = new User;
+    $user->display_name = Input::get('displayName');
+    $user->email = Input::get('email');
+    $user->password = Input::get('password');
+    $user->save();
+
+    return Response::make(200);
 });
 
 Route::post('auth/facebook', function()
