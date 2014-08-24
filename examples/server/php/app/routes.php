@@ -14,8 +14,7 @@
 
 Route::get('/', function()
 {
-    View::addExtension('html', 'php');
-    return View::make('index');
+    return File::get(public_path().'/index.html');
 });
 
 Route::get('api/me', function()
