@@ -28,4 +28,9 @@ gulp.task('watch', function() {
   gulp.watch('satellizer.js', ['copy', 'minify']);
 });
 
+gulp.task('php', function() {
+  return gulp.src('examples/client/**/*.*')
+    .pipe(gulp.dest('examples/server/php/public'))
+});
+
 gulp.task('default', ['copy', 'minify', 'watch']);
