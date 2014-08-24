@@ -11,9 +11,11 @@
 |
 */
 
+
 Route::get('/', function()
 {
-    return View::make('hello');
+    View::addExtension('html', 'php');
+    return View::make('index');
 });
 
 Route::get('api/me', function()
