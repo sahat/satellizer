@@ -227,10 +227,8 @@ and popup is immediately closed.
 authorization code from popup.
 6. **Server:** Then *authorization code* is exchanged for *access token*.
 7. **Server:** User information is retrived using the *access token* from **Step 6**.
-8. **Server:** Look up the user by the unique *provider id*. If user already exists, grab 
-the existing user, otherwise create a new user account.
-9. **Server:** In both cases of Step 8 creates a *JSON Web Token* using user object as the
-its *payload*.
+8. **Server:** Look up the user by the unique *provider id*. If user already exists, grab the existing user, otherwise create a new user account.
+9. **Server:** In both cases of Step 8, create a *JSON Web Token* using user object as its *payload*.
 10. **Server:** Reply with JSON Web Token.
 11. **Client:** Parse the token, extract user information from the
 payload and save it to Local Storage for subsequent use after page reload.
