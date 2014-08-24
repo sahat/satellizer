@@ -1,6 +1,6 @@
 <?php
 
-class UserController extends \BaseController {
+class UserController extends BaseController {
 
 	/**
 	 * Display a listing of the resource.
@@ -18,26 +18,22 @@ class UserController extends \BaseController {
 	 *
 	 * @return Response
 	 */
-	public function store()
+	public function getUser()
 	{
-		User::create(array(
-            'email' => Input::get('email'),
-            'password' => Input::get('password')
-        ));
-
         return Response::json(array('success' => true));
 	}
 
 
-	/**
-	 * Remove the specified resource from storage.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function destroy($id)
+	public function updateProfile()
 	{
-		//
+        $user = User::get();
+        $user->displayName = Input::get('displayName', $user->displayName);
+        $user->email = Input::get('email', $user->email);
+        $user->save();
+
+        $token = create_token($user);
+
+        return Response::json(array('token' => $token));
 	}
 
 

@@ -11,43 +11,13 @@
 |
 */
 
-Route::get('/', function()
-{
-    return File::get(public_path().'/index.html');
-});
+Route::get('/', 'HomeController@index');
 
-Route::get('api/me', function()
-{
-	return 'Not implemented';
-});
+Route::get('api/me', 'UserController@getUser');
+Route::put('api/me', 'UserController@updateProfile');
 
-Route::put('api/me', function()
-{
-    $user = User::find();
-    $user->display_name = Input::get('displayName', $user->display_name);
-    $user->email = Input::get('email', $user->email);
-    $user->save();
-
-    $token = create_token($user);
-
-    return Response::json(array('token' => $token));
-});
-
-Route::post('auth/login', function()
-{
-    return 'Not implemented';
-});
-
-Route::post('auth/signup', function()
-{
-    $user = new User;
-    $user->display_name = Input::get('displayName');
-    $user->email = Input::get('email');
-    $user->password = Input::get('password');
-    $user->save();
-
-    return Response::make(200);
-});
+Route::post('auth/login', 'AuthController@login');
+Route::post('auth/signup', 'AuthController@signup');
 
 Route::post('auth/facebook', function()
 {
@@ -81,5 +51,5 @@ Route::get('auth/twitter', function()
 
 Route::get('auth/unlink/{provider}', function($provider)
 {
-  return $provider.' conteent goes here.';
+  return $provider.' content goes here.';
 });

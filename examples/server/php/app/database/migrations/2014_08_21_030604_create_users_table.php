@@ -17,7 +17,7 @@ class CreateUsersTable extends Migration {
             $table->increments('id');
             $table->string('email');
             $table->string('password');
-            $table->string('display_name');
+            $table->string('displayName');
             $table->string('facebook');
             $table->string('foursquare');
             $table->string('github');
