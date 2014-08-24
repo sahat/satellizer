@@ -15,20 +15,17 @@ class CreateUsersTable extends Migration {
         Schema::create('users', function(Blueprint $table)
         {
             $table->increments('id');
-
             $table->string('email');
             $table->string('password');
-            $table->string('first_name');
-            $table->string('last_name');
+            $table->string('display_name');
             $table->string('facebook');
-            $table->string('google');
-            $table->string('github');
-            $table->string('linkedin');
             $table->string('foursquare');
+            $table->string('github');
+            $table->string('google');
+            $table->string('linkedin');
             $table->string('twitter');
-
             $table->timestamps();
-    });
+        });
 	}
 
 	/**
@@ -38,7 +35,7 @@ class CreateUsersTable extends Migration {
 	 */
 	public function down()
 	{
-		//
+        Schema::drop('users');
 	}
 
 }
