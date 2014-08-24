@@ -19,37 +19,11 @@ Route::put('api/me', 'UserController@updateProfile');
 Route::post('auth/login', 'AuthController@login');
 Route::post('auth/signup', 'AuthController@signup');
 
-Route::post('auth/facebook', function()
-{
-	return 'Not implemented';
-});
+Route::post('auth/facebook', 'AuthController@facebook');
+Route::post('auth/foursquare', 'AuthController@foursquare');
+Route::post('auth/github', 'AuthController@github');
+Route::post('auth/google', 'AuthController@google');
+Route::post('auth/linkedin', 'AuthController@linkedin');
+Route::get('auth/twitter', 'AuthController@twitter');
 
-Route::post('auth/google', function()
-{
-	return 'Not implemented';
-});
-
-Route::post('auth/github', function()
-{
-	return 'Not implemented';
-});
-
-Route::post('auth/linkedin', function()
-{
-	return 'Not implemented';
-});
-
-Route::post('auth/foursquare', function()
-{
-	return 'Not implemented';
-});
-
-Route::get('auth/twitter', function()
-{
-	return 'Not implemented';
-});
-
-Route::get('auth/unlink/{provider}', function($provider)
-{
-  return $provider.' content goes here.';
-});
+Route::get('auth/unlink/{provider}', 'AuthController@unlink');
