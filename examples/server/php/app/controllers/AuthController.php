@@ -2,7 +2,8 @@
 
 class AuthController extends \BaseController {
 
-    private function createToken($user) {
+    private function createToken($user)
+    {
         $payload = array(
             'user' => $user,
             'iat' => 'today',
@@ -16,8 +17,8 @@ class AuthController extends \BaseController {
         return 'Not implemented';
     }
 
-	public function signup()
-	{
+    public function signup()
+    {
         $user = new User;
         $user->display_name = Input::get('displayName');
         $user->email = Input::get('email');
@@ -25,9 +26,10 @@ class AuthController extends \BaseController {
         $user->save();
 
         return Response::make(200);
-	}
+    }
 
-    public function facebook() {
+    public function facebook()
+    {
         $accessTokenUrl = 'https://graph.facebook.com/oauth/access_token';
         $graphApiUrl = 'https://graph.facebook.com/me';
 
@@ -39,14 +41,83 @@ class AuthController extends \BaseController {
         );
 
         $client = new GuzzleHttp\Client();
-        $response1 = $client->get($accessTokenUrl, ['query' => $params]);
+
+        // Step 1. Exchange authorization code for access token.
+        $accessTokenResponse = $client->get($accessTokenUrl, ['query' => $params]);
 
         $accessToken = array();
-        parse_str($response1->getBody(), $accessToken);
+        parse_str($accessTokenResponse->getBody(), $accessToken);
 
-        $response2 = $client->get($graphApiUrl, ['query' => $accessToken]);
-        $profile = $response2->json();
+        // Step 2. Retrieve profile information about the current user.
+        $graphiApiResponse = $client->get($graphApiUrl, ['query' => $accessToken]);
+        $profile = $graphiApiResponse->json();
 
+        // Step 3a. If user is already signed in then link accounts.
+        if (Request::header('Authorization'))
+        {
+            $user = User::where('facebook', $profile->id);
+
+            if ($user->exists)
+            {
+                return Response::json(array('message' => 'There is already a Facebook account that belongs to you'));
+            }
+
+            $token = explode(' ', Request::header('Authorization'))[1];
+            $payload = JWT::decode($token, Config::get('secrets.TOKEN_SECRET'));
+
+            $user = User::find($payload->id);
+            $user->facebook = $profile->id;
+            $user->displayName = $user->displayName || $profile->name;
+            $user->save();
+
+            return Response::json(array('token' => $this->createToken($user)));
+        }
+        // Step 3b. Create a new user account or return an existing one.
+        else
+        {
+            $user = User::where('facebook', $profile->id);
+
+            if ($user->exists)
+            {
+                return Response::json(array('token' => $this->createToken($user)));
+            }
+
+            $user = new User;
+            $user->facebook = $profile->id;
+            $user->displayName = $profile->name;
+            $user->save();
+
+            return Response::json(array('token' => $this->createToken($user)));
+        }
+    }
+
+    public function google()
+    {
+        $accessTokenUrl = 'https://accounts.google.com/o/oauth2/token';
+        $peopleApiUrl = 'https://www.googleapis.com/plus/v1/people/me/openIdConnect';
+
+        $params = array(
+            'code' => Input::get('code'),
+            'client_id' => Input::get('clientId'),
+            'redirect_uri' => Input::get('redirectUri'),
+            'grant_type' => 'authorization_code',
+            'client_secret' => Config::get('secrets.GOOGLE_SECRET')
+        );
+
+        $client = new GuzzleHttp\Client();
+
+        // Step 1. Exchange authorization code for access token.
+        $accessTokenResponse = $client->post($accessTokenUrl, ['body' => $params]);
+        $accessToken = $accessTokenResponse->json()->access_token;
+
+        $headers = array('Authorization:' => 'Bearer ' . $accessToken);
+
+        // Step 2. Retrieve profile information about the current user.
+        $profileResponse = $client->get($peopleApiUrl, ['headers' => $headers]);
+
+        $profile = $profileResponse->json();
+
+        // Step 3a. If user is already signed in then link accounts.
         if (Request::header('Authorization'))
         {
             $user = User::where('facebook', $profile->id);
@@ -60,12 +131,14 @@ class AuthController extends \BaseController {
             $payload = JWT::decode($token, Config::get('secrets.TOKEN_SECRET'));
 
             $user = User::find($payload->id);
-            $user->facebook = $profile->id;
-            $user->displayName = $user->displayName || $profile.name;
+            $user->google = $profile->sub;
+            $user->displayName = $user->displayName || $profile->name;
             $user->save();
 
             return Response::json(array('token' => $this->createToken($user)));
-        } else
+        }
+        // Step 3b. Create a new user account or return an existing one.
+        else
         {
             $user = User::where('facebook', $profile->id);
 
@@ -75,31 +148,34 @@ class AuthController extends \BaseController {
             }
 
             $user = new User;
-            $user->facebook = profile.id;
-            $user->displayName = profile.name;
+            $user->google = $profile->sub;
+            $user->displayName = $profile->name;
             $user->save();
 
             return Response::json(array('token' => $this->createToken($user)));
         }
-    }
 
-    public function google() {
 
-    }
-
-    public function linkedin() {
 
     }
 
-    public function twitter() {
+    public function linkedin()
+    {
 
     }
 
-    public function foursquare() {
+    public function twitter()
+    {
 
     }
 
-    public function github() {
+    public function foursquare()
+    {
+
+    }
+
+    public function github()
+    {
 
     }
 
