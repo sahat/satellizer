@@ -18,6 +18,17 @@ during the configuration step.
 
 ![Screenshot](https://lh4.googleusercontent.com/-0UUIecT-3N4/U-LQJkd75iI/AAAAAAAAEZY/YN3Oe-eUPGc/w1676-h1158-no/satellizer.png)
 
+## Table of Contents
+
+- [Installation](#installation)
+- [Usage](#usage)
+- [Configuration](#configuration)
+- [How It Works](#how-it-works)
+- [FAQ](#faq)
+- [API Reference](#api-reference)
+- [Contributing](#contributing)
+- [License](#license)
+
 ## Installation
 
 The easiest way to get **Satellizer** is by running one of the following 
@@ -112,7 +123,8 @@ $authProvider.signupRedirect = '/login';
 $authProvider.loginRoute = '/login';
 $authProvider.signupRoute = '/signup';
 $authProvider.user = 'currentUser';
-$authProvider.tokenName = 'satellizerToken';
+$authProvider.tokenName: 'token';
+$authProvider.tokenPrefix: 'satellizer';
 $authProvider.unlinkUrl: '/auth/unlink/'
 
 // Google
@@ -312,6 +324,10 @@ payload and save it to Local Storage for subsequent use after page reload.
 - Check the box **Allow this application to be used to Sign in with Twitter**
 - Click **Update this Twitter's applications settings**
 
+## FAQ
+
+TODO.
+
 ## API Reference
 
 - [`$auth.login(user)`](#authlogin)
@@ -426,7 +442,7 @@ $http.put('/api/me', profileData).then(function(response) {
 - [ ] Go (Martini) implementation
 - [ ] Java (Dropwizard) implementation
 - [ ] Scala (Play!) implementation
-- [ ] PHP (Laravel) implementation
+- [x] PHP (Laravel) implementation
 - [x] Python (Flask) implementation
 
 ## Contributing
