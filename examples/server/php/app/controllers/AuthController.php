@@ -197,7 +197,71 @@ class AuthController extends \BaseController {
 
     public function github()
     {
+        $accessTokenUrl = 'https://github.com/login/oauth/access_token';
+        $userApiUrl = 'https://api.github.com/user';
 
+        $params = array(
+            'code' => Input::get('code'),
+            'client_id' => Input::get('clientId'),
+            'redirect_uri' => Input::get('redirectUri'),
+            'client_secret' => Config::get('secrets.GITHUB_SECRET')
+        );
+
+        $client = new GuzzleHttp\Client();
+
+        // Step 1. Exchange authorization code for access token.
+        $accessTokenResponse = $client->get($accessTokenUrl, ['query' => $params]);
+
+        $accessToken = array();
+        parse_str($accessTokenResponse->getBody(), $accessToken);
+
+        $headers = array('User-Agent' => 'Satellizer');
+
+        // Step 2. Retrieve profile information about the current user.
+        $userApiResponse = $client->get($userApiUrl, [
+            'headers' => $headers,
+            'query' => $accessToken
+        ]);
+        $profile = $userApiResponse->json();
+
+        // Step 3a. If user is already signed in then link accounts.
+        if (Request::header('Authorization'))
+        {
+            $user = User::where('github', '=', $profile['id']);
+
+            if ($user->first())
+            {
+                return Response::json(array('message' => 'There is already a GitHub account that belongs to you'), 409);
+            }
+
+            $token = explode(' ', Request::header('Authorization'))[1];
+            $payloadObject = JWT::decode($token, Config::get('secrets.TOKEN_SECRET'));
+            $payload = json_decode(json_encode($payloadObject), true);
+
+            $user = User::find($payload['user']['id']);
+            $user->github = $profile['id'];
+            $user->displayName = $user->displayName || $profile['name'];
+            $user->save();
+
+            return Response::json(array('token' => $this->createToken($user)));
+        }
+        // Step 3b. Create a new user account or return an existing one.
+        else
+        {
+            $user = User::where('github', '=', $profile['id']);
+
+            if ($user->first())
+            {
+                return Response::json(array('token' => $this->createToken($user)));
+            }
+
+            $user = new User;
+            $user->github = $profile['id'];
+            $user->displayName = $profile['name'];
+            $user->save();
+
+            return Response::json(array('token' => $this->createToken($user)));
+        }
     }
 
 
