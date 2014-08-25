@@ -63,11 +63,49 @@ app.use(express.static(path.join(__dirname, '../../client')));
 
 /*
  |--------------------------------------------------------------------------
+ | Loging Required Middleware
+ |--------------------------------------------------------------------------
+ */
+function ensureAuthenticated(req, res, next) {
+  if (!req.headers.authorization) {
+    return res.status(401).send({ message: 'Please make sure your request has an Authorization header' });
+  }
+
+  var token = req.headers.authorization.split(' ')[1];
+  var payload = jwt.decode(token, config.TOKEN_SECRET);
+
+  if (payload.exp <= Date.now()) {
+    return res.status(401).send({ message: 'Token has expired' });
+  }
+
+  req.user = payload.sub;
+  next();
+}
+
+/*
+ |--------------------------------------------------------------------------
+ | Generate JSON Web Token
+ |--------------------------------------------------------------------------
+ */
+function createToken(req, user) {
+  var payload = {
+    iss: req.hostname,
+    sub: user.id,
+    iat: moment().valueOf(),
+    exp: moment().add(14, 'days').valueOf()
+  };
+  return jwt.encode(payload, config.TOKEN_SECRET);
+}
+
+/*
+ |--------------------------------------------------------------------------
  | GET /api/me
  |--------------------------------------------------------------------------
  */
 app.get('/api/me', ensureAuthenticated, function(req, res) {
-  res.send(req.user);
+  User.findById(req.user, function (err, user) {
+    res.send(user);
+  });
 });
 
 /*
@@ -76,15 +114,11 @@ app.get('/api/me', ensureAuthenticated, function(req, res) {
  |--------------------------------------------------------------------------
  */
 app.put('/api/me', ensureAuthenticated, function(req, res) {
-  var displayName = req.body.displayName;
-  var email = req.body.email;
-
   User.findById(req.user._id, function(err, user) {
-    user.displayName = displayName ? displayName : user.displayName;
-    user.email = email ? email : user.email;
+    user.displayName = req.body.displayName || user.displayName;
+    user.email = req.body.email || user.email;
     user.save(function(err) {
-      var token = createToken(user);
-      res.send({ token: token });
+      res.send({ token: createToken(req, user) });
     });
   });
 });
@@ -105,11 +139,7 @@ app.post('/auth/login', function(req, res) {
       if (!isMatch) {
         return res.status(401).send({ message: 'Wrong email and/or password' });
       }
-
-      user = user.toObject();
-      delete user.password;
-      var token = createToken(user);
-      res.send({ token: token });
+      res.send({ token: createToken(req, user) });
     });
   });
 });
@@ -169,8 +199,7 @@ app.post('/auth/google', function(req, res) {
             user.google = profile.sub;
             user.displayName = user.displayName || profile.name;
             user.save(function(err) {
-              var token = createToken(user);
-              res.send({ token: token });
+              res.send({ token: createToken(req, user) });
             });
           });
         });
@@ -178,16 +207,14 @@ app.post('/auth/google', function(req, res) {
         // Step 3b. Create a new user account or return an existing one.
         User.findOne({ google: profile.sub }, function(err, existingUser) {
           if (existingUser) {
-            var token = createToken(existingUser);
-            return res.send({ token: token });
+            return res.send({ token: createToken(req, existingUser) });
           }
 
           var user = new User();
           user.google = profile.sub;
           user.displayName = profile.name;
           user.save(function(err) {
-            var token = createToken(user);
-            res.send({ token: token });
+            res.send({ token: createToken(req, user) });
           });
         });
       }
@@ -234,8 +261,7 @@ app.post('/auth/github', function(req, res) {
             user.github = profile.id;
             user.displayName = user.displayName || profile.name;
             user.save(function(err) {
-              var token = createToken(user);
-              res.send({ token: token });
+              res.send({ token: createToken(req, user) });
             });
           });
         });
@@ -243,16 +269,14 @@ app.post('/auth/github', function(req, res) {
         // Step 3b. Create a new user account or return an existing one.
         User.findOne({ github: profile.id }, function(err, existingUser) {
           if (existingUser) {
-            var token = createToken(existingUser);
-            return res.send({ token: token });
+            return res.send({ token: createToken(req, existingUser) });
           }
 
           var user = new User();
           user.github = profile.id;
           user.displayName = profile.name;
           user.save(function(err) {
-            var token = createToken(user);
-            res.send({ token: token });
+            res.send({ token: createToken(req, user) });
           });
         });
       }
@@ -306,8 +330,7 @@ app.post('/auth/linkedin', function(req, res) {
             user.linkedin = profile.id;
             user.displayName = user.displayName || profile.firstName + ' ' + profile.lastName;
             user.save(function(err) {
-              var token = createToken(user);
-              res.send({ token: token });
+              res.send({ token: createToken(req, user) });
             });
           });
         });
@@ -315,16 +338,14 @@ app.post('/auth/linkedin', function(req, res) {
         // Step 3b. Create a new user account or return an existing one.
         User.findOne({ linkedin: profile.id }, function(err, existingUser) {
           if (existingUser) {
-            var token = createToken(existingUser);
-            return res.send({ token: token });
+            return res.send({ token: createToken(req, existingUser) });
           }
 
           var user = new User();
           user.linkedin = profile.id;
           user.displayName = profile.firstName + ' ' + profile.lastName;
           user.save(function(err) {
-            var token = createToken(user);
-            res.send({ token: token });
+            res.send({ token: createToken(req, user) });
           });
         });
       }
@@ -369,8 +390,7 @@ app.post('/auth/facebook', function(req, res) {
             user.facebook = profile.id;
             user.displayName = user.displayName || profile.name;
             user.save(function(err) {
-              var token = createToken(user);
-              res.send({ token: token });
+              res.send({ token: createToken(req, user) });
             });
           });
         });
@@ -378,16 +398,14 @@ app.post('/auth/facebook', function(req, res) {
         // Step 3b. Create a new user account or return an existing one.
         User.findOne({ facebook: profile.id }, function(err, existingUser) {
           if (existingUser) {
-            var token = createToken(existingUser);
-            return res.send({ token: token });
+            return res.send({ token: createToken(req, existingUser) });
           }
 
           var user = new User();
           user.facebook = profile.id;
           user.displayName = profile.name;
           user.save(function(err) {
-            var token = createToken(user);
-            res.send({ token: token });
+            res.send({ token: createToken(req, user) });
           });
         });
       }
@@ -446,8 +464,7 @@ app.get('/auth/twitter', function(req, res) {
             user.twitter = profile.user_id;
             user.displayName = user.displayName || profile.screen_name;
             user.save(function(err) {
-              var token = createToken(user);
-              res.send({ token: token });
+              res.send({ token: createToken(req, user) });
             });
           });
         });
@@ -455,16 +472,14 @@ app.get('/auth/twitter', function(req, res) {
         // Step 4b. Create a new user account or return an existing one.
         User.findOne({ twitter: profile.user_id }, function(err, existingUser) {
           if (existingUser) {
-            var token = createToken(existingUser);
-            return res.send({ token: token });
+            return res.send({ token: createToken(req, existingUser) });
           }
 
           var user = new User();
           user.twitter = profile.user_id;
           user.displayName = profile.screen_name;
           user.save(function(err) {
-            var token = createToken(user);
-            res.send({ token: token });
+            res.send({ token: createToken(req, user) });
           });
         });
       }
@@ -514,8 +529,7 @@ app.post('/auth/foursquare', function(req, res) {
             user.foursquare = profile.id;
             user.displayName = user.displayName || profile.firstName + ' ' + profile.lastName;
             user.save(function(err) {
-              var token = createToken(user);
-              res.send({ token: token });
+              res.send({ token: createToken(req, user) });
             });
           });
         });
@@ -523,16 +537,14 @@ app.post('/auth/foursquare', function(req, res) {
         // Step 3b. Create a new user account or return an existing one.
         User.findOne({ foursquare: profile.id }, function(err, existingUser) {
           if (existingUser) {
-            var token = createToken(existingUser);
-            return res.send({ token: token });
+            return res.send({ token: createToken(req, existingUser) });
           }
 
           var user = new User();
           user.foursquare = profile.id;
           user.displayName = profile.firstName + ' ' + profile.lastName;
           user.save(function(err) {
-            var token = createToken(user);
-            res.send({ token: token });
+            res.send({ token: createToken(req, user) });
           });
         });
       }
@@ -552,46 +564,10 @@ app.get('/auth/unlink/:provider', ensureAuthenticated, function(req, res, next) 
   User.findById(req.user._id, function(err, user) {
     user[provider] = undefined;
     user.save(function(err) {
-      var token = createToken(user);
-      res.send({ token: token });
+      res.send({ token: createToken(req, user) });
     });
   });
 });
-
-/*
- |--------------------------------------------------------------------------
- | Loging Required Middleware
- |--------------------------------------------------------------------------
- */
-function ensureAuthenticated(req, res, next) {
-  if (!req.headers.authorization) {
-    return res.status(401).end();
-  }
-
-  var token = req.headers.authorization.split(' ')[1];
-  var payload = jwt.decode(token, config.TOKEN_SECRET);
-
-  if (payload.exp <= Date.now()) {
-    return res.status(401).send({ message: 'Token has expired' });
-  }
-
-  req.user = payload.user;
-  next();
-}
-
-/*
- |--------------------------------------------------------------------------
- | Generate JSON Web Token
- |--------------------------------------------------------------------------
- */
-function createToken(user) {
-  var payload = {
-    user: user,
-    iat: moment().valueOf(),
-    exp: moment().add(7, 'days').valueOf()
-  };
-  return jwt.encode(payload, config.TOKEN_SECRET);
-}
 
 /*
  |--------------------------------------------------------------------------
