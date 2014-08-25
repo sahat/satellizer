@@ -221,7 +221,6 @@
 
         $auth.authenticate = function(name) {
           var deferred = $q.defer();
-
           var provider = (providers[name].type === '1.0') ? Oauth1 : Oauth2;
 
           provider.open(providers[name])
@@ -563,7 +562,7 @@
             $rootScope.$on('$routeChangeStart', function(event, current) {
               if ($rootScope[config.user] &&
                 (current.originalPath === config.loginRoute || current.originalPath === config.signupRoute)) {
-                $location.path('/');
+                $location.path(config.loginRedirect);
               }
               if (current.protected && !$rootScope[config.user]) {
                 $location.path(config.loginRoute);
@@ -579,7 +578,7 @@
             $rootScope.$on('$stateChangeStart', function(event, toState) {
               if ($rootScope[config.user] &&
                 (toState.url === config.loginRoute || toState.url === config.signupRoute)) {
-                $location.path('/');
+                $location.path(config.loginRedirect);
               }
               if (toState.protected && !$rootScope[config.user]) {
                 $location.path(config.loginRoute);
