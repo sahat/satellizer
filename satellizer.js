@@ -16,7 +16,8 @@
     loginRoute: '/login',
     signupRoute: '/signup',
     user: 'currentUser',
-    tokenName: 'satellizerToken',
+    tokenName: 'token',
+    tokenPrefix: 'satellizer',
     unlinkUrl: '/auth/unlink/'
   };
 
@@ -159,6 +160,14 @@
             config.tokenName = value;
           }
         },
+        tokenPrefix: {
+          get: function() {
+            return config.tokenPrefix;
+          },
+          set: function(value) {
+            config.tokenPrefix = value;
+          }
+        },
         unlinkUrl: {
           get: function() {
             return config.unlinkUrl;
@@ -217,7 +226,7 @@
 
           provider.open(providers[name])
             .then(function(response) {
-              Local.parseUser(response.data.token, deferred);
+              Local.parseUser(response.data[config.tokenName], deferred);
             })
             .catch(function(response) {
               deferred.reject(response);
@@ -264,7 +273,9 @@
 
       var local = {};
 
+      // TODO: Move to shared service
       local.parseUser = function(token, deferred) {
+        // TODO: Move userFromToken to shared service
         var user = Utils.userFromToken(token);
         localStorage.setItem(config.tokenName, token);
         $rootScope[config.user] = user;
@@ -281,7 +292,7 @@
 
         $http.post(config.loginUrl, user)
           .then(function(response) {
-            local.parseUser(response.data.token, deferred);
+            local.parseUser(response.data[config.tokenName], deferred);
           })
           .catch(function(response) {
             deferred.reject(response);
@@ -329,7 +340,7 @@
 
         $http.get(config.unlinkUrl + provider)
           .then(function(response) {
-            local.parseUser(response.data.token, deferred);
+            local.parseUser(response.data[config.tokenName], deferred);
           })
           .catch(function(response) {
             deferred.reject(response);
