@@ -15,22 +15,32 @@ class AuthController extends \BaseController {
 
     public function login()
     {
-        $user = User::where('email', '=', Input::get('email'));
+        $email = Input::get('email');
+        $password = Input::get('password');
 
-        if ($user->isEmpty())
+        $user = User::where('email', '=', $email)->first();
+
+        if (!$user)
         {
             return Response::json(array('message' => 'Wrong email and/or password'), 401);
         }
 
-
-
-        return 'Not implemented';
+        if (Hash::check($password, $user->password))
+        {
+            // The passwords match...
+            unset($user->password);
+            return Response::json(array('token' => $this->createToken($user)));
+        }
+        else
+        {
+            return Response::json(array('message' => 'Wrong email and/or password'), 401);
+        }
     }
 
     public function signup()
     {
         $user = new User;
-        $user->display_name = Input::get('displayName');
+        $user->displayName = Input::get('displayName');
         $user->email = Input::get('email');
         $user->password = Hash::make(Input::get('password'));
         $user->save();
