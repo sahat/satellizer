@@ -15,6 +15,15 @@ class AuthController extends \BaseController {
 
     public function login()
     {
+        $user = User::where('email', '=', Input::get('email'));
+
+        if ($user->isEmpty())
+        {
+            return Response::json(array('message' => 'Wrong email and/or password'), 401);
+        }
+
+
+
         return 'Not implemented';
     }
 
@@ -23,7 +32,7 @@ class AuthController extends \BaseController {
         $user = new User;
         $user->display_name = Input::get('displayName');
         $user->email = Input::get('email');
-        $user->password = Input::get('password');
+        $user->password = Hash::make(Input::get('password'));
         $user->save();
 
         return Response::make(200);
