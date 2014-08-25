@@ -221,7 +221,6 @@
 
         $auth.authenticate = function(name) {
           var deferred = $q.defer();
-
           var provider = (providers[name].type === '1.0') ? Oauth1 : Oauth2;
 
           provider.open(providers[name])
@@ -278,6 +277,8 @@
         // TODO: Move userFromToken to shared service
         var user = Utils.userFromToken(token);
         localStorage.setItem([config.tokenPrefix, config.tokenName].join('_'), token);
+
+        $rootScope.isAuthenticated = true;
         $rootScope[config.user] = user;
 
         if (config.loginRedirect) {
@@ -320,6 +321,7 @@
         var deferred = $q.defer();
 
         delete $rootScope[config.user];
+        $rootScope.isAuthenticated = false;
         localStorage.removeItem([config.tokenPrefix, config.tokenName].join('_'));
 
         if (config.logoutRedirect) {
@@ -539,9 +541,13 @@
       return {
         run: function() {
           var token = localStorage.getItem([config.tokenPrefix, config.tokenName].join('_'));
+
           if (token) {
-            $rootScope[config.user] = Utils.userFromToken(token);
+//            $rootScope[config.user] = Utils.userFromToken(token);
+            $rootScope.isAuthenticated = true;
           }
+
+
 
           var params = $window.location.search.substring(1);
           var qs = Object.keys($location.search()).length ? $location.search() : Utils.parseQueryString(params);
@@ -561,11 +567,11 @@
           try {
             angular.module('ngRoute');
             $rootScope.$on('$routeChangeStart', function(event, current) {
-              if ($rootScope[config.user] &&
+              if ($rootScope.isAuthenticated &&
                 (current.originalPath === config.loginRoute || current.originalPath === config.signupRoute)) {
-                $location.path('/');
+                $location.path(config.loginRedirect);
               }
-              if (current.protected && !$rootScope[config.user]) {
+              if (current.protected && !$rootScope.isAuthenticated) {
                 $location.path(config.loginRoute);
               }
             });
@@ -577,11 +583,11 @@
           try {
             angular.module('ui.router');
             $rootScope.$on('$stateChangeStart', function(event, toState) {
-              if ($rootScope[config.user] &&
+              if ($rootScope.isAuthenticated &&
                 (toState.url === config.loginRoute || toState.url === config.signupRoute)) {
-                $location.path('/');
+                $location.path(config.loginRedirect);
               }
-              if (toState.protected && !$rootScope[config.user]) {
+              if (toState.protected && !$rootScope.isAuthenticated) {
                 $location.path(config.loginRoute);
               }
             });

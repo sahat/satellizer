@@ -19,13 +19,13 @@
   </div>
   <ul class="nav navbar-nav">
     <li><a href="/">Home</a></li>
-    <li ng-if="currentUser"><a href="/#/profile">Profile</a></li>
+    <li ng-if="isAuthenticated"><a href="/#/profile">Profile</a></li>
   </ul>
-  <ul class="nav navbar-nav pull-right" ng-if="!currentUser">
+  <ul ng-if="!isAuthenticated" class="nav navbar-nav pull-right">
     <li><a href="/#/login">Login</a></li>
     <li><a href="/#/signup">Sign up</a></li>
   </ul>
-  <ul class="nav navbar-nav pull-right" ng-if="currentUser">
+  <ul ng-if="isAuthenticated" class="nav navbar-nav pull-right">
     <li><a href="/#/logout">Logout</a></li>
   </ul>
 </div>
