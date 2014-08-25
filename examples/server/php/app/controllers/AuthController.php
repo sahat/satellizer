@@ -10,8 +10,6 @@ class AuthController extends \BaseController {
             'exp' => time() + (2 * 7 * 24 * 60 * 60)
         );
 
-        Log::info(time());
-
         return JWT::encode($payload, Config::get('secrets.TOKEN_SECRET'));
     }
 
@@ -62,13 +60,14 @@ class AuthController extends \BaseController {
 
             if ($user->first())
             {
-                return Response::json(array('message' => 'There is already a Facebook account that belongs to you'));
+                return Response::json(array('message' => 'There is already a Facebook account that belongs to you'), 409);
             }
 
             $token = explode(' ', Request::header('Authorization'))[1];
-            $payload = JWT::decode($token, Config::get('secrets.TOKEN_SECRET'));
+            $payloadObject = JWT::decode($token, Config::get('secrets.TOKEN_SECRET'));
+            $payload = json_decode(json_encode($payloadObject), true);
 
-            $user = User::find($payload->id);
+            $user = User::find($payload['user']['id']);
             $user->facebook = $profile['id'];
             $user->displayName = $user->displayName || $profile['name'];
             $user->save();
@@ -124,16 +123,16 @@ class AuthController extends \BaseController {
         if (Request::header('Authorization'))
         {
             $user = User::where('google', '=', $profile['sub']);
-
             if ($user->first())
             {
-                return Response::json(array('message' => 'There is already a Google account that belongs to you'));
+                return Response::json(array('message' => 'There is already a Google account that belongs to you'), 409);
             }
 
             $token = explode(' ', Request::header('Authorization'))[1];
-            $payload = JWT::decode($token, Config::get('secrets.TOKEN_SECRET'));
+            $payloadObject = JWT::decode($token, Config::get('secrets.TOKEN_SECRET'));
+            $payload = json_decode(json_encode($payloadObject), true);
 
-            $user = User::find($payload->id);
+            $user = User::find($payload['user']['id']);
             $user->google = $profile['sub'];
             $user->displayName = $user->displayName || $profile['name'];
             $user->save();
