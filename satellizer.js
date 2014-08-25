@@ -261,7 +261,7 @@
 
         // TODO: call from parseUser
         $auth.updateToken = function(token) {
-          localStorage.setItem(config.tokenName, token);
+          localStorage.setItem([config.tokenPrefix, config.tokenName].join('_'), token);
           $rootScope[config.user] = Utils.userFromToken(token);
         };
 
@@ -277,7 +277,7 @@
       local.parseUser = function(token, deferred) {
         // TODO: Move userFromToken to shared service
         var user = Utils.userFromToken(token);
-        localStorage.setItem(config.tokenName, token);
+        localStorage.setItem([config.tokenPrefix, config.tokenName].join('_'), token);
         $rootScope[config.user] = user;
 
         if (config.loginRedirect) {
@@ -320,7 +320,7 @@
         var deferred = $q.defer();
 
         delete $rootScope[config.user];
-        localStorage.removeItem(config.tokenName);
+        localStorage.removeItem([config.tokenPrefix, config.tokenName].join('_'));
 
         if (config.logoutRedirect) {
           $location.path(config.logoutRedirect);
@@ -538,7 +538,7 @@
     .factory('RunBlock', function RunBlock($rootScope, $window, $location, Utils) {
       return {
         run: function() {
-          var token = $window.localStorage[config.tokenName];
+          var token = localStorage.getItem([config.tokenPrefix, config.tokenName].join('_'));
           if (token) {
             $rootScope[config.user] = Utils.userFromToken(token);
           }
@@ -619,14 +619,14 @@
       $httpProvider.interceptors.push(function($q, $window, $location) {
         return {
           request: function(httpConfig) {
-            if ($window.localStorage[config.tokenName]) {
-              httpConfig.headers.Authorization = 'Bearer ' + $window.localStorage[config.tokenName];
+            if (localStorage.getItem([config.tokenPrefix, config.tokenName].join('_'))) {
+              httpConfig.headers.Authorization = 'Bearer ' + localStorage.getItem([config.tokenPrefix, config.tokenName].join('_'));
             }
             return httpConfig;
           },
           responseError: function(response) {
             if (response.status === 401) {
-              delete $window.localStorage[config.tokenName];
+              localStorage.removeItem([config.tokenPrefix, config.tokenName].join('_'));
             }
             return $q.reject(response);
           }
