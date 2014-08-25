@@ -114,7 +114,7 @@ app.get('/api/me', ensureAuthenticated, function(req, res) {
  |--------------------------------------------------------------------------
  */
 app.put('/api/me', ensureAuthenticated, function(req, res) {
-  User.findById(req.user._id, function(err, user) {
+  User.findById(req.user, function(err, user) {
     user.displayName = req.body.displayName || user.displayName;
     user.email = req.body.email || user.email;
     user.save(function(err) {
@@ -195,7 +195,7 @@ app.post('/auth/google', function(req, res) {
           var token = req.headers.authorization.split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
 
-          User.findById(payload.user._id, function(err, user) {
+          User.findById(payload.sub, function(err, user) {
             user.google = profile.sub;
             user.displayName = user.displayName || profile.name;
             user.save(function(err) {
@@ -257,7 +257,7 @@ app.post('/auth/github', function(req, res) {
           var token = req.headers.authorization.split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
 
-          User.findById(payload.user._id, function(err, user) {
+          User.findById(payload.sub, function(err, user) {
             user.github = profile.id;
             user.displayName = user.displayName || profile.name;
             user.save(function(err) {
@@ -326,7 +326,7 @@ app.post('/auth/linkedin', function(req, res) {
           var token = req.headers.authorization.split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
 
-          User.findById(payload.user._id, function(err, user) {
+          User.findById(payload.sub, function(err, user) {
             user.linkedin = profile.id;
             user.displayName = user.displayName || profile.firstName + ' ' + profile.lastName;
             user.save(function(err) {
@@ -386,7 +386,7 @@ app.post('/auth/facebook', function(req, res) {
           var token = req.headers.authorization.split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
 
-          User.findById(payload.user._id, function(err, user) {
+          User.findById(payload.sub, function(err, user) {
             user.facebook = profile.id;
             user.displayName = user.displayName || profile.name;
             user.save(function(err) {
@@ -460,7 +460,7 @@ app.get('/auth/twitter', function(req, res) {
           var token = req.headers.authorization.split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
 
-          User.findById(payload.user._id, function(err, user) {
+          User.findById(payload.sub, function(err, user) {
             user.twitter = profile.user_id;
             user.displayName = user.displayName || profile.screen_name;
             user.save(function(err) {
@@ -525,7 +525,7 @@ app.post('/auth/foursquare', function(req, res) {
           var token = req.headers.authorization.split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
 
-          User.findById(payload.user._id, function(err, user) {
+          User.findById(payload.sub, function(err, user) {
             user.foursquare = profile.id;
             user.displayName = user.displayName || profile.firstName + ' ' + profile.lastName;
             user.save(function(err) {
@@ -561,7 +561,7 @@ app.post('/auth/foursquare', function(req, res) {
 
 app.get('/auth/unlink/:provider', ensureAuthenticated, function(req, res, next) {
   var provider = req.params.provider;
-  User.findById(req.user._id, function(err, user) {
+  User.findById(req.user, function(err, user) {
     user[provider] = undefined;
     user.save(function(err) {
       res.send({ token: createToken(req, user) });
