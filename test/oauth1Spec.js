@@ -24,7 +24,6 @@ describe('OAuth 1.0 Login', function() {
   it('should exchange oauth for token', function() {
     var oauthData = 'oauth_token=hNDG4EmuJWPhqwJPrb0296aQaRKxInJ655Sop391BQ&oauth_verifier=SXkKIEPedLTGFwtDnU5kq1rhBPryIetlHSXcaQYLPc';
 
-
     Oauth1.open({
       url: '/auth/twitter',
       authorizationEndpoint: 'https://api.twitter.com/oauth/authenticate',

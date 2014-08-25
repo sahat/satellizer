@@ -5,7 +5,7 @@ describe('Local', function() {
     expect(angular.isFunction(Local.login)).toBe(true);
   }));
 
-  it('should return a user object on successful login', inject(function($httpBackend, Local) {
+  it('isAuthenticated should be true after successful sign-in', inject(function($httpBackend, Local) {
     var result = null;
     var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7Il9pZCI6IjUzZjYxZTEwNmZjNjFhNmMxM2I1Mjc4ZCIsImVtYWlsIjoic2FoYXRAbWUuY29tIiwiX192IjowfSwiaWF0IjoxNDA4ODIxMDkxNjc2LCJleHAiOjE0MDk0MjU4OTE2NzZ9.0l-ql-ZVjHiILMcMegNb3bNqapt3TZwjHy_ieduioiQ';
     var user = {
@@ -21,11 +21,7 @@ describe('Local', function() {
 
     $httpBackend.flush();
 
-    expect(result).toEqual({
-      _id: '53f61e106fc61a6c13b5278d',
-      email: 'sahat@me.com',
-      __v: 0
-    });
+    expect(Local.isAuthenticated()).toBe(true);
   }));
 
   it('should fail login with incorrect credentials', inject(function($httpBackend, Local) {

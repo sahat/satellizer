@@ -1,81 +1,90 @@
 describe('Configuration', function() {
 
-  var auth;
   var authProvider;
 
-  beforeEach(module('Satellizer'));
-
-  beforeEach(inject(function($auth) {
-    auth = $auth;
+  beforeEach(module('Satellizer', function($authProvider) {
+    authProvider = $authProvider;
   }));
 
-  beforeEach(function() {
-    angular.module('Satellizer').config(function($authProvider) {
-      authProvider = $authProvider;
-    });
-  });
+  it('$auth factory should be defined', inject(function($auth) {
+    expect($auth).toBeDefined();
+  }));
 
-  it('should have a $auth object', function() {
-    expect(auth).toBeDefined();
-  });
-
-  it('should allow overriding logoutRedirect', function() {
+  it('should allow overriding logoutRedirect', inject(function($auth) {
+    var reset = authProvider.logoutRedirect;
     authProvider.logoutRedirect = '/new_url';
     expect(authProvider.logoutRedirect).toEqual('/new_url');
-    authProvider.logoutRedirect = '/';
-  });
+    authProvider.logoutRedirect = reset;
+  }));
 
   it('should allow overriding loginRedirect', function() {
+    var reset = authProvider.loginRedirect;
     authProvider.loginRedirect = '/new_url';
     expect(authProvider.loginRedirect).toEqual('/new_url');
-    authProvider.loginRedirect = '/login';
+    authProvider.loginRedirect = reset;
   });
 
   it('should allow overriding loginUrl', function() {
+    var reset = authProvider.loginUrl;
     authProvider.loginUrl = '/api/login';
     expect(authProvider.loginUrl).toEqual('/api/login');
-    authProvider.loginUrl = '/auth/login';
+    authProvider.loginUrl = reset;
   });
 
   it('should allow overriding signupUrl', function() {
+    var reset = authProvider.signupUrl;
     authProvider.signupUrl = '/api/signup';
     expect(authProvider.signupUrl).toEqual('/api/signup');
-    authProvider.signupUrl = '/auth/signup';
+    authProvider.signupUrl = reset;
   });
 
   it('should allow overriding signupRedirect', function() {
+    var reset = authProvider.signupRedirect;
     authProvider.signupRedirect = '/new_url';
     expect(authProvider.signupRedirect).toEqual('/new_url');
-    authProvider.signupRedirect = '/login';
+    authProvider.signupRedirect = reset;
   });
 
   it('should allow overriding loginRoute', function() {
+    var reset = authProvider.loginRoute;
     authProvider.loginRoute = '/sign_in';
     expect(authProvider.loginRoute).toEqual('/sign_in');
-    authProvider.loginRoute = '/login';
+    authProvider.loginRoute = reset;
   });
 
   it('should allow overriding signupRoute', function() {
+    var reset = authProvider.signupRoute;
     authProvider.signupRoute = '/register';
     expect(authProvider.signupRoute).toEqual('/register');
-    authProvider.signupRoute = '/signup';
-
+    authProvider.signupRoute = reset;
   });
 
   it('should allow overriding user', function() {
+    var reset = authProvider.user;
     authProvider.user = 'user';
     expect(authProvider.user).toEqual('user');
+    authProvider.user = reset;
   });
 
   it('should allow overriding tokenName', function() {
-    authProvider.tokenName = 'satellizer_jwt';
-    expect(authProvider.tokenName).toEqual('satellizer_jwt');
+    var reset = authProvider.tokenName;
+    authProvider.tokenName = 'access_token';
+    expect(authProvider.tokenName).toEqual('access_token');
+    authProvider.tokenName = reset;
+  });
+
+  it('should allow overriding tokenPrefix', function() {
+    var reset = authProvider.tokenPrefix;
+    authProvider.tokenPrefix = 'myapp';
+    expect(authProvider.tokenPrefix).toEqual('myapp');
+    authProvider.tokenPrefix = reset;
   });
 
   it('should allow overriding unlinkUrl', function() {
+    var reset = authProvider.unlinkUrl;
     authProvider.unlinkUrl = '/disconnect/';
     expect(authProvider.unlinkUrl).toEqual('/disconnect/');
-    authProvider.unlinkUrl = '/auth/unlink/';
+    authProvider.unlinkUrl = reset;
   });
 
   it('should have facebook method', function() {
