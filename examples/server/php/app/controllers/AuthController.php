@@ -5,10 +5,13 @@ class AuthController extends \BaseController {
     private function createToken($user)
     {
         $payload = array(
-            'user' => $user,
-            'iat' => 'today',
-            'exp' => '14days'
+            'user' => $user->first(),
+            'iat' => time(),
+            'exp' => time() + (2 * 7 * 24 * 60 * 60)
         );
+
+        Log::info(time());
+
         return JWT::encode($payload, Config::get('secrets.TOKEN_SECRET'));
     }
 
@@ -55,9 +58,9 @@ class AuthController extends \BaseController {
         // Step 3a. If user is already signed in then link accounts.
         if (Request::header('Authorization'))
         {
-            $user = User::where('facebook', $profile->id);
+            $user = User::where('facebook', '=', $profile['id']);
 
-            if ($user->exists)
+            if ($user->first())
             {
                 return Response::json(array('message' => 'There is already a Facebook account that belongs to you'));
             }
@@ -66,8 +69,8 @@ class AuthController extends \BaseController {
             $payload = JWT::decode($token, Config::get('secrets.TOKEN_SECRET'));
 
             $user = User::find($payload->id);
-            $user->facebook = $profile->id;
-            $user->displayName = $user->displayName || $profile->name;
+            $user->facebook = $profile['id'];
+            $user->displayName = $user->displayName || $profile['name'];
             $user->save();
 
             return Response::json(array('token' => $this->createToken($user)));
@@ -75,16 +78,16 @@ class AuthController extends \BaseController {
         // Step 3b. Create a new user account or return an existing one.
         else
         {
-            $user = User::where('facebook', $profile->id);
+            $user = User::where('facebook', '=', $profile['id']);
 
-            if ($user->exists)
+            if ($user->first())
             {
                 return Response::json(array('token' => $this->createToken($user)));
             }
 
             $user = new User;
-            $user->facebook = $profile->id;
-            $user->displayName = $profile->name;
+            $user->facebook = $profile['id'];
+            $user->displayName = $profile['name'];
             $user->save();
 
             return Response::json(array('token' => $this->createToken($user)));
@@ -122,7 +125,7 @@ class AuthController extends \BaseController {
         {
             $user = User::where('google', '=', $profile['sub']);
 
-            if ($user->exists)
+            if ($user->first())
             {
                 return Response::json(array('message' => 'There is already a Google account that belongs to you'));
             }
