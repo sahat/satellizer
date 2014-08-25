@@ -4,13 +4,13 @@
 
 # Home page
 GET     /                             controllers.Application.index
-GET     /api/me                       controllers.User.index
-POST    /auth/facebook                controllers.Auth.facebook
-POST    /auth/foursquare              controllers.Auth.index
-POST    /auth/google                  controllers.Auth.index
-POST    /auth/github                  controllers.Auth.index
-POST    /auth/linkedin                controllers.Auth.index
-GET     /auth/twitter                 controllers.Auth.index
+GET     /api/me                       controllers.UserController.index
+# POST    /auth/facebook                controllers.Auth.facebook
+# POST    /auth/foursquare              controllers.Auth.index
+# POST    /auth/google                  controllers.Auth.index
+# POST    /auth/github                  controllers.Auth.index
+# POST    /auth/linkedin                controllers.Auth.index
+# GET     /auth/twitter                 controllers.Auth.index
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
