@@ -279,15 +279,18 @@
 
         $rootScope.isAuthenticated = true;
 
-        if (Utils.userFromToken(token)) {
+        var user = Utils.userFromToken(token);
+
+        if (user) {
           $rootScope[config.user] = Utils.userFromToken(token);
+          deferred.resolve(user);
+        } else {
+          deferred.resolve()
         }
 
         if (config.loginRedirect) {
           $location.path(config.loginRedirect);
         }
-
-        deferred.resolve(user);
       };
 
       local.login = function(user) {
@@ -542,7 +545,7 @@
 
       return popup;
     })
-    .factory('RunBlock', function RunBlock($rootScope, $window, $location, Utils) {
+    .factory('RunBlock', function RunBlock($rootScope, $window, $location, Utils, Local) {
       return {
         run: function() {
           var token = localStorage.getItem([config.tokenPrefix, config.tokenName].join('_'));
@@ -574,7 +577,10 @@
                 (current.originalPath === config.loginRoute || current.originalPath === config.signupRoute)) {
                 $location.path(config.loginRedirect);
               }
-              if (current.protected && (!$rootScope[config.user] || !$rootScope.isAuthenticated)) {
+              console.log($rootScope.isAuthenticated);
+              console.log($rootScope[config.user]);
+
+              if (current.protected && (!$rootScope.isAuthenticated && !$rootScope[config.user])) {
                 $location.path(config.loginRoute);
               }
             });
@@ -590,7 +596,7 @@
                 (toState.url === config.loginRoute || toState.url === config.signupRoute)) {
                 $location.path(config.loginRedirect);
               }
-              if (toState.protected && (!$rootScope[config.user] || !$rootScope.isAuthenticated)) {
+              if (toState.protected && (!$rootScope[config.user] && !$rootScope.isAuthenticated)) {
                 $location.path(config.loginRoute);
               }
             });
