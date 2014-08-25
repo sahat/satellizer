@@ -85,7 +85,7 @@
   };
 
   angular.module('Satellizer', [])
-    .provider('$auth', function $auth() {
+    .provider('$auth', function() {
 
       Object.defineProperties(this, {
         loginRedirect: {
@@ -215,60 +215,61 @@
         providers[params.name].type = '2.0';
       };
 
-      this.$get = function($q, $http, $rootScope, Oauth1, Oauth2, Local, Utils) {
+      this.$get = ['$q', '$http', '$rootScope', 'Oauth1', 'Oauth2', 'Local', 'Utils',
+        function($q, $http, $rootScope, Oauth1, Oauth2, Local, Utils) {
 
-        var $auth = {};
+          var $auth = {};
 
-        $auth.authenticate = function(name) {
-          var deferred = $q.defer();
-          var provider = (providers[name].type === '1.0') ? Oauth1 : Oauth2;
+          $auth.authenticate = function(name) {
+            var deferred = $q.defer();
+            var provider = (providers[name].type === '1.0') ? Oauth1 : Oauth2;
 
-          provider.open(providers[name])
-            .then(function(response) {
-              Local.parseUser(response.data[config.tokenName], deferred);
-            })
-            .catch(function(response) {
-              deferred.reject(response);
-            });
+            provider.open(providers[name])
+              .then(function(response) {
+                Local.parseUser(response.data[config.tokenName], deferred);
+              })
+              .catch(function(response) {
+                deferred.reject(response);
+              });
 
-          return deferred.promise;
-        };
+            return deferred.promise;
+          };
 
-        $auth.login = function(user) {
-          return Local.login(user);
-        };
+          $auth.login = function(user) {
+            return Local.login(user);
+          };
 
-        $auth.signup = function(user) {
-          return Local.signup(user);
-        };
+          $auth.signup = function(user) {
+            return Local.signup(user);
+          };
 
-        $auth.logout = function() {
-          return Local.logout();
-        };
+          $auth.logout = function() {
+            return Local.logout();
+          };
 
-        $auth.isAuthenticated = function() {
-          return Local.isAuthenticated();
-        };
+          $auth.isAuthenticated = function() {
+            return Local.isAuthenticated();
+          };
 
-        $auth.link = function(name) {
-          return $auth.authenticate(name);
-        };
+          $auth.link = function(name) {
+            return $auth.authenticate(name);
+          };
 
-        $auth.unlink = function(provider) {
-          return Local.unlink(provider);
-        };
+          $auth.unlink = function(provider) {
+            return Local.unlink(provider);
+          };
 
-        // TODO: call from parseUser
-        $auth.updateToken = function(token) {
-          localStorage.setItem([config.tokenPrefix, config.tokenName].join('_'), token);
-          $rootScope[config.user] = Utils.userFromToken(token);
-        };
+          // TODO: call from parseUser
+          $auth.updateToken = function(token) {
+            localStorage.setItem([config.tokenPrefix, config.tokenName].join('_'), token);
+            $rootScope[config.user] = Utils.userFromToken(token);
+          };
 
-        return $auth;
-      };
+          return $auth;
+        }];
 
     })
-    .factory('Local', function Local($q, $http, $rootScope, $location, Utils) {
+    .factory('Local', ['$q', '$http', '$rootScope', '$location', 'Utils', function($q, $http, $rootScope, $location, Utils) {
 
       var local = {};
 
@@ -360,8 +361,8 @@
       };
 
       return local;
-    })
-    .factory('Oauth2', function Oauth2($q, $http, Utils, Popup) {
+    }])
+    .factory('Oauth2', ['$q', '$http', 'Utils', 'Popup', function($q, $http, Utils, Popup) {
       var defaults = {
         url: null,
         name: null,
@@ -433,8 +434,8 @@
       };
 
       return oauth2;
-    })
-    .factory('Oauth1', function Oauth1($q, $http, Popup) {
+    }])
+    .factory('Oauth1', ['$q', '$http', 'Popup', function($q, $http, Popup) {
       var defaults = {
         url: null,
         name: null,
@@ -479,8 +480,8 @@
       };
 
       return oauth1;
-    })
-    .factory('Popup', function Popup($q, $interval, $window) {
+    }])
+    .factory('Popup', ['$q', '$interval', '$window', function($q, $interval, $window) {
       var popupWindow = null;
       var polling = null;
 
@@ -544,72 +545,11 @@
       };
 
       return popup;
-    })
-    .factory('RunBlock', function RunBlock($rootScope, $window, $location, Utils, Local) {
-      return {
-        run: function() {
-          var token = localStorage.getItem([config.tokenPrefix, config.tokenName].join('_'));
-
-          if (token) {
-            $rootScope[config.user] = Utils.userFromToken(token);
-            $rootScope.isAuthenticated = true;
-          }
-
-          var params = $window.location.search.substring(1);
-          var qs = Object.keys($location.search()).length ? $location.search() : Utils.parseQueryString(params);
-
-          if ($window.opener && $window.opener.location.origin === $window.location.origin) {
-            if (qs.oauth_token && qs.oauth_verifier) {
-              $window.opener.postMessage({ oauth_token: qs.oauth_token, oauth_verifier: qs.oauth_verifier }, $window.location.origin);
-            } else if (qs.code) {
-              $window.opener.postMessage({ code: qs.code }, $window.location.origin);
-            } else if (qs.error) {
-              $window.opener.postMessage({ error: qs.error }, $window.location.origin);
-            }
-          }
-        },
-        routeChangeListener: function() {
-          // ngRoute
-          try {
-            angular.module('ngRoute');
-            $rootScope.$on('$routeChangeStart', function(event, current) {
-              if (($rootScope[config.user] || $rootScope.isAuthenticated) &&
-                (current.originalPath === config.loginRoute || current.originalPath === config.signupRoute)) {
-                $location.path(config.loginRedirect);
-              }
-              console.log($rootScope.isAuthenticated);
-              console.log($rootScope[config.user]);
-
-              if (current.protected && (!$rootScope.isAuthenticated && !$rootScope[config.user])) {
-                $location.path(config.loginRoute);
-              }
-            });
-          } catch (error) {
-
-          }
-
-          // UI-Router
-          try {
-            angular.module('ui.router');
-            $rootScope.$on('$stateChangeStart', function(event, toState) {
-              if (($rootScope[config.user] || $rootScope.isAuthenticated) &&
-                (toState.url === config.loginRoute || toState.url === config.signupRoute)) {
-                $location.path(config.loginRedirect);
-              }
-              if (toState.protected && (!$rootScope[config.user] && !$rootScope.isAuthenticated)) {
-                $location.path(config.loginRoute);
-              }
-            });
-          } catch (error) {
-
-          }
-        }
-      };
-    })
+    }])
     .factory('Shared', function Shared() {
       // TODO: refactor
     })
-    .service('Utils', function Utils() {
+    .service('Utils', function() {
       this.camelCase = function(name) {
         return name.replace(/([\:\-\_]+(.))/g, function(_, separator, letter, offset) {
           return offset ? letter.toUpperCase() : letter;
@@ -633,8 +573,8 @@
         return payload.user;
       };
     })
-    .config(function httpInterceptor($httpProvider) {
-      $httpProvider.interceptors.push(function($q, $window, $location) {
+    .config(['$httpProvider', function($httpProvider) {
+      $httpProvider.interceptors.push(['$q', '$window', '$location', function($q, $window, $location) {
         return {
           request: function(httpConfig) {
             if (localStorage.getItem([config.tokenPrefix, config.tokenName].join('_'))) {
@@ -649,12 +589,66 @@
             return $q.reject(response);
           }
         };
-      });
-    })
-    .run(function onRun(RunBlock) {
-      RunBlock.run();
-      RunBlock.routeChangeListener();
-    });
+      }]);
+    }])
+    .run(['$rootScope', '$window', '$location', 'Utils', 'Local',
+      function($rootScope, $window, $location, Utils, Local) {
+        var token = localStorage.getItem([config.tokenPrefix, config.tokenName].join('_'));
+
+        if (token) {
+          $rootScope[config.user] = Utils.userFromToken(token);
+          $rootScope.isAuthenticated = true;
+        }
+
+        var params = $window.location.search.substring(1);
+        var qs = Object.keys($location.search()).length ? $location.search() : Utils.parseQueryString(params);
+
+        if ($window.opener && $window.opener.location.origin === $window.location.origin) {
+          if (qs.oauth_token && qs.oauth_verifier) {
+            $window.opener.postMessage({ oauth_token: qs.oauth_token, oauth_verifier: qs.oauth_verifier }, $window.location.origin);
+          } else if (qs.code) {
+            $window.opener.postMessage({ code: qs.code }, $window.location.origin);
+          } else if (qs.error) {
+            $window.opener.postMessage({ error: qs.error }, $window.location.origin);
+          }
+        }
+
+        /////////////////
+        /////////////////
+
+        // ngRoute
+        try {
+          angular.module('ngRoute');
+          $rootScope.$on('$routeChangeStart', function(event, current) {
+            if (($rootScope[config.user] || $rootScope.isAuthenticated) &&
+              (current.originalPath === config.loginRoute || current.originalPath === config.signupRoute)) {
+              $location.path(config.loginRedirect);
+            }
+
+            if (current.protected && (!$rootScope.isAuthenticated && !$rootScope[config.user])) {
+              $location.path(config.loginRoute);
+            }
+          });
+        } catch (error) {
+
+        }
+
+        // UI-Router
+        try {
+          angular.module('ui.router');
+          $rootScope.$on('$stateChangeStart', function(event, toState) {
+            if (($rootScope[config.user] || $rootScope.isAuthenticated) &&
+              (toState.url === config.loginRoute || toState.url === config.signupRoute)) {
+              $location.path(config.loginRedirect);
+            }
+            if (toState.protected && (!$rootScope[config.user] && !$rootScope.isAuthenticated)) {
+              $location.path(config.loginRoute);
+            }
+          });
+        } catch (error) {
+
+        }
+      }]);
 
 })(window, window.angular);
 
