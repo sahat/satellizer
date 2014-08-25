@@ -591,6 +591,9 @@
         }
       };
     })
+    .factory('Shared', function Shared() {
+      // TODO: refactor
+    })
     .service('Utils', function Utils() {
       this.camelCase = function(name) {
         return name.replace(/([\:\-\_]+(.))/g, function(_, separator, letter, offset) {
@@ -612,7 +615,7 @@
 
       this.userFromToken = function(token) {
         var payload = JSON.parse(window.atob(token.split('.')[1]));
-        return payload.user;
+        return payload.user || payload.sub;
       };
     })
     .config(function httpInterceptor($httpProvider) {
