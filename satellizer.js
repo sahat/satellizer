@@ -275,11 +275,13 @@
       // TODO: Move to shared service
       local.parseUser = function(token, deferred) {
         // TODO: Move userFromToken to shared service
-        var user = Utils.userFromToken(token);
         localStorage.setItem([config.tokenPrefix, config.tokenName].join('_'), token);
 
         $rootScope.isAuthenticated = true;
-        $rootScope[config.user] = user;
+
+        if (Utils.userFromToken(token)) {
+          $rootScope[config.user] = Utils.userFromToken(token);
+        }
 
         if (config.loginRedirect) {
           $location.path(config.loginRedirect);
@@ -320,9 +322,12 @@
       local.logout = function() {
         var deferred = $q.defer();
 
-        delete $rootScope[config.user];
         $rootScope.isAuthenticated = false;
         localStorage.removeItem([config.tokenPrefix, config.tokenName].join('_'));
+
+        if ($rootScope[config.user]) {
+          delete $rootScope[config.user];
+        }
 
         if (config.logoutRedirect) {
           $location.path(config.logoutRedirect);
@@ -543,11 +548,9 @@
           var token = localStorage.getItem([config.tokenPrefix, config.tokenName].join('_'));
 
           if (token) {
-//            $rootScope[config.user] = Utils.userFromToken(token);
+            $rootScope[config.user] = Utils.userFromToken(token);
             $rootScope.isAuthenticated = true;
           }
-
-
 
           var params = $window.location.search.substring(1);
           var qs = Object.keys($location.search()).length ? $location.search() : Utils.parseQueryString(params);
@@ -567,11 +570,11 @@
           try {
             angular.module('ngRoute');
             $rootScope.$on('$routeChangeStart', function(event, current) {
-              if ($rootScope.isAuthenticated &&
+              if (($rootScope[config.user] || $rootScope.isAuthenticated) &&
                 (current.originalPath === config.loginRoute || current.originalPath === config.signupRoute)) {
                 $location.path(config.loginRedirect);
               }
-              if (current.protected && !$rootScope.isAuthenticated) {
+              if (current.protected && (!$rootScope[config.user] || !$rootScope.isAuthenticated)) {
                 $location.path(config.loginRoute);
               }
             });
@@ -583,11 +586,11 @@
           try {
             angular.module('ui.router');
             $rootScope.$on('$stateChangeStart', function(event, toState) {
-              if ($rootScope.isAuthenticated &&
+              if (($rootScope[config.user] || $rootScope.isAuthenticated) &&
                 (toState.url === config.loginRoute || toState.url === config.signupRoute)) {
                 $location.path(config.loginRedirect);
               }
-              if (toState.protected && !$rootScope.isAuthenticated) {
+              if (toState.protected && (!$rootScope[config.user] || !$rootScope.isAuthenticated)) {
                 $location.path(config.loginRoute);
               }
             });
@@ -621,7 +624,7 @@
 
       this.userFromToken = function(token) {
         var payload = JSON.parse(window.atob(token.split('.')[1]));
-        return payload.user || payload.sub;
+        return payload.user;
       };
     })
     .config(function httpInterceptor($httpProvider) {
