@@ -108,9 +108,9 @@ class AuthController extends \BaseController {
 
         // Step 1. Exchange authorization code for access token.
         $accessTokenResponse = $client->post($accessTokenUrl, ['body' => $params]);
-        $accessToken = $accessTokenResponse->json()->access_token;
+        $accessToken = $accessTokenResponse->json()['access_token'];
 
-        $headers = array('Authorization:' => 'Bearer ' . $accessToken);
+        $headers = array('Authorization' => 'Bearer ' . $accessToken);
 
         // Step 2. Retrieve profile information about the current user.
         $profileResponse = $client->get($peopleApiUrl, ['headers' => $headers]);
@@ -120,7 +120,7 @@ class AuthController extends \BaseController {
         // Step 3a. If user is already signed in then link accounts.
         if (Request::header('Authorization'))
         {
-            $user = User::where('facebook', $profile->id);
+            $user = User::where('google', '=', $profile['sub']);
 
             if ($user->exists)
             {
@@ -131,8 +131,8 @@ class AuthController extends \BaseController {
             $payload = JWT::decode($token, Config::get('secrets.TOKEN_SECRET'));
 
             $user = User::find($payload->id);
-            $user->google = $profile->sub;
-            $user->displayName = $user->displayName || $profile->name;
+            $user->google = $profile['sub'];
+            $user->displayName = $user->displayName || $profile['name'];
             $user->save();
 
             return Response::json(array('token' => $this->createToken($user)));
@@ -140,16 +140,16 @@ class AuthController extends \BaseController {
         // Step 3b. Create a new user account or return an existing one.
         else
         {
-            $user = User::where('facebook', $profile->id);
+            $user = User::where('google', '=', $profile['sub']);
 
-            if ($user->exists)
+            if ($user->first())
             {
                 return Response::json(array('token' => $this->createToken($user)));
             }
 
             $user = new User;
-            $user->google = $profile->sub;
-            $user->displayName = $profile->name;
+            $user->google = $profile['sub'];
+            $user->displayName = $profile['name'];
             $user->save();
 
             return Response::json(array('token' => $this->createToken($user)));
