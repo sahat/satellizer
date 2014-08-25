@@ -7,9 +7,10 @@ describe('Local', function() {
 
   it('should return a user object on successful login', inject(function($httpBackend, Local) {
     var result = null;
-    var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7Il9pZCI6IjUzZjYxZTEwNmZjNjFhNmMxM2I1Mjc4ZCIsImVtYWlsIjoic2FoYXRAbWUuY29tIiwiX192IjowfSwiaWF0IjoxNDA4ODIxMDkxNjc2LCJleHAiOjE0MDk0MjU4OTE2NzZ9.0l-ql-ZVjHiILMcMegNb3bNqapt3TZwjHy_ieduioiQ';
+    var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7Il9pZCI6IjUzZjYxZTEwNmZjNjFhNmMxM2I1Mjc4ZCIsImVtYWlsIjoic2FoYXQ_QG1lLmNvbSIsIl9fdiI6MH0sImlhdCI6MTQwODgyMTA5MTY3NiwiZXhwIjoxNDA5NDI1ODkxNjc2fQ.0l-ql-ZVjHiILMcMegNb3bNqapt3TZwjHy_ieduioiQ';
     var user = {
-      email: 'sahat@me.com',
+
+      email: 'sahat?@me.com',
       password: '1234'
     };
 
@@ -23,7 +24,7 @@ describe('Local', function() {
 
     expect(result).toEqual({
       _id: '53f61e106fc61a6c13b5278d',
-      email: 'sahat@me.com',
+      email: user.email,
       __v: 0
     });
   }));
