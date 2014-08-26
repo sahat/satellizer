@@ -7,7 +7,7 @@
 [![Test Coverage](http://img.shields.io/codeclimate/coverage/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
 [![Version](http://img.shields.io/badge/version-0.4.1-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
 
-**:clapper: Live Demo:** [http://satellizer.herokuapp.com](http://satellizer.herokuapp.com)
+**:clapper: Live Demo:** [https://satellizer.herokuapp.com](http://satellizer.herokuapp.com)
 
 **Satellizer** is a simple to use, end-to-end, token-based authentication module 
 for [AngularJS](http://angularjs.org) with built-in support for Google, Facebook,
