@@ -5,7 +5,7 @@
 [![Build Status](http://img.shields.io/travis/sahat/satellizer.svg?style=flat)](https://travis-ci.org/sahat/satellizer) 
 [![Code Climate](http://img.shields.io/codeclimate/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer) 
 [![Test Coverage](http://img.shields.io/codeclimate/coverage/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
-[![Version](http://img.shields.io/badge/version-0.4.1-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
+[![Version](http://img.shields.io/badge/version-0.5.0-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
 
 **:clapper: Live Demo:** [https://satellizer.herokuapp.com](http://satellizer.herokuapp.com)
 
@@ -46,7 +46,7 @@ npm install satellizer --save
 or use the **CDN**:
 
 ```html
-<script src="//cdn.jsdelivr.net/satellizer/0.4.1/satellizer.min.js"></script>
+<script src="//cdn.jsdelivr.net/satellizer/0.5.0/satellizer.min.js"></script>
 ```
 
 ## Usage
