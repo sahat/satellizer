@@ -101,7 +101,7 @@ function ensureAuthenticated(req, res, next) {
 function createToken(req, user) {
   var payload = {
     iss: req.hostname,
-    sub: user.id,
+    sub: user._id,
     iat: moment().valueOf(),
     exp: moment().add(14, 'days').valueOf()
   };
