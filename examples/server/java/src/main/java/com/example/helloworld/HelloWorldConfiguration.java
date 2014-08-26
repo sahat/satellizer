@@ -1,7 +1,5 @@
 package com.example.helloworld;
 
-import com.bazaarvoice.dropwizard.assets.AssetsBundleConfiguration;
-import com.bazaarvoice.dropwizard.assets.AssetsConfiguration;
 import com.example.helloworld.core.Template;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -14,7 +12,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-public class HelloWorldConfiguration extends Configuration implements AssetsBundleConfiguration {
+public class HelloWorldConfiguration extends Configuration {
     @NotEmpty
     private String template;
 
@@ -24,11 +22,6 @@ public class HelloWorldConfiguration extends Configuration implements AssetsBund
     @Valid
     @NotNull
     private DataSourceFactory database = new DataSourceFactory();
-    
-    @Valid
-    @NotNull
-    @JsonProperty
-    private final AssetsConfiguration assets = new AssetsConfiguration();
 
     @Valid
     @NotNull
@@ -69,11 +62,6 @@ public class HelloWorldConfiguration extends Configuration implements AssetsBund
         this.database = dataSourceFactory;
     }
 
-	@Override
-	public AssetsConfiguration getAssetsConfiguration() {
-		return assets;
-	}
-	
 	public JerseyClientConfiguration getJerseyClientConfiguration() {
         return httpClient;
     }
