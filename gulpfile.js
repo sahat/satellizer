@@ -31,4 +31,9 @@ gulp.task('php', function() {
     .pipe(gulp.dest('examples/server/php/public'))
 });
 
+gulp.task('java', function() {
+  return gulp.src('examples/client/**/*.*')
+    .pipe(gulp.dest('examples/server/java/src/main/resources/assets'))
+});
+
 gulp.task('default', ['copy', 'minify', 'watch']);
