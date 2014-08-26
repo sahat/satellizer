@@ -86,7 +86,7 @@ class AuthController extends \BaseController {
             $payloadObject = JWT::decode($token, Config::get('secrets.TOKEN_SECRET'));
             $payload = json_decode(json_encode($payloadObject), true);
 
-            $user = User::find($payload['user']['id']);
+            $user = User::find($payload['sub']);
             $user->facebook = $profile['id'];
             $user->displayName = $user->displayName || $profile['name'];
             $user->save();
@@ -151,7 +151,7 @@ class AuthController extends \BaseController {
             $payloadObject = JWT::decode($token, Config::get('secrets.TOKEN_SECRET'));
             $payload = json_decode(json_encode($payloadObject), true);
 
-            $user = User::find($payload['user']['id']);
+            $user = User::find($payload['sub']);
             $user->google = $profile['sub'];
             $user->displayName = $user->displayName || $profile['name'];
             $user->save();
@@ -182,7 +182,69 @@ class AuthController extends \BaseController {
 
     public function linkedin()
     {
+        $accessTokenUrl = 'https://www.linkedin.com/uas/oauth2/accessToken';
+        $peopleApiUrl = 'https://api.linkedin.com/v1/people/~:(id,first-name,last-name)';
 
+        $params = array(
+            'code' => Input::get('code'),
+            'client_id' => Input::get('clientId'),
+            'redirect_uri' => Input::get('redirectUri'),
+            'grant_type' => 'authorization_code',
+            'client_secret' => Config::get('secrets.LINKEDIN_SECRET'),
+        );
+
+        $client = new GuzzleHttp\Client();
+
+        // Step 1. Exchange authorization code for access token.
+        $accessTokenResponse = $client->post($accessTokenUrl, ['body' => $params]);
+
+        $apiParams = array(
+            'oauth2_access_token' => $accessTokenResponse->json()['access_token'],
+            'format' => 'json'
+        );
+
+        // Step 2. Retrieve profile information about the current user.
+        $peopleApiResponse = $client->get($peopleApiUrl, ['query' => $apiParams]);
+        $profile = $peopleApiResponse->json();
+
+        // Step 3a. If user is already signed in then link accounts.
+        if (Request::header('Authorization'))
+        {
+            $user = User::where('linkedin', '=', $profile['id']);
+
+            if ($user->first())
+            {
+                return Response::json(array('message' => 'There is already a LinkedIn account that belongs to you'), 409);
+            }
+
+            $token = explode(' ', Request::header('Authorization'))[1];
+            $payloadObject = JWT::decode($token, Config::get('secrets.TOKEN_SECRET'));
+            $payload = json_decode(json_encode($payloadObject), true);
+
+            $user = User::find($payload['sub']);
+            $user->facebook = $profile['id'];
+            $user->displayName = $user->displayName || $profile['name'];
+            $user->save();
+
+            return Response::json(array('token' => $this->createToken($user)));
+        }
+        // Step 3b. Create a new user account or return an existing one.
+        else
+        {
+            $user = User::where('facebook', '=', $profile['id']);
+
+            if ($user->first())
+            {
+                return Response::json(array('token' => $this->createToken($user)));
+            }
+
+            $user = new User;
+            $user->facebook = $profile['id'];
+            $user->displayName = $profile['name'];
+            $user->save();
+
+            return Response::json(array('token' => $this->createToken($user)));
+        }
     }
 
     public function twitter()
@@ -238,7 +300,7 @@ class AuthController extends \BaseController {
             $payloadObject = JWT::decode($token, Config::get('secrets.TOKEN_SECRET'));
             $payload = json_decode(json_encode($payloadObject), true);
 
-            $user = User::find($payload['user']['id']);
+            $user = User::find($payload['sub']);
             $user->github = $profile['id'];
             $user->displayName = $user->displayName || $profile['name'];
             $user->save();
