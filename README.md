@@ -5,9 +5,9 @@
 [![Build Status](http://img.shields.io/travis/sahat/satellizer.svg?style=flat)](https://travis-ci.org/sahat/satellizer) 
 [![Code Climate](http://img.shields.io/codeclimate/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer) 
 [![Test Coverage](http://img.shields.io/codeclimate/coverage/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
-[![Version](http://img.shields.io/badge/version-0.4.1-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
+[![Version](http://img.shields.io/badge/version-0.5.0-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
 
-**:clapper: Live Demo:** [http://satellizer.herokuapp.com](http://satellizer.herokuapp.com)
+**:clapper: Live Demo:** [https://satellizer.herokuapp.com](http://satellizer.herokuapp.com)
 
 **Satellizer** is a simple to use, end-to-end, token-based authentication module 
 for [AngularJS](http://angularjs.org) with built-in support for Google, Facebook,
@@ -17,6 +17,17 @@ any *OAuth 1.0* or *OAuth 2.0* provider by passing provider-specific information
 during the configuration step.
 
 ![Screenshot](https://lh4.googleusercontent.com/-0UUIecT-3N4/U-LQJkd75iI/AAAAAAAAEZY/YN3Oe-eUPGc/w1676-h1158-no/satellizer.png)
+
+## Table of Contents
+
+- [Installation](#installation)
+- [Usage](#usage)
+- [Configuration](#configuration)
+- [How It Works](#how-it-works)
+- [FAQ](#faq)
+- [API Reference](#api-reference)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Installation
 
@@ -32,7 +43,11 @@ npm install satellizer --save
 ```
 
 **Note:** Alternatively, you may download the [latest release](https://github.com/sahat/satellizer/releases)
-from this repository.
+or use the **CDN**:
+
+```html
+<script src="//cdn.jsdelivr.net/satellizer/0.5.0/satellizer.min.js"></script>
+```
 
 ## Usage
 
@@ -112,7 +127,8 @@ $authProvider.signupRedirect = '/login';
 $authProvider.loginRoute = '/login';
 $authProvider.signupRoute = '/signup';
 $authProvider.user = 'currentUser';
-$authProvider.tokenName = 'satellizerToken';
+$authProvider.tokenName: 'token';
+$authProvider.tokenPrefix: 'satellizer';
 $authProvider.unlinkUrl: '/auth/unlink/'
 
 // Google
@@ -312,6 +328,10 @@ payload and save it to Local Storage for subsequent use after page reload.
 - Check the box **Allow this application to be used to Sign in with Twitter**
 - Click **Update this Twitter's applications settings**
 
+## FAQ
+
+TODO.
+
 ## API Reference
 
 - [`$auth.login(user)`](#authlogin)
@@ -426,7 +446,7 @@ $http.put('/api/me', profileData).then(function(response) {
 - [ ] Go (Martini) implementation
 - [ ] Java (Dropwizard) implementation
 - [ ] Scala (Play!) implementation
-- [ ] PHP (Laravel) implementation
+- [x] PHP (Laravel) implementation
 - [x] Python (Flask) implementation
 
 ## Contributing

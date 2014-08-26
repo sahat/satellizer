@@ -1,12 +1,31 @@
 angular.module('MyApp')
   .controller('ProfileCtrl', function($scope, $auth, $alert, Account) {
-    $scope.updateProfile = function() {
-      var profileData = {
-        displayName: $scope.currentUser.displayName,
-        email: $scope.currentUser.email
-      };
 
-      Account.updateProfile(profileData).then(function() {
+    /**
+     * Get user's profile information.
+     */
+    Account.getProfile()
+      .success(function(data) {
+        $scope.user = data;
+      })
+      .error(function() {
+        $alert({
+          content: 'Unable to get user information',
+          animation: 'fadeZoomFadeDown',
+          type: 'material',
+          duration: 3
+        });
+      });
+
+
+    /**
+     * Update user's profile information.
+     */
+    $scope.updateProfile = function() {
+      Account.updateProfile({
+        displayName: $scope.user.displayName,
+        email: $scope.user.email
+      }).then(function() {
         $alert({
           content: 'Profile has been updated',
           animation: 'fadeZoomFadeDown',
@@ -16,6 +35,9 @@ angular.module('MyApp')
       })
     };
 
+    /**
+     * Link third-party provider.
+     */
     $scope.link = function(provider) {
       $auth.link(provider)
         .then(function() {
@@ -36,6 +58,9 @@ angular.module('MyApp')
         });
     };
 
+    /**
+     * Unlink third-party provider.
+     */
     $scope.unlink = function(provider) {
       $auth.unlink(provider)
         .then(function() {

@@ -1,7 +1,7 @@
 {
   "name": "satellizer",
   "description": "Token-based AngularJS Authentication",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "scripts": {
     "start": "node ./examples/server/node/server.js",
     "test": "karma start"
