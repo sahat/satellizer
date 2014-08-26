@@ -43,7 +43,11 @@ npm install satellizer --save
 ```
 
 **Note:** Alternatively, you may download the [latest release](https://github.com/sahat/satellizer/releases)
-from this repository.
+or use the **CDN**:
+
+```html
+<script src="//cdn.jsdelivr.net/satellizer/0.4.1/satellizer.min.js"></script>
+```
 
 ## Usage
 
