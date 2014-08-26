@@ -61,6 +61,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../../client')));
 
+// Force HTTPS on Heroku
+if (app.get('env') === 'production') {
+  app.use(function(err, req, res, next) {
+    var connection = req.headers['x-forwarded-proto'];
+    connection == 'https' ? next() : res.redirect('https://' + req.headers.host + req.url);
+  });
+}
+
 /*
  |--------------------------------------------------------------------------
  | Loging Required Middleware
