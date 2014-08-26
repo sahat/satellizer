@@ -10,7 +10,6 @@ import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
-import com.bazaarvoice.dropwizard.assets.ConfiguredAssetsBundle;
 import com.example.helloworld.auth.ExampleAuthenticator;
 import com.example.helloworld.cli.RenderCommand;
 import com.example.helloworld.core.Template;
@@ -53,9 +52,14 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
 			}
 		});
 		bootstrap.addBundle(hibernateBundle);
-		 // FIXME: need to figure out how to properly serve client app
-		//bootstrap.addBundle(new ConfiguredAssetsBundle("/assets", "/", "index.html"));
-		//bootstrap.addBundle(new AssetsBundle("/assets", "/client", "index.html", "client"));
+		
+		bootstrap.addBundle(new AssetsBundle("/assets", "/app", null, "app"));
+        bootstrap.addBundle(new AssetsBundle("/assets/stylesheets", "/stylesheets", null, "css"));
+        bootstrap.addBundle(new AssetsBundle("/assets/directives", "/directives", null, "directives"));
+        bootstrap.addBundle(new AssetsBundle("/assets/controllers", "/controllers", null, "controllers"));
+        bootstrap.addBundle(new AssetsBundle("/assets/services", "/services", null, "services"));
+        bootstrap.addBundle(new AssetsBundle("/assets/vendor", "/vendor", null, "vendor"));
+        bootstrap.addBundle(new AssetsBundle("/assets/views", "/views", null, "views"));
 	}
 
 	@Override
@@ -71,8 +75,7 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
         environment.jersey().register(new BasicAuthProvider<>(new ExampleAuthenticator(),
                                                               "SUPER SECRET STUFF"));
         
-        // FIXME: need to figure out how to properly serve client app
-        //environment.jersey().register(new ClientResource()); 
+        environment.jersey().register(new ClientResource()); 
         environment.jersey().register(new UserResource(dao));
         environment.jersey().register(new AuthResource(client, dao));
     }
