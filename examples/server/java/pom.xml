@@ -67,11 +67,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.bazaarvoice.dropwizard</groupId>
-			<artifactId>dropwizard-configurable-assets-bundle</artifactId>
-			<version>0.2.1</version>
-		</dependency>
-		<dependency>
 			<groupId>org.mindrot</groupId>
 			<artifactId>jbcrypt</artifactId>
 			<version>0.3m</version>
