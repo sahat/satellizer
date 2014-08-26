@@ -5,14 +5,24 @@ import play.api.mvc._
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+
 // Reactive Mongo imports
+import play.modules.reactivemongo._
 import reactivemongo.api._
 
 // Reactive Mongo plugin, including the JSON-specialized collection
 import play.modules.reactivemongo.MongoController
 import play.modules.reactivemongo.json.collection.JSONCollection
 
-object User extends Controller with MongoController {
+import models._
+import JsonFormats._
+
+object UserController extends Controller with MongoController {
+
+  // db is defined in application.conf
+  def collection: JSONCollection = db.collection[JSONCollection]("users")
 
   def index = Action {
     Ok("It works!")
@@ -23,7 +33,6 @@ object User extends Controller with MongoController {
       "name" -> name,
       "age" -> age,
       "created" -> new java.util.Date().getTime())
-
     collection.insert(json).map(lastError =>
       Ok("Mongo LastError: %s".format(lastError)))
   }
@@ -35,7 +44,7 @@ object User extends Controller with MongoController {
           // `user` is an instance of the case class `models.User`
           collection.insert(user).map {
             lastError =>
-              logger.debug(s"Successfully inserted with LastError: $lastError")
+              Logger.debug(s"Successfully inserted with LastError: $lastError")
               Created(s"User Created")
           }
       }.getOrElse(Future.successful(BadRequest("invalid json")))
