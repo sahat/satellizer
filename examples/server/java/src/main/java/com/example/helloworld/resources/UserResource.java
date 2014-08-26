@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response;
 import com.example.helloworld.core.User;
 import com.example.helloworld.db.UserDAO;
 
-@Path("/me")
+@Path("/api/me")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserResource {
