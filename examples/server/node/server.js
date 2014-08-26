@@ -199,6 +199,9 @@ app.post('/auth/google', function(req, res) {
           var payload = jwt.decode(token, config.TOKEN_SECRET);
 
           User.findById(payload.sub, function(err, user) {
+            if (!user) {
+              return res.status(400).send({ message: 'User not found' });
+            }
             user.google = profile.sub;
             user.displayName = user.displayName || profile.name;
             user.save(function(err) {
@@ -261,6 +264,9 @@ app.post('/auth/github', function(req, res) {
           var payload = jwt.decode(token, config.TOKEN_SECRET);
 
           User.findById(payload.sub, function(err, user) {
+            if (!user) {
+              return res.status(400).send({ message: 'User not found' });
+            }
             user.github = profile.id;
             user.displayName = user.displayName || profile.name;
             user.save(function(err) {
@@ -330,6 +336,9 @@ app.post('/auth/linkedin', function(req, res) {
           var payload = jwt.decode(token, config.TOKEN_SECRET);
 
           User.findById(payload.sub, function(err, user) {
+            if (!user) {
+              return res.status(400).send({ message: 'User not found' });
+            }
             user.linkedin = profile.id;
             user.displayName = user.displayName || profile.firstName + ' ' + profile.lastName;
             user.save(function(err) {
@@ -390,6 +399,9 @@ app.post('/auth/facebook', function(req, res) {
           var payload = jwt.decode(token, config.TOKEN_SECRET);
 
           User.findById(payload.sub, function(err, user) {
+            if (!user) {
+              return res.status(400).send({ message: 'User not found' });
+            }
             user.facebook = profile.id;
             user.displayName = user.displayName || profile.name;
             user.save(function(err) {
@@ -464,6 +476,9 @@ app.get('/auth/twitter', function(req, res) {
           var payload = jwt.decode(token, config.TOKEN_SECRET);
 
           User.findById(payload.sub, function(err, user) {
+            if (!user) {
+              return res.status(400).send({ message: 'User not found' });
+            }
             user.twitter = profile.user_id;
             user.displayName = user.displayName || profile.screen_name;
             user.save(function(err) {
@@ -477,7 +492,6 @@ app.get('/auth/twitter', function(req, res) {
           if (existingUser) {
             return res.send({ token: createToken(req, existingUser) });
           }
-
           var user = new User();
           user.twitter = profile.user_id;
           user.displayName = profile.screen_name;
@@ -529,6 +543,9 @@ app.post('/auth/foursquare', function(req, res) {
           var payload = jwt.decode(token, config.TOKEN_SECRET);
 
           User.findById(payload.sub, function(err, user) {
+            if (!user) {
+              return res.status(400).send({ message: 'User not found' });
+            }
             user.foursquare = profile.id;
             user.displayName = user.displayName || profile.firstName + ' ' + profile.lastName;
             user.save(function(err) {
@@ -565,6 +582,9 @@ app.post('/auth/foursquare', function(req, res) {
 app.get('/auth/unlink/:provider', ensureAuthenticated, function(req, res, next) {
   var provider = req.params.provider;
   User.findById(req.user, function(err, user) {
+    if (!user) {
+      return res.status(400).send({ message: 'User not found' });
+    }
     user[provider] = undefined;
     user.save(function(err) {
       res.send({ token: createToken(req, user) });
