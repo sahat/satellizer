@@ -2,8 +2,11 @@ package com.example.helloworld;
 
 import com.example.helloworld.core.Template;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import io.dropwizard.Configuration;
+import io.dropwizard.client.JerseyClientConfiguration;
 import io.dropwizard.db.DataSourceFactory;
+
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.Valid;
@@ -20,6 +23,11 @@ public class HelloWorldConfiguration extends Configuration {
     @NotNull
     private DataSourceFactory database = new DataSourceFactory();
 
+    @Valid
+    @NotNull
+    @JsonProperty
+    private JerseyClientConfiguration httpClient = new JerseyClientConfiguration();
+    
     @JsonProperty
     public String getTemplate() {
         return template;
@@ -52,5 +60,9 @@ public class HelloWorldConfiguration extends Configuration {
     @JsonProperty("database")
     public void setDataSourceFactory(DataSourceFactory dataSourceFactory) {
         this.database = dataSourceFactory;
+    }
+
+	public JerseyClientConfiguration getJerseyClientConfiguration() {
+        return httpClient;
     }
 }
