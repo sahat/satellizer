@@ -66,3 +66,9 @@ logging:
 
   appenders:
     - type: console
+
+# assets bundle
+assets:
+  overrides:
+#    /assets: src/main/resources/assets/
+    /: src/main/resources/assets/
