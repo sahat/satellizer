@@ -13,6 +13,7 @@ import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "users")
@@ -59,6 +60,33 @@ public class User {
 	
 	public String getEmail() {
 		return email;
+	}
+	
+	public User(@JsonProperty("id") long id,  
+			@JsonProperty("email") String email, 
+			@JsonProperty("password") String password,
+			@JsonProperty("displayName") String displayName,
+			@JsonProperty("facebook") String facebook,
+			@JsonProperty("google") String google,
+			@JsonProperty("linkedin") String linkedin,
+			@JsonProperty("github") String github,
+			@JsonProperty("foursquare") String foursquare,
+			@JsonProperty("twitter") String twitter) {
+		this.id = id;
+		this.email = email;
+		this.password = password;
+		this.displayName = displayName;
+		this.facebook = facebook;
+		this.google = google;
+		this.linkedin = linkedin;
+		this.github = github;
+		this.foursquare = foursquare;
+		this.twitter = twitter;
+	}
+	
+	// temporary constructor 
+	public User(String displayName) {
+		this.displayName = displayName;
 	}
 	
 	@JsonIgnore

@@ -29,18 +29,12 @@ server:
 #  hardNofileLimit: 1000
   applicationConnectors:
     - type: http
-      port: 8080
+      port: 3000
     - type: https
       port: 8443
       keyStorePath: example.keystore
       keyStorePassword: example
       validateCerts: false
-# this requires the npn-boot library on the JVM's boot classpath
-#    - type: spdy3
-#      port: 8445
-#      keyStorePath: example.keystore
-#      keyStorePassword: example
-#      validateCerts: false
   adminConnectors:
     - type: http
       port: 8081
@@ -70,5 +64,5 @@ logging:
 # assets bundle
 assets:
   overrides:
-#    /assets: src/main/resources/assets/
-    /: src/main/resources/assets/
+    /assets: "../../client/" 
+    #/assets: src/main/resources/assets
