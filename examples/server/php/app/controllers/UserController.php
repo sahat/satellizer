@@ -1,6 +1,6 @@
 <?php
 
-class UserController extends BaseController {
+class UserController extends \BaseController {
 
 	public function getUser()
 	{
@@ -24,6 +24,8 @@ class UserController extends BaseController {
         $user->email = Input::get('email', $user->email);
         $user->save();
 
-        return $user;
+        $token = $this->createToken($user);
+
+        return Response::json(array('token' => $token));
 	}
 }
