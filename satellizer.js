@@ -381,6 +381,7 @@
       var oauth2 = {};
 
       oauth2.open = function(options) {
+        var originalDefaults = angular.copy(defaults);
         angular.extend(defaults, options);
         var deferred = $q.defer();
         var url = oauth2.buildUrl();
@@ -399,6 +400,7 @@
             deferred.reject(error);
           });
 
+        defaults = originalDefaults;
         return deferred.promise;
       };
 
@@ -445,6 +447,7 @@
       var oauth1 = {};
 
       oauth1.open = function(options) {
+        var originalDefaults = angular.copy(defaults);
         angular.extend(defaults, options);
 
         var deferred = $q.defer();
@@ -463,6 +466,7 @@
             deferred.reject(response);
           });
 
+        defaults = originalDefaults;
         return deferred.promise;
       };
 
