@@ -121,9 +121,9 @@ Below is a complete listing of all default configuration options.
 ```js
 $authProvider.logoutRedirect = '/';
 $authProvider.loginRedirect = '/';
+$authProvider.signupRedirect = '/login';
 $authProvider.loginUrl = '/auth/login';
 $authProvider.signupUrl = '/auth/signup';
-$authProvider.signupRedirect = '/login';
 $authProvider.loginRoute = '/login';
 $authProvider.signupRoute = '/signup';
 $authProvider.user = 'currentUser';
@@ -393,19 +393,20 @@ $auth.logout();
 
 Returns `true` or `false` if the user is signed in or not.
 
+**Controller:**
 ```js
-$auth.isAuthenticated(); // true
+$scope.isAuthenticated = function() {
+  return $auth.isAuthenticated();
+};
 ```
 
-Alternatively, you may check if `currentUser` is defined to determine the 
-authentication state.
-
+**Template:**
 ```html
-<ul class="nav navbar-nav pull-right" ng-if="!currentUser">
+<ul class="nav navbar-nav pull-right" ng-if="!isAuthenticated()">
   <li><a href="/#/login">Login</a></li>
   <li><a href="/#/signup">Sign up</a></li>
 </ul>
-<ul class="nav navbar-nav pull-right" ng-if="currentUser">
+<ul class="nav navbar-nav pull-right" ng-if="isAuthenticated()">
   <li><a href="/#/logout">Logout</a></li>
 </ul>
 ```
