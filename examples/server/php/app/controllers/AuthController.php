@@ -223,7 +223,7 @@ class AuthController extends \BaseController {
 
             $user = User::find($payload['sub']);
             $user->linkedin = $profile['id'];
-            $user->displayName = $user->displayName || $profile['firstName'] . $profile['lastName'];
+            $user->displayName = $user->displayName || $profile['firstName'] . ' ' . $profile['lastName'];
             $user->save();
 
             return Response::json(array('token' => $this->createToken($user)));
@@ -240,7 +240,7 @@ class AuthController extends \BaseController {
 
             $user = new User;
             $user->linkedin = $profile['id'];
-            $user->displayName =  $profile['firstName'] . $profile['lastName'];
+            $user->displayName =  $profile['firstName'] . ' ' . $profile['lastName'];
             $user->save();
 
             return Response::json(array('token' => $this->createToken($user)));
@@ -376,7 +376,7 @@ class AuthController extends \BaseController {
 
             $user = User::find($payload['sub']);
             $user->foursquare = $profile['id'];
-            $user->displayName = $user->displayName || $profile['firstName'] . $profile['lastName'];
+            $user->displayName = $user->displayName || $profile['firstName'] . ' ' . $profile['lastName'];
             $user->save();
 
             return Response::json(array('token' => $this->createToken($user)));
@@ -393,7 +393,7 @@ class AuthController extends \BaseController {
 
             $user = new User;
             $user->foursquare = $profile['id'];
-            $user->displayName =  $profile['firstName'] . $profile['lastName'];
+            $user->displayName =  $profile['firstName'] . ' ' . $profile['lastName'];
             $user->save();
 
             return Response::json(array('token' => $this->createToken($user)));
