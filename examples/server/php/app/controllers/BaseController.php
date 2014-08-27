@@ -14,4 +14,16 @@ class BaseController extends Controller {
         }
     }
 
+    protected function createToken($user)
+    {
+        $payload = array(
+            'iss' => Request::url(),
+            'sub' => $user->first()['id'],
+            'iat' => time(),
+            'exp' => time() + (2 * 7 * 24 * 60 * 60)
+        );
+
+        return JWT::encode($payload, Config::get('secrets.TOKEN_SECRET'));
+    }
+
 }

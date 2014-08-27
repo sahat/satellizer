@@ -2,18 +2,6 @@
 
 class AuthController extends \BaseController {
 
-    private function createToken($user)
-    {
-        $payload = array(
-            'iss' => Request::url(),
-            'sub' => $user->first()['id'],
-            'iat' => time(),
-            'exp' => time() + (2 * 7 * 24 * 60 * 60)
-        );
-
-        return JWT::encode($payload, Config::get('secrets.TOKEN_SECRET'));
-    }
-
     public function unlink($provider)
     {
         $user = User::find(Request::get('id'));
@@ -261,7 +249,87 @@ class AuthController extends \BaseController {
 
     public function twitter()
     {
+        $requestTokenUrl = 'https://api.twitter.com/oauth/request_token';
+        $accessTokenUrl = 'https://api.twitter.com/oauth/access_token';
+        $authenticateUrl = 'https://api.twitter.com/oauth/authenticate';
 
+        $client = new GuzzleHttp\Client();
+
+        if (!Request::get('oauth_token') || !Request::get('oauth_verifier'))
+        {
+            $requestTokenOauth = new Oauth1([
+              'consumer_key' => Config::get('secrets.TWITTER_KEY'),
+              'consumer_secret' => Config::get('secrets.TWITTER_SECRET'),
+              'callback' => Config::get('secrets.CALLBACK')
+            ]);
+
+            // Step 1. Obtain request token for the authorization popup.
+            $requestTokenResponse = $client->post($requestTokenUrl, ['auth' => $requestTokenOauth]);
+
+            $oauthToken = array();
+            parse_str($requestTokenResponse->getBody(), $oauthToken);
+
+            $params = serialize(array(
+                oauth_token => $oauthToken['oauth_token']
+            ));
+
+            // Step 2. Redirect to the authorization screen.
+            Response::redirect($authenticateUrl . '?' . $params);
+        }
+        else
+        {
+            $accessTokenOauth = new Oauth1([
+                'consumer_key' => Config::get('secrets.TWITTER_KEY'),
+                'consumer_secret' => Config::get('secrets.TWITTER_SECRET'),
+                'token' => Request::get('oauth_token'),
+                'verifier' => Request::get('oauth_verifier')
+            ]);
+
+            // Step 3. Exchange oauth token and oauth verifier for access token.
+            $accessTokenResponse = $client->post($accessTokenUrl, ['auth' => $accessTokenOauth]);
+
+            $profile = array();
+            parse_str($accessTokenResponse, $profile);
+
+            // Step 4a. If user is already signed in then link accounts.
+            if (Request::header('Authorization'))
+            {
+                $user = User::where('twitter', '=', $profile['user_id']);
+                if ($user->first())
+                {
+                    return Response::json(array('message' => 'There is already a Twitter account that belongs to you'), 409);
+                }
+
+                $token = explode(' ', Request::header('Authorization'))[1];
+                $payloadObject = JWT::decode($token, Config::get('secrets.TOKEN_SECRET'));
+                $payload = json_decode(json_encode($payloadObject), true);
+
+                $user = User::find($payload['sub']);
+                $user->twitter = $profile['user_id'];
+                $user->displayName = $user->displayName || $profile['screen_name'];
+                $user->save();
+
+                return Response::json(array('token' => $this->createToken($user)));
+            }
+            // Step 4b. Create a new user account or return an existing one.
+            else
+            {
+                $user = User::where('twitter', '=', $profile['user_id']);
+
+                if ($user->first())
+                {
+                    return Response::json(array('token' => $this->createToken($user)));
+                }
+
+                $user = new User;
+                $user->twitter = $profile['user_id'];
+                $user->displayName = $profile['screen_name'];
+                $user->save();
+
+                return Response::json(array('token' => $this->createToken($user)));
+            }
+
+        }
     }
 
     public function foursquare()
