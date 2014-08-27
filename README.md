@@ -7,7 +7,7 @@
 [![Test Coverage](http://img.shields.io/codeclimate/coverage/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
 [![Version](http://img.shields.io/badge/version-0.5.0-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
 
-**:clapper: Live Demo:** [https://satellizer.herokuapp.com](http://satellizer.herokuapp.com)
+**:space_invader: Live Demo:** [https://satellizer.herokuapp.com](http://satellizer.herokuapp.com)
 
 **Satellizer** is a simple to use, end-to-end, token-based authentication module 
 for [AngularJS](http://angularjs.org) with built-in support for Google, Facebook,
@@ -43,7 +43,7 @@ npm install satellizer --save
 ```
 
 **Note:** Alternatively, you may download the [latest release](https://github.com/sahat/satellizer/releases)
-or use the **CDN**:
+or use the :globe_with_meridians: CDN:
 
 ```html
 <script src="//cdn.jsdelivr.net/satellizer/0.5.0/satellizer.min.js"></script>
