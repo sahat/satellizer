@@ -5,7 +5,8 @@ class AuthController extends \BaseController {
     private function createToken($user)
     {
         $payload = array(
-            'user' => $user->first(),
+            'iss' => Response::host,
+            'sub' => $user->first()['id'],
             'iat' => time(),
             'exp' => time() + (2 * 7 * 24 * 60 * 60)
         );
@@ -222,8 +223,8 @@ class AuthController extends \BaseController {
             $payload = json_decode(json_encode($payloadObject), true);
 
             $user = User::find($payload['sub']);
-            $user->facebook = $profile['id'];
-            $user->displayName = $user->displayName || $profile['name'];
+            $user->linkedin = $profile['id'];
+            $user->displayName = $user->displayName || $profile['firstName'] . $profile['lastName'];
             $user->save();
 
             return Response::json(array('token' => $this->createToken($user)));
@@ -231,7 +232,7 @@ class AuthController extends \BaseController {
         // Step 3b. Create a new user account or return an existing one.
         else
         {
-            $user = User::where('facebook', '=', $profile['id']);
+            $user = User::where('linkedin', '=', $profile['id']);
 
             if ($user->first())
             {
@@ -239,8 +240,8 @@ class AuthController extends \BaseController {
             }
 
             $user = new User;
-            $user->facebook = $profile['id'];
-            $user->displayName = $profile['name'];
+            $user->linkedin = $profile['id'];
+            $user->displayName =  $profile['firstName'] . $profile['lastName'];
             $user->save();
 
             return Response::json(array('token' => $this->createToken($user)));
