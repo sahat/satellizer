@@ -6,7 +6,8 @@
   "require": {
     "laravel/framework": "4.2.*",
     "guzzlehttp/guzzle": "4.2.1",
-    "firebase/php-jwt": "dev-master"
+    "firebase/php-jwt": "dev-master",
+    "guzzlehttp/oauth-subscriber": "0.1.2"
   },
   "autoload": {
     "classmap": [
