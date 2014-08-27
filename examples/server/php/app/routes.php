@@ -13,8 +13,8 @@
 
 Route::get('/', 'HomeController@index');
 
-Route::get('api/me', 'UserController@getUser');
-Route::put('api/me', 'UserController@updateProfile');
+Route::get('api/me', array('before' => 'auth', 'uses' => 'UserController@getUser'));
+Route::put('api/me', array('before' => 'auth', 'uses' => 'UserController@updateUser'));
 
 Route::post('auth/login', 'AuthController@login');
 Route::post('auth/signup', 'AuthController@signup');
@@ -24,4 +24,4 @@ Route::post('auth/github', 'AuthController@github');
 Route::post('auth/google', 'AuthController@google');
 Route::post('auth/linkedin', 'AuthController@linkedin');
 Route::get('auth/twitter', 'AuthController@twitter');
-Route::get('auth/unlink/{provider}', 'AuthController@unlink');
+Route::get('auth/unlink/{provider}', array('before' => 'auth', 'uses' => 'AuthController@unlink'));
