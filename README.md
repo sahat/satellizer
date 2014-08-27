@@ -443,12 +443,13 @@ $http.put('/api/me', profileData).then(function(response) {
 
 - [ ] C# (ASP.NET vNext) implementation
 - [ ] Elixir (Phoenix) implementation
-- [ ] Ruby (Sinatra) implementation
 - [ ] Go (Martini) implementation
 - [ ] Java (Dropwizard) implementation
-- [ ] Scala (Play!) implementation
+- [x] Node.js (Express) implementation
 - [x] PHP (Laravel) implementation
 - [x] Python (Flask) implementation
+- [ ] Ruby (Sinatra and Rails) implementation
+- [ ] Scala (Play!) implementation
 
 ## Contributing
 
