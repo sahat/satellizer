@@ -53,8 +53,8 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
 		});
 		bootstrap.addBundle(hibernateBundle);
 		
-		bootstrap.addBundle(new AssetsBundle("/assets", "/app", null, "app"));
-        bootstrap.addBundle(new AssetsBundle("/assets/stylesheets", "/stylesheets", null, "css"));
+		bootstrap.addBundle(new AssetsBundle("/assets/app.js", "/app.js", null, "app"));
+		bootstrap.addBundle(new AssetsBundle("/assets/stylesheets", "/stylesheets", null, "css"));
         bootstrap.addBundle(new AssetsBundle("/assets/directives", "/directives", null, "directives"));
         bootstrap.addBundle(new AssetsBundle("/assets/controllers", "/controllers", null, "controllers"));
         bootstrap.addBundle(new AssetsBundle("/assets/services", "/services", null, "services"));
