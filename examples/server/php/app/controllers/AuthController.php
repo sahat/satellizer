@@ -1,5 +1,7 @@
 <?php
 
+use GuzzleHttp\Subscriber\Oauth\Oauth1;
+
 class AuthController extends \BaseController {
 
     public function unlink($provider)
@@ -249,6 +251,7 @@ class AuthController extends \BaseController {
 
     public function twitter()
     {
+
         $requestTokenUrl = 'https://api.twitter.com/oauth/request_token';
         $accessTokenUrl = 'https://api.twitter.com/oauth/access_token';
         $authenticateUrl = 'https://api.twitter.com/oauth/authenticate';
@@ -257,36 +260,40 @@ class AuthController extends \BaseController {
 
         if (!Request::get('oauth_token') || !Request::get('oauth_verifier'))
         {
-            $requestTokenOauth = new Oauth1([
+            $oauth = new Oauth1([
               'consumer_key' => Config::get('secrets.TWITTER_KEY'),
               'consumer_secret' => Config::get('secrets.TWITTER_SECRET'),
-              'callback' => Config::get('secrets.CALLBACK')
+              'callback' => Config::get('secrets.TWITTER_CALLBACK')
             ]);
 
+            $client->getEmitter()->attach($oauth);
+
             // Step 1. Obtain request token for the authorization popup.
-            $requestTokenResponse = $client->post($requestTokenUrl, ['auth' => $requestTokenOauth]);
+            $requestTokenResponse = $client->post($requestTokenUrl, ['auth' => 'oauth']);
 
             $oauthToken = array();
             parse_str($requestTokenResponse->getBody(), $oauthToken);
 
-            $params = serialize(array(
-                oauth_token => $oauthToken['oauth_token']
+            $params = http_build_query(array(
+                'oauth_token' => $oauthToken['oauth_token']
             ));
 
             // Step 2. Redirect to the authorization screen.
-            Response::redirect($authenticateUrl . '?' . $params);
+            return Redirect::to($authenticateUrl . '?' . $params);
         }
         else
         {
-            $accessTokenOauth = new Oauth1([
+            $oauth = new Oauth1([
                 'consumer_key' => Config::get('secrets.TWITTER_KEY'),
                 'consumer_secret' => Config::get('secrets.TWITTER_SECRET'),
                 'token' => Request::get('oauth_token'),
                 'verifier' => Request::get('oauth_verifier')
             ]);
 
+            $client->getEmitter()->attach($oauth);
+
             // Step 3. Exchange oauth token and oauth verifier for access token.
-            $accessTokenResponse = $client->post($accessTokenUrl, ['auth' => $accessTokenOauth]);
+            $accessTokenResponse = $client->post($accessTokenUrl, ['auth' => 'oauth']);
 
             $profile = array();
             parse_str($accessTokenResponse, $profile);
