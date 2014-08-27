@@ -5,13 +5,27 @@ class AuthController extends \BaseController {
     private function createToken($user)
     {
         $payload = array(
-            'iss' => Response::host,
+            'iss' => Request::url(),
             'sub' => $user->first()['id'],
             'iat' => time(),
             'exp' => time() + (2 * 7 * 24 * 60 * 60)
         );
 
         return JWT::encode($payload, Config::get('secrets.TOKEN_SECRET'));
+    }
+
+    public function unlink($provider)
+    {
+        $user = User::find(Request::get('id'));
+
+        if (!$user)
+        {
+            Response::json(array('message' => 'User not found'));
+        }
+
+        unset($user->$provider);
+        $user->save();
+        return Response::json(array('token' => $this->createToken($user)));
     }
 
     public function login()
