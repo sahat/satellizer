@@ -359,7 +359,7 @@ class AuthController extends \BaseController {
         // Step 2. Retrieve profile information about the current user.
         $profileResponse = $client->get($userProfileUrl, ['query' => $profileParams]);
 
-        $profile = $profileResponse->json();
+        $profile = $profileResponse->json()['response']['user'];
 
         // Step 3a. If user is already signed in then link accounts.
         if (Request::header('Authorization'))
