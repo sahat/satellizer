@@ -163,9 +163,10 @@
 
       this.$get = [
         '$q',
+        'satellizer.shared',
         'satellizer.local',
         'satellizer.oauth',
-        function($q, local, oauth) {
+        function($q, shared, local, oauth) {
           var $auth = {};
 
           $auth.authenticate = function(name) {
@@ -185,7 +186,7 @@
           };
 
           $auth.isAuthenticated = function() {
-            return local.isAuthenticated();
+            return shared.isAuthenticated();
           };
 
           $auth.link = function(name) {
@@ -220,6 +221,12 @@
             $location.path(config.loginRedirect);
           }
           deferred.resolve();
+        };
+
+
+        shared.isAuthenticated = function() {
+          var token = [config.tokenPrefix, config.tokenName].join('_');
+          return Boolean($window.localStorage[token]);
         };
 
         return shared;
@@ -304,9 +311,6 @@
           return deferred.promise;
         };
 
-        local.isAuthenticated = function() {
-          return $rootScope.isAuthenticated;
-        };
 
         local.unlink = function(provider) {
           var deferred = $q.defer();
@@ -587,37 +591,37 @@
         /////////////////
 
         // ngRoute
-        try {
-          angular.module('ngRoute');
-          $rootScope.$on('$routeChangeStart', function(event, current) {
-            if ($rootScope.isAuthenticated &&
-              (current.originalPath === config.loginRoute || current.originalPath === config.signupRoute)) {
-              $location.path(config.loginRedirect);
-            }
-
-            if (current.protected && !$rootScope.isAuthenticated) {
-              $location.path(config.loginRoute);
-            }
-          });
-        } catch (error) {
-
-        }
-
-        // UI-Router
-        try {
-          angular.module('ui.router');
-          $rootScope.$on('$stateChangeStart', function(event, toState) {
-            if ($rootScope.isAuthenticated &&
-              (toState.url === config.loginRoute || toState.url === config.signupRoute)) {
-              $location.path(config.loginRedirect);
-            }
-            if (toState.protected && !$rootScope.isAuthenticated) {
-              $location.path(config.loginRoute);
-            }
-          });
-        } catch (error) {
-
-        }
+//        try {
+//          angular.module('ngRoute');
+//          $rootScope.$on('$routeChangeStart', function(event, current) {
+//            if ($rootScope.isAuthenticated &&
+//              (current.originalPath === config.loginRoute || current.originalPath === config.signupRoute)) {
+//              $location.path(config.loginRedirect);
+//            }
+//
+//            if (current.protected && !$rootScope.isAuthenticated) {
+//              $location.path(config.loginRoute);
+//            }
+//          });
+//        } catch (error) {
+//
+//        }
+//
+//        // UI-Router
+//        try {
+//          angular.module('ui.router');
+//          $rootScope.$on('$stateChangeStart', function(event, toState) {
+//            if ($rootScope.isAuthenticated &&
+//              (toState.url === config.loginRoute || toState.url === config.signupRoute)) {
+//              $location.path(config.loginRedirect);
+//            }
+//            if (toState.protected && !$rootScope.isAuthenticated) {
+//              $location.path(config.loginRoute);
+//            }
+//          });
+//        } catch (error) {
+//
+//        }
       }]);
 
 })(window, window.angular);
