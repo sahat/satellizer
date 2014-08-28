@@ -14,6 +14,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 public class HelloWorldConfiguration extends Configuration {
+	
     @NotEmpty
     @JsonProperty
     private String template;
