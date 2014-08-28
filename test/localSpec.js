@@ -1,11 +1,26 @@
 describe('Local', function() {
+  var $auth, $httpBackend, Local, $location, $window;
+
   beforeEach(module('Satellizer'));
 
-  it('should have a login function', inject(function(Local) {
-    expect(angular.isFunction(Local.login)).toBe(true);
+  beforeEach(inject(function(_$auth_, _$httpBackend_, _Local_, _$location_, _$window_) {
+    $auth = _$auth_;
+    $httpBackend = _$httpBackend_;
+    Local = _Local_;
+    $location = _$location_;
+    $window = _$window_;
   }));
 
-  it('should return a user object on successful login', inject(function($httpBackend, Local) {
+  afterEach(function() {
+    $httpBackend.verifyNoOutstandingExpectation();
+    $httpBackend.verifyNoOutstandingRequest();
+  });
+
+  it('should have a login function', function() {
+    expect(angular.isFunction(Local.login)).toBe(true);
+  });
+
+  it('should return a user object on successful login', function() {
     var result = null;
     var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7Il9pZCI6IjUzZjYxZTEwNmZjNjFhNmMxM2I1Mjc4ZCIsImVtYWlsIjoic2FoYXQ_QG1lLmNvbSIsIl9fdiI6MH0sImlhdCI6MTQwODgyMTA5MTY3NiwiZXhwIjoxNDA5NDI1ODkxNjc2fQ.0l-ql-ZVjHiILMcMegNb3bNqapt3TZwjHy_ieduioiQ';
     var user = {
@@ -28,9 +43,9 @@ describe('Local', function() {
       email: user.email,
       __v: 0
     });
-  }));
+  });
 
-  it('should fail login with incorrect credentials', inject(function($httpBackend, Local) {
+  it('should fail login with incorrect credentials', function() {
     var result = null;
     var user = {
       email: 'foo@bar.com',
@@ -46,25 +61,25 @@ describe('Local', function() {
     $httpBackend.flush();
 
     expect(result).toEqual('Wrong email or password');
-  }));
+  });
 
-  it('should have a logout function', inject(function(Local) {
+  it('should have a logout function', function() {
     expect(Local.logout).toBeDefined();
     expect(angular.isFunction(Local.logout)).toBe(true);
-  }));
+  });
 
-  it('should log out a user', inject(function($window, $location, Local) {
+  it('should log out a user', function() {
     Local.logout();
     expect($window.localStorage.jwtToken).toBeUndefined();
     expect($location.path()).toEqual('/');
-  }));
+  });
 
-  it('should have a signup function', inject(function($window, Local) {
+  it('should have a signup function', function() {
     expect(Local.signup).toBeDefined();
     expect(angular.isFunction(Local.signup)).toBe(true);
-  }));
+  });
 
-  it('should unlink a provider successfully', inject(function($window, $httpBackend, Local) {
+  it('should unlink a provider successfully', function() {
     var result = null;
     var provider = 'google';
     var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7Il9pZCI6IjUzZjYxZTEwNmZjNjFhNmMxM2I1Mjc4ZCIsImVtYWlsIjoic2FoYXRAbWUuY29tIiwiX192IjowfSwiaWF0IjoxNDA4ODIxMDkxNjc2LCJleHAiOjE0MDk0MjU4OTE2NzZ9.0l-ql-ZVjHiILMcMegNb3bNqapt3TZwjHy_ieduioiQ';
@@ -77,10 +92,10 @@ describe('Local', function() {
 
     $httpBackend.flush();
 
-    expect(Local.unlink()).toBeDefined();
-  }));
+    expect(Local.unlink).toBeDefined();
+  });
 
-  it('should unlink a provider and get an error', inject(function($window, $httpBackend, Local) {
+  it('should unlink a provider and get an error', function() {
     var result = null;
     var provider = 'google';
 
@@ -93,9 +108,9 @@ describe('Local', function() {
     $httpBackend.flush();
 
     expect(result.status).toEqual(400);
-  }));
+  });
 
-  it('should create a new user', inject(function($httpBackend, $location, Local) {
+  it('should create a new user', function() {
     var user = {
       email: 'john@email.com',
       password: '1234'
@@ -108,11 +123,11 @@ describe('Local', function() {
     $httpBackend.flush();
 
     expect($location.path()).toEqual('/login');
-  }));
+  });
 
-  it('should have a isAuthenticated function', inject(function(Local) {
+  it('should have a isAuthenticated function', function() {
     expect(Local.isAuthenticated).toBeDefined();
     expect(angular.isFunction(Local.isAuthenticated)).toBe(true);
-  }));
+  });
 });
 

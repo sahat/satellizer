@@ -4,10 +4,11 @@ describe('Configuration', function() {
 
   beforeEach(module('Satellizer'));
 
-  beforeEach(inject(function(_Popup_, _$interval_, _$q_) {
+  beforeEach(inject(function(_Popup_, _$interval_, _$q_, _$window_) {
     Popup = _Popup_;
     $interval = _$interval_;
     $q = _$q_;
+    $window = _$window_;
   }));
 
 
@@ -31,7 +32,7 @@ describe('Configuration', function() {
   it('should open a new popup', function() {
     var open = Popup.open();
     $interval.flush(300);
-    window.postMessage('testing', '*');
+    $window.postMessage('testing', '*');
     expect(angular.isObject(open)).toBe(true);
   });
 

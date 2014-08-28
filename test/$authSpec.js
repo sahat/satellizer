@@ -1,8 +1,22 @@
 describe('$auth provider', function() {
+  var $auth, $httpBackend, Local, $location, $window;
 
   beforeEach(module('Satellizer'));
 
-  it('should be able to call login', inject(function($auth, $httpBackend) {
+  beforeEach(inject(function(_$auth_, _$httpBackend_, _Local_, _$location_, _$window_) {
+    $auth = _$auth_;
+    $httpBackend = _$httpBackend_;
+    Local = _Local_;
+    $location = _$location_;
+    $window = _$window_;
+  }));
+
+  afterEach(function() {
+    $httpBackend.verifyNoOutstandingExpectation();
+    $httpBackend.verifyNoOutstandingRequest();
+  });
+
+  it('should be able to call login', function() {
     var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7Il9pZCI6IjUzZTU3ZDZiY2MzNmMxNTgwNzU4NDJkZCIsImVtYWlsIjoiZm9vQGJhci5jb20iLCJfX3YiOjB9LCJpYXQiOjE0MDc1NDg3ODI5NzMsImV4cCI6MTQwODE1MzU4Mjk3M30.1Ak6mij5kfkSi6d_wtPOx4yK7pS7ZFSiwbkL7AJbnYs';
     var user = { email: 'foo@bar.com', password: '1234' };
 
@@ -13,9 +27,9 @@ describe('$auth provider', function() {
 //    $httpBackend.flush();
 
 //    expect(angular.isFunction($auth.login)).toBe(true);
-  }));
+  });
 
-  it('should be able to handle login errors', inject(function($auth, $httpBackend) {
+  it('should be able to handle login errors', function() {
     var user = {
       email: 'foo@bar.com',
       password: '1234'
@@ -31,9 +45,9 @@ describe('$auth provider', function() {
     $httpBackend.flush();
 
     expect(rejected).toBe(true);
-  }));
+  });
 
-  it('should be able to call signup', inject(function($auth, $httpBackend, $location) {
+  it('should be able to call signup', function() {
     var user = {
       email: 'foo@bar.com',
       password: '1234'
@@ -47,9 +61,9 @@ describe('$auth provider', function() {
 
     expect(angular.isFunction($auth.signup)).toBe(true);
     expect($location.path()).toEqual('/login');
-  }));
+  });
 
-  it('should be able to handle signup errors', inject(function(Local, $httpBackend) {
+  it('should be able to handle signup errors', function() {
     var user = {
       email: 'foo@bar.com',
       password: '1234'
@@ -65,20 +79,20 @@ describe('$auth provider', function() {
     $httpBackend.flush();
 
     expect(rejected).toBe(true);
-  }));
+  });
 
-  it('should log out a user', inject(function($window, $location, $auth) {
+  it('should log out a user', function() {
     $auth.logout();
     expect($window.localStorage.jwtToken).toBeUndefined();
     expect($location.path()).toEqual('/');
-  }));
+  });
 
-  it('should have a signup function', inject(function($window, Local) {
+  it('should have a signup function', function() {
     expect(Local.signup).toBeDefined();
     expect(angular.isFunction(Local.signup)).toBe(true);
-  }));
+  });
 
-  it('should create a new user', inject(function($httpBackend, $location, Local) {
+  it('should create a new user', function() {
     var user = {
       email: 'john@email.com',
       password: '1234'
@@ -91,12 +105,12 @@ describe('$auth provider', function() {
     $httpBackend.flush();
 
     expect($location.path()).toEqual('/login');
-  }));
+  });
 
-  it('should have a isAuthenticated function', inject(function(Local) {
+  it('should have a isAuthenticated function', function() {
     var isAuthed = Local.isAuthenticated();
     expect(Local.isAuthenticated).toBeDefined();
     expect(isAuthed).toBe(false);
-  }));
+  });
 });
 
