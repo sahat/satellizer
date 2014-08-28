@@ -163,12 +163,9 @@
 
       this.$get = [
         '$q',
-        '$http',
-        '$rootScope',
         'satellizer.local',
         'satellizer.oauth',
-        function($q, $http, local, oauth) {
-
+        function($q, local, oauth) {
           var $auth = {};
 
           $auth.authenticate = function(name) {
