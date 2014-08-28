@@ -455,16 +455,14 @@
 
         // TODO: setup scope delimiter and document it in readme
 
-        var oauth2 = {};
-
-        oauth2.open = function(options) {
+        function open(options) {
           angular.extend(defaults, options);
           var deferred = $q.defer();
-          var url = oauth2.buildUrl();
+          var url = buildUrl();
 
           Popup.open(url, defaults.popupOptions)
             .then(function(oauthData) {
-              oauth2.exchangeForToken(oauthData)
+              exchangeForToken(oauthData)
                 .then(function(response) {
                   deferred.resolve(response);
                 })
@@ -477,23 +475,23 @@
             });
 
           return deferred.promise;
-        };
+        }
 
-        oauth2.exchangeForToken = function(oauthData) {
+        function exchangeForToken(oauthData) {
           return $http.post(defaults.url, {
             code: oauthData.code,
             clientId: defaults.clientId,
             redirectUri: defaults.redirectUri
           });
-        };
+        }
 
-        oauth2.buildUrl = function() {
+        function buildUrl() {
           var baseUrl = defaults.authorizationEndpoint;
-          var qs = oauth2.buildQueryString();
+          var qs = buildQueryString();
           return [baseUrl, qs].join('?');
-        };
+        }
 
-        oauth2.buildQueryString = function() {
+        function buildQueryString() {
           var keyValuePairs = [];
           var urlParams = ['defaultUrlParams', 'requiredUrlParams', 'optionalUrlParams'];
 
@@ -508,9 +506,11 @@
           return keyValuePairs.map(function(pair) {
             return pair.join('=');
           }).join('&');
-        };
+        }
 
-        return oauth2;
+        return {
+          open: open
+        };
       };
     }])
     .factory('Oauth1', ['$q', '$http', 'Popup', function($q, $http, Popup) {
