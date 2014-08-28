@@ -1,4 +1,4 @@
-describe('Utils Service', function() {
+describe('satellizer.utils', function() {
 
   beforeEach(module('satellizer'));
 
@@ -6,16 +6,17 @@ describe('Utils Service', function() {
     this.utils = utils;
   }]));
 
-  it('should have parseQueryString method', function() {
-    expect(this.utils.parseQueryString).toBeDefined();
-  });
+  describe('parseQueryString()', function() {
 
-  it('should parse a querystring', function() {
-    var qs = 'hello=world&foo=bar';
-    var obj = this.utils.parseQueryString(qs);
-    expect(obj).toEqual({
-      hello: 'world',
-      foo: 'bar'
+    it('should be defined', function() {
+      expect(this.utils.parseQueryString).toBeDefined();
+    });
+
+    it('should parse a query string', function() {
+      var qs = 'hello=world&foo=bar';
+      var obj = this.utils.parseQueryString(qs);
+
+      expect(obj).toEqual({ hello: 'world', foo: 'bar' });
     });
   });
 
