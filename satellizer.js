@@ -216,8 +216,8 @@
         providers[params.name].type = '2.0';
       };
 
-      this.$get = ['$q', '$http', '$rootScope', 'Oauth1', 'Oauth2', 'Local', 'Utils',
-        function($q, $http, $rootScope, Oauth1, Oauth2, Local, Utils) {
+      this.$get = ['$q', '$http', '$rootScope', 'Oauth1', 'Oauth2', 'Local', 'satellizer.utils',
+        function($q, $http, $rootScope, Oauth1, Oauth2, Local, utils) {
 
           // TODO: rootscope events
 
@@ -265,14 +265,14 @@
           // TODO: call from parseUser
           $auth.updateToken = function(token) {
             localStorage.setItem([config.tokenPrefix, config.tokenName].join('_'), token);
-            $rootScope[config.user] = Utils.userFromToken(token);
+            $rootScope[config.user] = utils.userFromToken(token);
           };
 
           return $auth;
         }];
 
     })
-    .factory('Local', ['$q', '$http', '$rootScope', '$location', 'Utils', function($q, $http, $rootScope, $location, Utils) {
+    .factory('Local', ['$q', '$http', '$rootScope', '$location', 'satellizer.utils', function($q, $http, $rootScope, $location, utils) {
 
       var local = {};
 
@@ -283,10 +283,10 @@
 
         $rootScope.isAuthenticated = true;
 
-        var user = Utils.userFromToken(token);
+        var user = utils.userFromToken(token);
 
         if (user) {
-          $rootScope[config.user] = Utils.userFromToken(token);
+          $rootScope[config.user] = utils.userFromToken(token);
           deferred.resolve(user);
         } else {
           deferred.resolve()
@@ -365,7 +365,7 @@
 
       return local;
     }])
-    .factory('Oauth2', ['$q', '$http', 'Utils', 'Popup', function($q, $http, Utils, Popup) {
+    .factory('Oauth2', ['$q', '$http', 'satellizer.utils', 'Popup', function($q, $http, utils, Popup) {
       var defaults = {
         url: null,
         name: null,
@@ -427,7 +427,7 @@
 
         angular.forEach(urlParams, function(params) {
           angular.forEach(defaults[params], function(paramName) {
-            var camelizedName = Utils.camelCase(paramName);
+            var camelizedName = utils.camelCase(paramName);
             var paramValue = defaults[camelizedName];
             keyValuePairs.push([paramName, encodeURIComponent(paramValue)]);
           });
@@ -554,7 +554,7 @@
     .factory('Shared', function Shared() {
       // TODO: refactor
     })
-    .service('Utils', function() {
+    .service('satellizer.utils', function() {
       this.camelCase = function(name) {
         return name.replace(/([\:\-\_]+(.))/g, function(_, separator, letter, offset) {
           return offset ? letter.toUpperCase() : letter;
@@ -597,17 +597,17 @@
         };
       }]);
     }])
-    .run(['$rootScope', '$window', '$location', 'Utils', 'Local',
-      function($rootScope, $window, $location, Utils, Local) {
+    .run(['$rootScope', '$window', '$location', 'satellizer.utils', 'Local',
+      function($rootScope, $window, $location, utils, Local) {
         var token = localStorage.getItem([config.tokenPrefix, config.tokenName].join('_'));
 
         if (token) {
-          $rootScope[config.user] = Utils.userFromToken(token);
+          $rootScope[config.user] = utils.userFromToken(token);
           $rootScope.isAuthenticated = true;
         }
 
         var params = $window.location.search.substring(1);
-        var qs = Object.keys($location.search()).length ? $location.search() : Utils.parseQueryString(params);
+        var qs = Object.keys($location.search()).length ? $location.search() : utils.parseQueryString(params);
 
         if ($window.opener && $window.opener.location.origin === $window.location.origin) {
           if (qs.oauth_token && qs.oauth_verifier) {

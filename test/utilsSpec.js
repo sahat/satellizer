@@ -1,20 +1,18 @@
-describe('OAuth 1.0 Login', function() {
+describe('Utils Service', function() {
 
-  var Utils;
+  beforeEach(module('satellizer'));
 
-  beforeEach(module('Satellizer'));
-
-  beforeEach(inject(function(_Utils_) {
-    Utils = _Utils_;
-  }));
+  beforeEach(inject(['satellizer.utils', function(utils) {
+    this.utils = utils;
+  }]));
 
   it('should have parseQueryString method', function() {
-    expect(Utils.parseQueryString).toBeDefined();
+    expect(this.utils.parseQueryString).toBeDefined();
   });
 
   it('should parse a querystring', function() {
     var qs = 'hello=world&foo=bar';
-    var obj = Utils.parseQueryString(qs);
+    var obj = this.utils.parseQueryString(qs);
     expect(obj).toEqual({
       hello: 'world',
       foo: 'bar'
