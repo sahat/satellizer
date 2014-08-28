@@ -166,28 +166,13 @@
         '$http',
         '$rootScope',
         'satellizer.local',
-        'satellizer.utils',
-        'satellizer.Oauth1',
-        'satellizer.Oauth2',
-        function($q, $http, $rootScope, local, utils, Oauth1, Oauth2) {
-
-          // TODO: rootscope events
+        'satellizer.oauth',
+        function($q, $http, local, oauth) {
 
           var $auth = {};
 
           $auth.authenticate = function(name) {
-            var deferred = $q.defer();
-            var provider = (config.providers[name].type === '1.0') ? new Oauth1() : new Oauth2();
-
-            provider.open(config.providers[name])
-              .then(function(response) {
-                local.parseUser(response.data[config.tokenName], deferred);
-              })
-              .catch(function(response) {
-                deferred.reject(response);
-              });
-
-            return deferred.promise;
+            return oauth.authenticate(name);
           };
 
           $auth.login = function(user) {
@@ -223,6 +208,29 @@
         }];
 
     }])
+    .factory('satellizer.oauth', [
+      '$q',
+      'satellizer.config',
+      'satellizer.Oauth1',
+      'satellizer.Oauth2',
+      function($q, config, Oauth1, Oauth2) {
+        var oauth = {};
+
+        oauth.authenticate = function(name) {
+          var deferred = $q.defer();
+          var provider = config.providers[name].type === '1.0' ? new Oauth1() : new Oauth2();
+          provider.open(config.providers[name])
+            .then(function(response) {
+              local.parseUser(response.data[config.tokenName], deferred);
+            })
+            .catch(function(response) {
+              deferred.reject(response);
+            });
+          return deferred.promise;
+        };
+
+        return oauth;
+      }])
     .factory('satellizer.local', [
       '$q',
       '$http',
