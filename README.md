@@ -79,7 +79,7 @@ angular.module('MyApp', ['Satellizer'])
     $authProvider.oauth2({
       name: 'foursquare',
       url: '/auth/foursquare',
-      redirectUri: window.location.origin
+      redirectUri: window.location.origin,
       clientId: 'MTCEJ3NGW2PNNB31WOSBFDSAD4MTHYVAZ1UKIULXZ2CVFC2K',
       authorizationEndpoint: 'https://foursquare.com/oauth2/authenticate',
     });
@@ -443,12 +443,13 @@ $http.put('/api/me', profileData).then(function(response) {
 
 - [ ] C# (ASP.NET vNext) implementation
 - [ ] Elixir (Phoenix) implementation
-- [ ] Ruby (Sinatra) implementation
 - [ ] Go (Martini) implementation
 - [ ] Java (Dropwizard) implementation
-- [ ] Scala (Play!) implementation
+- [x] Node.js (Express) implementation
 - [x] PHP (Laravel) implementation
 - [x] Python (Flask) implementation
+- [ ] Ruby (Sinatra and Rails) implementation
+- [ ] Scala (Play!) implementation
 
 ## Contributing
 

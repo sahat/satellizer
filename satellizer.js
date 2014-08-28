@@ -7,226 +7,181 @@
 (function(window, angular, undefined) {
   'use strict';
 
-  var config = {
-    logoutRedirect: '/',
-    loginRedirect: '/',
-    loginUrl: '/auth/login',
-    signupUrl: '/auth/signup',
-    signupRedirect: '/login',
-    loginRoute: '/login',
-    signupRoute: '/signup',
-    user: 'currentUser',
-    tokenName: 'token',
-    tokenPrefix: 'satellizer',
-    unlinkUrl: '/auth/unlink/'
-  };
-
-  var providers = {
-    google: {
-      url: '/auth/google',
-      authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
-      redirectUri: window.location.origin,
-      scope: 'openid profile email',
-      scopeDelimiter: ' ',
-      requiredUrlParams: ['scope'],
-      optionalUrlParams: ['display'],
-      display: 'popup',
-      type: '2.0',
-      popupOptions: {
-        width: 452,
-        height: 633
+  angular.module('satellizer', [])
+    .constant('satellizer.config', {
+      logoutRedirect: '/',
+      loginRedirect: '/',
+      signupRedirect: '/login',
+      loginUrl: '/auth/login',
+      signupUrl: '/auth/signup',
+      loginRoute: '/login',
+      signupRoute: '/signup',
+      tokenName: 'token',
+      tokenPrefix: 'satellizer',
+      unlinkUrl: '/auth/unlink/',
+      providers: {
+        google: {
+          url: '/auth/google',
+          authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
+          redirectUri: window.location.origin,
+          scope: 'openid profile email',
+          scopeDelimiter: ' ',
+          requiredUrlParams: ['scope'],
+          optionalUrlParams: ['display'],
+          display: 'popup',
+          type: '2.0',
+          popupOptions: {
+            width: 452,
+            height: 633
+          }
+        },
+        facebook: {
+          url: '/auth/facebook',
+          authorizationEndpoint: 'https://www.facebook.com/dialog/oauth',
+          redirectUri: window.location.origin + '/',
+          scope: 'email',
+          scopeDelimiter: ',',
+          requiredUrlParams: ['display', 'scope'],
+          display: 'popup',
+          type: '2.0',
+          popupOptions: {
+            width: 481,
+            height: 269
+          }
+        },
+        linkedin: {
+          url: '/auth/linkedin',
+          authorizationEndpoint: 'https://www.linkedin.com/uas/oauth2/authorization',
+          redirectUri: window.location.origin,
+          requiredUrlParams: ['state'],
+          scope: [],
+          scopeDelimiter: ' ',
+          state: 'STATE',
+          type: '2.0',
+          popupOptions: {
+            width: 527,
+            height: 582
+          }
+        },
+        github: {
+          name: 'github',
+          url: '/auth/github',
+          authorizationEndpoint: 'https://github.com/login/oauth/authorize',
+          redirectUri: window.location.origin,
+          scope: [],
+          scopeDelimiter: ' ',
+          type: '2.0',
+          popupOptions: {
+            width: 1020,
+            height: 618
+          }
+        },
+        twitter: {
+          url: '/auth/twitter',
+          type: '1.0'
+        }
       }
-    },
-    facebook: {
-      url: '/auth/facebook',
-      authorizationEndpoint: 'https://www.facebook.com/dialog/oauth',
-      redirectUri: window.location.origin + '/',
-      scope: 'email',
-      scopeDelimiter: ',',
-      requiredUrlParams: ['display', 'scope'],
-      display: 'popup',
-      type: '2.0',
-      popupOptions: {
-        width: 481,
-        height: 269
-      }
-    },
-    linkedin: {
-      url: '/auth/linkedin',
-      authorizationEndpoint: 'https://www.linkedin.com/uas/oauth2/authorization',
-      redirectUri: window.location.origin,
-      requiredUrlParams: ['state'],
-      scope: [],
-      scopeDelimiter: ' ',
-      state: 'STATE',
-      type: '2.0',
-      popupOptions: {
-        width: 527,
-        height: 582
-      }
-    },
-    github: {
-      name: 'github',
-      url: '/auth/github',
-      authorizationEndpoint: 'https://github.com/login/oauth/authorize',
-      redirectUri: window.location.origin,
-      scope: [],
-      scopeDelimiter: ' ',
-      type: '2.0',
-      popupOptions: {
-        width: 1020,
-        height: 618
-      }
-    },
-    twitter: {
-      url: '/auth/twitter',
-      type: '1.0'
-    }
-  };
-
-  angular.module('Satellizer', [])
-    .provider('$auth', function() {
-
+    })
+    .provider('$auth', ['satellizer.config', function(config) {
       Object.defineProperties(this, {
-        loginRedirect: {
-          get: function() {
-            return config.loginRedirect;
-          },
-          set: function(value) {
-            config.loginRedirect = value;
-          }
-        },
         logoutRedirect: {
-          get: function() {
-            return config.logoutRedirect;
-          },
-          set: function(value) {
-            config.logoutRedirect = value;
-          }
+          get: function() { return config.logoutRedirect; },
+          set: function(value) { config.logoutRedirect = value; }
         },
-        loginUrl: {
-          get: function() {
-            return config.loginUrl;
-          },
-          set: function(value) {
-            config.loginUrl = value;
-          }
-        },
-        signupUrl: {
-          get: function() {
-            return config.signupUrl;
-          },
-          set: function(value) {
-            config.signupUrl = value;
-          }
+        loginRedirect: {
+          set: function(value) { config.loginRedirect = value; },
+          get: function() { return config.loginRedirect; }
         },
         signupRedirect: {
-          get: function() {
-            return config.signupRedirect;
-          },
-          set: function(value) {
-            config.signupRedirect = value;
-          }
+          get: function() { return config.signupRedirect; },
+          set: function(value) { config.signupRedirect = value; }
+        },
+        loginUrl: {
+          get: function() { return config.loginUrl; },
+          set: function(value) { config.loginUrl = value; }
+        },
+        signupUrl: {
+          get: function() { return config.signupUrl; },
+          set: function(value) { config.signupUrl = value; }
         },
         loginRoute: {
-          get: function() {
-            return config.loginRoute;
-          },
-          set: function(value) {
-            config.loginRoute = value;
-          }
+          get: function() { return config.loginRoute; },
+          set: function(value) { config.loginRoute = value; }
         },
         signupRoute: {
-          get: function() {
-            return config.signupRoute;
-          },
-          set: function(value) {
-            config.signupRoute = value;
-          }
-        },
-        user: {
-          get: function() {
-            return config.user;
-          },
-          set: function(value) {
-            config.user = value;
-          }
+          get: function() { return config.signupRoute; },
+          set: function(value) { config.signupRoute = value; }
         },
         tokenName: {
-          get: function() {
-            return config.tokenName;
-          },
-          set: function(value) {
-            config.tokenName = value;
-          }
+          get: function() { return config.tokenName; },
+          set: function(value) { config.tokenName = value; }
         },
         tokenPrefix: {
-          get: function() {
-            return config.tokenPrefix;
-          },
-          set: function(value) {
-            config.tokenPrefix = value;
-          }
+          get: function() { return config.tokenPrefix; },
+          set: function(value) { config.tokenPrefix = value; }
         },
         unlinkUrl: {
-          get: function() {
-            return config.unlinkUrl;
-          },
-          set: function(value) {
-            config.unlinkUrl = value;
-          }
+          get: function() { return config.unlinkUrl; },
+          set: function(value) { config.unlinkUrl = value; }
         }
       });
 
-      this.providers = providers;
-
       this.facebook = function(params) {
-        angular.extend(providers.facebook, params);
+        angular.extend(config.providers.facebook, params);
       };
 
       this.google = function(params) {
-        angular.extend(providers.google, params);
+        angular.extend(config.providers.google, params);
       };
 
       this.linkedin = function(params) {
-        angular.extend(providers.linkedin, params);
+        angular.extend(config.providers.linkedin, params);
       };
 
       this.github = function(params) {
-        angular.extend(providers.github, params);
+        angular.extend(config.providers.github, params);
       };
 
       this.twitter = function(params) {
-        angular.extend(providers.twitter, params);
+        angular.extend(config.providers.twitter, params);
       };
 
-      this.oauthBase = function(params) {
-        providers[params.name] = providers[params.name] || {};
-        angular.extend(providers[params.name], params);
+      var oauth = function(params) {
+        config.providers[params.name] = config.providers[params.name] || {};
+        angular.extend(config.providers[params.name], params);
       };
 
       this.oauth1 = function(params) {
-        this.oauthBase(params);
-        providers[params.name].type = '1.0';
+        oauth(params);
+        config.providers[params.name].type = '1.0';
       };
 
       this.oauth2 = function(params) {
-        this.oauthBase(params);
-        providers[params.name].type = '2.0';
+        oauth(params);
+        config.providers[params.name].type = '2.0';
       };
 
-      this.$get = ['$q', '$http', '$rootScope', 'Oauth1', 'Oauth2', 'Local', 'Utils',
-        function($q, $http, $rootScope, Oauth1, Oauth2, Local, Utils) {
+      this.$get = [
+        '$q',
+        '$http',
+        '$rootScope',
+        'satellizer.local',
+        'satellizer.utils',
+        'satellizer.Oauth1',
+        'satellizer.Oauth2',
+        function($q, $http, $rootScope, local, utils, Oauth1, Oauth2) {
+
+          // TODO: rootscope events
 
           var $auth = {};
 
           $auth.authenticate = function(name) {
             var deferred = $q.defer();
-            var provider = (providers[name].type === '1.0') ? Oauth1 : Oauth2;
+            var provider = (config.providers[name].type === '1.0') ? new Oauth1() : new Oauth2();
 
-            provider.open(providers[name])
+            provider.open(config.providers[name])
               .then(function(response) {
-                Local.parseUser(response.data[config.tokenName], deferred);
+                local.parseUser(response.data[config.tokenName], deferred);
               })
               .catch(function(response) {
                 deferred.reject(response);
@@ -236,19 +191,19 @@
           };
 
           $auth.login = function(user) {
-            return Local.login(user);
+            return local.login(user);
           };
 
           $auth.signup = function(user) {
-            return Local.signup(user);
+            return local.signup(user);
           };
 
           $auth.logout = function() {
-            return Local.logout();
+            return local.logout();
           };
 
           $auth.isAuthenticated = function() {
-            return Local.isAuthenticated();
+            return local.isAuthenticated();
           };
 
           $auth.link = function(name) {
@@ -256,232 +211,243 @@
           };
 
           $auth.unlink = function(provider) {
-            return Local.unlink(provider);
+            return local.unlink(provider);
           };
 
           // TODO: call from parseUser
           $auth.updateToken = function(token) {
             localStorage.setItem([config.tokenPrefix, config.tokenName].join('_'), token);
-            $rootScope[config.user] = Utils.userFromToken(token);
           };
 
           return $auth;
         }];
 
-    })
-    .factory('Local', ['$q', '$http', '$rootScope', '$location', 'Utils', function($q, $http, $rootScope, $location, Utils) {
-
-      var local = {};
-
-      // TODO: Move to shared service
-      local.parseUser = function(token, deferred) {
-        // TODO: Move userFromToken to shared service
-        localStorage.setItem([config.tokenPrefix, config.tokenName].join('_'), token);
-
-        $rootScope.isAuthenticated = true;
-
-        var user = Utils.userFromToken(token);
-
-        if (user) {
-          $rootScope[config.user] = Utils.userFromToken(token);
-          deferred.resolve(user);
-        } else {
-          deferred.resolve()
-        }
-
-        if (config.loginRedirect) {
-          $location.path(config.loginRedirect);
-        }
-      };
-
-      local.login = function(user) {
-        var deferred = $q.defer();
-
-        $http.post(config.loginUrl, user)
-          .then(function(response) {
-            local.parseUser(response.data[config.tokenName], deferred);
-          })
-          .catch(function(response) {
-            deferred.reject(response);
-          });
-
-        return deferred.promise;
-      };
-
-      local.signup = function(user) {
-        var deferred = $q.defer();
-
-        $http.post(config.signupUrl, user)
-          .then(function() {
-            $location.path(config.signupRedirect);
-            deferred.resolve();
-          })
-          .catch(function(response) {
-            deferred.reject(response);
-          });
-
-        return deferred.promise;
-      };
-
-      local.logout = function() {
-        var deferred = $q.defer();
-
-        $rootScope.isAuthenticated = false;
-        localStorage.removeItem([config.tokenPrefix, config.tokenName].join('_'));
-
-        if ($rootScope[config.user]) {
-          delete $rootScope[config.user];
-        }
-
-        if (config.logoutRedirect) {
-          $location.path(config.logoutRedirect);
-        }
-
-        deferred.resolve();
-
-        return deferred.promise;
-      };
-
-      local.isAuthenticated = function() {
-        return Boolean($rootScope.currentUser);
-      };
-
-      local.unlink = function(provider) {
-        var deferred = $q.defer();
-
-        $http.get(config.unlinkUrl + provider)
-          .then(function(response) {
-            local.parseUser(response.data[config.tokenName], deferred);
-          })
-          .catch(function(response) {
-            deferred.reject(response);
-          });
-
-        return deferred.promise;
-      };
-
-      return local;
     }])
-    .factory('Oauth2', ['$q', '$http', 'Utils', 'Popup', function($q, $http, Utils, Popup) {
-      var defaults = {
-        url: null,
-        name: null,
-        scope: null,
-        scopeDelimiter: null,
-        clientId: null,
-        redirectUri: null,
-        popupOptions: null,
-        authorizationEndpoint: null,
-        requiredUrlParams: null,
-        optionalUrlParams: null,
-        defaultUrlParams: ['response_type', 'client_id', 'redirect_uri'],
-        responseType: 'code'
-      };
+    .factory('satellizer.local', [
+      '$q',
+      '$http',
+      '$location',
+      '$rootScope',
+      'satellizer.utils',
+      'satellizer.config',
+      function($q, $http, $location, $rootScope, utils, config) {
 
-      var oauth2 = {};
+        var local = {};
 
-      oauth2.open = function(options) {
-        angular.extend(defaults, options);
-        var deferred = $q.defer();
-        var url = oauth2.buildUrl();
+        // TODO: Move to shared service
+        local.parseUser = function(token, deferred) {
+          // TODO: Move userFromToken to shared service
+          localStorage.setItem([config.tokenPrefix, config.tokenName].join('_'), token);
 
-        Popup.open(url, defaults.popupOptions)
-          .then(function(oauthData) {
-            oauth2.exchangeForToken(oauthData)
-              .then(function(response) {
-                deferred.resolve(response);
+          $rootScope.isAuthenticated = true;
+
+          if (config.loginRedirect) {
+            $location.path(config.loginRedirect);
+          }
+
+          deferred.resolve();
+        };
+
+        local.login = function(user) {
+          var deferred = $q.defer();
+
+          $http.post(config.loginUrl, user)
+            .then(function(response) {
+              local.parseUser(response.data[config.tokenName], deferred);
+            })
+            .catch(function(response) {
+              deferred.reject(response);
+            });
+
+          return deferred.promise;
+        };
+
+        local.signup = function(user) {
+          var deferred = $q.defer();
+
+          $http.post(config.signupUrl, user)
+            .then(function() {
+              $location.path(config.signupRedirect);
+              deferred.resolve();
+            })
+            .catch(function(response) {
+              deferred.reject(response);
+            });
+
+          return deferred.promise;
+        };
+
+        local.logout = function() {
+          var deferred = $q.defer();
+
+          $rootScope.isAuthenticated = false;
+          localStorage.removeItem([config.tokenPrefix, config.tokenName].join('_'));
+
+          if (config.logoutRedirect) {
+            $location.path(config.logoutRedirect);
+          }
+
+          deferred.resolve();
+
+          return deferred.promise;
+        };
+
+        local.isAuthenticated = function() {
+          return $rootScope.isAuthenticated;
+        };
+
+        local.unlink = function(provider) {
+          var deferred = $q.defer();
+
+          $http.get(config.unlinkUrl + provider)
+            .then(function(response) {
+              local.parseUser(response.data[config.tokenName], deferred);
+            })
+            .catch(function(response) {
+              deferred.reject(response);
+            });
+
+          return deferred.promise;
+        };
+
+        return local;
+      }])
+    .factory('satellizer.Oauth2', [
+      '$q',
+      '$http',
+      'satellizer.popup',
+      'satellizer.utils',
+      function($q, $http, popup, utils) {
+        return function() {
+          var defaults = {
+            url: null,
+            name: null,
+            scope: null,
+            scopeDelimiter: null,
+            clientId: null,
+            redirectUri: null,
+            popupOptions: null,
+            authorizationEndpoint: null,
+            requiredUrlParams: null,
+            optionalUrlParams: null,
+            defaultUrlParams: ['response_type', 'client_id', 'redirect_uri'],
+            responseType: 'code'
+          };
+
+          // TODO: setup scope delimiter and document it in readme
+
+          function open(options) {
+            angular.extend(defaults, options);
+            var deferred = $q.defer();
+            var url = buildUrl();
+
+            popup.open(url, defaults.popupOptions)
+              .then(function(oauthData) {
+                exchangeForToken(oauthData)
+                  .then(function(response) {
+                    deferred.resolve(response);
+                  })
+                  .catch(function(response) {
+                    deferred.reject(response);
+                  });
               })
-              .catch(function(response) {
-                deferred.reject(response);
+              .catch(function(error) {
+                deferred.reject(error);
               });
-          })
-          .catch(function(error) {
-            deferred.reject(error);
-          });
 
-        return deferred.promise;
-      };
+            return deferred.promise;
+          }
 
-      oauth2.exchangeForToken = function(oauthData) {
-        return $http.post(defaults.url, {
-          code: oauthData.code,
-          clientId: defaults.clientId,
-          redirectUri: defaults.redirectUri
-        });
-      };
+          function exchangeForToken(oauthData) {
+            return $http.post(defaults.url, {
+              code: oauthData.code,
+              clientId: defaults.clientId,
+              redirectUri: defaults.redirectUri
+            });
+          }
 
-      oauth2.buildUrl = function() {
-        var baseUrl = defaults.authorizationEndpoint;
-        var qs = oauth2.buildQueryString();
-        return [baseUrl, qs].join('?');
-      };
+          function buildUrl() {
+            var baseUrl = defaults.authorizationEndpoint;
+            var qs = buildQueryString();
+            return [baseUrl, qs].join('?');
+          }
 
-      oauth2.buildQueryString = function() {
-        var keyValuePairs = [];
-        var urlParams = ['defaultUrlParams', 'requiredUrlParams', 'optionalUrlParams'];
+          function buildQueryString() {
+            var keyValuePairs = [];
+            var urlParams = ['defaultUrlParams', 'requiredUrlParams', 'optionalUrlParams'];
 
-        angular.forEach(urlParams, function(params) {
-          angular.forEach(defaults[params], function(paramName) {
-            var camelizedName = Utils.camelCase(paramName);
-            var paramValue = defaults[camelizedName];
-            keyValuePairs.push([paramName, encodeURIComponent(paramValue)]);
-          });
-        });
-
-        return keyValuePairs.map(function(pair) {
-          return pair.join('=');
-        }).join('&');
-      };
-
-      return oauth2;
-    }])
-    .factory('Oauth1', ['$q', '$http', 'Popup', function($q, $http, Popup) {
-      var defaults = {
-        url: null,
-        name: null,
-        popupOptions: null
-      };
-
-      var oauth1 = {};
-
-      oauth1.open = function(options) {
-        angular.extend(defaults, options);
-
-        var deferred = $q.defer();
-
-        Popup.open(defaults.url)
-          .then(function(response) {
-            oauth1.exchangeForToken(response)
-              .then(function(response) {
-                deferred.resolve(response);
-              })
-              .catch(function(response) {
-                deferred.reject(response);
+            angular.forEach(urlParams, function(params) {
+              angular.forEach(defaults[params], function(paramName) {
+                var camelizedName = utils.camelCase(paramName);
+                var paramValue = defaults[camelizedName];
+                keyValuePairs.push([paramName, encodeURIComponent(paramValue)]);
               });
-          })
-          .catch(function(response) {
-            deferred.reject(response);
+            });
+
+            return keyValuePairs.map(function(pair) {
+              return pair.join('=');
+            }).join('&');
+          }
+
+          return {
+            open: open,
+            exchangeForToken: exchangeForToken,
+            buildUrl: buildUrl,
+            buildQueryString: buildQueryString
+          };
+        };
+      }])
+    .factory('satellizer.Oauth1', ['$q', '$http', 'satellizer.popup', function($q, $http, popup) {
+      return function() {
+        var defaults = {
+          url: null,
+          name: null,
+          popupOptions: null
+        };
+
+        function open(options) {
+          angular.extend(defaults, options);
+
+          var deferred = $q.defer();
+
+          popup.open(defaults.url)
+            .then(function(response) {
+              exchangeForToken(response)
+                .then(function(response) {
+                  deferred.resolve(response);
+                })
+                .catch(function(response) {
+                  deferred.reject(response);
+                });
+            })
+            .catch(function(response) {
+              deferred.reject(response);
+            });
+
+          return deferred.promise;
+        }
+
+        function exchangeForToken(oauthData) {
+          oauthData = buildQueryString(oauthData);
+          return $http.get(defaults.url + '?' + oauthData);
+        }
+
+        function buildQueryString(obj) {
+          var str = [];
+          angular.forEach(obj, function(value, key) {
+            str.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
           });
+          return str.join('&');
+        }
 
-        return deferred.promise;
+        return {
+          open: open,
+          exchangeForToken: exchangeForToken,
+          buildQueryString: buildQueryString
+        };
       };
-
-      oauth1.exchangeForToken = function(oauthData) {
-        oauthData = oauth1.buildQueryString(oauthData);
-        return $http.get(defaults.url + '?' + oauthData);
-      };
-
-      oauth1.buildQueryString = function(obj) {
-        var str = [];
-        angular.forEach(obj, function(value, key) {
-          str.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
-        });
-        return str.join('&');
-      };
-
-      return oauth1;
     }])
-    .factory('Popup', ['$q', '$interval', '$window', function($q, $interval, $window) {
+    .factory('satellizer.popup', ['$q', '$interval', '$window', function($q, $interval, $window) {
       var popupWindow = null;
       var polling = null;
 
@@ -546,10 +512,7 @@
 
       return popup;
     }])
-    .factory('Shared', function Shared() {
-      // TODO: refactor
-    })
-    .service('Utils', function() {
+    .service('satellizer.utils', function() {
       this.camelCase = function(name) {
         return name.replace(/([\:\-\_]+(.))/g, function(_, separator, letter, offset) {
           return offset ? letter.toUpperCase() : letter;
@@ -568,14 +531,9 @@
         return obj;
       };
 
-      this.userFromToken = function(token) {
-        var base64url = token.split('.')[1];
-        var base64 = base64url.replace('-', '+').replace('_', '/');
-        return JSON.parse(window.atob(base64)).user;
-      };
     })
-    .config(['$httpProvider', function($httpProvider) {
-      $httpProvider.interceptors.push(['$q', '$window', '$location', function($q, $window, $location) {
+    .config(['$httpProvider', 'satellizer.config', function($httpProvider, config) {
+      $httpProvider.interceptors.push(['$q', function($q) {
         return {
           request: function(httpConfig) {
             if (localStorage.getItem([config.tokenPrefix, config.tokenName].join('_'))) {
@@ -592,17 +550,16 @@
         };
       }]);
     }])
-    .run(['$rootScope', '$window', '$location', 'Utils', 'Local',
-      function($rootScope, $window, $location, Utils, Local) {
+    .run(['$rootScope', '$window', '$location', 'satellizer.utils', 'satellizer.config',
+      function($rootScope, $window, $location, utils, config) {
         var token = localStorage.getItem([config.tokenPrefix, config.tokenName].join('_'));
 
         if (token) {
-          $rootScope[config.user] = Utils.userFromToken(token);
           $rootScope.isAuthenticated = true;
         }
 
         var params = $window.location.search.substring(1);
-        var qs = Object.keys($location.search()).length ? $location.search() : Utils.parseQueryString(params);
+        var qs = Object.keys($location.search()).length ? $location.search() : utils.parseQueryString(params);
 
         if ($window.opener && $window.opener.location.origin === $window.location.origin) {
           if (qs.oauth_token && qs.oauth_verifier) {
@@ -621,12 +578,12 @@
         try {
           angular.module('ngRoute');
           $rootScope.$on('$routeChangeStart', function(event, current) {
-            if (($rootScope[config.user] || $rootScope.isAuthenticated) &&
+            if ($rootScope.isAuthenticated &&
               (current.originalPath === config.loginRoute || current.originalPath === config.signupRoute)) {
               $location.path(config.loginRedirect);
             }
 
-            if (current.protected && (!$rootScope.isAuthenticated && !$rootScope[config.user])) {
+            if (current.protected && !$rootScope.isAuthenticated) {
               $location.path(config.loginRoute);
             }
           });
@@ -638,11 +595,11 @@
         try {
           angular.module('ui.router');
           $rootScope.$on('$stateChangeStart', function(event, toState) {
-            if (($rootScope[config.user] || $rootScope.isAuthenticated) &&
+            if ($rootScope.isAuthenticated &&
               (toState.url === config.loginRoute || toState.url === config.signupRoute)) {
               $location.path(config.loginRedirect);
             }
-            if (toState.protected && (!$rootScope[config.user] && !$rootScope.isAuthenticated)) {
+            if (toState.protected && !$rootScope.isAuthenticated) {
               $location.path(config.loginRoute);
             }
           });
