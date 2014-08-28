@@ -205,12 +205,32 @@
         }];
 
     }])
+    .factory('satellizer.shared', [
+      '$window',
+      '$location',
+      'satellizer.config',
+      function($window, $location, config) {
+        var shared = {};
+
+        shared.parseUser = function(token, deferred) {
+          var namespace = [config.tokenPrefix, config.tokenName].join('_');
+          $window.localStorage[namespace] = token;
+//          $rootScope.isAuthenticated = true;
+          if (config.loginRedirect) {
+            $location.path(config.loginRedirect);
+          }
+          deferred.resolve();
+        };
+
+        return shared;
+      }])
     .factory('satellizer.oauth', [
       '$q',
       'satellizer.config',
+      'satellizer.shared',
       'satellizer.Oauth1',
       'satellizer.Oauth2',
-      function($q, config, Oauth1, Oauth2) {
+      function($q, config, shared, Oauth1, Oauth2) {
         var oauth = {};
 
         oauth.authenticate = function(name) {
@@ -218,7 +238,7 @@
           var provider = config.providers[name].type === '1.0' ? new Oauth1() : new Oauth2();
           provider.open(config.providers[name])
             .then(function(response) {
-              local.parseUser(response.data[config.tokenName], deferred);
+              shared.parseUser(response.data[config.tokenName], deferred);
             })
             .catch(function(response) {
               deferred.reject(response);
@@ -234,31 +254,17 @@
       '$location',
       '$rootScope',
       'satellizer.utils',
+      'satellizer.shared',
       'satellizer.config',
-      function($q, $http, $location, $rootScope, utils, config) {
-
+      function($q, $http, $location, $rootScope, utils, shared, config) {
         var local = {};
-
-        // TODO: Move to shared service
-        local.parseUser = function(token, deferred) {
-          // TODO: Move userFromToken to shared service
-          localStorage.setItem([config.tokenPrefix, config.tokenName].join('_'), token);
-
-          $rootScope.isAuthenticated = true;
-
-          if (config.loginRedirect) {
-            $location.path(config.loginRedirect);
-          }
-
-          deferred.resolve();
-        };
 
         local.login = function(user) {
           var deferred = $q.defer();
 
           $http.post(config.loginUrl, user)
             .then(function(response) {
-              local.parseUser(response.data[config.tokenName], deferred);
+              shared.parseUser(response.data[config.tokenName], deferred);
             })
             .catch(function(response) {
               deferred.reject(response);
@@ -283,6 +289,7 @@
         };
 
         local.logout = function() {
+
           var deferred = $q.defer();
 
           $rootScope.isAuthenticated = false;
@@ -306,7 +313,7 @@
 
           $http.get(config.unlinkUrl + provider)
             .then(function(response) {
-              local.parseUser(response.data[config.tokenName], deferred);
+              shared.parseUser(response.data[config.tokenName], deferred);
             })
             .catch(function(response) {
               deferred.reject(response);
