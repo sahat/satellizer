@@ -15,7 +15,6 @@
     signupUrl: '/auth/signup',
     loginRoute: '/login',
     signupRoute: '/signup',
-    user: 'currentUser', // TODO: remove.
     tokenName: 'token',
     tokenPrefix: 'satellizer',
     unlinkUrl: '/auth/unlink/'
@@ -344,7 +343,6 @@
           // TODO: call from parseUser
           $auth.updateToken = function(token) {
             localStorage.setItem([config.tokenPrefix, config.tokenName].join('_'), token);
-            $rootScope[config.user] = utils.userFromToken(token);
           };
 
           return $auth;
@@ -370,16 +368,11 @@
 
           var user = utils.userFromToken(token);
 
-          if (user) {
-            $rootScope[config.user] = utils.userFromToken(token);
-            deferred.resolve(user);
-          } else {
-            deferred.resolve();
-          }
-
           if (config.loginRedirect) {
             $location.path(config.loginRedirect);
           }
+
+          deferred.resolve();
         };
 
         local.login = function(user) {
@@ -417,10 +410,6 @@
           $rootScope.isAuthenticated = false;
           localStorage.removeItem([config.tokenPrefix, config.tokenName].join('_'));
 
-          if ($rootScope[config.user]) {
-            delete $rootScope[config.user];
-          }
-
           if (config.logoutRedirect) {
             $location.path(config.logoutRedirect);
           }
@@ -431,7 +420,7 @@
         };
 
         local.isAuthenticated = function() {
-          return Boolean($rootScope[config.user]);
+          return $rootScope.isAuthenticated;
         };
 
         local.unlink = function(provider) {
@@ -700,7 +689,6 @@
         var token = localStorage.getItem([config.tokenPrefix, config.tokenName].join('_'));
 
         if (token) {
-          $rootScope[config.user] = utils.userFromToken(token);
           $rootScope.isAuthenticated = true;
         }
 
@@ -724,12 +712,12 @@
         try {
           angular.module('ngRoute');
           $rootScope.$on('$routeChangeStart', function(event, current) {
-            if (($rootScope[config.user] || $rootScope.isAuthenticated) &&
+            if ($rootScope.isAuthenticated &&
               (current.originalPath === config.loginRoute || current.originalPath === config.signupRoute)) {
               $location.path(config.loginRedirect);
             }
 
-            if (current.protected && (!$rootScope.isAuthenticated && !$rootScope[config.user])) {
+            if (current.protected && !$rootScope.isAuthenticated) {
               $location.path(config.loginRoute);
             }
           });
@@ -741,11 +729,11 @@
         try {
           angular.module('ui.router');
           $rootScope.$on('$stateChangeStart', function(event, toState) {
-            if (($rootScope[config.user] || $rootScope.isAuthenticated) &&
+            if ($rootScope.isAuthenticated &&
               (toState.url === config.loginRoute || toState.url === config.signupRoute)) {
               $location.path(config.loginRedirect);
             }
-            if (toState.protected && (!$rootScope[config.user] && !$rootScope.isAuthenticated)) {
+            if (toState.protected && !$rootScope.isAuthenticated) {
               $location.path(config.loginRoute);
             }
           });
