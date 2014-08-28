@@ -7,82 +7,6 @@
 (function(window, angular, undefined) {
   'use strict';
 
-  var config = {
-    logoutRedirect: '/',
-    loginRedirect: '/',
-    signupRedirect: '/login',
-    loginUrl: '/auth/login',
-    signupUrl: '/auth/signup',
-    loginRoute: '/login',
-    signupRoute: '/signup',
-    tokenName: 'token',
-    tokenPrefix: 'satellizer',
-    unlinkUrl: '/auth/unlink/'
-  };
-
-  var providers = {
-    google: {
-      url: '/auth/google',
-      authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
-      redirectUri: window.location.origin,
-      scope: 'openid profile email',
-      scopeDelimiter: ' ',
-      requiredUrlParams: ['scope'],
-      optionalUrlParams: ['display'],
-      display: 'popup',
-      type: '2.0',
-      popupOptions: {
-        width: 452,
-        height: 633
-      }
-    },
-    facebook: {
-      url: '/auth/facebook',
-      authorizationEndpoint: 'https://www.facebook.com/dialog/oauth',
-      redirectUri: window.location.origin + '/',
-      scope: 'email',
-      scopeDelimiter: ',',
-      requiredUrlParams: ['display', 'scope'],
-      display: 'popup',
-      type: '2.0',
-      popupOptions: {
-        width: 481,
-        height: 269
-      }
-    },
-    linkedin: {
-      url: '/auth/linkedin',
-      authorizationEndpoint: 'https://www.linkedin.com/uas/oauth2/authorization',
-      redirectUri: window.location.origin,
-      requiredUrlParams: ['state'],
-      scope: [],
-      scopeDelimiter: ' ',
-      state: 'STATE',
-      type: '2.0',
-      popupOptions: {
-        width: 527,
-        height: 582
-      }
-    },
-    github: {
-      name: 'github',
-      url: '/auth/github',
-      authorizationEndpoint: 'https://github.com/login/oauth/authorize',
-      redirectUri: window.location.origin,
-      scope: [],
-      scopeDelimiter: ' ',
-      type: '2.0',
-      popupOptions: {
-        width: 1020,
-        height: 618
-      }
-    },
-    twitter: {
-      url: '/auth/twitter',
-      type: '1.0'
-    }
-  };
-
   angular.module('satellizer', [])
     .constant('satellizer.config', {
       logoutRedirect: '/',
@@ -161,96 +85,18 @@
     })
     .provider('$auth', ['satellizer.config', function(config) {
 
-      Object.defineProperties(this, {
-        loginRedirect: {
-          get: function() {
-            return config.loginRedirect;
-          },
-          set: function(value) {
-            config.loginRedirect = value;
-          }
-        },
-        logoutRedirect: {
-          get: function() {
-            return config.logoutRedirect;
-          },
-          set: function(value) {
-            config.logoutRedirect = value;
-          }
-        },
-        loginUrl: {
-          get: function() {
-            return config.loginUrl;
-          },
-          set: function(value) {
-            config.loginUrl = value;
-          }
-        },
-        signupUrl: {
-          get: function() {
-            return config.signupUrl;
-          },
-          set: function(value) {
-            config.signupUrl = value;
-          }
-        },
-        signupRedirect: {
-          get: function() {
-            return config.signupRedirect;
-          },
-          set: function(value) {
-            config.signupRedirect = value;
-          }
-        },
-        loginRoute: {
-          get: function() {
-            return config.loginRoute;
-          },
-          set: function(value) {
-            config.loginRoute = value;
-          }
-        },
-        signupRoute: {
-          get: function() {
-            return config.signupRoute;
-          },
-          set: function(value) {
-            config.signupRoute = value;
-          }
-        },
-        user: {
-          get: function() {
-            return config.user;
-          },
-          set: function(value) {
-            config.user = value;
-          }
-        },
-        tokenName: {
-          get: function() {
-            return config.tokenName;
-          },
-          set: function(value) {
-            config.tokenName = value;
-          }
-        },
-        tokenPrefix: {
-          get: function() {
-            return config.tokenPrefix;
-          },
-          set: function(value) {
-            config.tokenPrefix = value;
-          }
-        },
-        unlinkUrl: {
-          get: function() {
-            return config.unlinkUrl;
-          },
-          set: function(value) {
-            config.unlinkUrl = value;
-          }
-        }
-      });
+      this.logoutRedirect = config.logoutRedirect;
+      this.loginRedirect = config.loginRedirect;
+      this.signupRedirect = config.signupRedirect;
+      this.loginUrl = config.loginUrl;
+      this.signupUrl = config.signupUrl;
+      this.loginRoute = config.loginRoute;
+      this.signupRoute = config.signupRoute;
+      this.tokenName = config.tokenName;
+      this.tokenPrefix = config.tokenPrefix;
+      this.unlinkUrl = config.unlinkUrl;
+
+      console.log(this.loginRedirect);
 
       this.facebook = function(params) {
         angular.extend(config.providers.facebook, params);
@@ -355,7 +201,8 @@
       '$location',
       '$rootScope',
       'satellizer.utils',
-      function($q, $http, $location, $rootScope, utils) {
+      'satellizer.config',
+      function($q, $http, $location, $rootScope, utils, config) {
 
         var local = {};
 
@@ -666,7 +513,7 @@
         return JSON.parse(window.atob(base64)).user;
       };
     })
-    .config(['$httpProvider', function($httpProvider) {
+    .config(['$httpProvider', 'satellizer.config', function($httpProvider, config) {
       $httpProvider.interceptors.push(['$q', function($q) {
         return {
           request: function(httpConfig) {
@@ -684,8 +531,8 @@
         };
       }]);
     }])
-    .run(['$rootScope', '$window', '$location', 'satellizer.utils',
-      function($rootScope, $window, $location, utils) {
+    .run(['$rootScope', '$window', '$location', 'satellizer.utils', 'satellizer.config',
+      function($rootScope, $window, $location, utils, config) {
         var token = localStorage.getItem([config.tokenPrefix, config.tokenName].join('_'));
 
         if (token) {
