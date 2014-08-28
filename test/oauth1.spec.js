@@ -22,6 +22,10 @@ describe('satellizer.oauth1', function() {
 
   describe('exchangeForToken()', function() {
 
+    it('should be defined', function() {
+      expect(this.oauth1.exchangeForToken).toBeDefined();
+    });
+
     it('should exchange oauth_token and oauth_verifier for token', function() {
       this.oauth1.open({
         url: '/auth/twitter',
@@ -29,8 +33,6 @@ describe('satellizer.oauth1', function() {
       });
 
       this.oauth1.exchangeForToken('oauth_token=foo&oauth_verifier=bar');
-
-      expect(this.oauth1.exchangeForToken).toBeDefined();
     });
 
   });
