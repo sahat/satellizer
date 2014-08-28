@@ -83,7 +83,6 @@
       }
     })
     .provider('$auth', ['satellizer.config', function(config) {
-
       Object.defineProperties(this, {
         loginRedirect: {
           set: function(value) { config.loginRedirect = value; },
@@ -245,8 +244,6 @@
           localStorage.setItem([config.tokenPrefix, config.tokenName].join('_'), token);
 
           $rootScope.isAuthenticated = true;
-
-          var user = utils.userFromToken(token);
 
           if (config.loginRedirect) {
             $location.path(config.loginRedirect);
@@ -518,9 +515,6 @@
 
       return popup;
     }])
-    .factory('Shared', function Shared() {
-      // TODO: refactor
-    })
     .service('satellizer.utils', function() {
       this.camelCase = function(name) {
         return name.replace(/([\:\-\_]+(.))/g, function(_, separator, letter, offset) {
@@ -540,11 +534,6 @@
         return obj;
       };
 
-      this.userFromToken = function(token) {
-        var base64url = token.split('.')[1];
-        var base64 = base64url.replace('-', '+').replace('_', '/');
-        return JSON.parse(window.atob(base64)).user;
-      };
     })
     .config(['$httpProvider', 'satellizer.config', function($httpProvider, config) {
       $httpProvider.interceptors.push(['$q', function($q) {
