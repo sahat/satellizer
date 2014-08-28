@@ -10,12 +10,12 @@
   var config = {
     logoutRedirect: '/',
     loginRedirect: '/',
+    signupRedirect: '/login',
     loginUrl: '/auth/login',
     signupUrl: '/auth/signup',
-    signupRedirect: '/login',
     loginRoute: '/login',
     signupRoute: '/signup',
-    user: 'currentUser',
+    user: 'currentUser', // TODO: remove.
     tokenName: 'token',
     tokenPrefix: 'satellizer',
     unlinkUrl: '/auth/unlink/'
@@ -84,7 +84,7 @@
     }
   };
 
-  angular.module('Satellizer', [])
+  angular.module('satellizer', [])
     .provider('$auth', function() {
 
       Object.defineProperties(this, {
@@ -178,6 +178,7 @@
         }
       });
 
+      // TODO: Used for testing, refactor tests, then delete this line
       this.providers = providers;
 
       this.facebook = function(params) {
@@ -217,6 +218,8 @@
 
       this.$get = ['$q', '$http', '$rootScope', 'Oauth1', 'Oauth2', 'Local', 'Utils',
         function($q, $http, $rootScope, Oauth1, Oauth2, Local, Utils) {
+
+          // TODO: rootscope events
 
           var $auth = {};
 
@@ -343,7 +346,7 @@
       };
 
       local.isAuthenticated = function() {
-        return Boolean($rootScope.currentUser);
+        return Boolean($rootScope[config.user]);
       };
 
       local.unlink = function(provider) {
@@ -377,6 +380,8 @@
         defaultUrlParams: ['response_type', 'client_id', 'redirect_uri'],
         responseType: 'code'
       };
+
+      // TODO: setup scope delimiter and document it in readme
 
       var oauth2 = {};
 
