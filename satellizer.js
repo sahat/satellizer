@@ -85,6 +85,12 @@
   };
 
   angular.module('satellizer', [])
+    .constant('satellizer.config', {
+
+    })
+    .constant('satellizer.providers', {
+
+    })
     .provider('$auth', function() {
 
       Object.defineProperties(this, {
@@ -216,8 +222,8 @@
         providers[params.name].type = '2.0';
       };
 
-      this.$get = ['$q', '$http', '$rootScope', 'Oauth1', 'Oauth2', 'Local', 'satellizer.utils',
-        function($q, $http, $rootScope, Oauth1, Oauth2, Local, utils) {
+      this.$get = ['$q', '$http', '$rootScope', 'Oauth1', 'Oauth2', 'satellizer.local', 'satellizer.utils',
+        function($q, $http, $rootScope, Oauth1, Oauth2, local, utils) {
 
           // TODO: rootscope events
 
@@ -229,7 +235,7 @@
 
             provider.open(providers[name])
               .then(function(response) {
-                Local.parseUser(response.data[config.tokenName], deferred);
+                local.parseUser(response.data[config.tokenName], deferred);
               })
               .catch(function(response) {
                 deferred.reject(response);
@@ -239,19 +245,19 @@
           };
 
           $auth.login = function(user) {
-            return Local.login(user);
+            return local.login(user);
           };
 
           $auth.signup = function(user) {
-            return Local.signup(user);
+            return local.signup(user);
           };
 
           $auth.logout = function() {
-            return Local.logout();
+            return local.logout();
           };
 
           $auth.isAuthenticated = function() {
-            return Local.isAuthenticated();
+            return local.isAuthenticated();
           };
 
           $auth.link = function(name) {
@@ -259,7 +265,7 @@
           };
 
           $auth.unlink = function(provider) {
-            return Local.unlink(provider);
+            return local.unlink(provider);
           };
 
           // TODO: call from parseUser
@@ -272,7 +278,7 @@
         }];
 
     })
-    .factory('Local', ['$q', '$http', '$rootScope', '$location', 'satellizer.utils', function($q, $http, $rootScope, $location, utils) {
+    .factory('satellizer.local', ['$q', '$http', '$rootScope', '$location', 'satellizer.utils', function($q, $http, $rootScope, $location, utils) {
 
       var local = {};
 
@@ -580,7 +586,7 @@
       };
     })
     .config(['$httpProvider', function($httpProvider) {
-      $httpProvider.interceptors.push(['$q', '$window', '$location', function($q, $window, $location) {
+      $httpProvider.interceptors.push(['$q', function($q) {
         return {
           request: function(httpConfig) {
             if (localStorage.getItem([config.tokenPrefix, config.tokenName].join('_'))) {
@@ -597,8 +603,8 @@
         };
       }]);
     }])
-    .run(['$rootScope', '$window', '$location', 'satellizer.utils', 'Local',
-      function($rootScope, $window, $location, utils, Local) {
+    .run(['$rootScope', '$window', '$location', 'satellizer.utils',
+      function($rootScope, $window, $location, utils) {
         var token = localStorage.getItem([config.tokenPrefix, config.tokenName].join('_'));
 
         if (token) {
