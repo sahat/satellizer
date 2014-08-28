@@ -287,8 +287,15 @@
         config.providers[params.name].type = '2.0';
       };
 
-      this.$get = ['$q', '$http', '$rootScope', 'Oauth1', 'Oauth2', 'satellizer.local', 'satellizer.utils',
-        function($q, $http, $rootScope, Oauth1, Oauth2, local, utils) {
+      this.$get = [
+        '$q',
+        '$http',
+        '$rootScope',
+        'satellizer.local',
+        'satellizer.utils',
+        'satellizer.Oauth1',
+        'satellizer.Oauth2',
+        function($q, $http, $rootScope, local, utils, Oauth1, Oauth2) {
 
           // TODO: rootscope events
 
@@ -296,7 +303,7 @@
 
           $auth.authenticate = function(name) {
             var deferred = $q.defer();
-            var provider = (config.providers[name].type === '1.0') ? new Oauth1 : new Oauth2();
+            var provider = (config.providers[name].type === '1.0') ? new Oauth1() : new Oauth2();
 
             provider.open(config.providers[name])
               .then(function(response) {
@@ -436,7 +443,7 @@
 
       return local;
     }])
-    .factory('Oauth2', ['$q', '$http', 'satellizer.utils', 'Popup', function($q, $http, utils, Popup) {
+    .factory('satellizer.Oauth2', ['$q', '$http', 'satellizer.utils', 'Popup', function($q, $http, utils, Popup) {
       return function() {
         var defaults = {
           url: null,
@@ -513,7 +520,7 @@
         };
       };
     }])
-    .factory('Oauth1', ['$q', '$http', 'Popup', function($q, $http, Popup) {
+    .factory('satellizer.Oauth1', ['$q', '$http', 'Popup', function($q, $http, Popup) {
       return function() {
         var defaults = {
           url: null,
