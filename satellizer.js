@@ -296,9 +296,9 @@
 
           $auth.authenticate = function(name) {
             var deferred = $q.defer();
-            var provider = (providers[name].type === '1.0') ? Oauth1 : Oauth2;
+            var provider = (config.providers[name].type === '1.0') ? Oauth1 : new Oauth2();
 
-            provider.open(providers[name])
+            provider.open(config.providers[name])
               .then(function(response) {
                 local.parseUser(response.data[config.tokenName], deferred);
               })
@@ -437,79 +437,81 @@
       return local;
     }])
     .factory('Oauth2', ['$q', '$http', 'satellizer.utils', 'Popup', function($q, $http, utils, Popup) {
-      var defaults = {
-        url: null,
-        name: null,
-        scope: null,
-        scopeDelimiter: null,
-        clientId: null,
-        redirectUri: null,
-        popupOptions: null,
-        authorizationEndpoint: null,
-        requiredUrlParams: null,
-        optionalUrlParams: null,
-        defaultUrlParams: ['response_type', 'client_id', 'redirect_uri'],
-        responseType: 'code'
-      };
+      return function() {
+        var defaults = {
+          url: null,
+          name: null,
+          scope: null,
+          scopeDelimiter: null,
+          clientId: null,
+          redirectUri: null,
+          popupOptions: null,
+          authorizationEndpoint: null,
+          requiredUrlParams: null,
+          optionalUrlParams: null,
+          defaultUrlParams: ['response_type', 'client_id', 'redirect_uri'],
+          responseType: 'code'
+        };
 
-      // TODO: setup scope delimiter and document it in readme
+        // TODO: setup scope delimiter and document it in readme
 
-      var oauth2 = {};
+        var oauth2 = {};
 
-      oauth2.open = function(options) {
-        angular.extend(defaults, options);
-        var deferred = $q.defer();
-        var url = oauth2.buildUrl();
+        oauth2.open = function(options) {
+          angular.extend(defaults, options);
+          var deferred = $q.defer();
+          var url = oauth2.buildUrl();
 
-        Popup.open(url, defaults.popupOptions)
-          .then(function(oauthData) {
-            oauth2.exchangeForToken(oauthData)
-              .then(function(response) {
-                deferred.resolve(response);
-              })
-              .catch(function(response) {
-                deferred.reject(response);
-              });
-          })
-          .catch(function(error) {
-            deferred.reject(error);
+          Popup.open(url, defaults.popupOptions)
+            .then(function(oauthData) {
+              oauth2.exchangeForToken(oauthData)
+                .then(function(response) {
+                  deferred.resolve(response);
+                })
+                .catch(function(response) {
+                  deferred.reject(response);
+                });
+            })
+            .catch(function(error) {
+              deferred.reject(error);
+            });
+
+          return deferred.promise;
+        };
+
+        oauth2.exchangeForToken = function(oauthData) {
+          return $http.post(defaults.url, {
+            code: oauthData.code,
+            clientId: defaults.clientId,
+            redirectUri: defaults.redirectUri
+          });
+        };
+
+        oauth2.buildUrl = function() {
+          var baseUrl = defaults.authorizationEndpoint;
+          var qs = oauth2.buildQueryString();
+          return [baseUrl, qs].join('?');
+        };
+
+        oauth2.buildQueryString = function() {
+          var keyValuePairs = [];
+          var urlParams = ['defaultUrlParams', 'requiredUrlParams', 'optionalUrlParams'];
+
+          angular.forEach(urlParams, function(params) {
+            angular.forEach(defaults[params], function(paramName) {
+              var camelizedName = utils.camelCase(paramName);
+              var paramValue = defaults[camelizedName];
+              keyValuePairs.push([paramName, encodeURIComponent(paramValue)]);
+            });
           });
 
-        return deferred.promise;
+          return keyValuePairs.map(function(pair) {
+            return pair.join('=');
+          }).join('&');
+        };
+
+        return oauth2;
       };
-
-      oauth2.exchangeForToken = function(oauthData) {
-        return $http.post(defaults.url, {
-          code: oauthData.code,
-          clientId: defaults.clientId,
-          redirectUri: defaults.redirectUri
-        });
-      };
-
-      oauth2.buildUrl = function() {
-        var baseUrl = defaults.authorizationEndpoint;
-        var qs = oauth2.buildQueryString();
-        return [baseUrl, qs].join('?');
-      };
-
-      oauth2.buildQueryString = function() {
-        var keyValuePairs = [];
-        var urlParams = ['defaultUrlParams', 'requiredUrlParams', 'optionalUrlParams'];
-
-        angular.forEach(urlParams, function(params) {
-          angular.forEach(defaults[params], function(paramName) {
-            var camelizedName = utils.camelCase(paramName);
-            var paramValue = defaults[camelizedName];
-            keyValuePairs.push([paramName, encodeURIComponent(paramValue)]);
-          });
-        });
-
-        return keyValuePairs.map(function(pair) {
-          return pair.join('=');
-        }).join('&');
-      };
-
-      return oauth2;
     }])
     .factory('Oauth1', ['$q', '$http', 'Popup', function($q, $http, Popup) {
       var defaults = {
