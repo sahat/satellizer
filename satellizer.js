@@ -6,6 +6,7 @@
 
 (function(window, angular, undefined) {
   'use strict';
+
   var config = {
     logoutRedirect: '/',
     loginRedirect: '/',
@@ -350,225 +351,240 @@
         }];
 
     }])
-    .factory('satellizer.local', ['$q', '$http', '$rootScope', '$location', 'satellizer.utils', function($q, $http, $rootScope, $location, utils) {
+    .factory('satellizer.local', [
+      '$q',
+      '$http',
+      '$location',
+      '$rootScope',
+      'satellizer.utils',
+      function($q, $http, $location, $rootScope, utils) {
 
-      var local = {};
+        var local = {};
 
-      // TODO: Move to shared service
-      local.parseUser = function(token, deferred) {
-        // TODO: Move userFromToken to shared service
-        localStorage.setItem([config.tokenPrefix, config.tokenName].join('_'), token);
+        // TODO: Move to shared service
+        local.parseUser = function(token, deferred) {
+          // TODO: Move userFromToken to shared service
+          localStorage.setItem([config.tokenPrefix, config.tokenName].join('_'), token);
 
-        $rootScope.isAuthenticated = true;
+          $rootScope.isAuthenticated = true;
 
-        var user = utils.userFromToken(token);
+          var user = utils.userFromToken(token);
 
-        if (user) {
-          $rootScope[config.user] = utils.userFromToken(token);
-          deferred.resolve(user);
-        } else {
-          deferred.resolve();
-        }
-
-        if (config.loginRedirect) {
-          $location.path(config.loginRedirect);
-        }
-      };
-
-      local.login = function(user) {
-        var deferred = $q.defer();
-
-        $http.post(config.loginUrl, user)
-          .then(function(response) {
-            local.parseUser(response.data[config.tokenName], deferred);
-          })
-          .catch(function(response) {
-            deferred.reject(response);
-          });
-
-        return deferred.promise;
-      };
-
-      local.signup = function(user) {
-        var deferred = $q.defer();
-
-        $http.post(config.signupUrl, user)
-          .then(function() {
-            $location.path(config.signupRedirect);
+          if (user) {
+            $rootScope[config.user] = utils.userFromToken(token);
+            deferred.resolve(user);
+          } else {
             deferred.resolve();
-          })
-          .catch(function(response) {
-            deferred.reject(response);
-          });
+          }
 
-        return deferred.promise;
-      };
-
-      local.logout = function() {
-        var deferred = $q.defer();
-
-        $rootScope.isAuthenticated = false;
-        localStorage.removeItem([config.tokenPrefix, config.tokenName].join('_'));
-
-        if ($rootScope[config.user]) {
-          delete $rootScope[config.user];
-        }
-
-        if (config.logoutRedirect) {
-          $location.path(config.logoutRedirect);
-        }
-
-        deferred.resolve();
-
-        return deferred.promise;
-      };
-
-      local.isAuthenticated = function() {
-        return Boolean($rootScope[config.user]);
-      };
-
-      local.unlink = function(provider) {
-        var deferred = $q.defer();
-
-        $http.get(config.unlinkUrl + provider)
-          .then(function(response) {
-            local.parseUser(response.data[config.tokenName], deferred);
-          })
-          .catch(function(response) {
-            deferred.reject(response);
-          });
-
-        return deferred.promise;
-      };
-
-      return local;
-    }])
-    .factory('satellizer.Oauth2', ['$q', '$http', 'satellizer.utils', 'Popup', function($q, $http, utils, Popup) {
-      return function() {
-        var defaults = {
-          url: null,
-          name: null,
-          scope: null,
-          scopeDelimiter: null,
-          clientId: null,
-          redirectUri: null,
-          popupOptions: null,
-          authorizationEndpoint: null,
-          requiredUrlParams: null,
-          optionalUrlParams: null,
-          defaultUrlParams: ['response_type', 'client_id', 'redirect_uri'],
-          responseType: 'code'
+          if (config.loginRedirect) {
+            $location.path(config.loginRedirect);
+          }
         };
 
-        // TODO: setup scope delimiter and document it in readme
-
-        function open(options) {
-          angular.extend(defaults, options);
-          var deferred = $q.defer();
-          var url = buildUrl();
-
-          Popup.open(url, defaults.popupOptions)
-            .then(function(oauthData) {
-              exchangeForToken(oauthData)
-                .then(function(response) {
-                  deferred.resolve(response);
-                })
-                .catch(function(response) {
-                  deferred.reject(response);
-                });
-            })
-            .catch(function(error) {
-              deferred.reject(error);
-            });
-
-          return deferred.promise;
-        }
-
-        function exchangeForToken(oauthData) {
-          return $http.post(defaults.url, {
-            code: oauthData.code,
-            clientId: defaults.clientId,
-            redirectUri: defaults.redirectUri
-          });
-        }
-
-        function buildUrl() {
-          var baseUrl = defaults.authorizationEndpoint;
-          var qs = buildQueryString();
-          return [baseUrl, qs].join('?');
-        }
-
-        function buildQueryString() {
-          var keyValuePairs = [];
-          var urlParams = ['defaultUrlParams', 'requiredUrlParams', 'optionalUrlParams'];
-
-          angular.forEach(urlParams, function(params) {
-            angular.forEach(defaults[params], function(paramName) {
-              var camelizedName = utils.camelCase(paramName);
-              var paramValue = defaults[camelizedName];
-              keyValuePairs.push([paramName, encodeURIComponent(paramValue)]);
-            });
-          });
-
-          return keyValuePairs.map(function(pair) {
-            return pair.join('=');
-          }).join('&');
-        }
-
-        return {
-          open: open
-        };
-      };
-    }])
-    .factory('satellizer.Oauth1', ['$q', '$http', 'Popup', function($q, $http, Popup) {
-      return function() {
-        var defaults = {
-          url: null,
-          name: null,
-          popupOptions: null
-        };
-
-        function open(options) {
-          angular.extend(defaults, options);
-
+        local.login = function(user) {
           var deferred = $q.defer();
 
-          Popup.open(defaults.url)
+          $http.post(config.loginUrl, user)
             .then(function(response) {
-              exchangeForToken(response)
-                .then(function(response) {
-                  deferred.resolve(response);
-                })
-                .catch(function(response) {
-                  deferred.reject(response);
-                });
+              local.parseUser(response.data[config.tokenName], deferred);
             })
             .catch(function(response) {
               deferred.reject(response);
             });
 
           return deferred.promise;
-        }
-
-        function exchangeForToken(oauthData) {
-          oauthData = buildQueryString(oauthData);
-          return $http.get(defaults.url + '?' + oauthData);
-        }
-
-        function buildQueryString(obj) {
-          var str = [];
-          angular.forEach(obj, function(value, key) {
-            str.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
-          });
-          return str.join('&');
-        }
-
-        return {
-          open: open
         };
-      };
-    }])
-    .factory('Popup', ['$q', '$interval', '$window', function($q, $interval, $window) {
+
+        local.signup = function(user) {
+          var deferred = $q.defer();
+
+          $http.post(config.signupUrl, user)
+            .then(function() {
+              $location.path(config.signupRedirect);
+              deferred.resolve();
+            })
+            .catch(function(response) {
+              deferred.reject(response);
+            });
+
+          return deferred.promise;
+        };
+
+        local.logout = function() {
+          var deferred = $q.defer();
+
+          $rootScope.isAuthenticated = false;
+          localStorage.removeItem([config.tokenPrefix, config.tokenName].join('_'));
+
+          if ($rootScope[config.user]) {
+            delete $rootScope[config.user];
+          }
+
+          if (config.logoutRedirect) {
+            $location.path(config.logoutRedirect);
+          }
+
+          deferred.resolve();
+
+          return deferred.promise;
+        };
+
+        local.isAuthenticated = function() {
+          return Boolean($rootScope[config.user]);
+        };
+
+        local.unlink = function(provider) {
+          var deferred = $q.defer();
+
+          $http.get(config.unlinkUrl + provider)
+            .then(function(response) {
+              local.parseUser(response.data[config.tokenName], deferred);
+            })
+            .catch(function(response) {
+              deferred.reject(response);
+            });
+
+          return deferred.promise;
+        };
+
+        return local;
+      }])
+    .factory('satellizer.Oauth2', [
+      '$q',
+      '$http',
+      'satellizer.popup',
+      'satellizer.utils',
+      function($q, $http, popup, utils) {
+        return function() {
+          var defaults = {
+            url: null,
+            name: null,
+            scope: null,
+            scopeDelimiter: null,
+            clientId: null,
+            redirectUri: null,
+            popupOptions: null,
+            authorizationEndpoint: null,
+            requiredUrlParams: null,
+            optionalUrlParams: null,
+            defaultUrlParams: ['response_type', 'client_id', 'redirect_uri'],
+            responseType: 'code'
+          };
+
+          // TODO: setup scope delimiter and document it in readme
+
+          function open(options) {
+            angular.extend(defaults, options);
+            var deferred = $q.defer();
+            var url = buildUrl();
+
+            popup.open(url, defaults.popupOptions)
+              .then(function(oauthData) {
+                exchangeForToken(oauthData)
+                  .then(function(response) {
+                    deferred.resolve(response);
+                  })
+                  .catch(function(response) {
+                    deferred.reject(response);
+                  });
+              })
+              .catch(function(error) {
+                deferred.reject(error);
+              });
+
+            return deferred.promise;
+          }
+
+          function exchangeForToken(oauthData) {
+            return $http.post(defaults.url, {
+              code: oauthData.code,
+              clientId: defaults.clientId,
+              redirectUri: defaults.redirectUri
+            });
+          }
+
+          function buildUrl() {
+            var baseUrl = defaults.authorizationEndpoint;
+            var qs = buildQueryString();
+            return [baseUrl, qs].join('?');
+          }
+
+          function buildQueryString() {
+            var keyValuePairs = [];
+            var urlParams = ['defaultUrlParams', 'requiredUrlParams', 'optionalUrlParams'];
+
+            angular.forEach(urlParams, function(params) {
+              angular.forEach(defaults[params], function(paramName) {
+                var camelizedName = utils.camelCase(paramName);
+                var paramValue = defaults[camelizedName];
+                keyValuePairs.push([paramName, encodeURIComponent(paramValue)]);
+              });
+            });
+
+            return keyValuePairs.map(function(pair) {
+              return pair.join('=');
+            }).join('&');
+          }
+
+          return {
+            open: open
+          };
+        };
+      }])
+    .factory('satellizer.Oauth1', [
+      '$q',
+      '$http',
+      'satellizer.popup',
+      function($q, $http, popup) {
+        return function() {
+          var defaults = {
+            url: null,
+            name: null,
+            popupOptions: null
+          };
+
+          function open(options) {
+            angular.extend(defaults, options);
+
+            var deferred = $q.defer();
+
+            popup.open(defaults.url)
+              .then(function(response) {
+                exchangeForToken(response)
+                  .then(function(response) {
+                    deferred.resolve(response);
+                  })
+                  .catch(function(response) {
+                    deferred.reject(response);
+                  });
+              })
+              .catch(function(response) {
+                deferred.reject(response);
+              });
+
+            return deferred.promise;
+          }
+
+          function exchangeForToken(oauthData) {
+            oauthData = buildQueryString(oauthData);
+            return $http.get(defaults.url + '?' + oauthData);
+          }
+
+          function buildQueryString(obj) {
+            var str = [];
+            angular.forEach(obj, function(value, key) {
+              str.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+            });
+            return str.join('&');
+          }
+
+          return {
+            open: open
+          };
+        };
+      }])
+    .factory('satellizer.popup', ['$q', '$interval', '$window', function($q, $interval, $window) {
       var popupWindow = null;
       var polling = null;
 
