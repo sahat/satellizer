@@ -159,7 +159,7 @@
         }
       }
     })
-    .provider('$auth', function() {
+    .provider('$auth', ['satellizer.config', function(config) {
 
       Object.defineProperties(this, {
         loginRedirect: {
@@ -252,42 +252,39 @@
         }
       });
 
-      // TODO: Used for testing, refactor tests, then delete this line
-      this.providers = providers;
-
       this.facebook = function(params) {
-        angular.extend(providers.facebook, params);
+        angular.extend(config.providers.facebook, params);
       };
 
       this.google = function(params) {
-        angular.extend(providers.google, params);
+        angular.extend(config.providers.google, params);
       };
 
       this.linkedin = function(params) {
-        angular.extend(providers.linkedin, params);
+        angular.extend(config.providers.linkedin, params);
       };
 
       this.github = function(params) {
-        angular.extend(providers.github, params);
+        angular.extend(config.providers.github, params);
       };
 
       this.twitter = function(params) {
-        angular.extend(providers.twitter, params);
+        angular.extend(config.providers.twitter, params);
       };
 
-      this.oauthBase = function(params) {
-        providers[params.name] = providers[params.name] || {};
-        angular.extend(providers[params.name], params);
+      var oauth = function(params) {
+        config.providers[params.name] = config.providers[params.name] || {};
+        angular.extend(config.providers[params.name], params);
       };
 
       this.oauth1 = function(params) {
-        this.oauthBase(params);
-        providers[params.name].type = '1.0';
+        oauth(params);
+        config.providers[params.name].type = '1.0';
       };
 
       this.oauth2 = function(params) {
-        this.oauthBase(params);
-        providers[params.name].type = '2.0';
+        oauth(params);
+        config.providers[params.name].type = '2.0';
       };
 
       this.$get = ['$q', '$http', '$rootScope', 'Oauth1', 'Oauth2', 'satellizer.local', 'satellizer.utils',
@@ -345,7 +342,7 @@
           return $auth;
         }];
 
-    })
+    }])
     .factory('satellizer.local', ['$q', '$http', '$rootScope', '$location', 'satellizer.utils', function($q, $http, $rootScope, $location, utils) {
 
       var local = {};
