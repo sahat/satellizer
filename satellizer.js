@@ -16,7 +16,6 @@
       signupUrl: '/auth/signup',
       loginRoute: '/login',
       signupRoute: '/signup',
-      user: 'currentUser', // TODO: remove.
       tokenName: 'token',
       tokenPrefix: 'satellizer',
       unlinkUrl: '/auth/unlink/',
@@ -85,18 +84,52 @@
     })
     .provider('$auth', ['satellizer.config', function(config) {
 
-      this.logoutRedirect = config.logoutRedirect;
-      this.loginRedirect = config.loginRedirect;
-      this.signupRedirect = config.signupRedirect;
-      this.loginUrl = config.loginUrl;
-      this.signupUrl = config.signupUrl;
-      this.loginRoute = config.loginRoute;
-      this.signupRoute = config.signupRoute;
-      this.tokenName = config.tokenName;
-      this.tokenPrefix = config.tokenPrefix;
-      this.unlinkUrl = config.unlinkUrl;
-
-      console.log(this.loginRedirect);
+      Object.defineProperties(this, {
+        loginRedirect: {
+          set: function(value) { config.loginRedirect = value; },
+          get: function() { return config.loginRedirect; }
+        },
+        logoutRedirect: {
+          get: function() { return config.logoutRedirect; },
+          set: function(value) { config.logoutRedirect = value; }
+        },
+        loginUrl: {
+          get: function() { return config.loginUrl; },
+          set: function(value) { config.loginUrl = value; }
+        },
+        signupUrl: {
+          get: function() { return config.signupUrl; },
+          set: function(value) { config.signupUrl = value; }
+        },
+        signupRedirect: {
+          get: function() { return config.signupRedirect; },
+          set: function(value) { config.signupRedirect = value; }
+        },
+        loginRoute: {
+          get: function() { return config.loginRoute; },
+          set: function(value) { config.loginRoute = value; }
+        },
+        signupRoute: {
+          get: function() { return config.signupRoute; },
+          set: function(value) { config.signupRoute = value; }
+        },
+        user: {
+          get: function() { return config.user; },
+          set: function(value) { config.user = value; }
+        },
+        tokenName: {
+          get: function() { return config.tokenName; },
+          set: function(value) { config.tokenName = value; }
+        },
+        tokenPrefix: {
+          get: function() { return config.tokenPrefix; },
+          set: function(value) { config.tokenPrefix = value; }
+        },
+        unlinkUrl: {
+          get: function() { return config.unlinkUrl; },
+          set: function(value) { config.unlinkUrl = value; }
+        }
+      });
 
       this.facebook = function(params) {
         angular.extend(config.providers.facebook, params);
