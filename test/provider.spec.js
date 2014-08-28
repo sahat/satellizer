@@ -15,127 +15,96 @@ describe('satellizer.config', function() {
   it('should set logoutRedirect', function() {
     this.$authProvider.logoutRedirect = '/signout';
     expect(this.config.logoutRedirect).toEqual('/signout');
+    expect(this.$authProvider.logoutRedirect).toEqual('/signout');
   });
 
   it('should set loginRedirect', function() {
     this.$authProvider.loginRedirect = '/signin';
     expect(this.config.loginRedirect).toEqual('/signin');
+    expect(this.$authProvider.loginRedirect).toEqual('/signin');
   });
 
   it('should set signupRedirect', function() {
     this.$authProvider.signupRedirect = '/newurl';
     expect(this.config.signupRedirect).toEqual('/newurl');
+    expect(this.$authProvider.signupRedirect).toEqual('/newurl');
   });
 
   it('should set loginUrl', function() {
     this.$authProvider.loginUrl = '/api/signin';
     expect(this.config.loginUrl).toEqual('/api/signin');
+    expect(this.$authProvider.loginUrl).toEqual('/api/signin');
   });
 
   it('should set signupUrl', function() {
     this.$authProvider.signupUrl = '/api/signup';
     expect(this.config.signupUrl).toEqual('/api/signup');
+    expect(this.$authProvider.signupUrl).toEqual('/api/signup');
   });
 
   it('should set loginRoute', function() {
     this.$authProvider.loginRoute = '/signin';
     expect(this.config.loginRoute).toEqual('/signin');
+    expect(this.$authProvider.loginRoute).toEqual('/signin');
   });
 
   it('should set signupRoute', function() {
     this.$authProvider.signupRoute = '/register';
     expect(this.config.signupRoute).toEqual('/register');
+    expect(this.$authProvider.signupRoute).toEqual('/register');
   });
 
   it('should set tokenName', function() {
     this.$authProvider.tokenName = 'access_token';
     expect(this.config.tokenName).toEqual('access_token');
+    expect(this.$authProvider.tokenName).toEqual('access_token');
   });
 
   it('should set tokenPrefix', function() {
     this.$authProvider.tokenPrefix = 'myApp';
     expect(this.config.tokenPrefix).toEqual('myApp');
+    expect(this.$authProvider.tokenPrefix).toEqual('myApp');
   });
 
   it('should set unlinkUrl', function() {
     this.$authProvider.unlinkUrl = '/disconnect/';
     expect(this.config.unlinkUrl).toEqual('/disconnect/');
+    expect(this.$authProvider.unlinkUrl).toEqual('/disconnect/');
   });
 
-  it('should have facebook method', function() {
-    expect(this.$authProvider.facebook).toBeDefined();
+  it('should update facebook with new params', function() {
+    this.$authProvider.facebook({ clientId: '1234' });
+    expect(this.config.providers.facebook.clientId).toBe('1234');
   });
 
-  it('should have google method', function() {
-    expect(this.$authProvider.google).toBeDefined();
-  });
-
-  it('should have linkedin method', function() {
-    expect(this.$authProvider.linkedin).toBeDefined();
-  });
-
-  it('should have twitter method', function() {
-    expect(this.$authProvider.twitter).toBeDefined();
-  });
-
-  it('should have oauth1', function() {
-    expect(this.$authProvider.oauth1).toBeDefined();
-  });
-
-  it('should have oauth2 method', function() {
-    expect(this.$authProvider.oauth2).toBeDefined();
-  });
-
-
-  it('should update a facebook provider with new params', function() {
-    this.$authProvider.facebook({
-      scope: 'profile'
-    });
-    expect(this.config.providers.facebook.scope).toBe('profile');
-  });
-
-  it('should update a google provider with new params', function() {
-    this.$authProvider.google({
-      state: 'secret'
-    });
+  it('should update googlewith new params', function() {
+    this.$authProvider.google({ state: 'secret' });
     expect(this.config.providers.google.state).toBe('secret');
   });
 
-  it('should update a github provider with new params', function() {
-    this.$authProvider.github({
-      scope: 'email'
-    });
-    expect(this.config.providers.github.scope).toBe('email');
+  it('should update github with new params', function() {
+    this.$authProvider.github({ clientId: '1234' });
+    expect(this.config.providers.github.clientId).toBe('1234');
   });
 
-  it('should update a linkedin provider with new params', function() {
-    this.$authProvider.linkedin({
-      state: 'secret'
-    });
+  it('should update linkedin with new params', function() {
+    this.$authProvider.linkedin({ state: 'secret' });
     expect(this.config.providers.linkedin.state).toBe('secret');
   });
 
-  it('should update a twitter provider with new params', function() {
-    this.$authProvider.twitter({
-      url: '/oauth/twitter'
-    });
-    expect(this.config.providers.twitter.url).toBe('/oauth/twitter');
+  it('should update twitter with new params', function() {
+    this.$authProvider.twitter({ url: '/api/twitter' });
+    expect(this.config.providers.twitter.url).toBe('/api/twitter');
   });
 
-  it('should add a new oauth2 provider', function() {
-    this.$authProvider.oauth2({
-      name: 'github',
-      url: '/auth/github',
-      authorizationEndpoint: 'https://github.com/login/oauth/authorize'
-    });
-    expect(this.config.providers['github'].name).toBe('github');
+  it('should create new oauth2 provider', function() {
+    this.$authProvider.oauth2({ name: 'instagram', url: '/auth/instagram' });
+    expect(this.config.providers['instagram'].name).toBe('instagram');
+    expect(this.config.providers['instagram'].url).toBe('/auth/instagram');
   });
 
   it('should add a new oauth1 provider', function() {
-    this.$authProvider.oauth1({
-      name: 'goodreads',
-      url: '/auth/goodreads'
-    });
+    this.$authProvider.oauth1({ name: 'goodreads', url: '/auth/goodreads' });
     expect(this.config.providers['goodreads'].url).toBe('/auth/goodreads');
   });
 
