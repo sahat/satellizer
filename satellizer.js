@@ -296,7 +296,7 @@
 
           $auth.authenticate = function(name) {
             var deferred = $q.defer();
-            var provider = (config.providers[name].type === '1.0') ? Oauth1 : new Oauth2();
+            var provider = (config.providers[name].type === '1.0') ? new Oauth1 : new Oauth2();
 
             provider.open(config.providers[name])
               .then(function(response) {
@@ -360,7 +360,7 @@
           $rootScope[config.user] = utils.userFromToken(token);
           deferred.resolve(user);
         } else {
-          deferred.resolve()
+          deferred.resolve();
         }
 
         if (config.loginRedirect) {
@@ -514,50 +514,52 @@
       };
     }])
     .factory('Oauth1', ['$q', '$http', 'Popup', function($q, $http, Popup) {
-      var defaults = {
-        url: null,
-        name: null,
-        popupOptions: null
-      };
+      return function() {
+        var defaults = {
+          url: null,
+          name: null,
+          popupOptions: null
+        };
 
-      var oauth1 = {};
+        function open(options) {
+          angular.extend(defaults, options);
 
-      oauth1.open = function(options) {
-        angular.extend(defaults, options);
+          var deferred = $q.defer();
 
-        var deferred = $q.defer();
+          Popup.open(defaults.url)
+            .then(function(response) {
+              exchangeForToken(response)
+                .then(function(response) {
+                  deferred.resolve(response);
+                })
+                .catch(function(response) {
+                  deferred.reject(response);
+                });
+            })
+            .catch(function(response) {
+              deferred.reject(response);
+            });
 
-        Popup.open(defaults.url)
-          .then(function(response) {
-            oauth1.exchangeForToken(response)
-              .then(function(response) {
-                deferred.resolve(response);
-              })
-              .catch(function(response) {
-                deferred.reject(response);
-              });
-          })
-          .catch(function(response) {
-            deferred.reject(response);
+          return deferred.promise;
+        }
+
+        function exchangeForToken(oauthData) {
+          oauthData = buildQueryString(oauthData);
+          return $http.get(defaults.url + '?' + oauthData);
+        }
+
+        function buildQueryString(obj) {
+          var str = [];
+          angular.forEach(obj, function(value, key) {
+            str.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
           });
+          return str.join('&');
+        }
 
-        return deferred.promise;
+        return {
+          open: open
+        };
       };
-
-      oauth1.exchangeForToken = function(oauthData) {
-        oauthData = oauth1.buildQueryString(oauthData);
-        return $http.get(defaults.url + '?' + oauthData);
-      };
-
-      oauth1.buildQueryString = function(obj) {
-        var str = [];
-        angular.forEach(obj, function(value, key) {
-          str.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
-        });
-        return str.join('&');
-      };
-
-      return oauth1;
     }])
     .factory('Popup', ['$q', '$interval', '$window', function($q, $interval, $window) {
       var popupWindow = null;
