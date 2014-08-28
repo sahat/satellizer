@@ -21,6 +21,55 @@ describe('$auth', function() {
 
   });
 
+  describe('link()', function() {
+
+    it('should be defined', function() {
+      expect(this.$auth.link).toBeDefined();
+    });
+
+    it('should link third-party provider', function() {
+      this.$auth.link('facebook');
+    });
+
+  });
+
+  describe('unlink()', function() {
+
+    it('should be defined', function() {
+      expect(this.$auth.unlink).toBeDefined();
+    });
+
+    it('should unlink third-party provider', function() {
+      this.$auth.unlink('facebook');
+    });
+
+  });
+
+  describe('isAuthenticated()', function() {
+
+    it('should be defined', function() {
+      expect(this.$auth.isAuthenticated).toBeDefined();
+    });
+
+    it('should return false', function() {
+      expect(this.$auth.isAuthenticated()).toBe(true);
+    });
+
+  });
+
+  describe('updateToken()', function() {
+
+    it('should be defined', function() {
+      expect(this.$auth.updateToken).toBeDefined();
+    });
+
+    it('should set new token in local storage', function() {
+      this.$auth.updateToken('foo');
+      expect(this.$window.localStorage['satellizer_token']).toBe('foo');
+    });
+
+  });
+
   describe('logout()', function() {
 
     it('should log out a user', function() {
