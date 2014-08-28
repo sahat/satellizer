@@ -79,7 +79,7 @@ angular.module('MyApp', ['Satellizer'])
     $authProvider.oauth2({
       name: 'foursquare',
       url: '/auth/foursquare',
-      redirectUri: window.location.origin
+      redirectUri: window.location.origin,
       clientId: 'MTCEJ3NGW2PNNB31WOSBFDSAD4MTHYVAZ1UKIULXZ2CVFC2K',
       authorizationEndpoint: 'https://foursquare.com/oauth2/authenticate',
     });
