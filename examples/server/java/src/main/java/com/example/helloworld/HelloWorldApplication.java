@@ -20,6 +20,7 @@ import com.example.helloworld.health.TemplateHealthCheck;
 import com.example.helloworld.resources.AuthResource;
 import com.example.helloworld.resources.ClientResource;
 import com.example.helloworld.resources.UserResource;
+import com.example.helloworld.util.AuthFilter;
 import com.sun.jersey.api.client.Client;
 
 public class HelloWorldApplication extends Application<HelloWorldConfiguration> {
@@ -78,5 +79,8 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
         environment.jersey().register(new ClientResource()); 
         environment.jersey().register(new UserResource(dao));
         environment.jersey().register(new AuthResource(client, dao, clientSecrets));
+        
+        environment.servlets().addFilter("AuthFilter", new AuthFilter())
+        	.addMappingForUrlPatterns(null, true, "/api/me");
     }
 }
