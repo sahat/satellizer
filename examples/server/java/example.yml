@@ -1,7 +1,3 @@
-template: Hello, %s!
-
-defaultName: Stranger
-
 # Database settings.
 database:
   # the name of your JDBC driver
@@ -37,8 +33,8 @@ logging:
     - type: console
 
 clientSecrets:
-    facebook: Facebook Client Secret
-    google: Google Client Secret
+    facebook: 298fb6c080fda239b809ae418bf49700
+    google: xGxxgKAObIRUwOKycySkL9Fi
     linkedin: Linkedin Client Secret
     github: Github Client Secret
     foursquare: Foursquare Secret
