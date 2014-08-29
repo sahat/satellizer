@@ -348,14 +348,16 @@
             responseType: 'code'
           };
 
-          function open(options) {
+          var oauth2 = {};
+
+          oauth2.open = function(options) {
             angular.extend(defaults, options);
             var deferred = $q.defer();
-            var url = buildUrl();
+            var url = oauth2.buildUrl();
 
             popup.open(url, defaults.popupOptions)
               .then(function(oauthData) {
-                exchangeForToken(oauthData)
+                oauth2.exchangeForToken(oauthData)
                   .then(function(response) {
                     deferred.resolve(response);
                   })
@@ -368,23 +370,23 @@
               });
 
             return deferred.promise;
-          }
+          };
 
-          function exchangeForToken(oauthData) {
+          oauth2.exchangeForToken = function(oauthData) {
             return $http.post(defaults.url, {
               code: oauthData.code,
               clientId: defaults.clientId,
               redirectUri: defaults.redirectUri
             });
-          }
+          };
 
-          function buildUrl() {
+          oauth2.buildUrl = function() {
             var baseUrl = defaults.authorizationEndpoint;
-            var qs = buildQueryString();
+            var qs = oauth2.buildQueryString();
             return [baseUrl, qs].join('?');
-          }
+          };
 
-          function buildQueryString() {
+          oauth2.buildQueryString = function() {
             var keyValuePairs = [];
             var urlParams = ['defaultUrlParams', 'requiredUrlParams', 'optionalUrlParams'];
 
@@ -408,14 +410,9 @@
             return keyValuePairs.map(function(pair) {
               return pair.join('=');
             }).join('&');
-          }
-
-          return {
-            open: open,
-            exchangeForToken: exchangeForToken,
-            buildUrl: buildUrl,
-            buildQueryString: buildQueryString
           };
+
+          return oauth2;
         };
       }])
     .factory('satellizer.Oauth1', ['$q', '$http', 'satellizer.popup', function($q, $http, popup) {
@@ -426,14 +423,16 @@
           popupOptions: null
         };
 
-        function open(options) {
+        var oauth1 = {};
+
+        oauth1.open = function(options) {
           angular.extend(defaults, options);
 
           var deferred = $q.defer();
 
           popup.open(defaults.url)
             .then(function(response) {
-              exchangeForToken(response)
+              oauth1.exchangeForToken(response)
                 .then(function(response) {
                   deferred.resolve(response);
                 })
@@ -446,26 +445,22 @@
             });
 
           return deferred.promise;
-        }
+        };
 
-        function exchangeForToken(oauthData) {
-          oauthData = buildQueryString(oauthData);
+        oauth1.exchangeForToken = function(oauthData) {
+          oauthData = oauth1.buildQueryString(oauthData);
           return $http.get(defaults.url + '?' + oauthData);
-        }
+        };
 
-        function buildQueryString(obj) {
+        oauth1.buildQueryString = function(obj) {
           var str = [];
           angular.forEach(obj, function(value, key) {
             str.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
           });
           return str.join('&');
-        }
-
-        return {
-          open: open,
-          exchangeForToken: exchangeForToken,
-          buildQueryString: buildQueryString
         };
+
+        return oauth1;
       };
     }])
     .factory('satellizer.popup', ['$q', '$interval', '$window', function($q, $interval, $window) {
