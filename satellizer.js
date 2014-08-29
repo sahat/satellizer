@@ -40,7 +40,7 @@
           url: '/auth/facebook',
           authorizationEndpoint: 'https://www.facebook.com/dialog/oauth',
           redirectUri: window.location.origin + '/',
-          scope: ['user_likes', 'email'],
+          scope: ['email'],
           scopeDelimiter: ',',
           requiredUrlParams: ['display', 'scope'],
           display: 'popup',
