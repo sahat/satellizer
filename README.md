@@ -53,7 +53,7 @@ or use the :globe_with_meridians: CDN:
 
 **Step 1. App Module**
 ```js
-angular.module('MyApp', ['Satellizer'])
+angular.module('MyApp', ['satellizer'])
   .config(function($authProvider) {
     
     $authProvider.facebook({
