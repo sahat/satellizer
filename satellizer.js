@@ -198,10 +198,6 @@
             return oauth.unlink(provider);
           };
 
-          $auth.updateToken = function(token) {
-            localStorage.setItem([config.tokenPrefix, config.tokenName].join('_'), token);
-          };
-
           return $auth;
         }];
 
@@ -223,7 +219,6 @@
           }
           deferred.resolve();
         };
-
 
         shared.isAuthenticated = function() {
           var token = [config.tokenPrefix, config.tokenName].join('_');
@@ -582,4 +577,3 @@
     }]);
 
 })(window, window.angular);
-
