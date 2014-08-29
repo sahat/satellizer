@@ -99,6 +99,10 @@ public class User {
 		this.email = email;
 	}
 	
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	
 	public void setDisplayName(String name) {
 		this.displayName = name;
 	}

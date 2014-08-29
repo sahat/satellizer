@@ -28,7 +28,7 @@ import com.example.helloworld.core.Token;
 import com.example.helloworld.core.User;
 import com.example.helloworld.db.UserDAO;
 import com.example.helloworld.util.AuthUtils;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.example.helloworld.util.PasswordService;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -67,14 +67,17 @@ public class AuthResource {
 
 	@POST
 	@Path("login")
-	public Response loginEmail() {
+	@UnitOfWork
+	public Response login() {
 		return Response.ok().build();
 	}
 
 	@POST
 	@Path("signup")
-	public Response signup() {
-		return Response.ok().build();
+	@UnitOfWork
+	public Response signup(@Valid User user) {
+		user.setPassword(PasswordService.hashPassword(user.getPassword()));
+		return Response.ok().entity(dao.save(user)).build();
 	}
 
 	@POST
@@ -207,14 +210,6 @@ public class AuthResource {
 
 		@NotBlank
 		String code;
-
-		public Payload(@JsonProperty("cliendId") String cliendId,
-				@JsonProperty("redirectUri") String redirectUri,
-				@JsonProperty("code") String code) {
-			this.clientId = cliendId;
-			this.redirectUri = redirectUri;
-			this.code = code;
-		}
 
 		public String getClientId() {
 			return clientId;
