@@ -95,6 +95,10 @@ public class User {
 		return twitter;
 	}
 
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	
 	public void setDisplayName(String name) {
 		this.displayName = name;
 	}
@@ -102,4 +106,25 @@ public class User {
 	public void setFacebook(String facebook) {
 		this.facebook = facebook;
 	}
+	
+	public void setGoogle(String google) {
+		this.google = google;
+	}
+	
+	public void setLinkedin(String linkedin) {
+		this.linkedin = linkedin;
+	}
+	
+	public void setGithub(String github) {
+		this.github = github;
+	}
+	
+	public void setFouresquare(String foursquare) {
+		this.foursquare = foursquare;
+	}
+	
+	public void setTwitter(String twitter) {
+		this.twitter = twitter;
+	}
+	
 }
