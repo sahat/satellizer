@@ -24,7 +24,8 @@
           url: '/auth/google',
           authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
           redirectUri: window.location.origin,
-          scope: 'openid profile email',
+          scope: ['profile', 'email'],
+          scopePrefix: 'openid',
           scopeDelimiter: ' ',
           requiredUrlParams: ['scope'],
           optionalUrlParams: ['display'],
@@ -39,7 +40,7 @@
           url: '/auth/facebook',
           authorizationEndpoint: 'https://www.facebook.com/dialog/oauth',
           redirectUri: window.location.origin + '/',
-          scope: 'email',
+          scope: ['user_likes', 'email'],
           scopeDelimiter: ',',
           requiredUrlParams: ['display', 'scope'],
           display: 'popup',
@@ -197,7 +198,6 @@
             return oauth.unlink(provider);
           };
 
-          // TODO: call from parseUser
           $auth.updateToken = function(token) {
             localStorage.setItem([config.tokenPrefix, config.tokenName].join('_'), token);
           };
@@ -236,7 +236,6 @@
           delete $window.localStorage[token];
           deferred.resolve();
 
-          // todo location.path null, empty, undef
           if (config.logoutRedirect) {
             $location.path(config.logoutRedirect);
           }
@@ -349,8 +348,6 @@
             responseType: 'code'
           };
 
-          // TODO: setup scope delimiter and document it in readme
-
           function open(options) {
             angular.extend(defaults, options);
             var deferred = $q.defer();
@@ -395,6 +392,15 @@
               angular.forEach(defaults[params], function(paramName) {
                 var camelizedName = utils.camelCase(paramName);
                 var paramValue = defaults[camelizedName];
+
+                if (paramName === 'scope' && Array.isArray(paramValue)) {
+                  paramValue = paramValue.join(defaults.scopeDelimiter);
+
+                  if (defaults.scopePrefix) {
+                    paramValue = [defaults.scopePrefix, paramValue].join(defaults.scopeDelimiter);
+                  }
+                }
+
                 keyValuePairs.push([paramName, encodeURIComponent(paramValue)]);
               });
             });
