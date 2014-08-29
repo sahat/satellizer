@@ -7,6 +7,70 @@
 (function(window, angular, undefined) {
   'use strict';
 
+  var providers = {
+    google: {
+      url: '/auth/google',
+      authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
+      redirectUri: window.location.origin,
+      scope: ['profile', 'email'],
+      scopePrefix: 'openid',
+      scopeDelimiter: ' ',
+      requiredUrlParams: ['scope'],
+      optionalUrlParams: ['display'],
+      display: 'popup',
+      type: '2.0',
+      popupOptions: {
+        width: 452,
+        height: 633
+      }
+    },
+    facebook: {
+      url: '/auth/facebook',
+      authorizationEndpoint: 'https://www.facebook.com/dialog/oauth',
+      redirectUri: window.location.origin + '/',
+      scope: ['user_likes', 'email'],
+      scopeDelimiter: ',',
+      requiredUrlParams: ['display', 'scope'],
+      display: 'popup',
+      type: '2.0',
+      popupOptions: {
+        width: 481,
+        height: 269
+      }
+    },
+    linkedin: {
+      url: '/auth/linkedin',
+      authorizationEndpoint: 'https://www.linkedin.com/uas/oauth2/authorization',
+      redirectUri: window.location.origin,
+      requiredUrlParams: ['state'],
+      scope: [],
+      scopeDelimiter: ' ',
+      state: 'STATE',
+      type: '2.0',
+      popupOptions: {
+        width: 527,
+        height: 582
+      }
+    },
+    github: {
+      name: 'github',
+      url: '/auth/github',
+      authorizationEndpoint: 'https://github.com/login/oauth/authorize',
+      redirectUri: window.location.origin,
+      scope: [],
+      scopeDelimiter: ' ',
+      type: '2.0',
+      popupOptions: {
+        width: 1020,
+        height: 618
+      }
+    },
+    twitter: {
+      url: '/auth/twitter',
+      type: '1.0'
+    }
+  };
+
   angular.module('satellizer', [])
     .constant('satellizer.config', {
       logoutRedirect: '/',
@@ -19,69 +83,7 @@
       tokenName: 'token',
       tokenPrefix: 'satellizer',
       unlinkUrl: '/auth/unlink/',
-      providers: {
-        google: {
-          url: '/auth/google',
-          authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
-          redirectUri: window.location.origin,
-          scope: ['profile', 'email'],
-          scopePrefix: 'openid',
-          scopeDelimiter: ' ',
-          requiredUrlParams: ['scope'],
-          optionalUrlParams: ['display'],
-          display: 'popup',
-          type: '2.0',
-          popupOptions: {
-            width: 452,
-            height: 633
-          }
-        },
-        facebook: {
-          url: '/auth/facebook',
-          authorizationEndpoint: 'https://www.facebook.com/dialog/oauth',
-          redirectUri: window.location.origin + '/',
-          scope: ['user_likes', 'email'],
-          scopeDelimiter: ',',
-          requiredUrlParams: ['display', 'scope'],
-          display: 'popup',
-          type: '2.0',
-          popupOptions: {
-            width: 481,
-            height: 269
-          }
-        },
-        linkedin: {
-          url: '/auth/linkedin',
-          authorizationEndpoint: 'https://www.linkedin.com/uas/oauth2/authorization',
-          redirectUri: window.location.origin,
-          requiredUrlParams: ['state'],
-          scope: [],
-          scopeDelimiter: ' ',
-          state: 'STATE',
-          type: '2.0',
-          popupOptions: {
-            width: 527,
-            height: 582
-          }
-        },
-        github: {
-          name: 'github',
-          url: '/auth/github',
-          authorizationEndpoint: 'https://github.com/login/oauth/authorize',
-          redirectUri: window.location.origin,
-          scope: [],
-          scopeDelimiter: ' ',
-          type: '2.0',
-          popupOptions: {
-            width: 1020,
-            height: 618
-          }
-        },
-        twitter: {
-          url: '/auth/twitter',
-          type: '1.0'
-        }
-      }
+      providers: providers
     })
     .provider('$auth', ['satellizer.config', function(config) {
       Object.defineProperties(this, {
@@ -127,25 +129,15 @@
         }
       });
 
-      this.facebook = function(params) {
-        angular.extend(config.providers.facebook, params);
-      };
+      angular.forEach(Object.keys(config.providers), function (provider) {
+        this[provider] = function (params) {
+          if (! angular.isDefined(params)) {
+            return config.providers[provider];
+          }
 
-      this.google = function(params) {
-        angular.extend(config.providers.google, params);
-      };
-
-      this.linkedin = function(params) {
-        angular.extend(config.providers.linkedin, params);
-      };
-
-      this.github = function(params) {
-        angular.extend(config.providers.github, params);
-      };
-
-      this.twitter = function(params) {
-        angular.extend(config.providers.twitter, params);
-      };
+          return angular.extend(config.providers[provider], params);
+        };
+      }, this);
 
       var oauth = function(params) {
         config.providers[params.name] = config.providers[params.name] || {};
