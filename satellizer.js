@@ -182,7 +182,7 @@
           };
 
           $auth.logout = function() {
-            return local.logout();
+            return shared.logout();
           };
 
           $auth.isAuthenticated = function() {
@@ -227,6 +227,20 @@
         shared.isAuthenticated = function() {
           var token = [config.tokenPrefix, config.tokenName].join('_');
           return Boolean($window.localStorage[token]);
+        };
+
+        shared.logout = function() {
+          var deferred = $q.defer();
+          var token = [config.tokenPrefix, config.tokenName].join('_');
+          delete $window.localStorage[token];
+
+          if (config.logoutRedirect) {
+            $location.path(config.logoutRedirect);
+          }
+
+          deferred.resolve();
+
+          return deferred.promise;
         };
 
         return shared;
@@ -291,22 +305,6 @@
             .catch(function(response) {
               deferred.reject(response);
             });
-
-          return deferred.promise;
-        };
-
-        local.logout = function() {
-
-          var deferred = $q.defer();
-
-          $rootScope.isAuthenticated = false;
-          localStorage.removeItem([config.tokenPrefix, config.tokenName].join('_'));
-
-          if (config.logoutRedirect) {
-            $location.path(config.logoutRedirect);
-          }
-
-          deferred.resolve();
 
           return deferred.promise;
         };
