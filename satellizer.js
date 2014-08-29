@@ -31,10 +31,7 @@
           optionalUrlParams: ['display'],
           display: 'popup',
           type: '2.0',
-          popupOptions: {
-            width: 452,
-            height: 633
-          }
+          popupOptions: { width: 452, height: 633 }
         },
         facebook: {
           url: '/auth/facebook',
@@ -45,10 +42,7 @@
           requiredUrlParams: ['display', 'scope'],
           display: 'popup',
           type: '2.0',
-          popupOptions: {
-            width: 481,
-            height: 269
-          }
+          popupOptions: { width: 481, height: 269 }
         },
         linkedin: {
           url: '/auth/linkedin',
@@ -59,10 +53,7 @@
           scopeDelimiter: ' ',
           state: 'STATE',
           type: '2.0',
-          popupOptions: {
-            width: 527,
-            height: 582
-          }
+          popupOptions: { width: 527, height: 582 }
         },
         github: {
           name: 'github',
@@ -72,10 +63,7 @@
           scope: [],
           scopeDelimiter: ' ',
           type: '2.0',
-          popupOptions: {
-            width: 1020,
-            height: 618
-          }
+          popupOptions: { width: 1020, height: 618 }
         },
         twitter: {
           url: '/auth/twitter',
