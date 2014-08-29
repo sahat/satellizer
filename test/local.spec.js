@@ -2,11 +2,12 @@ describe('satellizer.local', function() {
 
   beforeEach(module('satellizer'));
 
-  beforeEach(inject(['$httpBackend', '$location', '$window', 'satellizer.local',
-    function($httpBackend, $location, $window, local) {
+  beforeEach(inject(['$httpBackend', '$location', '$window', 'satellizer.config', 'satellizer.local',
+    function($httpBackend, $location, $window, config, local) {
       this.$httpBackend = $httpBackend;
       this.$location = $location;
       this.$window = $window;
+      this.config = config;
       this.local = local;
     }]));
 
@@ -48,7 +49,7 @@ describe('satellizer.local', function() {
         password: 'invalid'
       };
 
-      this.$httpBackend.expectPOST('/auth/login').respond(401, 'Wrong email or password');
+      this.$httpBackend.expectPOST(this.config.loginUrl).respond(401, 'Wrong email or password');
 
       this.local.login(user).catch(function(response) {
         result = response.data;
@@ -61,20 +62,7 @@ describe('satellizer.local', function() {
 
   });
 
-  describe('logout()', function() {
 
-    it('should have a logout function', function() {
-      expect(this.local.logout).toBeDefined();
-      expect(angular.isFunction(this.local.logout)).toBe(true);
-    });
-
-    it('should log out a user', function() {
-      this.local.logout();
-      expect(this.$window.localStorage['satellizer_token']).toBeUndefined();
-      expect(this.$location.path()).toEqual('/');
-    });
-
-  });
 
   describe('signup()', function() {
 
@@ -89,13 +77,13 @@ describe('satellizer.local', function() {
         password: '1234'
       };
 
-      this.$httpBackend.expectPOST('/auth/signup').respond(200);
+      this.$httpBackend.expectPOST(this.config.signupUrl).respond(200);
 
       this.local.signup(user);
 
       this.$httpBackend.flush();
 
-      expect(this.$location.path()).toEqual('/login');
+      expect(this.$location.path()).toEqual(this.config.signupRedirect);
     });
 
     it('should be able to handle signup errors', function() {
@@ -105,7 +93,7 @@ describe('satellizer.local', function() {
       };
       var rejected = false;
 
-      this.$httpBackend.expectPOST('/auth/signup').respond(400);
+      this.$httpBackend.expectPOST(this.config.signupUrl).respond(400);
 
       this.local.signup(user).catch(function() {
         rejected = true;
@@ -118,49 +106,9 @@ describe('satellizer.local', function() {
 
   });
 
-  describe('unlink()', function() {
 
-    it('should unlink a provider successfully', function() {
-      var result = null;
-      var provider = 'google';
-      var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7Il9pZCI6IjUzZjYxZTEwNmZjNjFhNmMxM2I1Mjc4ZCIsImVtYWlsIjoic2FoYXRAbWUuY29tIiwiX192IjowfSwiaWF0IjoxNDA4ODIxMDkxNjc2LCJleHAiOjE0MDk0MjU4OTE2NzZ9.0l-ql-ZVjHiILMcMegNb3bNqapt3TZwjHy_ieduioiQ';
 
-      this.$httpBackend.expectGET('/auth/unlink/google').respond(200, { token: token });
 
-      this.local.unlink(provider).then(function(response) {
-        result = response;
-      });
-
-      this.$httpBackend.flush();
-
-      expect(this.local.unlink()).toBeDefined();
-    });
-
-    it('should unlink a provider and get an error', function() {
-      var result = null;
-      var provider = 'google';
-
-      this.$httpBackend.expectGET('/auth/unlink/google').respond(400);
-
-      this.local.unlink(provider).catch(function(response) {
-        result = response;
-      });
-
-      this.$httpBackend.flush();
-
-      expect(result.status).toEqual(400);
-    });
-
-  });
-
-  describe('isAuthenticated()', function() {
-
-    it('should be defined', function() {
-      expect(this.local.isAuthenticated).toBeDefined();
-      expect(angular.isFunction(this.local.isAuthenticated)).toBe(true);
-    });
-
-  });
 
 });
 

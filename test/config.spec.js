@@ -4,13 +4,12 @@ describe('satellizer.config', function() {
     var self = this;
     module('satellizer', function($authProvider) {
       self.$authProvider = $authProvider;
-    })
+    });
   });
 
   beforeEach(inject(['satellizer.config', function(config) {
     this.config = config;
   }]));
-
 
   it('should set logoutRedirect', function() {
     this.$authProvider.logoutRedirect = '/signout';

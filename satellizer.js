@@ -248,11 +248,12 @@
       }])
     .factory('satellizer.oauth', [
       '$q',
+      '$http',
       'satellizer.config',
       'satellizer.shared',
       'satellizer.Oauth1',
       'satellizer.Oauth2',
-      function($q, config, shared, Oauth1, Oauth2) {
+      function($q, $http, config, shared, Oauth1, Oauth2) {
         var oauth = {};
 
         oauth.authenticate = function(name) {
