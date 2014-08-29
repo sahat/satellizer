@@ -126,7 +126,6 @@ $authProvider.loginUrl = '/auth/login';
 $authProvider.signupUrl = '/auth/signup';
 $authProvider.loginRoute = '/login';
 $authProvider.signupRoute = '/signup';
-$authProvider.user = 'currentUser';
 $authProvider.tokenName: 'token';
 $authProvider.tokenPrefix: 'satellizer';
 $authProvider.unlinkUrl: '/auth/unlink/'
