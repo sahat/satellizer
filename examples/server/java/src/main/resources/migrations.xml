@@ -13,12 +13,8 @@
 			<column name="email" type="varchar(255)">
 				<constraints unique="true" />
 			</column>
-			<column name="password" type="varchar(255)">
-				<constraints nullable="false" />
-			</column>
-			<column name="display_name" type="varchar(255)">
-				<constraints nullable="false" />
-			</column>
+			<column name="password" type="varchar(255)" />
+			<column name="display_name" type="varchar(255)" />
 			<column name="facebook" type="varchar(255)" />
 			<column name="google" type="varchar(255)" />
 			<column name="linkedin" type="varchar(255)" />
