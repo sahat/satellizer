@@ -213,10 +213,11 @@
         shared.parseUser = function(token, deferred) {
           var namespace = [config.tokenPrefix, config.tokenName].join('_');
           $window.localStorage[namespace] = token;
-//          $rootScope.isAuthenticated = true;
+
           if (config.loginRedirect) {
             $location.path(config.loginRedirect);
           }
+
           deferred.resolve();
         };
 
@@ -229,11 +230,12 @@
           var deferred = $q.defer();
           var token = [config.tokenPrefix, config.tokenName].join('_');
           delete $window.localStorage[token];
-          deferred.resolve();
 
           if (config.logoutRedirect) {
             $location.path(config.logoutRedirect);
           }
+
+          deferred.resolve();
 
           return deferred.promise;
         };

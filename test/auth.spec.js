@@ -47,35 +47,6 @@ describe('$auth', function() {
 
   describe('isAuthenticated()', function() {
 
-    beforeEach(function() {
-      localStorage.clear();
-    });
-
-    it('should be defined', function() {
-      expect(this.$auth.isAuthenticated).toBeDefined();
-    });
-
-//    it('should return false', function() {
-//      expect(this.$auth.isAuthenticated()).toBe(true);
-//    });
-
-  });
-
-  describe('updateToken()', function() {
-
-    it('should be defined', function() {
-      expect(this.$auth.updateToken).toBeDefined();
-    });
-
-    it('should set new token in local storage', function() {
-      this.$auth.updateToken('foo');
-      expect(this.$window.localStorage['satellizer_token']).toBe('foo');
-    });
-
-  });
-
-  describe('isAuthenticated()', function() {
-
     it('should be defined', function() {
       expect(this.$auth.isAuthenticated).toBeDefined();
     });

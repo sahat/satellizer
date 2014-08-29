@@ -198,10 +198,6 @@
             return oauth.unlink(provider);
           };
 
-          $auth.updateToken = function(token) {
-            localStorage.setItem([config.tokenPrefix, config.tokenName].join('_'), token);
-          };
-
           return $auth;
         }];
 
@@ -217,13 +213,13 @@
         shared.parseUser = function(token, deferred) {
           var namespace = [config.tokenPrefix, config.tokenName].join('_');
           $window.localStorage[namespace] = token;
-//          $rootScope.isAuthenticated = true;
+
           if (config.loginRedirect) {
             $location.path(config.loginRedirect);
           }
+
           deferred.resolve();
         };
-
 
         shared.isAuthenticated = function() {
           var token = [config.tokenPrefix, config.tokenName].join('_');
@@ -234,11 +230,12 @@
           var deferred = $q.defer();
           var token = [config.tokenPrefix, config.tokenName].join('_');
           delete $window.localStorage[token];
-          deferred.resolve();
 
           if (config.logoutRedirect) {
             $location.path(config.logoutRedirect);
           }
+
+          deferred.resolve();
 
           return deferred.promise;
         };
@@ -582,4 +579,3 @@
     }]);
 
 })(window, window.angular);
-
