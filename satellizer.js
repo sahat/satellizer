@@ -568,12 +568,6 @@
     }])
     .run(['$rootScope', '$window', '$location', 'satellizer.utils', 'satellizer.config',
       function($rootScope, $window, $location, utils, config) {
-        var token = localStorage.getItem([config.tokenPrefix, config.tokenName].join('_'));
-
-        if (token) {
-          $rootScope.isAuthenticated = true;
-        }
-
         var params = $window.location.search.substring(1);
         var qs = Object.keys($location.search()).length ? $location.search() : utils.parseQueryString(params);
 
