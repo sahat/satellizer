@@ -22,11 +22,12 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
-import org.joda.time.DateTime;
 
 import com.example.helloworld.HelloWorldConfiguration.ClientSecretsConfiguration;
+import com.example.helloworld.core.Token;
 import com.example.helloworld.core.User;
 import com.example.helloworld.db.UserDAO;
+import com.example.helloworld.util.AuthUtils;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -35,12 +36,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jose.JWSSigner;
-import com.nimbusds.jose.crypto.MACSigner;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientResponse;
@@ -56,16 +51,11 @@ public class AuthResource {
 	private UserDAO dao;
 	private ClientSecretsConfiguration secrets;
 
-	public static final String 
-			CLIENT_ID_KEY = "client_id",
-			REDIRECT_URI_KEY = "redirect_uri", 
-			CLIENT_SECRET = "client_secret",
+	public static final String CLIENT_ID_KEY = "client_id",
+			REDIRECT_URI_KEY = "redirect_uri", CLIENT_SECRET = "client_secret",
 			CODE_KEY = "code";
 
-	public static final JWSHeader JWT_HEADER = new JWSHeader(JWSAlgorithm.HS256);
-	
-	public static final String 
-			CONFLICT_MSG = "There is already a %s account that belongs to you",
+	public static final String CONFLICT_MSG = "There is already a %s account that belongs to you",
 			NOT_FOUND_MSG = "User not found";
 
 	public AuthResource(Client client, UserDAO dao,
@@ -93,8 +83,7 @@ public class AuthResource {
 	public Response loginFacebook(@Valid Payload payload,
 			@Context HttpServletRequest request) throws JsonParseException,
 			JsonMappingException, ClientHandlerException,
-			UniformInterfaceException, IOException, JOSEException,
-			ParseException {
+			UniformInterfaceException, IOException, ParseException, JOSEException {
 		String accessTokenUrl = "https://graph.facebook.com/oauth/access_token";
 		String graphApiUrl = "https://graph.facebook.com/me";
 
@@ -107,8 +96,8 @@ public class AuthResource {
 		ClientResponse response = client.resource(accessTokenUrl)
 				.queryParams(authParams).get(ClientResponse.class);
 
-		// FIXME: there should be more reliable way of parsing this!
-		String paramStr = Preconditions.checkNotNull(response.getEntity(String.class));
+		String paramStr = Preconditions.checkNotNull(response
+				.getEntity(String.class));
 		// first param is token, second is expire
 		String[] params = paramStr.split("&");
 		String[] tokenPair = params[0].split("=");
@@ -123,27 +112,27 @@ public class AuthResource {
 		ObjectMapper mapper = new ObjectMapper();
 		Map<String, Object> userInfo = mapper.readValue(
 				response.getEntity(String.class),
-				new TypeReference<Map<String, Object>>() {});
+				new TypeReference<Map<String, Object>>() {
+				});
 		String facebookId = userInfo.get("id").toString();
 		String displayName = userInfo.get("name").toString();
 		Optional<User> fbUser = dao.findByFacebook(facebookId);
 
 		// Step 3a. If user is already signed in then link accounts.
 		User user;
-		String authHeader = request.getHeader("Authorization");
+		String authHeader = request.getHeader(AuthUtils.AUTH_HEADER_KEY);
 		if (StringUtils.isNotBlank(authHeader)) {
 			if (fbUser.isPresent()) {
 				return Response
 						.status(Status.CONFLICT)
-						.entity(new ErrorMessage(String.format(CONFLICT_MSG, "Facebook"))).build();
+						.entity(new ErrorMessage(String.format(CONFLICT_MSG,
+								"Facebook"))).build();
 			}
-			String token = authHeader.split(" ")[1];
-			String subject = SignedJWT.parse(token).getJWTClaimsSet()
-					.getSubject();
+
+			String subject = AuthUtils.getSubject(authHeader);
 			Optional<User> foundUser = dao.findById(Long.parseLong(subject));
 			if (!foundUser.isPresent()) {
-				return Response
-						.status(Status.NOT_FOUND)
+				return Response.status(Status.NOT_FOUND)
 						.entity(new ErrorMessage(NOT_FOUND_MSG)).build();
 			}
 			user = foundUser.get();
@@ -164,11 +153,9 @@ public class AuthResource {
 			}
 		}
 
-		JWSSigner signer = new MACSigner(secrets.getFacebook());
-		SignedJWT jwt = createToken(request.getRemoteHost(), user.getId());
-		jwt.sign(signer);
-
-		return Response.ok().entity(new Token(jwt.serialize())).build();
+		Token token = AuthUtils.createToken(request.getRemoteHost(),
+				user.getId(), secrets.getFacebook());
+		return Response.ok().entity(token).build();
 	}
 
 	@POST
@@ -240,30 +227,6 @@ public class AuthResource {
 		public String getCode() {
 			return code;
 		}
-	}
-
-	public static class Token {
-		String token;
-
-		public Token(@JsonProperty("token") String token) {
-			this.token = token;
-		}
-
-		public String getToken() {
-			return token;
-		}
-	}
-
-	/*
-	 * Helper methods
-	 */
-	private SignedJWT createToken(String host, long sub) {
-		JWTClaimsSet claim = new JWTClaimsSet();
-		claim.setSubject(Long.toString(sub));
-		claim.setIssuer(host);
-		claim.setIssueTime(DateTime.now().toDate());
-		claim.setExpirationTime(DateTime.now().plusDays(14).toDate());
-		return new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claim);
 	}
 
 }
