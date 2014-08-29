@@ -127,25 +127,11 @@
         }
       });
 
-      this.facebook = function(params) {
-        angular.extend(config.providers.facebook, params);
-      };
-
-      this.google = function(params) {
-        angular.extend(config.providers.google, params);
-      };
-
-      this.linkedin = function(params) {
-        angular.extend(config.providers.linkedin, params);
-      };
-
-      this.github = function(params) {
-        angular.extend(config.providers.github, params);
-      };
-
-      this.twitter = function(params) {
-        angular.extend(config.providers.twitter, params);
-      };
+      angular.forEach(Object.keys(config.providers), function(provider) {
+        this[provider] = function(params) {
+          return angular.extend(config.providers[provider], params);
+        };
+      }, this);
 
       var oauth = function(params) {
         config.providers[params.name] = config.providers[params.name] || {};
