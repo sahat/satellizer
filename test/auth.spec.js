@@ -74,6 +74,19 @@ describe('$auth', function() {
 
   });
 
+  describe('isAuthenticated()', function() {
+
+    it('should be defined', function() {
+      expect(this.$auth.isAuthenticated).toBeDefined();
+    });
+
+    it('should return false', function() {
+      localStorage.clear();
+      expect(this.$auth.isAuthenticated()).toBe(false);
+    });
+
+  });
+
   describe('logout()', function() {
 
     it('should log out a user', function() {
