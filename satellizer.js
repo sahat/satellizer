@@ -244,20 +244,6 @@
           return deferred.promise;
         };
 
-        shared.unlink = function(provider) {
-          var deferred = $q.defer();
-
-          $http.get(config.unlinkUrl + provider)
-            .then(function(response) {
-              shared.parseUser(response.data[config.tokenName], deferred);
-            })
-            .catch(function(response) {
-              deferred.reject(response);
-            });
-
-          return deferred.promise;
-        };
-
         return shared;
       }])
     .factory('satellizer.oauth', [
@@ -279,6 +265,20 @@
             .catch(function(response) {
               deferred.reject(response);
             });
+          return deferred.promise;
+        };
+
+        oauth.unlink = function(provider) {
+          var deferred = $q.defer();
+
+          $http.get(config.unlinkUrl + provider)
+            .then(function(response) {
+              shared.parseUser(response.data[config.tokenName], deferred);
+            })
+            .catch(function(response) {
+              deferred.reject(response);
+            });
+
           return deferred.promise;
         };
 
