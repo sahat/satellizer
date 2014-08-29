@@ -10,6 +10,7 @@ import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
+import com.example.helloworld.HelloWorldConfiguration.ClientSecretsConfiguration;
 import com.example.helloworld.auth.ExampleAuthenticator;
 import com.example.helloworld.cli.RenderCommand;
 import com.example.helloworld.core.Template;
@@ -19,6 +20,7 @@ import com.example.helloworld.health.TemplateHealthCheck;
 import com.example.helloworld.resources.AuthResource;
 import com.example.helloworld.resources.ClientResource;
 import com.example.helloworld.resources.UserResource;
+import com.example.helloworld.util.AuthFilter;
 import com.sun.jersey.api.client.Client;
 
 public class HelloWorldApplication extends Application<HelloWorldConfiguration> {
@@ -66,17 +68,19 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
     public void run(HelloWorldConfiguration configuration,
                     Environment environment) throws ClassNotFoundException {
         final Template template = configuration.buildTemplate();
-        final UserDAO dao = new UserDAO(hibernateBundle.getSessionFactory());
-        final Client client = new JerseyClientBuilder(environment).using(configuration.getJerseyClientConfiguration())
-                .build(getName());
-
         environment.healthChecks().register("template", new TemplateHealthCheck(template));
-
         environment.jersey().register(new BasicAuthProvider<>(new ExampleAuthenticator(),
                                                               "SUPER SECRET STUFF"));
         
+        final UserDAO dao = new UserDAO(hibernateBundle.getSessionFactory());
+        final Client client = new JerseyClientBuilder(environment).using(configuration.getJerseyClient()).build(getName());
+        final ClientSecretsConfiguration clientSecrets = configuration.getClientSecrets();
+        
         environment.jersey().register(new ClientResource()); 
         environment.jersey().register(new UserResource(dao));
-        environment.jersey().register(new AuthResource(client, dao));
+        environment.jersey().register(new AuthResource(client, dao, clientSecrets));
+        
+        environment.servlets().addFilter("AuthFilter", new AuthFilter())
+        	.addMappingForUrlPatterns(null, true, "/api/me");
     }
 }

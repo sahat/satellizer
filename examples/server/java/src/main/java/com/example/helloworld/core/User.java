@@ -13,113 +13,93 @@ import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "users")
 @NamedQueries({
-    @NamedQuery(
-        name = "com.example.helloworld.core.User.findAll",
-        query = "SELECT u FROM User u"
-    )
-})
+		@NamedQuery(name = "User.findAll", query = "SELECT u FROM User u"),
+		@NamedQuery(name = "User.findByFacebook", query = "SELECT u FROM User u WHERE u.facebook = :facebook") })
 public class User {
-	
+
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
-	
+
 	@Email
 	@Column(name = "email", unique = true)
 	private String email;
-	
+
 	@Column(name = "password")
 	private String password;
-	
+
 	@NotBlank
 	@Column(name = "display_name")
 	private String displayName;
-	
+
 	@Column(name = "facebook")
 	private String facebook;
-	
+
 	@Column(name = "google")
 	private String google;
 
 	@Column(name = "linkedin")
 	private String linkedin;
-	
+
 	@Column(name = "github")
 	private String github;
-	
+
 	@Column(name = "foursquare")
 	private String foursquare;
 
 	@Column(name = "twitter")
 	private String twitter;
 	
+	public long getId() {
+		return id;
+	}
+
 	public String getEmail() {
 		return email;
 	}
-	
-	public User(@JsonProperty("id") long id,  
-			@JsonProperty("email") String email, 
-			@JsonProperty("password") String password,
-			@JsonProperty("displayName") String displayName,
-			@JsonProperty("facebook") String facebook,
-			@JsonProperty("google") String google,
-			@JsonProperty("linkedin") String linkedin,
-			@JsonProperty("github") String github,
-			@JsonProperty("foursquare") String foursquare,
-			@JsonProperty("twitter") String twitter) {
-		this.id = id;
-		this.email = email;
-		this.password = password;
-		this.displayName = displayName;
-		this.facebook = facebook;
-		this.google = google;
-		this.linkedin = linkedin;
-		this.github = github;
-		this.foursquare = foursquare;
-		this.twitter = twitter;
-	}
-	
-	// temporary constructor 
-	public User(String displayName) {
-		this.displayName = displayName;
-	}
-	
+
 	@JsonIgnore
 	public String getPassword() {
 		return password;
 	}
-	
+
 	public String getDisplayName() {
 		return displayName;
 	}
-	
+
 	public String getFacebook() {
 		return facebook;
 	}
-	
+
 	public String getGoogle() {
 		return google;
 	}
-	
+
 	public String getLinkedin() {
 		return linkedin;
 	}
-	
+
 	public String getGithub() {
 		return github;
 	}
-	
+
 	public String getFoursquare() {
 		return foursquare;
 	}
-	
+
 	public String getTwitter() {
 		return twitter;
 	}
+
+	public void setDisplayName(String name) {
+		this.displayName = name;
+	}
 	
+	public void setFacebook(String facebook) {
+		this.facebook = facebook;
+	}
 }

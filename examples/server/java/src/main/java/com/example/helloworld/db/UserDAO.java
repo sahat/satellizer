@@ -17,12 +17,19 @@ public class UserDAO extends AbstractDAO<User> {
     public Optional<User> findById(Long id) {
         return Optional.fromNullable(get(id));
     }
+    
+    public Optional<User> findByFacebook(String facebookId) {
+    	User foundUser = (User) namedQuery("User.findByFacebook")
+    							.setParameter("facebook", facebookId)
+    							.uniqueResult();
+    	return Optional.fromNullable(foundUser);
+    }
 
     public User save(User user) {
         return persist(user);
     }
 
     public List<User> findAll() {
-        return list(namedQuery("com.example.helloworld.core.User.findAll"));
+        return list(namedQuery("User.findAll"));
     }
 }
