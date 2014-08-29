@@ -1,6 +1,6 @@
 /**
  * Satellizer
- * (c) 2014 Sahat Yalkabov <sahat@me.com>
+ * (c) 2014 Sahat Yalkabov
  * License: MIT
  */
 
@@ -207,10 +207,11 @@
 
     }])
     .factory('satellizer.shared', [
+      '$q',
       '$window',
       '$location',
       'satellizer.config',
-      function($window, $location, config) {
+      function($q, $window, $location, config) {
         var shared = {};
 
         shared.parseUser = function(token, deferred) {
