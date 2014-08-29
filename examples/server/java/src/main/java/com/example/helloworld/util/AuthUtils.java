@@ -11,6 +11,7 @@ import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
 public final class AuthUtils {
@@ -18,12 +19,16 @@ public final class AuthUtils {
 	public static final JWSHeader JWT_HEADER = new JWSHeader(JWSAlgorithm.HS256);
 	public static final String AUTH_HEADER_KEY = "Authorization";
 	
-	public static String getToken(String authHeader) {
+	public static String getSerializedToken(String authHeader) {
 		return authHeader.split(" ")[1];
 	}
 	
 	public static String getSubject(String authHeader) throws ParseException {
-		return SignedJWT.parse(getToken(authHeader)).getJWTClaimsSet().getSubject();
+		return decodeToken(authHeader).getSubject();
+	}
+	
+	public static ReadOnlyJWTClaimsSet decodeToken(String authHeader) throws ParseException {
+		return SignedJWT.parse(getSerializedToken(authHeader)).getJWTClaimsSet();
 	}
 	
 	public static Token createToken(String host, long sub, String clientSecret) throws JOSEException {
@@ -39,5 +44,4 @@ public final class AuthUtils {
 		
 		return new Token(jwt.serialize());
 	}
-	
 }

@@ -17,11 +17,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.example.helloworld.core.Token;
 import com.example.helloworld.core.User;
 import com.example.helloworld.db.UserDAO;
 import com.example.helloworld.util.AuthUtils;
 import com.google.common.base.Optional;
-import com.nimbusds.jwt.SignedJWT;
 
 @Path("/api/me")
 @Produces(MediaType.APPLICATION_JSON)
@@ -37,13 +37,8 @@ public class UserResource {
 	@GET
 	@UnitOfWork
 	public Response getUser(@Context HttpServletRequest request) throws ParseException {
-		String[] auth = request.getHeader("Authorization").split(" ");
-		if (auth.length != 2 || !auth[0].equals("Bearer")) {
-			return Response.status(Status.UNAUTHORIZED).build();
-		}
+		Optional<User> foundUser = getAuthUser(request);
 		
-		String subject = SignedJWT.parse(auth[1]).getJWTClaimsSet().getSubject();
-		Optional<User> foundUser = dao.findById(Long.parseLong(subject));
 		if (!foundUser.isPresent()) {
 			return Response.status(Status.NOT_FOUND).build();
 		}
@@ -62,8 +57,7 @@ public class UserResource {
 	@UnitOfWork
 	public Response updateUser(@Valid User user, @Context HttpServletRequest request) throws ParseException {
 		String authHeader = request.getHeader(AuthUtils.AUTH_HEADER_KEY);
-		String subject = AuthUtils.getSubject(authHeader);
-		Optional<User> foundUser = dao.findById(Long.parseLong(subject));
+		Optional<User> foundUser = getAuthUser(authHeader);
 		
 		if (!foundUser.isPresent()) {
 			return Response
@@ -76,7 +70,21 @@ public class UserResource {
 		userToUpdate.setEmail(user.getEmail());
 		dao.save(userToUpdate);
 		
-		return Response.ok().entity(AuthUtils.getToken(authHeader)).build();
+		Token token = new Token(AuthUtils.getSerializedToken(authHeader));
+		return Response.ok().entity(token).build();
+	}
+	
+	/*
+	 * Helper methods
+	 */
+	private Optional<User> getAuthUser(String authHeader) throws ParseException {
+		String subject = AuthUtils.getSubject(authHeader);
+		return dao.findById(Long.parseLong(subject));
+	}
+	
+	private Optional<User> getAuthUser(HttpServletRequest request) throws ParseException {
+		String authHeader = request.getHeader(AuthUtils.AUTH_HEADER_KEY);
+		return getAuthUser(authHeader);
 	}
 
 }
