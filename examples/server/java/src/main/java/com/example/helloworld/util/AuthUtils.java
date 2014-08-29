@@ -16,8 +16,10 @@ import com.nimbusds.jwt.SignedJWT;
 
 public final class AuthUtils {
 	
-	public static final JWSHeader JWT_HEADER = new JWSHeader(JWSAlgorithm.HS256);
+	private static final JWSHeader JWT_HEADER = new JWSHeader(JWSAlgorithm.HS256);
+	private static final String TOKEN_SECRET = "aliceinwonderland";
 	public static final String AUTH_HEADER_KEY = "Authorization";
+	
 	
 	public static String getSerializedToken(String authHeader) {
 		return authHeader.split(" ")[1];
@@ -31,14 +33,14 @@ public final class AuthUtils {
 		return SignedJWT.parse(getSerializedToken(authHeader)).getJWTClaimsSet();
 	}
 	
-	public static Token createToken(String host, long sub, String clientSecret) throws JOSEException {
+	public static Token createToken(String host, long sub) throws JOSEException {
 		JWTClaimsSet claim = new JWTClaimsSet();
 		claim.setSubject(Long.toString(sub));
 		claim.setIssuer(host);
 		claim.setIssueTime(DateTime.now().toDate());
 		claim.setExpirationTime(DateTime.now().plusDays(14).toDate());
 		
-		JWSSigner signer = new MACSigner(clientSecret);
+		JWSSigner signer = new MACSigner(TOKEN_SECRET);
 		SignedJWT jwt = new SignedJWT(JWT_HEADER, claim);
 		jwt.sign(signer);
 		
