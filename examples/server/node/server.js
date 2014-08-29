@@ -132,7 +132,7 @@ app.put('/api/me', ensureAuthenticated, function(req, res) {
     user.displayName = req.body.displayName || user.displayName;
     user.email = req.body.email || user.email;
     user.save(function(err) {
-      res.send({ token: createToken(req, user) });
+      res.status(200).end();
     });
   });
 });

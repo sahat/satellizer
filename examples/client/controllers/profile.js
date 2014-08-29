@@ -32,7 +32,7 @@ angular.module('MyApp')
           type: 'material',
           duration: 3
         });
-      })
+      });
     };
 
     /**

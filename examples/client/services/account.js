@@ -5,9 +5,7 @@ angular.module('MyApp')
         return $http.get('/api/me');
       },
       updateProfile: function(profileData) {
-        return $http.put('/api/me', profileData).success(function(data) {
-          $auth.updateToken(data.token);
-        });
+        return $http.put('/api/me', profileData);
       }
     };
   });
