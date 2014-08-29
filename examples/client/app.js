@@ -1,4 +1,4 @@
-angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'Satellizer', 'mgcrea.ngStrap'])
+angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'satellizer', 'mgcrea.ngStrap'])
   .config(function($routeProvider, $authProvider) {
     $routeProvider
       .when('/', {
