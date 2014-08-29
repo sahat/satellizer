@@ -303,6 +303,7 @@ payload and save it to Local Storage for subsequent use after page reload.
  - **Application Type**: Web Application
  - **Authorized Javascript origins**: http://localhost:3000
  - **Authorized redirect URI**: http://localhost:3000
+- Then select the *APIs* tab and make sure you have **Contacts API** and **Google+ API** turned **ON**. Note: once enabled, you may need to wait 10 minutes before you can use them.
 
 <hr>
 
