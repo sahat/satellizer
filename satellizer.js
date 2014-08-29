@@ -194,7 +194,7 @@
           };
 
           $auth.unlink = function(provider) {
-            return local.unlink(provider);
+            return oauth.unlink(provider);
           };
 
           // TODO: call from parseUser
@@ -233,12 +233,26 @@
           var deferred = $q.defer();
           var token = [config.tokenPrefix, config.tokenName].join('_');
           delete $window.localStorage[token];
+          deferred.resolve();
 
+          // todo location.path null, empty, undef
           if (config.logoutRedirect) {
             $location.path(config.logoutRedirect);
           }
 
-          deferred.resolve();
+          return deferred.promise;
+        };
+
+        shared.unlink = function(provider) {
+          var deferred = $q.defer();
+
+          $http.get(config.unlinkUrl + provider)
+            .then(function(response) {
+              shared.parseUser(response.data[config.tokenName], deferred);
+            })
+            .catch(function(response) {
+              deferred.reject(response);
+            });
 
           return deferred.promise;
         };
@@ -301,21 +315,6 @@
             .then(function() {
               $location.path(config.signupRedirect);
               deferred.resolve();
-            })
-            .catch(function(response) {
-              deferred.reject(response);
-            });
-
-          return deferred.promise;
-        };
-
-
-        local.unlink = function(provider) {
-          var deferred = $q.defer();
-
-          $http.get(config.unlinkUrl + provider)
-            .then(function(response) {
-              shared.parseUser(response.data[config.tokenName], deferred);
             })
             .catch(function(response) {
               deferred.reject(response);
