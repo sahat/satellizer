@@ -1,4 +1,4 @@
-package com.example.helloworld.util;
+package com.example.helloworld.auth;
 
 import java.io.IOException;
 import java.text.ParseException;

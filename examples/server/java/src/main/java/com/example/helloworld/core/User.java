@@ -10,7 +10,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -18,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Table(name = "users")
 @NamedQueries({
 		@NamedQuery(name = "User.findAll", query = "SELECT u FROM User u"),
+		@NamedQuery(name = "User.findByEmail", query = "SELECT u FROM User u WHERE u.email = :email"),
 		@NamedQuery(name = "User.findByFacebook", query = "SELECT u FROM User u WHERE u.facebook = :facebook") })
 public class User {
 
@@ -32,7 +32,6 @@ public class User {
 	@Column(name = "password")
 	private String password;
 
-	@NotBlank
 	@Column(name = "display_name")
 	private String displayName;
 
@@ -97,6 +96,10 @@ public class User {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	
+	public void setPassword(String password) {
+		this.password = password;
 	}
 	
 	public void setDisplayName(String name) {

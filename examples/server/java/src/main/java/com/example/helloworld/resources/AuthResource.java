@@ -1,5 +1,6 @@
 package com.example.helloworld.resources;
 
+import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.errors.ErrorMessage;
 
@@ -24,11 +25,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.example.helloworld.HelloWorldConfiguration.ClientSecretsConfiguration;
+import com.example.helloworld.auth.AuthUtils;
+import com.example.helloworld.auth.PasswordService;
 import com.example.helloworld.core.Token;
 import com.example.helloworld.core.User;
 import com.example.helloworld.db.UserDAO;
-import com.example.helloworld.util.AuthUtils;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -51,13 +52,16 @@ public class AuthResource {
 	private UserDAO dao;
 	private ClientSecretsConfiguration secrets;
 
-	public static final String CLIENT_ID_KEY = "client_id",
+	public static final String 
+			CLIENT_ID_KEY = "client_id",
 			REDIRECT_URI_KEY = "redirect_uri", CLIENT_SECRET = "client_secret",
 			CODE_KEY = "code";
 
-	public static final String CONFLICT_MSG = "There is already a %s account that belongs to you",
-			NOT_FOUND_MSG = "User not found";
-
+	public static final String 
+			CONFLICT_MSG = "There is already a %s account that belongs to you",
+			NOT_FOUND_MSG = "User not found",
+			LOGING_ERROR_MSG = "Wrong email and/or password";
+			
 	public AuthResource(Client client, UserDAO dao,
 			ClientSecretsConfiguration secrets) {
 		this.client = client;
@@ -67,14 +71,22 @@ public class AuthResource {
 
 	@POST
 	@Path("login")
-	public Response loginEmail() {
-		return Response.ok().build();
+	@UnitOfWork
+	public Response login(@Valid @Auth User user, @Context HttpServletRequest request) throws JOSEException {
+		Optional<User> foundUser = dao.findByEmail(user.getEmail());
+		if (foundUser.isPresent() && PasswordService.checkPassword(user.getPassword(), foundUser.get().getPassword())) {
+			Token token = AuthUtils.createToken(request.getRemoteHost(), foundUser.get().getId());
+			return Response.ok().entity(token).build();
+		}
+		return Response.status(Status.UNAUTHORIZED).entity(new ErrorMessage(LOGING_ERROR_MSG)).build();	
 	}
 
 	@POST
 	@Path("signup")
-	public Response signup() {
-		return Response.ok().build();
+	@UnitOfWork
+	public Response signup(@Valid User user) {
+		user.setPassword(PasswordService.hashPassword(user.getPassword()));
+		return Response.status(Status.CREATED).entity(dao.save(user)).build();
 	}
 
 	@POST
@@ -153,8 +165,7 @@ public class AuthResource {
 			}
 		}
 
-		Token token = AuthUtils.createToken(request.getRemoteHost(),
-				user.getId(), secrets.getFacebook());
+		Token token = AuthUtils.createToken(request.getRemoteHost(), user.getId());
 		return Response.ok().entity(token).build();
 	}
 
@@ -207,14 +218,6 @@ public class AuthResource {
 
 		@NotBlank
 		String code;
-
-		public Payload(@JsonProperty("cliendId") String cliendId,
-				@JsonProperty("redirectUri") String redirectUri,
-				@JsonProperty("code") String code) {
-			this.clientId = cliendId;
-			this.redirectUri = redirectUri;
-			this.code = code;
-		}
 
 		public String getClientId() {
 			return clientId;
