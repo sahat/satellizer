@@ -259,11 +259,10 @@
       '$q',
       '$http',
       '$location',
-      '$rootScope',
       'satellizer.utils',
       'satellizer.shared',
       'satellizer.config',
-      function($q, $http, $location, $rootScope, utils, shared, config) {
+      function($q, $http, $location, utils, shared, config) {
         var local = {};
 
         local.login = function(user) {
