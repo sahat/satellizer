@@ -1,5 +1,6 @@
 package com.example.helloworld.resources;
 
+import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.errors.ErrorMessage;
 
@@ -51,13 +52,16 @@ public class AuthResource {
 	private UserDAO dao;
 	private ClientSecretsConfiguration secrets;
 
-	public static final String CLIENT_ID_KEY = "client_id",
+	public static final String 
+			CLIENT_ID_KEY = "client_id",
 			REDIRECT_URI_KEY = "redirect_uri", CLIENT_SECRET = "client_secret",
 			CODE_KEY = "code";
 
-	public static final String CONFLICT_MSG = "There is already a %s account that belongs to you",
-			NOT_FOUND_MSG = "User not found";
-
+	public static final String 
+			CONFLICT_MSG = "There is already a %s account that belongs to you",
+			NOT_FOUND_MSG = "User not found",
+			LOGING_ERROR_MSG = "Wrong email and/or password";
+			
 	public AuthResource(Client client, UserDAO dao,
 			ClientSecretsConfiguration secrets) {
 		this.client = client;
@@ -68,8 +72,13 @@ public class AuthResource {
 	@POST
 	@Path("login")
 	@UnitOfWork
-	public Response login() {
-		return Response.ok().build();
+	public Response login(@Valid @Auth User user, @Context HttpServletRequest request) throws JOSEException {
+		Optional<User> foundUser = dao.findByEmail(user.getEmail());
+		if (foundUser.isPresent() && PasswordService.checkPassword(user.getPassword(), foundUser.get().getPassword())) {
+			Token token = AuthUtils.createToken(request.getRemoteHost(), foundUser.get().getId());
+			return Response.ok().entity(token).build();
+		}
+		return Response.status(Status.UNAUTHORIZED).entity(new ErrorMessage(LOGING_ERROR_MSG)).build();	
 	}
 
 	@POST
@@ -77,7 +86,7 @@ public class AuthResource {
 	@UnitOfWork
 	public Response signup(@Valid User user) {
 		user.setPassword(PasswordService.hashPassword(user.getPassword()));
-		return Response.ok().entity(dao.save(user)).build();
+		return Response.status(Status.CREATED).entity(dao.save(user)).build();
 	}
 
 	@POST
@@ -156,8 +165,7 @@ public class AuthResource {
 			}
 		}
 
-		Token token = AuthUtils.createToken(request.getRemoteHost(),
-				user.getId(), secrets.getFacebook());
+		Token token = AuthUtils.createToken(request.getRemoteHost(), user.getId());
 		return Response.ok().entity(token).build();
 	}
 

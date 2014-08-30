@@ -18,6 +18,13 @@ public class UserDAO extends AbstractDAO<User> {
         return Optional.fromNullable(get(id));
     }
     
+    public Optional<User> findByEmail(String email) {
+    	User foundUser = (User) namedQuery("User.findByEmail")
+				.setParameter("email", email)
+				.uniqueResult();
+    	return Optional.fromNullable(foundUser);
+    }
+    
     public Optional<User> findByFacebook(String facebookId) {
     	User foundUser = (User) namedQuery("User.findByFacebook")
     							.setParameter("facebook", facebookId)
