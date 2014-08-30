@@ -274,7 +274,7 @@ use after page reload.
 1. **Client:** Enter your email and password into the signup form.
 2. **Client:** On form submit call `$auth.signup()`, passing an object with email
 and password.
-3. **Client:** Send a `POST` request to the **/auth/signup**.
+3. **Client:** Send a `POST` request to the */auth/signup*.
 4. **Server:** Create a new user account then reply with `200 OK`.
 5. **Client:** Redirect to the `signupRedirect` route. *Default: `/login`*.
 
@@ -292,10 +292,10 @@ and password.
 - Then select *APIs & auth* from the sidebar and click on *Credentials* tab
 - Click **CREATE NEW CLIENT ID** button
  - **Application Type**: Web Application
- - **Authorized Javascript origins**: http://localhost:3000
- - **Authorized redirect URI**: http://localhost:3000
+ - **Authorized Javascript origins**: *http://localhost:3000*
+ - **Authorized redirect URI**: *http://localhost:3000*
 
-**:pushpin: Note:** Make sure you have turned on **Contacts API** and 
+**:exclamation: Note:** Make sure you have turned on **Contacts API** and 
 **Google+ API** in the *APIs* tab.
 
 <hr>
@@ -306,7 +306,7 @@ and password.
 - Enter *Display Name*, then choose a category, then click **Create app**
 - Click on *Settings* on the sidebar, then click **+ Add Platform**
 - Select **Website**
-- Enter `http://localhost:3000` for *Site URL*
+- Enter *http://localhost:3000* for *Site URL*
 
 <hr>
 
@@ -315,7 +315,7 @@ and password.
 - From the profile picture dropdown menu select **My Applications**
 - Click **Create a new application**
 - Enter your application name, website and description
-- For **Callback URL**: http://127.0.0.1:3000
+- For **Callback URL**: *http://127.0.0.1:3000*
 - Go to **Settings** tab
 - Under *Application Type* select **Read and Write** access
 - Check the box **Allow this application to be used to Sign in with Twitter**
@@ -438,6 +438,10 @@ $auth.unlink('github');
 Found a typo or a bug? Send a pull request. I would especially appreciate pull
 requests for server-side examples since I do not have much experience with any
 of the languages on the *TODO* list.
+
+## Credits
+
+TODO.
 
 ## License
 
