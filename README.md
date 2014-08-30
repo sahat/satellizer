@@ -42,10 +42,10 @@ npm install satellizer --save
 ```
 
 **Note:** Alternatively, you may download the [latest release](https://github.com/sahat/satellizer/releases)
-or use the :globe_with_meridians: CDN:
+or use the CDN:
 
 ```html
-<script src="//cdn.jsdelivr.net/satellizer/0.5.0/satellizer.min.js"></script>
+<script src="//cdn.jsdelivr.net/satellizer/0.6.0/satellizer.min.js"></script>
 ```
 
 ## Usage
@@ -108,7 +108,7 @@ angular.module('MyApp')
 <button ng-click="authenticate('foursquare')">Sign in with Foursquare</button>
 ```
 
-**:pushpin: Note:** For server-side usage please refer to the [examples](https://github.com/sahat/satellizer/tree/master/examples/server)
+**:exclamation: Note:** For server-side usage please refer to the [examples](https://github.com/sahat/satellizer/tree/master/examples/server)
 directory.
 
 ## Configuration
@@ -218,46 +218,43 @@ how the authentication process works.
 
 ### Login with OAuth 2.0
 
-1. **Client:** Open a popup window via `$auth.authenticate('<provider name>')`.
-2. **Client:** Sign in with that provider by entering your username and password
-and authorize the application.
+1. **Client:** Open a popup window via `$auth.authenticate('provider name')`.
+2. **Client:** Sign in with that provider, if necessary, then authorize the application.
 3. **Client:** After successful authorization, the popup is redirected back to 
-your app, e.g. **http://localhost:3000**,  with the `code` query string parameter.
-4. **Client:** The `code` (authorization code) parameter is sent back to the 
-parent window that opened the popup.
-5. **Client:** Parent window closes the popup and sends the *authorization code*
-cia a **POST** request to **/auth/<provider>**.
-6. **Server:** The *authorization code* is exchanged for the *access token*.
+your app, e.g. *http://localhost:3000*,  with the `code` (authorization code)
+query string parameter.
+4. **Client:** The `code` parameter is sent back to the  parent window that opened the popup.
+5. **Client:** Parent window closes the popup and sends a **POST** 
+request to */auth/provider* with`code` parameter.
+6. **Server:** *Authorization code* is exchanged for *access token*.
 7. **Server:** User information is retrived using the *access token* from **Step 6**.
 8. **Server:** Look up the user by their unique *Provider ID*. If user already 
 exists, grab the existing user, otherwise create a new user account.
-9. **Server:** In both cases of Step 8, generate a *JSON Web Token* with the
-the payload containing *issuer*, *user id*, *issued time* and *expiration time*.
-10. **Server:** Reply with *JSON Web Token* response.
-11. **Client:** Parse the token and save it to *Local Storage* for subsequent
+9. **Server:** In both cases of Step 8, create a JSON Web Token and send it back to the client.
+10. **Client:** Parse the token and save it to *Local Storage* for subsequent
 use after page reload.
 
 ### Login with OAuth 1.0
 
-1. **Client:** Open a popup window via `$auth.authenticate('<provider name>')`.
+1. **Client:** Open a popup window via `$auth.authenticate('provider name')`.
 2. **Client:** Unlike OAuth 2.0, you cannot go directly to the authentication 
 screen without a valid *request token*.
-3. **Client:** The OAuth 1.0 flow starts with the **GET** request to **/auth/<provider>**
+3. **Client:** The OAuth 1.0 flow starts with the **GET** request to */auth/provider*
 inside the popup.
 4. **Server:** Check if URL contains `oauth_token` and `oauth_verifier` parameters.
 5. **Sever:** Initially it does not, so send an OAuth signed **POST** request to 
-the **/request_token** URL.
-6. **Server:** Redirect to the **/authenticate** URL with a valid *request token*.
+the */request_token* URL.
+6. **Server:** Redirect to the */authenticate* URL with a valid *request token*.
 7. **Client:** Sign in with your username and password if necessary, then authorize
 the application.
-8. **Client:** Send a *GET* request back to the **/auth/<provider>** with 
+8. **Client:** Send a *GET* request back to the */auth/provider* with 
 `oauth_token` and `oauth_verifier` query string parameters.
 9. **Server:** Similar to **Step 4**, but this time send an OAuth signed `POST` 
-request to the **/access_token** URL since we now have `oauth_token` and 
+request to the */access_token* URL since we now have `oauth_token` and 
 `oauth_verifier` parameters.
 10. **Server:** Look up the user by their unique *Provider ID*. If user already 
 exists, grab the existing user, otherwise create a new user account.
-11. **Server:** Reply with *JSON Web Token* response.
+11. **Server:** Create a JSON Web Token and send it back to the client.
 12. **Client:** Parse the token and save it to *Local Storage* for subsequent
 use after page reload.
 
@@ -266,12 +263,12 @@ use after page reload.
 1. **Client:** Enter your email and password into the login form.
 2. **Client:** On form submit call `$auth.login()` with email and password.
 3. **Client:** Send a `POST` request to `/auth/login`.
-4. **Server:** Check if email exists, if not return `401`.
-5. **Server:** Check if password is correct, if not return `401`.
-5. **Server:** Reply with JSON Web Token.
-13. **Client:** Parse the token, extract user information from the
-payload and save it to Local Storage for subsequent use after page reload.
-1
+4. **Server:** Check if email exists, if not - return `401`.
+5. **Server:** Check if password is correct, if not - return `401`.
+6. **Server:** Create a JSON Web Token and send it back to the client.
+7. **Client:** Parse the token and save it to *Local Storage* for subsequent
+use after page reload.
+
 ### Signup
 
 1. **Client:** Enter your email and password into the signup form.
@@ -283,8 +280,8 @@ and password.
 
 ### Logout
 
-2. **Client:** Delete `satellizer_token` from *Local Storage*.
-3. **Client:** Redirect to the `logoutRedirect` route. *Default: `/`*.
+1. **Client:** Delete `satellizer_token` from *Local Storage*.
+2. **Client:** Redirect to the `logoutRedirect` route. *Default: `/`*.
 
 ## Obtaining OAuth Keys
 
