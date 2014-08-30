@@ -271,20 +271,20 @@ use after page reload.
 5. **Server:** Reply with JSON Web Token.
 13. **Client:** Parse the token, extract user information from the
 payload and save it to Local Storage for subsequent use after page reload.
-
+1
 ### Signup
 
 1. **Client:** Enter your email and password into the signup form.
-2. **Client:** On form submit call `$auth.signup()` with email and password.
-3. **Client:** Send a `POST` request to `/auth/signup`.
-4. **Server:** Create a new user account then return `200 OK`.
-5. **Client:** Redirect to `signupRedirect`. (Default: '/login')
+2. **Client:** On form submit call `$auth.signup()`, passing an object with email
+and password.
+3. **Client:** Send a `POST` request to the **/auth/signup**.
+4. **Server:** Create a new user account then reply with `200 OK`.
+5. **Client:** Redirect to the `signupRedirect` route. *Default: `/login`*.
 
 ### Logout
 
-1. **Client:** Delete `currentUser` from the `$rootScope`.
-2. **Client:** Delete `jwtToken` from the Local Storage.
-3. **Client:** Redirect to `logoutRedirect`. (Default: `/`)
+2. **Client:** Delete `satellizer_token` from *Local Storage*.
+3. **Client:** Redirect to the `logoutRedirect` route. *Default: `/`*.
 
 ## Obtaining OAuth Keys
 
@@ -297,7 +297,9 @@ payload and save it to Local Storage for subsequent use after page reload.
  - **Application Type**: Web Application
  - **Authorized Javascript origins**: http://localhost:3000
  - **Authorized redirect URI**: http://localhost:3000
-- Then select the *APIs* tab and make sure you have **Contacts API** and **Google+ API** turned **ON**. Note: once enabled, you may need to wait 10 minutes before you can use them.
+
+**:pushpin: Note:** Make sure you have turned on **Contacts API** and 
+**Google+ API** in the *APIs* tab.
 
 <hr>
 
@@ -335,7 +337,6 @@ TODO.
 - [`$auth.isAuthenticated()`](#authisauthenticated)
 - [`$auth.link(provider)`](#authlinkprovider)
 - [`$auth.unlink(provider)`](#authunlinkprovider)
-- [`$auth.updateToken(token)`](#authupdatetokentoken)
 
 #### `$auth.login(user)`
 
@@ -363,21 +364,19 @@ $auth.signup({
 
 #### `$auth.authenticate(name)`
 
-Starts the *OAuth 1.0* or *OAuth 2.0* authentication flow by opening a poup where:
-- `name` - valid provider name.
-
-If empty or invalid name is provided, the function will throw an error.
+Starts the *OAuth 1.0* or *OAuth 2.0* authentication flow by opening a popup where:
+- `name` - one of the predefined provider names or a custom provider name created
+via `$authProvider.oauth1()` or `$authProvider.oauth2()`.
 
 ```js
 $auth.authenticate('google').then(function() {
-  // signed in!
+  // Signed In.
 });
 ```
 
 #### `$auth.logout()`
 
-Logs out current user by deleting the token from *Local Storage* and setting
-`currentUser` to `null`. *No request to the server is necessary*.
+Logs out current user by deleting the token from *Local Storage*.
 
 ```js
 $auth.logout();
@@ -385,7 +384,7 @@ $auth.logout();
 
 #### `$auth.isAuthenticated()`
 
-Returns `true` or `false` if the user is signed in or not.
+Returns `true` or `false` depending on if the user is signed in or not.
 
 **Controller:**
 ```js
@@ -407,16 +406,18 @@ $scope.isAuthenticated = function() {
 
 #### `$auth.link(provider)`
 
-Links an OAuth provider to the account. *It's an alias for the `$auth.authenticate(provider)`*.
+Links an OAuth provider to the account. *Alias for `$auth.authenticate(provider)`*.
 
+Account linking business logic is handled entirely on the server.
 
 ```js
-$auth.unlink('github');
+$auth.link('github');
 ```
 
 #### `$auth.unlink(provider)`
 
-Unlinks an OAuth provider from the account.
+Unlinks an OAuth provider from the account by sending a **GET** request to the
+**/auth/unlink/<provider>** URL.
 
 ```js
 $auth.unlink('github');
@@ -463,16 +464,3 @@ FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER 
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-
-
-
-
-
-
-
-
-
-
-
-
