@@ -17,10 +17,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import com.example.helloworld.core.Token;
+import com.example.helloworld.auth.AuthUtils;
 import com.example.helloworld.core.User;
 import com.example.helloworld.db.UserDAO;
-import com.example.helloworld.util.AuthUtils;
 import com.google.common.base.Optional;
 
 @Path("/api/me")
@@ -56,8 +55,7 @@ public class UserResource {
 	@PUT
 	@UnitOfWork
 	public Response updateUser(@Valid User user, @Context HttpServletRequest request) throws ParseException {
-		String authHeader = request.getHeader(AuthUtils.AUTH_HEADER_KEY);
-		Optional<User> foundUser = getAuthUser(authHeader);
+		Optional<User> foundUser = getAuthUser(request.getHeader(AuthUtils.AUTH_HEADER_KEY));
 		
 		if (!foundUser.isPresent()) {
 			return Response
@@ -69,9 +67,8 @@ public class UserResource {
 		userToUpdate.setDisplayName(user.getDisplayName());
 		userToUpdate.setEmail(user.getEmail());
 		dao.save(userToUpdate);
-		
-		Token token = new Token(AuthUtils.getSerializedToken(authHeader));
-		return Response.ok().entity(token).build();
+
+		return Response.ok().build();
 	}
 	
 	/*
