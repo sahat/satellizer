@@ -1,6 +1,5 @@
 package com.example.helloworld.resources;
 
-import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.errors.ErrorMessage;
 
@@ -14,6 +13,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -72,7 +72,7 @@ public class AuthResource {
 	@POST
 	@Path("login")
 	@UnitOfWork
-	public Response login(@Valid @Auth User user, @Context HttpServletRequest request) throws JOSEException {
+	public Response login(@Valid User user, @Context HttpServletRequest request) throws JOSEException {
 		Optional<User> foundUser = dao.findByEmail(user.getEmail());
 		if (foundUser.isPresent() && PasswordService.checkPassword(user.getPassword(), foundUser.get().getPassword())) {
 			Token token = AuthUtils.createToken(request.getRemoteHost(), foundUser.get().getId());
@@ -171,38 +171,79 @@ public class AuthResource {
 
 	@POST
 	@Path("google")
+	@UnitOfWork
 	public Response loginGoogle() {
 		return Response.ok().build();
 	}
 
 	@POST
 	@Path("linkedin")
+	@UnitOfWork
 	public Response loginLinkedin() {
 		return Response.ok().build();
 	}
 
 	@POST
 	@Path("github")
+	@UnitOfWork
 	public Response loginGithub() {
 		return Response.ok().build();
 	}
 
 	@POST
 	@Path("foursquare")
+	@UnitOfWork
 	public Response loginFoursquare() {
 		return Response.ok().build();
 	}
 
 	@GET
 	@Path("twitter")
+	@UnitOfWork
 	public Response loginTwitter() {
 		return Response.ok().build();
 	}
 
 	@GET
 	@Path("unlink/{provider}")
-	public Response unlink() {
-		// TODO: make provider id null then return 200
+	@UnitOfWork
+	public Response unlink(@PathParam("provider") String provider, @Context HttpServletRequest request) throws ParseException {
+		String subject = AuthUtils.getSubject(request.getHeader(AuthUtils.AUTH_HEADER_KEY));
+		Optional<User> foundUser = dao.findById(Long.parseLong(subject));
+		
+		if (!foundUser.isPresent()) {
+			return Response.status(Status.NOT_FOUND)
+					.entity(new ErrorMessage(NOT_FOUND_MSG)).build();
+		}
+		
+		User userToUnlink = foundUser.get();
+		switch (provider) {
+			case "facebook":
+				userToUnlink.setFacebook(null);
+				break;
+			case "google":
+				userToUnlink.setGoogle(null);
+				break;
+			case "linkedin":
+				userToUnlink.setLinkedin(null);
+				break;
+			case "github":
+				userToUnlink.setGithub(null);
+				break;
+			case "foursquare":
+				userToUnlink.setFouresquare(null);
+				break;
+			case "twitter":
+				userToUnlink.setTwitter(null);
+				break;
+			default:
+				return Response.status(Status.BAD_REQUEST).build();
+		}
+		
+		dao.save(userToUnlink);
+		
+		// TODO: need to create new token here?
+		// remove user if not linked to anything and has no email/password credentials?
 		return Response.ok().build();
 	}
 
