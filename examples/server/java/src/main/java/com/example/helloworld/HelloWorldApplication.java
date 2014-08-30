@@ -2,7 +2,6 @@ package com.example.helloworld;
 
 import io.dropwizard.Application;
 import io.dropwizard.assets.AssetsBundle;
-import io.dropwizard.auth.basic.BasicAuthProvider;
 import io.dropwizard.client.JerseyClientBuilder;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.hibernate.HibernateBundle;
@@ -11,13 +10,12 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
 import com.example.helloworld.HelloWorldConfiguration.ClientSecretsConfiguration;
-import com.example.helloworld.auth.ExampleAuthenticator;
+import com.example.helloworld.auth.AuthFilter;
 import com.example.helloworld.core.User;
 import com.example.helloworld.db.UserDAO;
 import com.example.helloworld.resources.AuthResource;
 import com.example.helloworld.resources.ClientResource;
 import com.example.helloworld.resources.UserResource;
-import com.example.helloworld.util.AuthFilter;
 import com.sun.jersey.api.client.Client;
 
 public class HelloWorldApplication extends Application<HelloWorldConfiguration> {
@@ -64,9 +62,6 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
     public void run(HelloWorldConfiguration configuration,
                     Environment environment) throws ClassNotFoundException {
 		
-        environment.jersey().register(new BasicAuthProvider<>(new ExampleAuthenticator(),
-                                                              "SUPER SECRET STUFF"));
-        
         final UserDAO dao = new UserDAO(hibernateBundle.getSessionFactory());
         final Client client = new JerseyClientBuilder(environment).using(configuration.getJerseyClient()).build(getName());
         final ClientSecretsConfiguration clientSecrets = configuration.getClientSecrets();

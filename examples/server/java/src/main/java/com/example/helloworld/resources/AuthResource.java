@@ -25,11 +25,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.example.helloworld.HelloWorldConfiguration.ClientSecretsConfiguration;
+import com.example.helloworld.auth.AuthUtils;
+import com.example.helloworld.auth.PasswordService;
 import com.example.helloworld.core.Token;
 import com.example.helloworld.core.User;
 import com.example.helloworld.db.UserDAO;
-import com.example.helloworld.util.AuthUtils;
-import com.example.helloworld.util.PasswordService;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;

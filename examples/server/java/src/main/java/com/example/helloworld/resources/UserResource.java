@@ -17,9 +17,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import com.example.helloworld.auth.AuthUtils;
 import com.example.helloworld.core.User;
 import com.example.helloworld.db.UserDAO;
-import com.example.helloworld.util.AuthUtils;
 import com.google.common.base.Optional;
 
 @Path("/api/me")
