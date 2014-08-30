@@ -1,4 +1,3 @@
-
 ![Project Logo](https://lh6.googleusercontent.com/-YmfKZZLZKL0/U-KVPFSbiOI/AAAAAAAAEZA/maoYT8iJCnA/w1089-h513-no/sshot-1.png)
 
 # [Satellizer](https://github.com/sahat/satellizer/) 
@@ -7,7 +6,7 @@
 [![Test Coverage](http://img.shields.io/codeclimate/coverage/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
 [![Version](http://img.shields.io/badge/version-0.5.0-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
 
-**:space_invader: Live Demo:** [https://satellizer.herokuapp.com](http://satellizer.herokuapp.com)
+**:space_invader: Live Demo:** [https://satellizer.herokuapp.com](https://satellizer.herokuapp.com)
 
 **Satellizer** is a simple to use, end-to-end, token-based authentication module 
 for [AngularJS](http://angularjs.org) with built-in support for Google, Facebook,
@@ -109,10 +108,8 @@ angular.module('MyApp')
 <button ng-click="authenticate('foursquare')">Sign in with Foursquare</button>
 ```
 
-For server-side usage please refer to the [examples](https://github.com/sahat/satellizer/tree/master/examples/server)
+**:pushpin: Note:** For server-side usage please refer to the [examples](https://github.com/sahat/satellizer/tree/master/examples/server)
 directory.
-
-**Note:** List of popular [OAuth service providers](http://en.wikipedia.org/wiki/OAuth#List_of_OAuth_service_providers).
 
 ## Configuration
 
@@ -128,39 +125,7 @@ $authProvider.loginRoute = '/login';
 $authProvider.signupRoute = '/signup';
 $authProvider.tokenName: 'token';
 $authProvider.tokenPrefix: 'satellizer';
-$authProvider.unlinkUrl: '/auth/unlink/'
-
-// Google
-$authProvider.google({
-  url: '/auth/google',
-  authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
-  redirectUri: window.location.origin,
-  scope: 'openid profile email',
-  scopeDelimiter: ' ',
-  requiredUrlParams: ['scope'],
-  optionalUrlParams: ['display'],
-  display: 'popup',
-  type: '2.0',
-  popupOptions: {
-    width: 452,
-    height: 633
-  }
-});
-
-// GitHub
-$authProvider.github({
-  name: 'github',
-  url: '/auth/github',
-  authorizationEndpoint: 'https://github.com/login/oauth/authorize',
-  redirectUri: window.location.origin,
-  scope: [],
-  scopeDelimiter: ' ',
-  type: '2.0',
-  popupOptions: {
-    width: 1020,
-    height: 618
-  }
-});
+$authProvider.unlinkUrl: '/auth/unlink/';
 
 // Facebook
 $authProvider.facebook({
@@ -169,13 +134,25 @@ $authProvider.facebook({
   redirectUri: window.location.origin + '/',
   scope: 'email',
   scopeDelimiter: ',',
-  requiredUrlParams: ['display'],
+  requiredUrlParams: ['display', 'scope'],
   display: 'popup',
   type: '2.0',
-  popupOptions: {
-    width: 481,
-    height: 269
-  }
+  popupOptions: { width: 481, height: 269 }
+});
+
+// Google
+$authProvider.google({
+  url: '/auth/google',
+  authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
+  redirectUri: window.location.origin,
+  scope: ['profile', 'email'];
+  scopePrefix: 'openid';
+  scopeDelimiter: ' ',
+  requiredUrlParams: ['scope'],
+  optionalUrlParams: ['display'],
+  display: 'popup',
+  type: '2.0',
+  popupOptions: { width: 452, height: 633 }
 });
 
 // LinkedIn
@@ -188,16 +165,25 @@ $authProvider.linkedin({
   scopeDelimiter: ' ',
   state: 'STATE',
   type: '2.0',
-  popupOptions: {
-    width: 527,
-    height: 582
-  }
+  popupOptions: { width: 527, height: 582 }
 });
 
 // Twitter
 $authProvider.twitter({
   url: '/auth/twitter',
   type: '1.0'
+});
+
+// GitHub
+$authProvider.github({
+  name: 'github',
+  url: '/auth/github',
+  authorizationEndpoint: 'https://github.com/login/oauth/authorize',
+  redirectUri: window.location.origin,
+  scope: [],
+  scopeDelimiter: ' ',
+  type: '2.0',
+  popupOptions: { width: 1020, height: 618 }
 });
 
 // OAuth 2.0
@@ -232,25 +218,28 @@ how the authentication process works.
 
 ### Login with OAuth 2.0
 
-1. **Client:** Open a popup window via `$auth.authenticate('provider_name')`.
-2. **Client:** Sign in with that provider by entering your username and password and authorize the application.
-3. **Client:** Popup is redirected back to your app, e.g. **http://localhost:3000**, 
-with the `code` url parameter.
-4. **Client:** The `code` (authorization code) is sent back to the parent window
-and popup is immediately closed.
-5. **Client:** Parent window sends a `POST` request to **/auth/provider** with the 
-authorization code from popup.
-6. **Server:** Then *authorization code* is exchanged for *access token*.
+1. **Client:** Open a popup window via `$auth.authenticate('<provider name>')`.
+2. **Client:** Sign in with that provider by entering your username and password
+and authorize the application.
+3. **Client:** After successful authorization, the popup is redirected back to 
+your app, e.g. **http://localhost:3000**,  with the `code` url parameter.
+4. **Client:** The `code` (authorization code) parameter is sent back to the 
+parent window that opened the popup.
+5. **Client:** Parent window closes the popup and sends the *authorization code*
+cia a **POST** request to **/auth/<provider>**.
+6. **Server:** The *authorization code* is exchanged for the *access token*.
 7. **Server:** User information is retrived using the *access token* from **Step 6**.
-8. **Server:** Look up the user by the unique *provider id*. If user already exists, grab the existing user, otherwise create a new user account.
-9. **Server:** In both cases of Step 8, create a *JSON Web Token* using user object as its *payload*.
+8. **Server:** Look up the user by their unique *Provider ID*. If user already 
+exists, grab the existing user, otherwise create a new user account.
+9. **Server:** In both cases of Step 8, generate a *JSON Web Token* with the
+the payload containing *issuer*, *user id*, *issued time* and *expiration time*.
 10. **Server:** Reply with JSON Web Token.
 11. **Client:** Parse the token, extract user information from the
 payload and save it to Local Storage for subsequent use after page reload.
 
 ### Login with OAuth 1.0
 
-1. **Client:** Open a popup window via `$auth.authenticate('provider_name')`.
+1. **Client:** Open a popup window via `$auth.authenticate('<provider name>')`.
 2. **Client:** Unlike OAuth 2.0 you cannot go directly to the authentication screen without
 a valid request token.
 3. **Client:** The OAuth 1.0 flow starts with the `GET` request to `/auth/<provider>` inside a popup.  
@@ -428,23 +417,13 @@ Unlinks an OAuth provider from the account.
 $auth.unlink('github');
 ```
 
-#### `$auth.updateToken(token)`
-
-Updates existing *JSON Web Token* stored in Local Storage with the new one.
-
-```js
-// Update user information
-$http.put('/api/me', profileData).then(function(response) {
-  $auth.updateToken(response.data.token);
-});
-```
-
 ## TODO
 
 - [ ] C# (ASP.NET vNext) implementation
+- [ ] Clojure (Compojure) implementation
 - [ ] Elixir (Phoenix) implementation
 - [ ] Go (Martini) implementation
-- [ ] Java (Dropwizard) implementation
+- [x] Java (Dropwizard) implementation
 - [x] Node.js (Express) implementation
 - [x] PHP (Laravel) implementation
 - [x] Python (Flask) implementation
