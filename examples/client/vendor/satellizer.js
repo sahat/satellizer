@@ -193,7 +193,7 @@
             $location.path(config.loginRedirect);
           }
 
-          deferred.resolve();
+          deferred.resolve(response);
         };
 
         shared.isAuthenticated = function() {
