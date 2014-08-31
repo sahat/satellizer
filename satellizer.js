@@ -188,12 +188,16 @@
           var namespace = [config.tokenPrefix, config.tokenName].join('_');
           $window.localStorage[namespace] = token;
 
+          this.redirect(deferred);
+        };
+
+        shared.redirect = function(deferred) {
           if (config.loginRedirect) {
             $location.path(config.loginRedirect);
           }
 
           deferred.resolve();
-        };
+        }
 
         shared.isAuthenticated = function() {
           var token = [config.tokenPrefix, config.tokenName].join('_');
@@ -244,7 +248,7 @@
 
           $http.get(config.unlinkUrl + provider)
             .then(function(response) {
-              shared.parseUser(response.data[config.tokenName], deferred);
+              shared.redirect(deferred);
             })
             .catch(function(response) {
               deferred.reject(response);
