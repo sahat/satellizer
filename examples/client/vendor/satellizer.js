@@ -184,7 +184,8 @@
       function($q, $window, $location, config) {
         var shared = {};
 
-        shared.parseUser = function(token, deferred) {
+        shared.parseUser = function(response, deferred) {
+          var token = response.data[config.tokenName];
           var namespace = [config.tokenPrefix, config.tokenName].join('_');
           $window.localStorage[namespace] = token;
 
@@ -231,7 +232,7 @@
           var provider = config.providers[name].type === '1.0' ? new Oauth1() : new Oauth2();
           provider.open(config.providers[name])
             .then(function(response) {
-              shared.parseUser(response.data[config.tokenName], deferred);
+              shared.parseUser(response, deferred);
             })
             .catch(function(response) {
               deferred.reject(response);
@@ -240,17 +241,7 @@
         };
 
         oauth.unlink = function(provider) {
-          var deferred = $q.defer();
-
-          $http.get(config.unlinkUrl + provider)
-            .then(function(response) {
-              shared.parseUser(response.data[config.tokenName], deferred);
-            })
-            .catch(function(response) {
-              deferred.reject(response);
-            });
-
-          return deferred.promise;
+          return $http.get(config.unlinkUrl + provider);
         };
 
         return oauth;
@@ -270,7 +261,7 @@
 
           $http.post(config.loginUrl, user)
             .then(function(response) {
-              shared.parseUser(response.data[config.tokenName], deferred);
+              shared.parseUser(response, deferred);
             })
             .catch(function(response) {
               deferred.reject(response);
