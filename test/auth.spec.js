@@ -2,11 +2,12 @@ describe('$auth', function() {
 
   beforeEach(module('satellizer'));
 
-  beforeEach(inject(['$window', '$location', '$httpBackend', '$auth', function($window, $location, $httpBackend, $auth) {
+  beforeEach(inject(['$window', '$location', '$httpBackend', '$auth', 'satellizer.config', function($window, $location, $httpBackend, $auth, config) {
     this.$auth = $auth;
     this.$window = $window;
     this.$location = $location;
     this.$httpBackend = $httpBackend;
+    this.config = config;
   }]));
 
   it('should be defined', function() {
@@ -105,11 +106,31 @@ describe('$auth', function() {
 
   describe('signup()', function() {
 
-    it('should be able to call signup', function() {
+    it('should be able to call signup and auto login by default', function() {
       var user = {
         email: 'foo@bar.com',
         password: '1234'
       };
+
+      var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7Il9pZCI6IjUzZTU3ZDZiY2MzNmMxNTgwNzU4NDJkZCIsImVtYWlsIjoiZm9vQGJhci5jb20iLCJfX3YiOjB9LCJpYXQiOjE0MDc1NDg3ODI5NzMsImV4cCI6MTQwODE1MzU4Mjk3M30.1Ak6mij5kfkSi6d_wtPOx4yK7pS7ZFSiwbkL7AJbnYs';
+
+      this.$httpBackend.expectPOST('/auth/signup').respond({token: token});
+
+      this.$auth.signup(user);
+
+      this.$httpBackend.flush();
+
+      expect(angular.isFunction(this.$auth.signup)).toBe(true);
+      expect(this.$location.path()).toEqual('/');
+    });
+
+    it('should be able to call signup and redirect to login', function() {
+      var user = {
+        email: 'foo@bar.com',
+        password: '1234'
+      };
+
+      this.config.loginOnSignup = false;
 
       this.$httpBackend.expectPOST('/auth/signup').respond(200);
 

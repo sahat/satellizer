@@ -12,6 +12,7 @@
       logoutRedirect: '/',
       loginRedirect: '/',
       signupRedirect: '/login',
+      loginOnSignup: true,
       loginUrl: '/auth/login',
       signupUrl: '/auth/signup',
       loginRoute: '/login',
@@ -84,6 +85,10 @@
         signupRedirect: {
           get: function() { return config.signupRedirect; },
           set: function(value) { config.signupRedirect = value; }
+        },
+        loginOnSignup: {
+          get: function() { return config.loginOnSignup; },
+          set: function(value) { config.loginOnSignup = value; }
         },
         loginUrl: {
           get: function() { return config.loginUrl; },
@@ -274,9 +279,13 @@
           var deferred = $q.defer();
 
           $http.post(config.signupUrl, user)
-            .then(function() {
-              $location.path(config.signupRedirect);
-              deferred.resolve();
+            .then(function(response) {
+              if (config.loginOnSignup) {
+                shared.parseUser(response, deferred);
+              } else {
+                $location.path(config.signupRedirect);
+                deferred.resolve(response);
+              }
             })
             .catch(function(response) {
               deferred.reject(response);

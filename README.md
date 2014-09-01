@@ -119,6 +119,7 @@ Below is a complete listing of all default configuration options.
 $authProvider.logoutRedirect = '/';
 $authProvider.loginRedirect = '/';
 $authProvider.signupRedirect = '/login';
+$authProvider.loginOnSignup = true;
 $authProvider.loginUrl = '/auth/login';
 $authProvider.signupUrl = '/auth/signup';
 $authProvider.loginRoute = '/login';
