@@ -41,10 +41,12 @@ describe('satellizer.shared', function() {
 
     it('should not redirect if loginRedirect is null', function() {
       var deferred = this.$q.defer();
-      var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsb…YzMn0.YATZN37JENCQWeNAoN4M7KxJl7OAIJL4ka_fSM_gYkE';
+      var response = {
+        data: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsb…YzMn0.YATZN37JENCQWeNAoN4M7KxJl7OAIJL4ka_fSM_gYkE'
+      };
       this.config.loginRedirect = null;
 
-      this.shared.parseUser(token, deferred);
+      this.shared.parseUser(response, deferred);
 
       expect(this.$location.path()).toBe('');
     });
