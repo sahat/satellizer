@@ -7,6 +7,7 @@ import io.dropwizard.hibernate.AbstractDAO;
 import org.hibernate.SessionFactory;
 
 import com.example.helloworld.core.User;
+import com.example.helloworld.core.User.Provider;
 import com.google.common.base.Optional;
 
 public class UserDAO extends AbstractDAO<User> {
@@ -25,9 +26,9 @@ public class UserDAO extends AbstractDAO<User> {
     	return Optional.fromNullable(foundUser);
     }
     
-    public Optional<User> findByFacebook(String facebookId) {
-    	User foundUser = (User) namedQuery("User.findByFacebook")
-    							.setParameter("facebook", facebookId)
+    public Optional<User> findByProvider(Provider provider, String providerId) {
+    	User foundUser = (User) namedQuery(String.format("User.findBy%s", provider.capitalize()))
+    							.setParameter(provider.getName(), providerId)
     							.uniqueResult();
     	return Optional.fromNullable(foundUser);
     }
@@ -39,4 +40,5 @@ public class UserDAO extends AbstractDAO<User> {
     public List<User> findAll() {
         return list(namedQuery("User.findAll"));
     }
+
 }

@@ -9,6 +9,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.validator.constraints.Email;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -18,7 +19,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @NamedQueries({
 		@NamedQuery(name = "User.findAll", query = "SELECT u FROM User u"),
 		@NamedQuery(name = "User.findByEmail", query = "SELECT u FROM User u WHERE u.email = :email"),
-		@NamedQuery(name = "User.findByFacebook", query = "SELECT u FROM User u WHERE u.facebook = :facebook") })
+		@NamedQuery(name = "User.findByFacebook", query = "SELECT u FROM User u WHERE u.facebook = :facebook"),
+		@NamedQuery(name = "User.findByGoogle", query = "SELECT u FROM User u WHERE u.google = :google"),
+		@NamedQuery(name = "User.findByGithub", query = "SELECT u FROM User u WHERE u.github = :github"),
+		@NamedQuery(name = "User.findByLinkedin", query = "SELECT u FROM User u WHERE u.linkedin = :linkedin"),
+		@NamedQuery(name = "User.findByFoursquare", query = "SELECT u FROM User u WHERE u.foursquare = :foursquare"),
+		@NamedQuery(name = "User.findByTwitter", query = "SELECT u FROM User u WHERE u.twitter = :twitter") })
 public class User {
 
 	@Id
@@ -61,6 +67,14 @@ public class User {
 
 		Provider(String name) {
 			this.name = name;
+		}
+		
+		public String getName() {
+			return this.name;
+		}
+		
+		public String capitalize() {
+			return StringUtils.capitalize(this.name);
 		}
 	}
 
@@ -142,6 +156,7 @@ public class User {
 		}
 	}
 
+	@JsonIgnore
 	public int getSignInMethodCount() throws IllegalArgumentException,
 			IllegalAccessException, NoSuchFieldException, SecurityException {
 		int count = 0;
@@ -158,5 +173,5 @@ public class User {
 
 		return count;
 	}
-
+	
 }
