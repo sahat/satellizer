@@ -1,6 +1,5 @@
 package com.example.helloworld.resources;
 
-import io.dropwizard.auth.Auth;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.errors.ErrorMessage;
 
@@ -14,6 +13,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -29,6 +29,7 @@ import com.example.helloworld.auth.AuthUtils;
 import com.example.helloworld.auth.PasswordService;
 import com.example.helloworld.core.Token;
 import com.example.helloworld.core.User;
+import com.example.helloworld.core.User.Provider;
 import com.example.helloworld.db.UserDAO;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -52,16 +53,15 @@ public class AuthResource {
 	private UserDAO dao;
 	private ClientSecretsConfiguration secrets;
 
-	public static final String 
-			CLIENT_ID_KEY = "client_id",
+	public static final String CLIENT_ID_KEY = "client_id",
 			REDIRECT_URI_KEY = "redirect_uri", CLIENT_SECRET = "client_secret",
 			CODE_KEY = "code";
 
-	public static final String 
-			CONFLICT_MSG = "There is already a %s account that belongs to you",
+	public static final String CONFLICT_MSG = "There is already a %s account that belongs to you",
 			NOT_FOUND_MSG = "User not found",
-			LOGING_ERROR_MSG = "Wrong email and/or password";
-			
+			LOGING_ERROR_MSG = "Wrong email and/or password",
+			UNLINK_ERROR_MSG = "Could not unlink %s account because it is your only sign-in method";
+
 	public AuthResource(Client client, UserDAO dao,
 			ClientSecretsConfiguration secrets) {
 		this.client = client;
@@ -72,13 +72,18 @@ public class AuthResource {
 	@POST
 	@Path("login")
 	@UnitOfWork
-	public Response login(@Valid @Auth User user, @Context HttpServletRequest request) throws JOSEException {
+	public Response login(@Valid User user, @Context HttpServletRequest request)
+			throws JOSEException {
 		Optional<User> foundUser = dao.findByEmail(user.getEmail());
-		if (foundUser.isPresent() && PasswordService.checkPassword(user.getPassword(), foundUser.get().getPassword())) {
-			Token token = AuthUtils.createToken(request.getRemoteHost(), foundUser.get().getId());
+		if (foundUser.isPresent()
+				&& PasswordService.checkPassword(user.getPassword(), foundUser
+						.get().getPassword())) {
+			Token token = AuthUtils.createToken(request.getRemoteHost(),
+					foundUser.get().getId());
 			return Response.ok().entity(token).build();
 		}
-		return Response.status(Status.UNAUTHORIZED).entity(new ErrorMessage(LOGING_ERROR_MSG)).build();	
+		return Response.status(Status.UNAUTHORIZED)
+				.entity(new ErrorMessage(LOGING_ERROR_MSG)).build();
 	}
 
 	@POST
@@ -95,7 +100,8 @@ public class AuthResource {
 	public Response loginFacebook(@Valid Payload payload,
 			@Context HttpServletRequest request) throws JsonParseException,
 			JsonMappingException, ClientHandlerException,
-			UniformInterfaceException, IOException, ParseException, JOSEException {
+			UniformInterfaceException, IOException, ParseException,
+			JOSEException {
 		String accessTokenUrl = "https://graph.facebook.com/oauth/access_token";
 		String graphApiUrl = "https://graph.facebook.com/me";
 
@@ -148,7 +154,7 @@ public class AuthResource {
 						.entity(new ErrorMessage(NOT_FOUND_MSG)).build();
 			}
 			user = foundUser.get();
-			user.setFacebook(facebookId);
+			user.setProviderId(Provider.FACEBOOK, facebookId);
 			if (user.getDisplayName() == null) {
 				user.setDisplayName(displayName);
 			}
@@ -159,50 +165,84 @@ public class AuthResource {
 			} else {
 				// Step 3b. Create a new user account or return an existing one.
 				user = new User();
-				user.setFacebook(facebookId);
+				user.setProviderId(Provider.FACEBOOK, facebookId);
 				user.setDisplayName(displayName);
 				user = dao.save(user);
 			}
 		}
 
-		Token token = AuthUtils.createToken(request.getRemoteHost(), user.getId());
+		Token token = AuthUtils.createToken(request.getRemoteHost(),
+				user.getId());
 		return Response.ok().entity(token).build();
 	}
 
 	@POST
 	@Path("google")
+	@UnitOfWork
 	public Response loginGoogle() {
 		return Response.ok().build();
 	}
 
 	@POST
 	@Path("linkedin")
+	@UnitOfWork
 	public Response loginLinkedin() {
 		return Response.ok().build();
 	}
 
 	@POST
 	@Path("github")
+	@UnitOfWork
 	public Response loginGithub() {
 		return Response.ok().build();
 	}
 
 	@POST
 	@Path("foursquare")
+	@UnitOfWork
 	public Response loginFoursquare() {
 		return Response.ok().build();
 	}
 
 	@GET
 	@Path("twitter")
+	@UnitOfWork
 	public Response loginTwitter() {
 		return Response.ok().build();
 	}
 
 	@GET
 	@Path("unlink/{provider}")
-	public Response unlink() {
-		// TODO: make provider id null then return 200
+	@UnitOfWork
+	public Response unlink(@PathParam("provider") String provider,
+			@Context HttpServletRequest request) throws ParseException,
+			IllegalArgumentException, IllegalAccessException,
+			NoSuchFieldException, SecurityException {
+		String subject = AuthUtils.getSubject(request
+				.getHeader(AuthUtils.AUTH_HEADER_KEY));
+		Optional<User> foundUser = dao.findById(Long.parseLong(subject));
+
+		if (!foundUser.isPresent()) {
+			return Response.status(Status.NOT_FOUND)
+					.entity(new ErrorMessage(NOT_FOUND_MSG)).build();
+		}
+
+		User userToUnlink = foundUser.get();
+
+		// check that the user is not trying to unlink the only sign-in method
+		if (userToUnlink.getSignInMethodCount() == 1) {
+			return Response.status(Status.BAD_REQUEST)
+					.entity(new ErrorMessage(String.format(UNLINK_ERROR_MSG, provider))).build();
+		}
+
+		try {
+			userToUnlink.setProviderId(Provider.valueOf(provider.toUpperCase()), null);
+		} catch (IllegalArgumentException e) {
+			return Response.status(Status.BAD_REQUEST).build();
+		}
+
+		dao.save(userToUnlink);
+
 		return Response.ok().build();
 	}
 
