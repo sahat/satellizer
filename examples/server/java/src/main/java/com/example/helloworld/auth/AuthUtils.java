@@ -20,11 +20,6 @@ public final class AuthUtils {
 	private static final String TOKEN_SECRET = "aliceinwonderland";
 	public static final String AUTH_HEADER_KEY = "Authorization";
 	
-	
-	public static String getSerializedToken(String authHeader) {
-		return authHeader.split(" ")[1];
-	}
-	
 	public static String getSubject(String authHeader) throws ParseException {
 		return decodeToken(authHeader).getSubject();
 	}
@@ -45,5 +40,9 @@ public final class AuthUtils {
 		jwt.sign(signer);
 		
 		return new Token(jwt.serialize());
+	}
+	
+	public static String getSerializedToken(String authHeader) {
+		return authHeader.split(" ")[1];
 	}
 }
