@@ -4,7 +4,7 @@
 [![Build Status](http://img.shields.io/travis/sahat/satellizer.svg?style=flat)](https://travis-ci.org/sahat/satellizer) 
 [![Code Climate](http://img.shields.io/codeclimate/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer) 
 [![Test Coverage](http://img.shields.io/codeclimate/coverage/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
-[![Version](http://img.shields.io/badge/version-0.6.0-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
+[![Version](http://img.shields.io/badge/version-0.6.1-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
 
 **:space_invader: Live Demo:** [https://satellizer.herokuapp.com](https://satellizer.herokuapp.com)
 
@@ -45,7 +45,7 @@ npm install satellizer --save
 or use the CDN:
 
 ```html
-<script src="//cdn.jsdelivr.net/satellizer/0.6.0/satellizer.min.js"></script>
+<script src="//cdn.jsdelivr.net/satellizer/0.6.1/satellizer.min.js"></script>
 ```
 
 ## Usage
@@ -119,6 +119,7 @@ Below is a complete listing of all default configuration options.
 $authProvider.logoutRedirect = '/';
 $authProvider.loginRedirect = '/';
 $authProvider.signupRedirect = '/login';
+$authProvider.loginOnSignup = true;
 $authProvider.loginUrl = '/auth/login';
 $authProvider.signupUrl = '/auth/signup';
 $authProvider.loginRoute = '/login';

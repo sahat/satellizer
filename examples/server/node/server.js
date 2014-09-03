@@ -169,7 +169,7 @@ app.post('/auth/signup', function(req, res) {
   user.email = req.body.email;
   user.password = req.body.password;
   user.save(function(err) {
-    res.status(200).end();
+    res.send({ token: createToken(req, user) });
   });
 });
 
