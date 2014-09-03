@@ -55,7 +55,7 @@ public class UserResource {
 	@PUT
 	@UnitOfWork
 	public Response updateUser(@Valid User user, @Context HttpServletRequest request) throws ParseException {
-		Optional<User> foundUser = getAuthUser(request.getHeader(AuthUtils.AUTH_HEADER_KEY));
+		Optional<User> foundUser = getAuthUser(request);
 		
 		if (!foundUser.isPresent()) {
 			return Response
@@ -73,15 +73,10 @@ public class UserResource {
 	
 	/*
 	 * Helper methods
-	 */
-	private Optional<User> getAuthUser(String authHeader) throws ParseException {
-		String subject = AuthUtils.getSubject(authHeader);
-		return dao.findById(Long.parseLong(subject));
-	}
-	
+	 */	
 	private Optional<User> getAuthUser(HttpServletRequest request) throws ParseException {
-		String authHeader = request.getHeader(AuthUtils.AUTH_HEADER_KEY);
-		return getAuthUser(authHeader);
+		String subject = AuthUtils.getSubject(request.getHeader(AuthUtils.AUTH_HEADER_KEY));
+		return dao.findById(Long.parseLong(subject));
 	}
 
 }

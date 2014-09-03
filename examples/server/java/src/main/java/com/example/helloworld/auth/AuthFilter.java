@@ -18,6 +18,11 @@ import org.joda.time.DateTime;
 import com.nimbusds.jwt.JWTClaimsSet;
 
 public class AuthFilter implements Filter {
+	
+	private static final String AUTH_ERROR_MSG = "Please make sure your request has an Authorization header",
+								EXPIRE_ERROR_MSG = "Token has expired",
+								JWT_ERROR_MSG = "Unable to parse JWT";
+								
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response,
@@ -28,17 +33,17 @@ public class AuthFilter implements Filter {
 		String authHeader = httpRequest.getHeader(AuthUtils.AUTH_HEADER_KEY);
 		
 		if (StringUtils.isBlank(authHeader) || authHeader.split(" ").length != 2) {
-			httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+			httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, AUTH_ERROR_MSG);
 		} else {
 			JWTClaimsSet claimSet = null;
 			try {
 				claimSet = (JWTClaimsSet) AuthUtils.decodeToken(authHeader);
 			} catch (ParseException e) {
-				httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unable to parse JWT");
+				httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, JWT_ERROR_MSG);
 			}
 			// ensure that the token is not expired
 			if (new DateTime(claimSet.getExpirationTime()).isBefore(DateTime.now())) {
-				httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+				httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, EXPIRE_ERROR_MSG);
 			} else {
 				chain.doFilter(request, response);
 			}

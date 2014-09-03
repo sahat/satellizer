@@ -71,9 +71,9 @@ angular.module('MyApp')
             duration: 3
           });
         })
-        .catch(function() {
+        .catch(function(response) {
           $alert({
-            content: 'Could not unlink ' + provider + ' account',
+            content: response.data ?  response.data.message : 'Could not unlink ' + provider + ' account',
             animation: 'fadeZoomFadeDown',
             type: 'material',
             duration: 3

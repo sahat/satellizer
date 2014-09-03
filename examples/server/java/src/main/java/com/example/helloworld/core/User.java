@@ -52,7 +52,18 @@ public class User {
 
 	@Column(name = "twitter")
 	private String twitter;
-	
+
+	public enum Provider {
+		FACEBOOK("facebook"), GOOGLE("google"), LINKEDIN("linkedin"), 
+		GITHUB("github"), FOURSQUARE("foursquare"), TWITTER("twitter");
+
+		String name;
+
+		Provider(String name) {
+			this.name = name;
+		}
+	}
+
 	public long getId() {
 		return id;
 	}
@@ -97,37 +108,55 @@ public class User {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
+
 	public void setDisplayName(String name) {
 		this.displayName = name;
 	}
-	
-	public void setFacebook(String facebook) {
-		this.facebook = facebook;
+
+	public void setProviderId(Provider provider, String value) {
+		switch (provider) {
+		case FACEBOOK:
+			this.facebook = value;
+			break;
+		case GOOGLE:
+			this.google = value;
+			break;
+		case LINKEDIN:
+			this.linkedin = value;
+			break;
+		case GITHUB:
+			this.github = value;
+			break;
+		case FOURSQUARE:
+			this.facebook = value;
+			break;
+		case TWITTER:
+			this.twitter = value;
+			break;
+		default:
+			throw new IllegalArgumentException();
+		}
 	}
-	
-	public void setGoogle(String google) {
-		this.google = google;
+
+	public int getSignInMethodCount() throws IllegalArgumentException,
+			IllegalAccessException, NoSuchFieldException, SecurityException {
+		int count = 0;
+
+		if (this.getPassword() != null) {
+			count++;
+		}
+
+		for (Provider p : Provider.values()) {
+			if (this.getClass().getDeclaredField(p.name).get(this) != null) {
+				count++;
+			}
+		}
+
+		return count;
 	}
-	
-	public void setLinkedin(String linkedin) {
-		this.linkedin = linkedin;
-	}
-	
-	public void setGithub(String github) {
-		this.github = github;
-	}
-	
-	public void setFouresquare(String foursquare) {
-		this.foursquare = foursquare;
-	}
-	
-	public void setTwitter(String twitter) {
-		this.twitter = twitter;
-	}
-	
+
 }
