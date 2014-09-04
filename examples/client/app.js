@@ -19,8 +19,13 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'satellizer', 'm
       .when('/profile', {
         templateUrl: '../views/profile.html',
         controller: 'ProfileCtrl',
-        protected: true
-
+        resolve: {
+          authenticated: ['$location', '$auth', function($location, $auth) {
+            if (!$auth.isAuthenticated()) {
+              return $location.path('/login');
+            }
+          }]
+        }
       })
       .otherwise({
         redirectTo: '/'
