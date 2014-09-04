@@ -89,9 +89,11 @@ public class AuthResource {
 	@POST
 	@Path("signup")
 	@UnitOfWork
-	public Response signup(@Valid User user) {
+	public Response signup(@Valid User user, @Context HttpServletRequest request) throws JOSEException {
 		user.setPassword(PasswordService.hashPassword(user.getPassword()));
-		return Response.status(Status.CREATED).entity(dao.save(user)).build();
+		User savedUser = dao.save(user);
+		Token token = AuthUtils.createToken(request.getRemoteHost(), savedUser.getId());
+		return Response.status(Status.CREATED).entity(token).build();
 	}
 
 	@POST
