@@ -382,7 +382,13 @@ of the languages on the *TODO* list.
 
 ## Credits
 
-TODO.
+Special thanks goes to [Alice Chen](https://github.com/chena) for all your hard work
+on the [Dropwizard](dropwizard.github.io) implementation and
+[Jesús Rodríguez](https://github.com/Foxandxss) for being so proactive and actively
+reporting bugs.
+
+Additionally, I would like to thank all other contributors who have submitted
+issues and/or pull requests!
 
 ## License
 
