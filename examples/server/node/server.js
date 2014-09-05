@@ -74,7 +74,7 @@ app.use(express.static(path.join(__dirname, '../../client')));
 
 /*
  |--------------------------------------------------------------------------
- | Loging Required Middleware
+ | Login Required Middleware
  |--------------------------------------------------------------------------
  */
 function ensureAuthenticated(req, res, next) {
