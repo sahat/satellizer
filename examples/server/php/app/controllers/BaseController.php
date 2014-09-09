@@ -18,7 +18,7 @@ class BaseController extends Controller {
     {
         $payload = array(
             'iss' => Request::url(),
-            'sub' => $user->first()['id'],
+            'sub' => $user->first()->id,
             'iat' => time(),
             'exp' => time() + (2 * 7 * 24 * 60 * 60)
         );
