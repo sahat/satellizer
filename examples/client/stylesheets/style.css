@@ -206,7 +206,11 @@ a {
 }
 
 .btn [class^='ion-'] {
-  margin-right: 6px;
+  margin-right: 5px;
+}
+
+.btn .fa {
+  margin-right: 5px;
 }
 
 /*********************
@@ -263,14 +267,14 @@ a {
 
 .btn-foursquare {
   color: #fff;
-  background-color: #0072b1;
-  border: 1px solid #00669e;
+  background-color: #f94877;
+  border: 1px solid #f8215a;
 }
 
 .btn-foursquare:hover,
 .btn-foursquare:focus {
   color: #fff;
-  background-color: #00598a;
+  background-color: #f71752;
 }
 
 .btn-github {
