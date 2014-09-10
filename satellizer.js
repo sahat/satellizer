@@ -9,6 +9,7 @@
 
   angular.module('satellizer', [])
     .constant('satellizer.config', {
+      isFirstLoad : true,
       logoutRedirect: '/',
       loginRedirect: '/',
       signupRedirect: '/login',
@@ -117,6 +118,10 @@
         unlinkUrl: {
           get: function() { return config.unlinkUrl; },
           set: function(value) { config.unlinkUrl = value; }
+        },
+        isFirstLoad : {
+          get : function() { return config.isFirstLoad; },
+          set : function(value) { config.isFirstLoad = value; }
         }
       });
 
@@ -536,7 +541,12 @@
         };
       }]);
     }])
-    .run(['$window', '$location', 'satellizer.utils', function($window, $location, utils) {
+    .run(['$window', '$location', 'satellizer.utils', 'satellizer.config', function($window, $location, utils, config) {
+      if ( config.isFirstLoad === true ) {
+          config.isFirstLoad = false;
+          return;
+      }
+
       var params = $window.location.search.substring(1);
       var qs = Object.keys($location.search()).length ? $location.search() : utils.parseQueryString(params);
       try {
