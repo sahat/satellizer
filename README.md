@@ -215,8 +215,8 @@ $authProvider.oauth1({
 
 **Satellizer** relies on *token-based authentication* using
 [JSON Web Tokens](https://auth0.com/blog/2014/01/07/angularjs-authentication-with-cookies-vs-token/) 
-instead of cookies. Each [Wiki](https://github.com/sahat/satellizer/wiki)
-sub-section below goes in-depth into how the authentication process works.
+instead of cookies. Each **Wiki** link below goes in-depth into how the 
+authentication process works.
 
 - [Login with OAuth 2.0](https://github.com/sahat/satellizer/wiki/Login-with-OAuth-2.0)
 - [Login with OAuth 1.0](https://github.com/sahat/satellizer/wiki/Login-with-OAuth-1.0)
@@ -224,7 +224,7 @@ sub-section below goes in-depth into how the authentication process works.
 - [Signup](https://github.com/sahat/satellizer/wiki/Signup)
 - [Logout](https://github.com/sahat/satellizer/wiki/Logout)
 
-**:bulb: Note:** Learn more about JSON Web Token (JWT) at [jwt.io](http://jwt.io/).
+**:bulb: Note:** To learn more about JSON Web Token (JWT) visit [JWT.io](http://jwt.io/).
 
 ## Obtaining OAuth Keys
 
