@@ -289,6 +289,18 @@ a {
   background-color: #303030;
 }
 
+.btn-yahoo {
+  color: #fff;
+  background-color: #720e9e;
+  border: 1px solid #580b75;
+}
+
+.btn-yahoo:hover,
+.btn-yahoo:focus {
+  color: #fff;
+  background-color: #303030;
+}
+
 /*********************
 * Animations
 *********************/
