@@ -235,6 +235,7 @@
         oauth.authenticate = function(name) {
           var deferred = $q.defer();
           var provider = config.providers[name].type === '1.0' ? new Oauth1() : new Oauth2();
+
           provider.open(config.providers[name])
             .then(function(response) {
               shared.parseUser(response, deferred);
@@ -242,6 +243,7 @@
             .catch(function(response) {
               deferred.reject(response);
             });
+
           return deferred.promise;
         };
 
@@ -303,6 +305,7 @@
       'satellizer.utils',
       function($q, $http, popup, utils) {
         return function() {
+
           var defaults = {
             url: null,
             name: null,
@@ -387,6 +390,7 @@
       }])
     .factory('satellizer.Oauth1', ['$q', '$http', 'satellizer.popup', function($q, $http, popup) {
       return function() {
+
         var defaults = {
           url: null,
           name: null,
@@ -549,10 +553,9 @@
             $window.opener.postMessage({ error: qs.error }, $window.location.origin);
           }
         }
-      } catch(ex) {
+      } catch(error) {
 
       }
-
     }]);
 
 })(window, window.angular);
