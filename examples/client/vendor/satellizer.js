@@ -69,6 +69,11 @@
         twitter: {
           url: '/auth/twitter',
           type: '1.0'
+        },
+        yahoo: {
+          url: '/auth/yahoo',
+          type: '1.0',
+          popupOptions: { width: 559, height: 519 }
         }
       }
     })
@@ -189,6 +194,7 @@
       function($q, $window, $location, config) {
         var shared = {};
 
+        // TODO include directly into functions
         shared.parseUser = function(response, deferred) {
           var token = response.data[config.tokenName];
           var namespace = [config.tokenPrefix, config.tokenName].join('_');
@@ -404,7 +410,7 @@
 
           var deferred = $q.defer();
 
-          popup.open(defaults.url)
+          popup.open(defaults.url, defaults.popupOptions)
             .then(function(response) {
               oauth1.exchangeForToken(response)
                 .then(function(response) {
