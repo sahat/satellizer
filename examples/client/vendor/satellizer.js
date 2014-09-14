@@ -208,8 +208,17 @@
         };
 
         shared.isAuthenticated = function() {
-          var token = [config.tokenPrefix, config.tokenName].join('_');
-          return Boolean($window.localStorage[token]);
+          var tokenName = [config.tokenPrefix, config.tokenName].join('_');
+          var token = $window.localStorage[tokenName];
+
+          if (token) {
+            var base64Url = token.split('.')[1];
+            var base64 = base64Url.replace('-', '+').replace('_', '/');
+            var exp = JSON.parse($window.atob(base64)).exp;
+            return Date.now() <= exp;
+          }
+
+          return false;
         };
 
         shared.logout = function() {
