@@ -50,6 +50,9 @@ angular.module('MyApp')
             duration: 3
           });
         })
+        .then(function() {
+          $scope.getProfile();
+        })
         .catch(function(response) {
           $alert({
             content: response.data.message,
