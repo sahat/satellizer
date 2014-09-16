@@ -4,18 +4,20 @@ angular.module('MyApp')
     /**
      * Get user's profile information.
      */
-    Account.getProfile()
-      .success(function(data) {
-        $scope.user = data;
-      })
-      .error(function() {
-        $alert({
-          content: 'Unable to get user information',
-          animation: 'fadeZoomFadeDown',
-          type: 'material',
-          duration: 3
+    $scope.getProfile = function() {
+      Account.getProfile()
+        .success(function(data) {
+          $scope.user = data;
+        })
+        .error(function() {
+          $alert({
+            content: 'Unable to get user information',
+            animation: 'fadeZoomFadeDown',
+            type: 'material',
+            duration: 3
+          });
         });
-      });
+    };
 
 
     /**
@@ -71,13 +73,19 @@ angular.module('MyApp')
             duration: 3
           });
         })
+        .then(function() {
+          $scope.getProfile();
+        })
         .catch(function(response) {
           $alert({
-            content: response.data ?  response.data.message : 'Could not unlink ' + provider + ' account',
+            content: response.data ? response.data.message : 'Could not unlink ' + provider + ' account',
             animation: 'fadeZoomFadeDown',
             type: 'material',
             duration: 3
           });
         });
     };
+
+    $scope.getProfile();
+
   });
