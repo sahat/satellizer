@@ -199,7 +199,7 @@ app.post('/auth/google', function(req, res) {
     // Step 2. Retrieve profile information about the current user.
     request.get({ url: peopleApiUrl, headers: headers, json: true }, function(err, response, profile) {
 
-      // Step 3a. If user is already signed in then link accounts.
+      // Step 3a. Link user accounts.
       if (req.headers.authorization) {
         User.findOne({ google: profile.sub }, function(err, existingUser) {
           if (existingUser) {
@@ -264,7 +264,7 @@ app.post('/auth/github', function(req, res) {
     // Step 2. Retrieve profile information about the current user.
     request.get({ url: userApiUrl, qs: accessToken, headers: headers, json: true }, function(err, response, profile) {
 
-      // Step 3a. If user is already signed in then link accounts.
+      // Step 3a. Link user accounts.
       if (req.headers.authorization) {
         User.findOne({ github: profile.id }, function(err, existingUser) {
           if (existingUser) {
@@ -336,7 +336,7 @@ app.post('/auth/linkedin', function(req, res) {
     // Step 2. Retrieve profile information about the current user.
     request.get({ url: peopleApiUrl, qs: params, json: true }, function(err, response, profile) {
 
-      // Step 3a. If user is already signed in then link accounts.
+      // Step 3a. Link user accounts.
       if (req.headers.authorization) {
         User.findOne({ linkedin: profile.id }, function(err, existingUser) {
           if (existingUser) {
@@ -399,7 +399,7 @@ app.post('/auth/facebook', function(req, res) {
     // Step 2. Retrieve profile information about the current user.
     request.get({ url: graphApiUrl, qs: accessToken, json: true }, function(err, response, profile) {
 
-      // Step 3a. If user is already signed in then link accounts.
+      // Step 3a. Link user accounts.
       if (req.headers.authorization) {
         User.findOne({ facebook: profile.id }, function(err, existingUser) {
           if (existingUser) {
@@ -476,7 +476,7 @@ app.get('/auth/twitter', function(req, res) {
     request.post({ url: accessTokenUrl, oauth: accessTokenOauth }, function(err, response, profile) {
       profile = qs.parse(profile);
 
-      // Step 4a. If user is already signed in then link accounts.
+      // Step 4a. Link user accounts.
       if (req.headers.authorization) {
         User.findOne({ twitter: profile.user_id }, function(err, existingUser) {
           if (existingUser) {
@@ -543,7 +543,7 @@ app.post('/auth/foursquare', function(req, res) {
     request.get({ url: userProfileUrl, qs: params, json: true }, function(err, response, profile) {
       profile = profile.response.user;
 
-      // Step 3a. If user is already signed in then link accounts.
+      // Step 3a. Link user accounts.
       if (req.headers.authorization) {
         User.findOne({ foursquare: profile.id }, function(err, existingUser) {
           if (existingUser) {
