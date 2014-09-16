@@ -9,10 +9,10 @@
 
   angular.module('satellizer', [])
     .constant('satellizer.config', {
-      logoutRedirect: '/',
-      loginRedirect: '/',
-      signupRedirect: '/login',
       loginOnSignup: true,
+      loginRedirect: '/',
+      logoutRedirect: '/',
+      signupRedirect: '/login',
       loginUrl: '/auth/login',
       signupUrl: '/auth/signup',
       loginRoute: '/login',
@@ -68,7 +68,8 @@
         },
         twitter: {
           url: '/auth/twitter',
-          type: '1.0'
+          type: '1.0',
+          popupOptions: { width: 495, height: 645 }
         },
         yahoo: {
           url: '/auth/yahoo',
