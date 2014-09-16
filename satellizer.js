@@ -50,7 +50,7 @@
           authorizationEndpoint: 'https://www.linkedin.com/uas/oauth2/authorization',
           redirectUri: window.location.origin,
           requiredUrlParams: ['state'],
-          scope: [],
+          scope: ['r_emailaddress'],
           scopeDelimiter: ' ',
           state: 'STATE',
           type: '2.0',
