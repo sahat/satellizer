@@ -51,7 +51,7 @@ describe('satellizer.shared', function() {
       };
       this.config.loginRedirect = null;
 
-      this.shared.parseUser(response, deferred);
+      this.shared.saveToken(response, deferred);
 
       expect(this.$location.path()).toBe('');
     });

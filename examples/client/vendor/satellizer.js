@@ -175,7 +175,7 @@
           };
 
           $auth.link = function(name) {
-            return $auth.authenticate(name);
+            return oauth.authenticate(name, true);
           };
 
           $auth.unlink = function(provider) {
@@ -194,8 +194,7 @@
       function($q, $window, $location, config) {
         var shared = {};
 
-        // TODO include directly into functions
-        shared.parseUser = function(response, deferred) {
+        shared.saveToken = function(response, deferred) {
           var token = response.data[config.tokenName];
           var namespace = [config.tokenPrefix, config.tokenName].join('_');
           $window.localStorage[namespace] = token;
@@ -247,13 +246,17 @@
       function($q, $http, config, shared, Oauth1, Oauth2) {
         var oauth = {};
 
-        oauth.authenticate = function(name) {
+        oauth.authenticate = function(name, isLinking) {
           var deferred = $q.defer();
           var provider = config.providers[name].type === '1.0' ? new Oauth1() : new Oauth2();
 
           provider.open(config.providers[name])
             .then(function(response) {
-              shared.parseUser(response, deferred);
+              if (isLinking) {
+                deferred.resolve(response);
+              } else {
+                shared.saveToken(response, deferred);
+              }
             })
             .catch(function(response) {
               deferred.reject(response);
@@ -283,7 +286,7 @@
 
           $http.post(config.loginUrl, user)
             .then(function(response) {
-              shared.parseUser(response, deferred);
+              shared.saveToken(response, deferred);
             })
             .catch(function(response) {
               deferred.reject(response);
@@ -298,7 +301,7 @@
           $http.post(config.signupUrl, user)
             .then(function(response) {
               if (config.loginOnSignup) {
-                shared.parseUser(response, deferred);
+                shared.saveToken(response, deferred);
               } else {
                 $location.path(config.signupRedirect);
                 deferred.resolve(response);
