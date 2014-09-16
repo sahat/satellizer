@@ -194,12 +194,12 @@
       function($q, $window, $location, config) {
         var shared = {};
 
-        shared.saveToken = function(response, deferred) {
+        shared.saveToken = function(response, deferred, isLinking) {
           var token = response.data[config.tokenName];
           var namespace = [config.tokenPrefix, config.tokenName].join('_');
           $window.localStorage[namespace] = token;
 
-          if (config.loginRedirect) {
+          if (config.loginRedirect && !isLinking) {
             $location.path(config.loginRedirect);
           }
 
@@ -252,11 +252,7 @@
 
           provider.open(config.providers[name])
             .then(function(response) {
-              if (isLinking) {
-                deferred.resolve(response);
-              } else {
-                shared.saveToken(response, deferred);
-              }
+              shared.saveToken(response, deferred, isLinking);
             })
             .catch(function(response) {
               deferred.reject(response);
