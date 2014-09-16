@@ -311,7 +311,7 @@ app.post('/auth/github', function(req, res) {
  */
 app.post('/auth/linkedin', function(req, res) {
   var accessTokenUrl = 'https://www.linkedin.com/uas/oauth2/accessToken';
-  var peopleApiUrl = 'https://api.linkedin.com/v1/people/~:(id,first-name,last-name)';
+  var peopleApiUrl = 'https://api.linkedin.com/v1/people/~:(id,first-name,last-name,email-address)';
 
   var params = {
     client_id: req.body.clientId,
@@ -367,6 +367,7 @@ app.post('/auth/linkedin', function(req, res) {
           var user = new User();
           user.linkedin = profile.id;
           user.displayName = profile.firstName + ' ' + profile.lastName;
+          user.email = profile.emailAddress;
           user.save(function(err) {
             res.send({ token: createToken(req, user) });
           });
