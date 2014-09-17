@@ -116,10 +116,10 @@ directory.
 Below is a complete listing of all default configuration options.
 
 ```js
-$authProvider.logoutRedirect = '/';
+$authProvider.loginSignup = true;
 $authProvider.loginRedirect = '/';
+$authProvider.logoutRedirect = '/';
 $authProvider.signupRedirect = '/login';
-$authProvider.loginOnSignup = true;
 $authProvider.loginUrl = '/auth/login';
 $authProvider.signupUrl = '/auth/signup';
 $authProvider.loginRoute = '/login';
@@ -172,7 +172,8 @@ $authProvider.linkedin({
 // Twitter
 $authProvider.twitter({
   url: '/auth/twitter',
-  type: '1.0'
+  type: '1.0',
+  popupOptions: { width: 495, height: 645 }
 });
 
 // GitHub
@@ -266,7 +267,11 @@ authentication process works.
 
 ## FAQ
 
-TODO.
+- How do I add a new OAuth provider?
+- How to send a token using different HTTP header?
+- Can I remap server-side URLs?
+- Can I store token in a cookie instead of Local Storage?
+- How do I get a current user object?
 
 ## API Reference
 
@@ -366,14 +371,13 @@ $auth.unlink('github');
 ## TODO
 
 - [ ] C# (ASP.NET vNext) implementation
-- [ ] Clojure (Compojure) implementation
 - [ ] Elixir (Phoenix) implementation
-- [ ] Go (Martini) implementation
+- [ ] Go (Beego) implementation
 - [x] Java (Dropwizard) implementation
 - [x] Node.js (Express) implementation
 - [x] PHP (Laravel) implementation
 - [x] Python (Flask) implementation
-- [ ] Ruby (Sinatra and Rails) implementation
+- [ ] Ruby (Sinatra and/or Rails) implementation
 - [ ] Scala (Play!) implementation
 
 ## Contributing
