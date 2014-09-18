@@ -367,7 +367,6 @@ app.post('/auth/linkedin', function(req, res) {
           var user = new User();
           user.linkedin = profile.id;
           user.displayName = profile.firstName + ' ' + profile.lastName;
-          user.email = profile.emailAddress;
           user.save(function(err) {
             res.send({ token: createToken(req, user) });
           });

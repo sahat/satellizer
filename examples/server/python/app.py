@@ -232,8 +232,7 @@ def linkedin():
         return jsonify(token=token)
     u = User(linkedin=profile['id'],
              first_name=profile['firstName'],
-             last_name=profile['lastName'],
-             email=profile['emailAddress'])
+             last_name=profile['lastName'])
     db.session.add(u)
     db.session.commit()
     token = create_jwt_token(u)

@@ -226,7 +226,6 @@ class AuthController extends \BaseController {
             $user = User::find($payload['sub']);
             $user->linkedin = $profile['id'];
             $user->displayName = $user->displayName || $profile['firstName'] . ' ' . $profile['lastName'];
-            $user->email = $profile['emailAddress'];
             $user->save();
 
             return Response::json(array('token' => $this->createToken($user)));
