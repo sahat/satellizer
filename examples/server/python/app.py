@@ -208,7 +208,7 @@ def google():
 @app.route('/auth/linkedin', methods=['POST'])
 def linkedin():
     access_token_url = 'https://www.linkedin.com/uas/oauth2/accessToken'
-    people_api_url = 'https://api.linkedin.com/v1/people/~:(id,first-name,last-name)'
+    people_api_url = 'https://api.linkedin.com/v1/people/~:(id,first-name,last-name,email-address)'
 
     payload = dict(client_id=request.json['clientId'],
                    redirect_uri=request.json['redirectUri'],
@@ -232,7 +232,8 @@ def linkedin():
         return jsonify(token=token)
     u = User(linkedin=profile['id'],
              first_name=profile['firstName'],
-             last_name=profile['lastName'])
+             last_name=profile['lastName'],
+             email=profile['emailAddress'])
     db.session.add(u)
     db.session.commit()
     token = create_jwt_token(u)
