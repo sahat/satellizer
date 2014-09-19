@@ -4,7 +4,7 @@
 [![Build Status](http://img.shields.io/travis/sahat/satellizer.svg?style=flat)](https://travis-ci.org/sahat/satellizer) 
 [![Code Climate](http://img.shields.io/codeclimate/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer) 
 [![Test Coverage](http://img.shields.io/codeclimate/coverage/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
-[![Version](http://img.shields.io/badge/version-0.6.3-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
+[![Version](http://img.shields.io/badge/version-0.6.4-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
 
 **:space_invader: Live Demo:** [https://satellizer.herokuapp.com](https://satellizer.herokuapp.com)
 
@@ -45,7 +45,7 @@ npm install satellizer --save
 or use the CDN:
 
 ```html
-<script src="//cdn.jsdelivr.net/satellizer/0.6.3/satellizer.min.js"></script>
+<script src="//cdn.jsdelivr.net/satellizer/0.6.4/satellizer.min.js"></script>
 ```
 
 ## Usage
@@ -227,6 +227,14 @@ authentication process works.
 
 **:bulb: Note:** To learn more about JSON Web Token (JWT) visit [JWT.io](http://jwt.io/).
 
+## FAQ
+
+- How do I add a new OAuth provider?
+- How to send a token using different HTTP header?
+- Can I remap server-side URLs?
+- Can I store token in a cookie instead of Local Storage?
+- How do I get a current user object?
+
 ## Obtaining OAuth Keys
 
 <img src="http://images.google.com/intl/en_ALL/images/srpr/logo6w.png" width="150">
@@ -264,14 +272,6 @@ authentication process works.
 - Under *Application Type* select **Read and Write** access
 - Check the box **Allow this application to be used to Sign in with Twitter**
 - Click **Update this Twitter's applications settings**
-
-## FAQ
-
-- How do I add a new OAuth provider?
-- How to send a token using different HTTP header?
-- Can I remap server-side URLs?
-- Can I store token in a cookie instead of Local Storage?
-- How do I get a current user object?
 
 ## API Reference
 
