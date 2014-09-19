@@ -102,8 +102,8 @@ function createToken(req, user) {
   var payload = {
     iss: req.hostname,
     sub: user._id,
-    iat: moment().valueOf(),
-    exp: moment().add(14, 'days').valueOf()
+    iat: moment().unix(),
+    exp: moment().add(14, 'days').unix()
   };
   return jwt.encode(payload, config.TOKEN_SECRET);
 }
