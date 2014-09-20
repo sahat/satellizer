@@ -9,9 +9,9 @@ angular.module('MyApp')
         .success(function(data) {
           $scope.user = data;
         })
-        .error(function() {
+        .error(function(error) {
           $alert({
-            content: 'Unable to get user information',
+            content: error.message,
             animation: 'fadeZoomFadeDown',
             type: 'material',
             duration: 3
