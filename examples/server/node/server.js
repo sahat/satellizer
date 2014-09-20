@@ -85,7 +85,7 @@ function ensureAuthenticated(req, res, next) {
   var token = req.headers.authorization.split(' ')[1];
   var payload = jwt.decode(token, config.TOKEN_SECRET);
 
-  if (payload.exp <= Date.now()) {
+  if (payload.exp <= moment().unix()) {
     return res.status(401).send({ message: 'Token has expired' });
   }
 
