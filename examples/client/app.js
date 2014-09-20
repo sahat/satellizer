@@ -3,16 +3,16 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ui.router', 'mgcrea.ngStra
     $stateProvider
       .state('home', {
         url: '/',
-        templateUrl: '../views/home.html'
+        templateUrl: 'partials/home.html'
       })
       .state('login', {
         url: '/login',
-        templateUrl: '../views/login.html',
+        templateUrl: 'partials/login.html',
         controller: 'LoginCtrl'
       })
       .state('signup', {
         url: '/signup',
-        templateUrl: '../views/signup.html',
+        templateUrl: 'partials/signup.html',
         controller: 'SignupCtrl'
       })
       .state('logout', {
@@ -22,7 +22,7 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ui.router', 'mgcrea.ngStra
       })
       .state('profile', {
         url: '/profile',
-        templateUrl: '../views/profile.html',
+        templateUrl: 'partials/profile.html',
         controller: 'ProfileCtrl',
         resolve: {
           authenticated: ['$location', '$auth', function($location, $auth) {
