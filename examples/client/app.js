@@ -1,22 +1,27 @@
-angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'satellizer', 'mgcrea.ngStrap'])
-  .config(function($routeProvider, $authProvider) {
-    $routeProvider
-      .when('/', {
+angular.module('MyApp', ['ngResource', 'ngMessages', 'ui.router', 'mgcrea.ngStrap', 'satellizer'])
+  .config(function($stateProvider, $urlRouterProvider, $authProvider) {
+    $stateProvider
+      .state('home', {
+        url: '/',
         templateUrl: '../views/home.html'
       })
-      .when('/login', {
+      .state('login', {
+        url: '/login',
         templateUrl: '../views/login.html',
         controller: 'LoginCtrl'
       })
-      .when('/signup', {
+      .state('signup', {
+        url: '/signup',
         templateUrl: '../views/signup.html',
         controller: 'SignupCtrl'
       })
-      .when('/logout', {
+      .state('logout', {
+        url: '/logout',
         template: null,
         controller: 'LogoutCtrl'
       })
-      .when('/profile', {
+      .state('profile', {
+        url: '/profile',
         templateUrl: '../views/profile.html',
         controller: 'ProfileCtrl',
         resolve: {
@@ -26,10 +31,9 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngRoute', 'satellizer', 'm
             }
           }]
         }
-      })
-      .otherwise({
-        redirectTo: '/'
       });
+
+    $urlRouterProvider.otherwise('/');
 
     $authProvider.facebook({
       clientId: '657854390977827'
