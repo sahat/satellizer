@@ -129,11 +129,11 @@ def login():
 
 @app.route('/auth/signup', methods=['POST'])
 def signup():
-    u = User(email=request.json['email'],
-             password=request.json['password'])
-    db.session.add(u)
+    user = User(email=request.json['email'], password=request.json['password'])
+    db.session.add(user)
     db.session.commit()
-    return 'OK'
+    token = create_jwt_token(user)
+    return jsonify(token=token)
 
 
 @app.route('/auth/facebook', methods=['POST'])
