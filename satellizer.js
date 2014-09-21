@@ -197,8 +197,8 @@
 
         shared.saveToken = function(response, deferred, isLinking) {
           var token = response.data[config.tokenName];
-          var namespace = [config.tokenPrefix, config.tokenName].join('_');
-          $window.localStorage[namespace] = token;
+          var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
+          $window.localStorage[tokenName] = token;
 
           if (config.loginRedirect && !isLinking) {
             $location.path(config.loginRedirect);
@@ -208,7 +208,7 @@
         };
 
         shared.isAuthenticated = function() {
-          var tokenName = [config.tokenPrefix, config.tokenName].join('_');
+          var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
           var token = $window.localStorage[tokenName];
 
           if (token) {
@@ -223,8 +223,8 @@
 
         shared.logout = function() {
           var deferred = $q.defer();
-          var token = [config.tokenPrefix, config.tokenName].join('_');
-          delete $window.localStorage[token];
+          var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
+          delete $window.localStorage[tokenName];
 
           if (config.logoutRedirect) {
             $location.path(config.logoutRedirect);
@@ -539,16 +539,17 @@
     })
     .config(['$httpProvider', 'satellizer.config', function($httpProvider, config) {
       $httpProvider.interceptors.push(['$q', function($q) {
+        var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
         return {
           request: function(httpConfig) {
-            if (localStorage.getItem([config.tokenPrefix, config.tokenName].join('_'))) {
-              httpConfig.headers.Authorization = 'Bearer ' + localStorage.getItem([config.tokenPrefix, config.tokenName].join('_'));
+            if (localStorage.getItem(tokenName)) {
+              httpConfig.headers.Authorization = 'Bearer ' + localStorage.getItem(tokenName);
             }
             return httpConfig;
           },
           responseError: function(response) {
             if (response.status === 401) {
-              localStorage.removeItem([config.tokenPrefix, config.tokenName].join('_'));
+              localStorage.removeItem(tokenName);
             }
             return $q.reject(response);
           }
