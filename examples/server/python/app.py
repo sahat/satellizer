@@ -32,7 +32,8 @@ class User(db.Model):
     linkedin = db.Column(db.String(120))
     twitter = db.Column(db.String(120))
 
-    def __init__(self, email=None, password=None, display_name=None, facebook=None, google=None, linkedin=None, twitter=None):
+    def __init__(self, email=None, password=None, display_name=None,
+                 facebook=None, google=None, linkedin=None, twitter=None):
         if email:
             self.email = email.lower()
         if password:
@@ -54,6 +55,12 @@ class User(db.Model):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
+    def to_json(self):
+        return dict(id=self.id, email=self.email, displayName=self.display_name,
+                    facebook=self.facebook, google=self.google,
+                    linkedin=self.linkedin, twitter=self.twitter)
+
+
 db.create_all()
 
 
@@ -72,6 +79,7 @@ def parse_token(headers):
     token = headers.get('Authorization').split()[1]
     return jwt.decode(token, app.config('TOKEN_SECRET'))
 
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -79,15 +87,18 @@ def login_required(f):
             response = jsonify(message='Missing authorization header')
             response.status_code = 401
             return response
+
         auth = request.headers.get('Authorization')
         token = auth.split()[1]
         payload = jwt.decode(token, app.config['TOKEN_SECRET'])
+
         if datetime.fromtimestamp(payload['exp']) < datetime.now():
             response = jsonify(message='Token has expired')
             response.status_code = 401
             return response
 
-        g.user = payload['user']
+        g.user_id = payload['sub']
+
         return f(*args, **kwargs)
 
     return decorated_function
@@ -103,7 +114,8 @@ def index():
 @app.route('/api/me')
 @login_required
 def me():
-    return jsonify(g.user)
+    user = User.query.filter_by(id=g.user_id).first()
+    return jsonify(user.to_json())
 
 
 @app.route('/auth/login', methods=['POST'])
@@ -150,9 +162,16 @@ def facebook():
     if request.headers.get('Authorization'):
         user = User.query.filter_by(facebook=profile['id']).first()
         if user:
-            response = jsonify(message='There is already a Facebook account that belongs to you')
+            response = jsonify(
+                message='There is already a Facebook account that belongs to you')
             response.status_code = 409
             return response
+
+        payload = parse_token(request.headers)
+        print(payload)
+
+        user = User.query.filter_by(facebook=payload['sub']).first()
+
 
     # Step 4. Create a new account or return an existing one.
     user = User.query.filter_by(facebook=profile['id']).first()
