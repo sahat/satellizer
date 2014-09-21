@@ -75,8 +75,8 @@ def create_jwt_token(user):
     return token.decode('unicode_escape')
 
 
-def parse_token(headers):
-    token = headers.get('Authorization').split()[1]
+def parse_token(request):
+    token = request.headers.get('Authorization').split()[1]
     return jwt.decode(token, app.config('TOKEN_SECRET'))
 
 
@@ -88,9 +88,7 @@ def login_required(f):
             response.status_code = 401
             return response
 
-        auth = request.headers.get('Authorization')
-        token = auth.split()[1]
-        payload = jwt.decode(token, app.config['TOKEN_SECRET'])
+        payload = parse_token(request)
 
         if datetime.fromtimestamp(payload['exp']) < datetime.now():
             response = jsonify(message='Token has expired')
@@ -167,8 +165,7 @@ def facebook():
             response.status_code = 409
             return response
 
-        payload = parse_token(request.headers)
-        print(payload)
+        payload = parse_token(request)
 
         user = User.query.filter_by(facebook=payload['sub']).first()
 
