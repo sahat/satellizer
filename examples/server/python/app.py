@@ -64,7 +64,8 @@ def create_jwt_token(user):
         'iat': datetime.now(),
         'exp': datetime.now() + timedelta(days=14)
     }
-    return jwt.encode(payload, app.config['TOKEN_SECRET'])
+    token = jwt.encode(payload, app.config['TOKEN_SECRET'])
+    return token.decode('unicode_escape')
 
 
 def login_required(f):
@@ -126,10 +127,12 @@ def facebook():
     access_token_url = 'https://graph.facebook.com/oauth/access_token'
     graph_api_url = 'https://graph.facebook.com/me'
 
-    params = dict(client_id=request.json['clientId'],
-                  redirect_uri=request.json['redirectUri'],
-                  client_secret=app.config['FACEBOOK_SECRET'],
-                  code=request.json['code'])
+    params = {
+        'client_id': request.json['clientId'],
+        'redirect_uri': request.json['redirectUri'],
+        'client_secret': app.config['FACEBOOK_SECRET'],
+        'code': request.json['code']
+    }
 
     # Step 1. Exchange authorization code for access token.
     r = requests.get(access_token_url, params=params)
@@ -140,14 +143,16 @@ def facebook():
     profile = json.loads(r.text)
 
     user = User.query.filter_by(facebook=profile['id']).first()
+
     if user:
         token = create_jwt_token(user)
         return jsonify(token=token)
-    u = User(facebook=profile['id'],
-             display_name=profile['name'])
+
+    u = User(facebook=profile['id'], display_name=profile['name'])
     db.session.add(u)
     db.session.commit()
     token = create_jwt_token(u)
+
     return jsonify(token=token)
 
 
