@@ -68,6 +68,10 @@ def create_jwt_token(user):
     return token.decode('unicode_escape')
 
 
+def parse_token(headers):
+    token = headers.get('Authorization').split()[1]
+    return jwt.decode(token, app.config('TOKEN_SECRET'))
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -142,8 +146,16 @@ def facebook():
     r = requests.get(graph_api_url, params=access_token)
     profile = json.loads(r.text)
 
-    user = User.query.filter_by(facebook=profile['id']).first()
+    # Step 3. (optional) Link accounts.
+    if request.headers.get('Authorization'):
+        user = User.query.filter_by(facebook=profile['id']).first()
+        if user:
+            response = jsonify(message='There is already a Facebook account that belongs to you')
+            response.status_code = 409
+            return response
 
+    # Step 4. Create a new account or return an existing one.
+    user = User.query.filter_by(facebook=profile['id']).first()
     if user:
         token = create_jwt_token(user)
         return jsonify(token=token)
@@ -152,7 +164,6 @@ def facebook():
     db.session.add(u)
     db.session.commit()
     token = create_jwt_token(u)
-
     return jsonify(token=token)
 
 
