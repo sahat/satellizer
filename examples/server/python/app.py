@@ -160,15 +160,23 @@ def facebook():
     if request.headers.get('Authorization'):
         user = User.query.filter_by(facebook=profile['id']).first()
         if user:
-            response = jsonify(
-                message='There is already a Facebook account that belongs to you')
+            response = jsonify(message='There is already a Facebook account that belongs to you')
             response.status_code = 409
             return response
 
-        payload = parse_token(request.headers)
+        payload = parse_token(request)
 
-        user = User.query.filter_by(facebook=payload['sub']).first()
+        user = User.query.filter_by(id=payload['sub']).first()
+        if not user:
+            response = jsonify(message='User not found')
+            response.status_code = 400
+            return response
 
+        u = User(facebook=profile['id'], display_name=profile['name'])
+        db.session.add(u)
+        db.session.commit()
+        token = create_jwt_token(u)
+        return jsonify(token=token)
 
     # Step 4. Create a new account or return an existing one.
     user = User.query.filter_by(facebook=profile['id']).first()
