@@ -75,9 +75,9 @@ def create_jwt_token(user):
     return token.decode('unicode_escape')
 
 
-def parse_token(request):
-    token = request.headers.get('Authorization').split()[1]
-    return jwt.decode(token, app.config('TOKEN_SECRET'))
+def parse_token(req):
+    token = req.headers.get('Authorization').split()[1]
+    return jwt.decode(token, app.config['TOKEN_SECRET'])
 
 
 def login_required(f):
@@ -165,7 +165,7 @@ def facebook():
             response.status_code = 409
             return response
 
-        payload = parse_token(request)
+        payload = parse_token(request.headers)
 
         user = User.query.filter_by(facebook=payload['sub']).first()
 
