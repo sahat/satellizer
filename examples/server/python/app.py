@@ -8,8 +8,8 @@ import jwt
 import json
 import requests
 from functools import wraps
-from urlparse import parse_qsl
-from urllib import urlencode
+from urllib.parse import parse_qs, parse_qsl
+from urllib.parse import urlencode
 from flask import Flask, g, send_file, request, redirect, url_for, jsonify
 from flask.ext.sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -32,24 +32,21 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True)
     password = db.Column(db.String(120))
-    first_name = db.Column(db.String(120))
-    last_name = db.Column(db.String(120))
+    display_name = db.Column(db.String(120))
     facebook = db.Column(db.String(120))
     google = db.Column(db.String(120))
     linkedin = db.Column(db.String(120))
     twitter = db.Column(db.String(120))
 
-    def __init__(self, email=None, password=None, first_name=None,
+    def __init__(self, email=None, password=None, display_name=None,
                  last_name=None, facebook=None, google=None,
                  linkedin=None, twitter=None):
         if email:
             self.email = email.lower()
         if password:
             self.set_password(password)
-        if first_name:
-            self.first_name = first_name
-        if last_name:
-            self.last_name = last_name
+        if display_name:
+            self.display_name = display_name
         if facebook:
             self.facebook = facebook
         if google:
