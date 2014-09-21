@@ -1,7 +1,3 @@
-# Satellizer Python Example
-# (c) 2014 Sahat Yalkabov
-# License: MIT
-
 from datetime import datetime, timedelta
 import os
 import jwt
@@ -23,8 +19,6 @@ client_path = os.path.abspath(os.path.join(current_path, '..', '..', 'client'))
 app = Flask(__name__, static_url_path='', static_folder=client_path)
 app.config.from_object('config')
 
-# Database and User Model
-
 db = SQLAlchemy(app)
 
 
@@ -38,9 +32,7 @@ class User(db.Model):
     linkedin = db.Column(db.String(120))
     twitter = db.Column(db.String(120))
 
-    def __init__(self, email=None, password=None, display_name=None,
-                 last_name=None, facebook=None, google=None,
-                 linkedin=None, twitter=None):
+    def __init__(self, email=None, password=None, display_name=None, facebook=None, google=None, linkedin=None, twitter=None):
         if email:
             self.email = email.lower()
         if password:
@@ -62,26 +54,17 @@ class User(db.Model):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
-
 db.create_all()
 
-# Helper Functions
 
 def create_jwt_token(user):
-    payload = dict(
-        iat=datetime.now(),
-        exp=datetime.now() + timedelta(days=7),
-        user=dict(
-            id=user.id,
-            email=user.email,
-            first_name=user.first_name,
-            last_name=user.last_name,
-            facebook=user.facebook,
-            google=user.google,
-            linkedin=user.linkedin,
-            twitter=user.twitter))
-    token = jwt.encode(payload, app.config['TOKEN_SECRET'])
-    return token
+    payload = {
+        'iss': 'localhost',
+        'sub': user.id,
+        'iat': datetime.now(),
+        'exp': datetime.now() + timedelta(days=14)
+    }
+    return jwt.encode(payload, app.config['TOKEN_SECRET'])
 
 
 def login_required(f):
@@ -161,8 +144,7 @@ def facebook():
         token = create_jwt_token(user)
         return jsonify(token=token)
     u = User(facebook=profile['id'],
-             first_name=profile['first_name'],
-             last_name=profile['last_name'])
+             display_name=profile['name'])
     db.session.add(u)
     db.session.commit()
     token = create_jwt_token(u)
