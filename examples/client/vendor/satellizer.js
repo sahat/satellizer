@@ -155,8 +155,8 @@
         function($q, shared, local, oauth) {
           var $auth = {};
 
-          $auth.authenticate = function(name) {
-            return oauth.authenticate(name);
+          $auth.authenticate = function(name, userData) {
+            return oauth.authenticate(name, false, userData);
           };
 
           $auth.login = function(user) {
@@ -247,11 +247,11 @@
       function($q, $http, config, shared, Oauth1, Oauth2) {
         var oauth = {};
 
-        oauth.authenticate = function(name, isLinking) {
+        oauth.authenticate = function(name, isLinking, userData) {
           var deferred = $q.defer();
           var provider = config.providers[name].type === '1.0' ? new Oauth1() : new Oauth2();
 
-          provider.open(config.providers[name])
+          provider.open(config.providers[name], userData || {})
             .then(function(response) {
               shared.saveToken(response, deferred, isLinking);
             })
@@ -338,14 +338,14 @@
 
           var oauth2 = {};
 
-          oauth2.open = function(options) {
+          oauth2.open = function(options, userData) {
             angular.extend(defaults, options);
             var deferred = $q.defer();
             var url = oauth2.buildUrl();
 
             popup.open(url, defaults.popupOptions)
               .then(function(oauthData) {
-                oauth2.exchangeForToken(oauthData)
+                oauth2.exchangeForToken(oauthData, userData)
                   .then(function(response) {
                     deferred.resolve(response);
                   })
@@ -360,12 +360,14 @@
             return deferred.promise;
           };
 
-          oauth2.exchangeForToken = function(oauthData) {
-            return $http.post(defaults.url, {
+          oauth2.exchangeForToken = function(oauthData, userData) {
+            var data = angular.extend({}, userData, {
               code: oauthData.code,
               clientId: defaults.clientId,
               redirectUri: defaults.redirectUri
             });
+
+            return $http.post(defaults.url, data);
           };
 
           oauth2.buildUrl = function() {
@@ -414,14 +416,14 @@
 
         var oauth1 = {};
 
-        oauth1.open = function(options) {
+        oauth1.open = function(options, userData) {
           angular.extend(defaults, options);
 
           var deferred = $q.defer();
 
           popup.open(defaults.url, defaults.popupOptions)
             .then(function(response) {
-              oauth1.exchangeForToken(response)
+              oauth1.exchangeForToken(response, userData)
                 .then(function(response) {
                   deferred.resolve(response);
                 })
@@ -436,8 +438,9 @@
           return deferred.promise;
         };
 
-        oauth1.exchangeForToken = function(oauthData) {
-          var qs = oauth1.buildQueryString(oauthData);
+        oauth1.exchangeForToken = function(oauthData, userData) {
+          var data = angular.extend({}, userData, oauthData);
+          var qs = oauth1.buildQueryString(data);
           return $http.get(defaults.url + '?' + qs);
         };
 
