@@ -437,8 +437,8 @@
         };
 
         oauth1.exchangeForToken = function(oauthData) {
-          oauthData = oauth1.buildQueryString(oauthData);
-          return $http.get(defaults.url + '?' + oauthData);
+          var qs = oauth1.buildQueryString(oauthData);
+          return $http.get(defaults.url + '?' + qs);
         };
 
         oauth1.buildQueryString = function(obj) {
