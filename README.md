@@ -277,7 +277,7 @@ authentication process works.
 
 - [`$auth.login(user)`](#authlogin)
 - [`$auth.signup(user)`](#authsignup)
-- [`$auth.authenticate(name, [userData])`](#authauthenticate)
+- [`$auth.authenticate(name, [userData])`](#authauthenticatename-userdata)
 - [`$auth.logout()`](#authlogout)
 - [`$auth.isAuthenticated()`](#authisauthenticated)
 - [`$auth.link(provider)`](#authlinkprovider)
