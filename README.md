@@ -286,7 +286,7 @@ authentication process works.
 #### `$auth.login(user)`
 
 Sign in via email and password where:
-- `user` - object with *email* and *password* properties.
+- **user** - data object with *email* and *password* properties.
 
 ```js
 $auth.login({
@@ -298,7 +298,7 @@ $auth.login({
 #### `$auth.signup(user)`
 
 Creates a new local account where: 
-- `user` - object with *email*, *password* fields.
+- **user** - data object with *email* and *password* properties.
 
 ```js
 $auth.signup({
@@ -310,10 +310,10 @@ $auth.signup({
 #### `$auth.authenticate(name, [userData])`
 
 Starts the *OAuth 1.0* or *OAuth 2.0* authentication flow by opening a popup where:
-- `name` - one of the predefined provider names or a custom provider name created
+- **name** - one of the predefined provider names or a custom provider name created
 via `$authProvider.oauth1()` or `$authProvider.oauth2()`.
-- `userData` - *optional* object if you need to send some additional data to
-the server in addition to `code`, `clientId` and `redirectUri` in the case of
+- **userData** - optional object if you need to send some additional data to
+the server along with `code`, `clientId` and `redirectUri` in the case of
 *OAuth 2.0* or `oauth_token` and `oauth_verifier` in the case of *OAuth 1.0*.
 
 ```js
