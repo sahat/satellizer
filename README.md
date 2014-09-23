@@ -212,6 +212,12 @@ $authProvider.oauth1({
 });
 ```
 
+## Browser Support
+
+| IE11 | IE10 | IE9 | IE8 | Chrome | Firefox | Safari | iOS | Android |
+|-----:|-----:|----:|----:|-------:|--------:|-------:|----:|---------|
+|   ✗  |   ✗  |  ✗  |  ✗  |    ✔   |    ✔    |    ✔   |  ✔  |    ✔    |
+
 ## How It Works
 
 **Satellizer** relies on *token-based authentication* using
@@ -391,13 +397,16 @@ of the languages on the *TODO* list.
 
 ## Credits
 
-Special thanks goes to [Alice Chen](https://github.com/chena) for all your hard work
+A big thanks goes to [Alice Chen](https://github.com/chena) for all your hard work
 on the [Dropwizard](https://dropwizard.github.io) implementation and
 [Jesús Rodríguez](https://github.com/Foxandxss) for being so proactive and actively
 reporting bugs.
 
 Additionally, I would like to thank all other contributors who have submitted
 issues and/or pull requests!
+
+Satellizer was inspired by [ng-token-auth](https://github.com/lynndylanhurley/ng-token-auth),
+[Torii](https://github.com/Vestorly/torii) and [angular-oauth](https://github.com/enginous/angular-oauth).
 
 ## License
 
