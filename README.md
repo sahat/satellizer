@@ -116,7 +116,7 @@ directory.
 Below is a complete listing of all default configuration options.
 
 ```js
-$authProvider.loginSignup = true;
+$authProvider.loginOnSignup = true;
 $authProvider.loginRedirect = '/';
 $authProvider.logoutRedirect = '/';
 $authProvider.signupRedirect = '/login';
