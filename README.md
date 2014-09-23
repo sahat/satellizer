@@ -277,7 +277,7 @@ authentication process works.
 
 - [`$auth.login(user)`](#authlogin)
 - [`$auth.signup(user)`](#authsignup)
-- [`$auth.authenticate(name)`](#authauthenticate)
+- [`$auth.authenticate(name, [userData])`](#authauthenticate)
 - [`$auth.logout()`](#authlogout)
 - [`$auth.isAuthenticated()`](#authisauthenticated)
 - [`$auth.link(provider)`](#authlinkprovider)
@@ -307,11 +307,14 @@ $auth.signup({
 });
 ```
 
-#### `$auth.authenticate(name)`
+#### `$auth.authenticate(name, [userData])`
 
 Starts the *OAuth 1.0* or *OAuth 2.0* authentication flow by opening a popup where:
 - `name` - one of the predefined provider names or a custom provider name created
 via `$authProvider.oauth1()` or `$authProvider.oauth2()`.
+- `userData` - *optional* object if you need to send some additional data to
+the server in addition to `code`, `clientId` and `redirectUri` in the case of
+*OAuth 2.0* or `oauth_token` and `oauth_verifier` in the case of *OAuth 1.0*.
 
 ```js
 $auth.authenticate('google').then(function() {
