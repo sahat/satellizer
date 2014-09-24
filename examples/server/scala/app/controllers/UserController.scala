@@ -17,16 +17,11 @@ import play.modules.reactivemongo.MongoController
 import play.modules.reactivemongo.json.collection.JSONCollection
 
 import models._
-import JsonFormats._
 
 object UserController extends Controller with MongoController {
 
   // db is defined in application.conf
   def collection: JSONCollection = db.collection[JSONCollection]("users")
-
-  def index = Action {
-    Ok("It works!")
-  }
 
   def create(name: String, age: Int) = Action.async {
     val json = Json.obj(
