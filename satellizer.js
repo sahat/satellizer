@@ -568,7 +568,7 @@
             return httpConfig;
           },
           responseError: function(response) {
-            if (response.status === 401) {
+            if (response.status === 401 && response.config.url.indexOf(window.location.origin) !== -1) {
               localStorage.removeItem(tokenName);
             }
             return $q.reject(response);
