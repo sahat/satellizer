@@ -464,12 +464,14 @@
       popup.popupWindow = popupWindow;
 
       popup.open = function(url, options) {
-
         var deferred = $q.defer();
         var optionsString = popup.stringifyOptions(popup.prepareOptions(options || {}));
 
         popupWindow = $window.open(url, '_blank', optionsString);
-        popupWindow.focus();
+
+        if (popupWindow && popupWindow.focus) {
+          popupWindow.focus();
+        }
 
         popup.postMessageHandler(deferred);
         popup.pollPopup(deferred);
