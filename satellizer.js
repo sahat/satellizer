@@ -561,14 +561,14 @@
         return {
           request: function(httpConfig) {
             if (localStorage.getItem(tokenName)) {
-              if (httpConfig.url.indexOf(window.location.origin) !== -1) {
+              if (httpConfig.url.indexOf('://') === -1) {
                 httpConfig.headers.Authorization = 'Bearer ' + localStorage.getItem(tokenName);
               }
             }
             return httpConfig;
           },
           responseError: function(response) {
-            if (response.status === 401 && response.config.url.indexOf(window.location.origin) !== -1) {
+            if (response.status === 401 && response.config.url.indexOf('://') === -1) {
               localStorage.removeItem(tokenName);
             }
             return $q.reject(response);
