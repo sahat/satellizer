@@ -561,7 +561,9 @@
         return {
           request: function(httpConfig) {
             if (localStorage.getItem(tokenName)) {
-              httpConfig.headers.Authorization = 'Bearer ' + localStorage.getItem(tokenName);
+              if (httpConfig.url.indexOf(window.location.origin) !== -1) {
+                httpConfig.headers.Authorization = 'Bearer ' + localStorage.getItem(tokenName);
+              }
             }
             return httpConfig;
           },
