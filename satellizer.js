@@ -175,8 +175,8 @@
             return shared.isAuthenticated();
           };
 
-          $auth.link = function(name) {
-            return oauth.authenticate(name, true);
+          $auth.link = function(name, userData) {
+            return oauth.authenticate(name, true, userData);
           };
 
           $auth.unlink = function(provider) {
