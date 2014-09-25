@@ -260,7 +260,7 @@
             .then(function(response) {
               shared.saveToken(response, deferred, isLinking);
             })
-            .catch(function(response) {
+            .then(null, function(response) {
               deferred.reject(response);
             });
 
@@ -290,7 +290,7 @@
             .then(function(response) {
               shared.saveToken(response, deferred);
             })
-            .catch(function(response) {
+            .then(null, function(response) {
               deferred.reject(response);
             });
 
@@ -309,7 +309,7 @@
                 deferred.resolve(response);
               }
             })
-            .catch(function(response) {
+            .then(null, function(response) {
               deferred.reject(response);
             });
 
@@ -354,11 +354,11 @@
                   .then(function(response) {
                     deferred.resolve(response);
                   })
-                  .catch(function(response) {
+                  .then(null, function(response) {
                     deferred.reject(response);
                   });
               })
-              .catch(function(error) {
+              .then(null, function(error) {
                 deferred.reject(error);
               });
 
@@ -432,11 +432,11 @@
                 .then(function(response) {
                   deferred.resolve(response);
                 })
-                .catch(function(response) {
+                .then(null, function(response) {
                   deferred.reject(response);
                 });
             })
-            .catch(function(response) {
+            .then(null, function(response) {
               deferred.reject(response);
             });
 
