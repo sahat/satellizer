@@ -455,73 +455,82 @@
         return oauth1;
       };
     }])
-    .factory('satellizer.popup', ['$q', '$interval', '$window', function($q, $interval, $window) {
-      var popupWindow = null;
-      var polling = null;
+    .factory('satellizer.popup', [
+      '$q',
+      '$interval',
+      '$window',
+      '$location',
+      'satellizer.utils',
+      function($q, $interval, $window, $location, utils) {
+        var popupWindow = null;
+        var polling = null;
 
-      var popup = {};
+        var popup = {};
 
-      popup.popupWindow = popupWindow;
+        popup.popupWindow = popupWindow;
 
-      popup.open = function(url, options) {
-        var deferred = $q.defer();
-        var optionsString = popup.stringifyOptions(popup.prepareOptions(options || {}));
+        popup.open = function(url, options) {
+          var deferred = $q.defer();
+          var optionsString = popup.stringifyOptions(popup.prepareOptions(options || {}));
 
-        popupWindow = $window.open(url, '_blank', optionsString);
+          popupWindow = window.open(url, '_blank', optionsString);
 
-        if (popupWindow && popupWindow.focus) {
-          popupWindow.focus();
-        }
-
-        popup.postMessageHandler(deferred);
-        popup.pollPopup(deferred);
-
-        return deferred.promise;
-      };
-
-      popup.pollPopup = function(deferred) {
-        polling = $interval(function() {
-          if (popupWindow.closed) {
-            $interval.cancel(polling);
-            deferred.reject({ data: 'Authorization Failed' });
+          if (popupWindow && popupWindow.focus) {
+            popupWindow.focus();
           }
-        }, 35);
-      };
 
-      popup.postMessageHandler = function(deferred) {
-        $window.addEventListener('message', function(event) {
-          if (event.origin === $window.location.origin) {
-            popupWindow.close();
-            if (event.data.error) {
-              deferred.reject({ data: event.data.error });
-            } else {
-              deferred.resolve(event.data);
+          popup.pollPopup(deferred);
+
+          return deferred.promise;
+        };
+
+        popup.pollPopup = function(deferred) {
+          polling = $interval(function() {
+            try {
+              if (popupWindow.document.domain === document.domain && popupWindow.location.search) {
+                var params = popupWindow.location.search.substring(1);
+                var qs = Object.keys($location.search()).length ? $location.search() : utils.parseQueryString(params);
+
+                if (qs.oauth_token && qs.oauth_verifier) {
+                  deferred.resolve({ oauth_token: qs.oauth_token, oauth_verifier: qs.oauth_verifier });
+                } else if (qs.code) {
+                  deferred.resolve({ code: qs.code });
+                } else if (qs.error) {
+                  deferred.reject({ error: qs.error });
+                }
+                popupWindow.close();
+                $interval.cancel(polling);
+              }
+            } catch (error) {}
+
+            if (popupWindow.closed) {
+              $interval.cancel(polling);
+              deferred.reject({ data: 'Authorization Failed' });
             }
-          }
-        }, false);
-      };
+          }, 35);
+        };
 
-      popup.prepareOptions = function(options) {
-        var width = options.width || 500;
-        var height = options.height || 500;
-        return angular.extend({
-          width: width,
-          height: height,
-          left: $window.screenX + (($window.outerWidth - width) / 2),
-          top: $window.screenY + (($window.outerHeight - height) / 2.5)
-        }, options);
-      };
+        popup.prepareOptions = function(options) {
+          var width = options.width || 500;
+          var height = options.height || 500;
+          return angular.extend({
+            width: width,
+            height: height,
+            left: $window.screenX + (($window.outerWidth - width) / 2),
+            top: $window.screenY + (($window.outerHeight - height) / 2.5)
+          }, options);
+        };
 
-      popup.stringifyOptions = function(options) {
-        var parts = [];
-        angular.forEach(options, function(value, key) {
-          parts.push(key + '=' + value);
-        });
-        return parts.join(',');
-      };
+        popup.stringifyOptions = function(options) {
+          var parts = [];
+          angular.forEach(options, function(value, key) {
+            parts.push(key + '=' + value);
+          });
+          return parts.join(',');
+        };
 
-      return popup;
-    }])
+        return popup;
+      }])
     .service('satellizer.utils', function() {
       this.camelCase = function(name) {
         return name.replace(/([\:\-\_]+(.))/g, function(_, separator, letter, offset) {
@@ -560,23 +569,6 @@
           }
         };
       }]);
-    }])
-    .run(['$window', '$location', 'satellizer.utils', function($window, $location, utils) {
-      var params = $window.location.search.substring(1);
-      var qs = Object.keys($location.search()).length ? $location.search() : utils.parseQueryString(params);
-      try {
-        if ($window.opener && $window.opener.location.origin === $window.location.origin) {
-          if (qs.oauth_token && qs.oauth_verifier) {
-            $window.opener.postMessage({ oauth_token: qs.oauth_token, oauth_verifier: qs.oauth_verifier }, $window.location.origin);
-          } else if (qs.code) {
-            $window.opener.postMessage({ code: qs.code }, $window.location.origin);
-          } else if (qs.error) {
-            $window.opener.postMessage({ error: qs.error }, $window.location.origin);
-          }
-        }
-      } catch(error) {
-
-      }
     }]);
 
 })(window, window.angular);
