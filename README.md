@@ -226,11 +226,11 @@ $authProvider.oauth1({
 
     </tr>
     <tr>
-      <td>8+</td>
-      <td>✓</td>
-      <td>✓</td>
-      <td>✓</td>
-      <td>✓</td>
+      <td align="center">8+</td>
+      <td align="center">✓</td>
+      <td align="center">✓</td>
+      <td align="center">✓</td>
+      <td align="center">✓</td>
     </tr>
   </tbody>
 </table>
