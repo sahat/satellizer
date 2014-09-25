@@ -211,9 +211,12 @@
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
           var token = $window.localStorage[tokenName];
 
-          if (token) {
-            if (!$window.atob) { return true; }
+          // IE8 and IE9
+          if (token && !$window.atob) {
+            return true;
+          }
 
+          if (token) {
             var base64Url = token.split('.')[1];
             var base64 = base64Url.replace('-', '+').replace('_', '/');
             var exp = JSON.parse($window.atob(base64)).exp;
@@ -541,7 +544,7 @@
       };
 
       this.parseQueryString = function(keyValue) {
-        var obj = { }, key, value;
+        var obj = {}, key, value;
         angular.forEach((keyValue || '').split('&'), function(keyValue) {
           if (keyValue) {
             value = keyValue.split('=');
@@ -551,7 +554,6 @@
         });
         return obj;
       };
-
     })
     .config(['$httpProvider', 'satellizer.config', function($httpProvider, config) {
       $httpProvider.interceptors.push(['$q', function($q) {
