@@ -133,7 +133,7 @@ $authProvider.unlinkUrl = '/auth/unlink/';
 $authProvider.facebook({
   url: '/auth/facebook',
   authorizationEndpoint: 'https://www.facebook.com/dialog/oauth',
-  redirectUri: window.location.origin + '/',
+  redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host + '/',
   scope: 'email',
   scopeDelimiter: ',',
   requiredUrlParams: ['display', 'scope'],
@@ -146,7 +146,7 @@ $authProvider.facebook({
 $authProvider.google({
   url: '/auth/google',
   authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
-  redirectUri: window.location.origin,
+  redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
   scope: ['profile', 'email'];
   scopePrefix: 'openid';
   scopeDelimiter: ' ',
@@ -161,7 +161,7 @@ $authProvider.google({
 $authProvider.linkedin({
   url: '/auth/linkedin',
   authorizationEndpoint: 'https://www.linkedin.com/uas/oauth2/authorization',
-  redirectUri: window.location.origin,
+  redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
   requiredUrlParams: ['state'],
   scope: [],
   scopeDelimiter: ' ',
@@ -182,7 +182,7 @@ $authProvider.github({
   name: 'github',
   url: '/auth/github',
   authorizationEndpoint: 'https://github.com/login/oauth/authorize',
-  redirectUri: window.location.origin,
+  redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
   scope: [],
   scopeDelimiter: ' ',
   type: '2.0',
