@@ -298,7 +298,7 @@ authentication process works.
 - [`$auth.authenticate(name, [userData])`](#authauthenticatename-userdata)
 - [`$auth.logout()`](#authlogout)
 - [`$auth.isAuthenticated()`](#authisauthenticated)
-- [`$auth.link(provider)`](#authlinkprovider)
+- [`$auth.link(provider, [userData])`](#authlinkprovider-userdata)
 - [`$auth.unlink(provider)`](#authunlinkprovider)
 
 #### `$auth.login(user)`
@@ -370,11 +370,17 @@ $scope.isAuthenticated = function() {
 </ul>
 ```
 
-#### `$auth.link(provider)`
+#### `$auth.link(provider, [userData])`
 
-Links an OAuth provider to the account. *Alias for `$auth.authenticate(provider)`*.
+Links an OAuth provider to the account. Alias for [$auth.authenticate()](#authauthenticatename-userdata).
+- **provider** - one of the predefined provider names or a custom provider name created
+via `$authProvider.oauth1()` or `$authProvider.oauth2()`.
+- **userData** - optional object if you need to send some additional data to
+the server along with `code`, `clientId` and `redirectUri` in the case of
+*OAuth 2.0* or `oauth_token` and `oauth_verifier` in the case of *OAuth 1.0*.
 
-Account linking business logic is handled entirely on the server.
+**:bulb: Note:** Account linking business logic is handled entirely on the server.
+
 
 ```js
 $auth.link('github');
