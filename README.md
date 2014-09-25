@@ -372,7 +372,8 @@ $scope.isAuthenticated = function() {
 
 #### `$auth.link(provider, [userData])`
 
-Links an OAuth provider to the account. Alias for [$auth.authenticate()](#authauthenticatename-userdata).
+Links an OAuth provider to the account. Same as [$auth.authenticate()](#authauthenticatename-userdata)
+with the exception that it does not redirect to `$authProvider.loginRedirect` path.
 - **provider** - one of the predefined provider names or a custom provider name created
 via `$authProvider.oauth1()` or `$authProvider.oauth2()`.
 - **userData** - optional object if you need to send some additional data to
