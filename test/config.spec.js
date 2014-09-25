@@ -29,6 +29,12 @@ describe('satellizer.config', function() {
     expect(this.$authProvider.signupRedirect).toEqual('/newurl');
   });
 
+  it('should get loginOnSignup', function() {
+    this.$authProvider.loginOnSignup = true;
+    expect(this.config.loginOnSignup).toEqual(true);
+    expect(this.$authProvider.loginOnSignup).toEqual(true);
+  });
+
   it('should set loginUrl', function() {
     this.$authProvider.loginUrl = '/api/signin';
     expect(this.config.loginUrl).toEqual('/api/signin');
@@ -76,7 +82,7 @@ describe('satellizer.config', function() {
     expect(this.config.providers.facebook.clientId).toBe('1234');
   });
 
-  it('should update googlewith new params', function() {
+  it('should update google with new params', function() {
     this.$authProvider.google({ state: 'secret' });
     expect(this.config.providers.google.state).toBe('secret');
   });
