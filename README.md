@@ -111,6 +111,30 @@ angular.module('MyApp')
 **:exclamation: Note:** For server-side usage please refer to the [examples](https://github.com/sahat/satellizer/tree/master/examples/server)
 directory.
 
+## Browser Support
+
+<table>
+  <tbody>
+    <tr>
+      <td><img src="http://ie.microsoft.com/testdrive/ieblog/2010/Sep/16_UserExperiencesEvolvingthebluee_23.png" height="40"></td>
+      <td><img src="http://img3.wikia.nocookie.net/__cb20120330024137/logopedia/images/d/d7/Google_Chrome_logo_2011.svg" height="40"></td>
+      <td><img src="http://media.idownloadblog.com/wp-content/uploads/2014/06/Safari-logo-OS-X-Yosemite.png" height="40"></td>
+      <td><img src="http://th09.deviantart.net/fs71/200H/f/2013/185/e/b/firefox_2013_vector_icon_by_thegoldenbox-d6bxsye.png" height="40"></td>
+      <td><img src="http://upload.wikimedia.org/wikipedia/commons/d/d4/Opera_browser_logo_2013.png" height="40"></td>
+
+    </tr>
+    <tr>
+      <td>8+</td>
+      <td>✓</td>
+      <td>✓</td>
+      <td>✓</td>
+      <td>✓</td>
+    </tr>
+  </tbody>
+</table>
+
+**:exclamation: Note:** If you stumble upon a browser version that does not work with *Satellizer* please [open an issue](https://github.com/sahat/satellizer/issues) so I could update the checkmark with the lowest supported version.
+
 ## Configuration
 
 Below is a complete listing of all default configuration options.
@@ -211,12 +235,6 @@ $authProvider.oauth1({
   popupOptions: null
 });
 ```
-
-## Browser Support
-
-| IE11 | IE10 | IE9 | IE8 | Chrome | Firefox | Safari | iOS | Android |
-|-----:|-----:|----:|----:|-------:|--------:|-------:|----:|---------|
-|   ✗  |   ✗  |  ✗  |  ✗  |    ✔   |    ✔    |    ✔   |  ✔  |    ✔    |
 
 ## How It Works
 
@@ -340,14 +358,14 @@ $auth.logout();
 
 Returns `true` or `false` depending on if the user is signed in or not.
 
-**Controller:**
+*Controller:*
 ```js
 $scope.isAuthenticated = function() {
   return $auth.isAuthenticated();
 };
 ```
 
-**Template:**
+*Template:*
 ```html
 <ul class="nav navbar-nav pull-right" ng-if="!isAuthenticated()">
   <li><a href="/#/login">Login</a></li>
@@ -405,8 +423,8 @@ reporting bugs.
 Additionally, I would like to thank all other contributors who have submitted
 issues and/or pull requests!
 
-Satellizer was inspired by [ng-token-auth](https://github.com/lynndylanhurley/ng-token-auth),
-[Torii](https://github.com/Vestorly/torii) and [angular-oauth](https://github.com/enginous/angular-oauth).
+Satellizer was inspired by [ng-token-auth](https://github.com/lynndylanhurley/ng-token-auth)
+and [torii](https://github.com/Vestorly/torii) and [angular-oauth](https://github.com/enginous/angular-oauth).
 
 ## License
 
