@@ -212,6 +212,8 @@
           var token = $window.localStorage[tokenName];
 
           if (token) {
+            if (!$window.atob) { return true; }
+
             var base64Url = token.split('.')[1];
             var base64 = base64Url.replace('-', '+').replace('_', '/');
             var exp = JSON.parse($window.atob(base64)).exp;
@@ -572,7 +574,7 @@
     }]);
 
   function origin() {
-    return window.location.origin || window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
+    return window.location.origin || window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
   }
 
 })(window, window.angular);
