@@ -24,7 +24,7 @@
         google: {
           url: '/auth/google',
           authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
-          redirectUri: window.location.origin,
+          redirectUri: origin(),
           scope: ['profile', 'email'],
           scopePrefix: 'openid',
           scopeDelimiter: ' ',
@@ -37,7 +37,7 @@
         facebook: {
           url: '/auth/facebook',
           authorizationEndpoint: 'https://www.facebook.com/dialog/oauth',
-          redirectUri: window.location.origin + '/',
+          redirectUri: origin() + '/',
           scope: ['email'],
           scopeDelimiter: ',',
           requiredUrlParams: ['display', 'scope'],
@@ -48,7 +48,7 @@
         linkedin: {
           url: '/auth/linkedin',
           authorizationEndpoint: 'https://www.linkedin.com/uas/oauth2/authorization',
-          redirectUri: window.location.origin,
+          redirectUri: origin(),
           requiredUrlParams: ['state'],
           scope: ['r_emailaddress'],
           scopeDelimiter: ' ',
@@ -60,7 +60,7 @@
           name: 'github',
           url: '/auth/github',
           authorizationEndpoint: 'https://github.com/login/oauth/authorize',
-          redirectUri: window.location.origin,
+          redirectUri: origin(),
           scope: [],
           scopeDelimiter: ' ',
           type: '2.0',
@@ -570,5 +570,9 @@
         };
       }]);
     }]);
+
+  function origin() {
+    return window.location.origin || window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
+  }
 
 })(window, window.angular);
