@@ -29,12 +29,6 @@ describe('satellizer.popup', function() {
   it('should open a new popup', function() {
     var open = this.popup.open();
     this.$interval.flush(300);
-    this.$window.postMessage('testing', '*');
-    expect(angular.isObject(open)).toBe(true);
-  });
-
-  it('should postMessage to window', function() {
-    var open = this.popup.open();
     expect(angular.isObject(open)).toBe(true);
   });
 });

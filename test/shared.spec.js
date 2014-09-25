@@ -12,7 +12,6 @@ describe('satellizer.shared', function() {
       this.config = config;
     }]));
 
-
   describe('logout()', function() {
 
     it('should be defined', function() {
@@ -20,9 +19,9 @@ describe('satellizer.shared', function() {
     });
 
     it('should log out a user', function() {
-      var token = [this.config.tokenPrefix, this.config.tokenName].join('_');
+      var tokenName = [this.config.tokenPrefix, this.config.tokenName].join('_');
       this.shared.logout();
-      expect(this.$window.localStorage[token]).toBeUndefined();
+      expect(this.$window.localStorage[tokenName]).toBeUndefined();
       expect(this.$location.path()).toEqual(this.config.logoutRedirect);
     });
 
@@ -35,15 +34,19 @@ describe('satellizer.shared', function() {
       expect(angular.isFunction(this.shared.isAuthenticated)).toBe(true);
     });
 
+    it('test coverage', function() {
+      var tokenName = [this.config.tokenPrefix, this.config.tokenName].join('_');
+      localStorage.setItem(tokenName, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEyMzQ1Njc4OTAsIm5hbWUiOiJKb2huIERvZSJ9.kRkUHzvZMWXjgB4zkO3d6P1imkdp0ogebLuxnTCiYUU');
+      expect(this.shared.isAuthenticated()).toBe(false);
+    });
+
+
   });
 
   describe('parseUser()', function() {
 
     it('should not redirect if loginRedirect is null', function() {
       var deferred = this.$q.defer();
-      var response = {
-        data: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsb…YzMn0.YATZN37JENCQWeNAoN4M7KxJl7OAIJL4ka_fSM_gYkE'
-      };
       var response = {
         data: {
           token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsb…YzMn0.YATZN37JENCQWeNAoN4M7KxJl7OAIJL4ka_fSM_gYkE'
