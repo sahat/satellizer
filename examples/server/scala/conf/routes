@@ -2,15 +2,15 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Home page
-GET     /                             controllers.Application.index
-GET     /api/me                       controllers.UserController.index
-# POST    /auth/facebook                controllers.Auth.facebook
-# POST    /auth/foursquare              controllers.Auth.index
-# POST    /auth/google                  controllers.Auth.index
-# POST    /auth/github                  controllers.Auth.index
-# POST    /auth/linkedin                controllers.Auth.index
-# GET     /auth/twitter                 controllers.Auth.index
+
+# Authentication
+POST    /auth/facebook                controllers.Authentication.facebook
+#POST    /auth/foursquare              controllers.Authentication.foursquare
+POST    /auth/google                  controllers.Authentication.google
+#POST    /auth/github                  controllers.Authentication.github
+POST    /auth/linkedin                controllers.Authentication.linkedin
+POST    /auth/twitter                 controllers.Authentication.twitter
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET     /    controllers.Assets.at(path="/public", file="index.html")
+GET     /*file               controllers.Assets.at(path="/public", file)
