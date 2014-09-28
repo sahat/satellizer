@@ -4,8 +4,8 @@ import jwt
 import json
 import requests
 from functools import wraps
-from urllib.parse import parse_qs, parse_qsl
-from urllib.parse import urlencode
+from urlparse import parse_qs, parse_qsl
+from urllib import urlencode
 from flask import Flask, g, send_file, request, redirect, url_for, jsonify
 from flask.ext.sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
