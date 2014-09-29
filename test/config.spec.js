@@ -113,5 +113,17 @@ describe('satellizer.config', function() {
     expect(this.config.providers['goodreads'].url).toBe('/auth/goodreads');
   });
 
+  it('should set requestFilter', function() {
+    var requestInterceptor = function (httpConfig) {};
+    this.$authProvider.requestFilter = requestInterceptor;
+    expect(this.config.requestFilter).toEqual(requestInterceptor);
+  });
+
+  it('should set responseFilter', function() {
+    var responseInterceptor = function (response) {};
+    this.$authProvider.responseFilter = responseInterceptor;
+    expect(this.config.responseFilter).toEqual(responseInterceptor);
+  });
+
 });
 

@@ -123,6 +123,14 @@
         unlinkUrl: {
           get: function() { return config.unlinkUrl; },
           set: function(value) { config.unlinkUrl = value; }
+        },
+        requestFilter: {
+          get: function() { return config.requestFilter; },
+          set: function(value) { config.requestFilter = value; }
+        },
+        responseFilter: {
+          get: function() { return config.responseFilter; },
+          set: function(value) { config.responseFilter = value; }
         }
       });
 
