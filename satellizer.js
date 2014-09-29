@@ -577,20 +577,28 @@
         return obj;
       };
     })
-    .config(['$httpProvider', 'satellizer.config', function($httpProvider, config) {
+    .config(['$httpProvider', '$authProvider', 'satellizer.config', function($httpProvider, $authProvider, config) {
       $httpProvider.interceptors.push(['$q', function($q) {
         var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
         return {
           request: function(httpConfig) {
+            var skip = angular.isFunction($authProvider.requestFilter) && !$authProvider.requestFilter(httpConfig);
+            if (skip) {
+              return httpConfig;
+            }
+
             if (localStorage.getItem(tokenName)) {
-              if (httpConfig.url.indexOf('://') === -1) {
-                httpConfig.headers.Authorization = 'Bearer ' + localStorage.getItem(tokenName);
-              }
+              httpConfig.headers.Authorization = 'Bearer ' + localStorage.getItem(tokenName);
             }
             return httpConfig;
           },
           responseError: function(response) {
-            if (response.status === 401 && response.config.url.indexOf('://') === -1) {
+            var skip = angular.isFunction($authProvider.responseFilter) && !$authProvider.responseFilter(response);
+            if (skip) {
+              return $q.reject(response);
+            }
+
+            if (response.status === 401) {
               localStorage.removeItem(tokenName);
             }
             return $q.reject(response);
