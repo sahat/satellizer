@@ -254,11 +254,11 @@
           return false;
         }
 
-        shared.requestFilter = (config.requestFilter || function(httpConfig) {
+        shared.requestFilter = config.requestFilter = (config.requestFilter || function(httpConfig) {
           return intercept(httpConfig.url);
         });
 
-        shared.responseFilter = (config.responseFilter || function(response) {
+        shared.responseFilter = config.responseFilter = (config.responseFilter || function(response) {
           return intercept(response.config.url);
         });
 
