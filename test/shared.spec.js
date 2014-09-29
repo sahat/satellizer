@@ -4,6 +4,9 @@ describe('satellizer.shared', function() {
 
   beforeEach(inject(['$q', '$httpBackend', '$location', '$window', 'satellizer.shared', 'satellizer.config',
     function($q, $httpBackend, $location, $window, shared, config) {
+      delete config.requestFilter;
+      delete config.responseFilter;
+
       this.$q = $q;
       this.$httpBackend = $httpBackend;
       this.$location = $location;
@@ -61,5 +64,70 @@ describe('satellizer.shared', function() {
 
   });
 
+  describe('requestFilter()', function() {
+
+    it('should match urls', function() {
+      expect(this.shared.requestFilter).toBeDefined();
+
+      var filter = this.shared.requestFilter;
+
+      expect(filter({ url: 'http://localhost:9876' })).toBe(true);
+      expect(filter({ url: 'http://localhost:9876/api' })).toBe(true);
+      expect(filter({ url: 'http://localhost:9876/api?url=example.com' })).toBe(true);
+      expect(filter({ url: '/api/example.com' })).toBe(true);
+      expect(filter({ url: '/api?url=example.com' })).toBe(true);
+      expect(filter({ url: '/api?url=www.example.com' })).toBe(true);
+      expect(filter({ url: '/api?url=https://example.com' })).toBe(true);
+
+      expect(filter({ url: 'http://example.com/api' })).toBe(false);
+      expect(filter({ url: 'https://example.com/api' })).toBe(false);
+      expect(filter({ url: 'http://example.com/api?url=http://localhost:9876' })).toBe(false);
+      expect(filter({ url: 'https://example.com/api?url=http://localhost:9876' })).toBe(false);
+
+      // TODO: Ensure we get the expected results for scenarios below
+      // expect(this.shared.requestFilter({ url: '//localhost:9876/api' })).toBe(true);
+      // expect(this.shared.requestFilter({ url: '//www.example.com/api' })).toBe('??');
+      // expect(this.shared.requestFilter({ url: 'example.com/api' })).toBe(false);
+      // expect(this.shared.requestFilter({ url: '//other.api.com/api?url=example.com' })).toBe(false);
+      // expect(this.shared.requestFilter({ url: '//other.api.com/api?url=example.com' })).toBe(false);
+      // expect(this.shared.requestFilter({ url: '//other.api.com/api?url=www.example.com' })).toBe(false);
+      // expect(this.shared.requestFilter({ url: '//other.api.com/api?url=https://example.com' })).toBe(false);
+      // expect(this.shared.requestFilter({ url: '//other.api.com/api?url=//example.com' })).toBe(false);
+    });
+
+  });
+
+  describe('responseFilter()', function() {
+
+    it('should match urls', function() {
+      expect(this.shared.responseFilter).toBeDefined();
+
+      var filter = this.shared.responseFilter;
+
+      expect(filter({ config: { url: 'http://localhost:9876' } })).toBe(true);
+      expect(filter({ config: { url: 'http://localhost:9876/api' } })).toBe(true);
+      expect(filter({ config: { url: 'http://localhost:9876/api?url=example.com' } })).toBe(true);
+      expect(filter({ config: { url: '/api/example.com' } })).toBe(true);
+      expect(filter({ config: { url: '/api?url=example.com' } })).toBe(true);
+      expect(filter({ config: { url: '/api?url=www.example.com' } })).toBe(true);
+      expect(filter({ config: { url: '/api?url=https://example.com' } })).toBe(true);
+
+      expect(filter({ config: { url: 'http://example.com/api' } })).toBe(false);
+      expect(filter({ config: { url: 'https://example.com/api' } })).toBe(false);
+      expect(filter({ config: { url: 'http://example.com/api?url=http://localhost:9876' } })).toBe(false);
+      expect(filter({ config: { url: 'https://example.com/api?url=http://localhost:9876' } })).toBe(false);
+
+      // TODO: Ensure we get the expected results for scenarios below
+      // expect(this.shared.requestFilter({ config: { url: '//localhost:9876/api' } })).toBe(true);
+      // expect(this.shared.requestFilter({ config: { url: '//www.example.com/api' } })).toBe('??');
+      // expect(this.shared.requestFilter({ config: { url: 'example.com/api' } })).toBe(false);
+      // expect(this.shared.requestFilter({ config: { url: '//other.api.com/api?url=example.com' } })).toBe(false);
+      // expect(this.shared.requestFilter({ config: { url: '//other.api.com/api?url=example.com' } })).toBe(false);
+      // expect(this.shared.requestFilter({ config: { url: '//other.api.com/api?url=www.example.com' } })).toBe(false);
+      // expect(this.shared.requestFilter({ config: { url: '//other.api.com/api?url=https://example.com' } })).toBe(false);
+      // expect(this.shared.requestFilter({ config: { url: '//other.api.com/api?url=//example.com' } })).toBe(false);
+    });
+
+  });
 
 });
