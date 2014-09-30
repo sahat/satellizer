@@ -9,5 +9,7 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 resolvers += "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
 
 libraryDependencies ++= Seq(
-  "org.reactivemongo" %% "play2-reactivemongo" % "0.11.0-SNAPSHOT"
+  "org.reactivemongo" %% "play2-reactivemongo" % "0.11.0-SNAPSHOT",
+  ws,
+  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.2"
 )
