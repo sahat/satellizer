@@ -98,9 +98,8 @@ function ensureAuthenticated(req, res, next) {
  | Generate JSON Web Token
  |--------------------------------------------------------------------------
  */
-function createToken(req, user) {
+function createToken(user) {
   var payload = {
-    iss: req.hostname,
     sub: user._id,
     iat: moment().unix(),
     exp: moment().add(14, 'days').unix()
@@ -153,7 +152,7 @@ app.post('/auth/login', function(req, res) {
       if (!isMatch) {
         return res.status(401).send({ message: 'Wrong email and/or password' });
       }
-      res.send({ token: createToken(req, user) });
+      res.send({ token: createToken(user) });
     });
   });
 });
@@ -176,7 +175,7 @@ app.post('/auth/signup', function(req, res) {
     });
 
     user.save(function() {
-      res.send({ token: createToken(req, user) });
+      res.send({ token: createToken(user) });
     });
   });
 });
@@ -224,7 +223,7 @@ app.post('/auth/google', function(req, res) {
             user.google = profile.sub;
             user.displayName = user.displayName || profile.name;
             user.save(function(err) {
-              res.send({ token: createToken(req, user) });
+              res.send({ token: createToken(user) });
             });
           });
         });
@@ -232,14 +231,14 @@ app.post('/auth/google', function(req, res) {
         // Step 3b. Create a new user account or return an existing one.
         User.findOne({ google: profile.sub }, function(err, existingUser) {
           if (existingUser) {
-            return res.send({ token: createToken(req, existingUser) });
+            return res.send({ token: createToken(existingUser) });
           }
 
           var user = new User();
           user.google = profile.sub;
           user.displayName = profile.name;
           user.save(function(err) {
-            res.send({ token: createToken(req, user) });
+            res.send({ token: createToken(user) });
           });
         });
       }
@@ -289,7 +288,7 @@ app.post('/auth/github', function(req, res) {
             user.github = profile.id;
             user.displayName = user.displayName || profile.name;
             user.save(function(err) {
-              res.send({ token: createToken(req, user) });
+              res.send({ token: createToken(user) });
             });
           });
         });
@@ -297,14 +296,14 @@ app.post('/auth/github', function(req, res) {
         // Step 3b. Create a new user account or return an existing one.
         User.findOne({ github: profile.id }, function(err, existingUser) {
           if (existingUser) {
-            return res.send({ token: createToken(req, existingUser) });
+            return res.send({ token: createToken(existingUser) });
           }
 
           var user = new User();
           user.github = profile.id;
           user.displayName = profile.name;
           user.save(function(err) {
-            res.send({ token: createToken(req, user) });
+            res.send({ token: createToken(user) });
           });
         });
       }
@@ -361,7 +360,7 @@ app.post('/auth/linkedin', function(req, res) {
             user.linkedin = profile.id;
             user.displayName = user.displayName || profile.firstName + ' ' + profile.lastName;
             user.save(function(err) {
-              res.send({ token: createToken(req, user) });
+              res.send({ token: createToken(user) });
             });
           });
         });
@@ -369,14 +368,14 @@ app.post('/auth/linkedin', function(req, res) {
         // Step 3b. Create a new user account or return an existing one.
         User.findOne({ linkedin: profile.id }, function(err, existingUser) {
           if (existingUser) {
-            return res.send({ token: createToken(req, existingUser) });
+            return res.send({ token: createToken(existingUser) });
           }
 
           var user = new User();
           user.linkedin = profile.id;
           user.displayName = profile.firstName + ' ' + profile.lastName;
           user.save(function(err) {
-            res.send({ token: createToken(req, user) });
+            res.send({ token: createToken(user) });
           });
         });
       }
@@ -424,7 +423,7 @@ app.post('/auth/facebook', function(req, res) {
             user.facebook = profile.id;
             user.displayName = user.displayName || profile.name;
             user.save(function(err) {
-              res.send({ token: createToken(req, user) });
+              res.send({ token: createToken(user) });
             });
           });
         });
@@ -432,14 +431,14 @@ app.post('/auth/facebook', function(req, res) {
         // Step 3b. Create a new user account or return an existing one.
         User.findOne({ facebook: profile.id }, function(err, existingUser) {
           if (existingUser) {
-            return res.send({ token: createToken(req, existingUser) });
+            return res.send({ token: createToken(existingUser) });
           }
 
           var user = new User();
           user.facebook = profile.id;
           user.displayName = profile.name;
           user.save(function(err) {
-            res.send({ token: createToken(req, user) });
+            res.send({ token: createToken(user) });
           });
         });
       }
@@ -501,7 +500,7 @@ app.get('/auth/twitter', function(req, res) {
             user.twitter = profile.user_id;
             user.displayName = user.displayName || profile.screen_name;
             user.save(function(err) {
-              res.send({ token: createToken(req, user) });
+              res.send({ token: createToken(user) });
             });
           });
         });
@@ -509,13 +508,13 @@ app.get('/auth/twitter', function(req, res) {
         // Step 4b. Create a new user account or return an existing one.
         User.findOne({ twitter: profile.user_id }, function(err, existingUser) {
           if (existingUser) {
-            return res.send({ token: createToken(req, existingUser) });
+            return res.send({ token: createToken(existingUser) });
           }
           var user = new User();
           user.twitter = profile.user_id;
           user.displayName = profile.screen_name;
           user.save(function(err) {
-            res.send({ token: createToken(req, user) });
+            res.send({ token: createToken(user) });
           });
         });
       }
@@ -568,7 +567,7 @@ app.post('/auth/foursquare', function(req, res) {
             user.foursquare = profile.id;
             user.displayName = user.displayName || profile.firstName + ' ' + profile.lastName;
             user.save(function(err) {
-              res.send({ token: createToken(req, user) });
+              res.send({ token: createToken(user) });
             });
           });
         });
@@ -576,14 +575,14 @@ app.post('/auth/foursquare', function(req, res) {
         // Step 3b. Create a new user account or return an existing one.
         User.findOne({ foursquare: profile.id }, function(err, existingUser) {
           if (existingUser) {
-            return res.send({ token: createToken(req, existingUser) });
+            return res.send({ token: createToken(existingUser) });
           }
 
           var user = new User();
           user.foursquare = profile.id;
           user.displayName = profile.firstName + ' ' + profile.lastName;
           user.save(function(err) {
-            res.send({ token: createToken(req, user) });
+            res.send({ token: createToken(user) });
           });
         });
       }
