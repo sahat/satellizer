@@ -306,6 +306,10 @@ authentication process works.
 Sign in via email and password where:
 - **user** - data object with *email* and *password* properties.
 
+##### Returns
+- **response** - the response object from a server. On the server you could
+pass extra info like a `user` object in addition to `token` and retrieve it here.
+
 ```js
 $auth.login({
   email: $scope.email,
@@ -317,6 +321,10 @@ $auth.login({
 
 Creates a new local account where: 
 - **user** - data object with *email* and *password* properties.
+
+##### Returns
+- **response** - the response object from a server. On the server you could
+pass extra info like a `user` object in addition to `token` and retrieve it here.
 
 ```js
 $auth.signup({
@@ -334,8 +342,12 @@ via `$authProvider.oauth1()` or `$authProvider.oauth2()`.
 the server along with `code`, `clientId` and `redirectUri` in the case of
 *OAuth 2.0* or `oauth_token` and `oauth_verifier` in the case of *OAuth 1.0*.
 
+##### Returns
+- **response** - the response object from a server. On the server you could
+pass extra info like a `user` object in addition to `token` and retrieve it here.
+
 ```js
-$auth.authenticate('google').then(function() {
+$auth.authenticate('google').then(function(response) {
   // Signed In.
 });
 ```
