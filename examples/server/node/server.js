@@ -164,12 +164,20 @@ app.post('/auth/login', function(req, res) {
  |--------------------------------------------------------------------------
  */
 app.post('/auth/signup', function(req, res) {
-  var user = new User();
-  user.displayName = req.body.displayName;
-  user.email = req.body.email;
-  user.password = req.body.password;
-  user.save(function(err) {
-    res.send({ token: createToken(req, user) });
+  User.findOne({ email: req.body.email }, function(err, existingUser) {
+    if (existingUser) {
+      return res.status(409).send({ message: 'Email is already taken' });
+    }
+
+    var user = new User({
+      displayName: req.body.displayName,
+      email: req.body.email,
+      password: req.body.password
+    });
+
+    user.save(function() {
+      res.send({ token: createToken(req, user) });
+    });
   });
 });
 
