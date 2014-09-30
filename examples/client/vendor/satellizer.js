@@ -493,7 +493,7 @@
           polling = $interval(function() {
             try {
               if (popupWindow.document.domain === document.domain && popupWindow.location.search) {
-                var params = popupWindow.location.search.substring(1);
+                var params = popupWindow.location.search.substring(1).replace(/\/$/, '');
                 var qs = Object.keys($location.search()).length ? $location.search() : utils.parseQueryString(params);
 
                 if (qs.oauth_token && qs.oauth_verifier) {
