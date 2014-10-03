@@ -211,11 +211,6 @@
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
           var token = $window.localStorage[tokenName];
 
-          // IE8 and IE9
-          if (token && !$window.atob) {
-            return true;
-          }
-
           if (token) {
             var base64Url = token.split('.')[1];
             var base64 = base64Url.replace('-', '+').replace('_', '/');
@@ -575,7 +570,7 @@
       }]);
     }]);
 
-  // Base64.js polyfill
+  // Base64.js polyfill (https://github.com/davidchambers/Base64.js/)
   (function () {
     var object = typeof exports != 'undefined' ? exports : this; // #8: web workers
     var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
