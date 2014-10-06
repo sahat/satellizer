@@ -24,7 +24,7 @@
         google: {
           url: '/auth/google',
           authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
-          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
+          redirectUri: currentUrl(),
           scope: ['profile', 'email'],
           scopePrefix: 'openid',
           scopeDelimiter: ' ',
@@ -37,7 +37,7 @@
         facebook: {
           url: '/auth/facebook',
           authorizationEndpoint: 'https://www.facebook.com/dialog/oauth',
-          redirectUri: window.location.origin ? window.location.origin + '/' : window.location.protocol + '//' + window.location.host + '/',
+          redirectUri: currentUrl() + '/',
           scope: ['email'],
           scopeDelimiter: ',',
           requiredUrlParams: ['display', 'scope'],
@@ -48,7 +48,7 @@
         linkedin: {
           url: '/auth/linkedin',
           authorizationEndpoint: 'https://www.linkedin.com/uas/oauth2/authorization',
-          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
+          redirectUri: currentUrl(),
           requiredUrlParams: ['state'],
           scope: ['r_emailaddress'],
           scopeDelimiter: ' ',
@@ -60,7 +60,7 @@
           name: 'github',
           url: '/auth/github',
           authorizationEndpoint: 'https://github.com/login/oauth/authorize',
-          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
+          redirectUri: currentUrl(),
           scope: [],
           scopeDelimiter: ' ',
           type: '2.0',
@@ -569,6 +569,11 @@
         };
       }]);
     }]);
+
+  // Helper functions
+  function currentUrl() {
+    return window.location.origin || window.location.protocol + '//' + window.location.host;
+  }
 
 })(window, window.angular);
 
