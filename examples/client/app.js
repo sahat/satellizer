@@ -59,7 +59,7 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ui.router', 'mgcrea.ngStra
       name: 'foursquare',
       url: '/auth/foursquare',
       clientId: 'MTCEJ3NGW2PNNB31WOSBFDSAD4MTHYVAZ1UKIULXZ2CVFC2K',
-      redirectUri: window.location.origin,
+      redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
       authorizationEndpoint: 'https://foursquare.com/oauth2/authenticate'
     });
   });
