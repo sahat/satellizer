@@ -123,6 +123,14 @@
         unlinkUrl: {
           get: function() { return config.unlinkUrl; },
           set: function(value) { config.unlinkUrl = value; }
+        },
+        requestFilter: {
+          get: function() { return config.requestFilter; },
+          set: function(value) { config.requestFilter = value; }
+        },
+        responseFilter: {
+          get: function() { return config.responseFilter; },
+          set: function(value) { config.responseFilter = value; }
         }
       });
 
@@ -234,6 +242,20 @@
 
           return deferred.promise;
         };
+
+        function intercept (url) {
+          if (url.indexOf($window.location.origin) === 0) return true;
+          if (url.indexOf('http://') !== 0 && url.indexOf('https://') !== 0) return true;
+          return false;
+        }
+
+        shared.requestFilter = config.requestFilter = (config.requestFilter || function(httpConfig) {
+          return intercept(httpConfig.url);
+        });
+
+        shared.responseFilter = config.responseFilter = (config.responseFilter || function(response) {
+          return intercept(response.config.url);
+        });
 
         return shared;
       }])
@@ -550,17 +572,27 @@
         return obj;
       };
     })
-    .config(['$httpProvider', 'satellizer.config', function($httpProvider, config) {
+    .config(['$httpProvider', '$authProvider', 'satellizer.config', function($httpProvider, $authProvider, config) {
       $httpProvider.interceptors.push(['$q', function($q) {
         var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
         return {
           request: function(httpConfig) {
+            var skip = angular.isFunction($authProvider.requestFilter) && !$authProvider.requestFilter(httpConfig);
+            if (skip) {
+              return httpConfig;
+            }
+
             if (localStorage.getItem(tokenName)) {
               httpConfig.headers.Authorization = 'Bearer ' + localStorage.getItem(tokenName);
             }
             return httpConfig;
           },
           responseError: function(response) {
+            var skip = angular.isFunction($authProvider.responseFilter) && !$authProvider.responseFilter(response);
+            if (skip) {
+              return $q.reject(response);
+            }
+
             if (response.status === 401) {
               localStorage.removeItem(tokenName);
             }
