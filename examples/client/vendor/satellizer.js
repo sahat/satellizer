@@ -206,6 +206,11 @@
         shared.saveToken = function(response, deferred, isLinking) {
           var token = response.data[config.tokenName];
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
+
+          if (!token) {
+            throw new Error('Expecting a token named "' + config.tokenName + '" but instead got: ' + JSON.stringify(response.data));
+          }
+
           $window.localStorage[tokenName] = token;
 
           if (config.loginRedirect && !isLinking) {
@@ -244,8 +249,14 @@
         };
 
         function intercept (url) {
-          if (url.indexOf($window.location.origin) === 0) return true;
-          if (url.indexOf('http://') !== 0 && url.indexOf('https://') !== 0) return true;
+          if (url.indexOf($window.location.origin) === 0) {
+            return true;
+          }
+
+          if (url.indexOf('http://') !== 0 && url.indexOf('https://') !== 0) {
+            return true;
+          }
+
           return false;
         }
 
