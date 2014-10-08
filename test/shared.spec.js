@@ -55,6 +55,7 @@ describe('satellizer.shared', function() {
           token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsb…YzMn0.YATZN37JENCQWeNAoN4M7KxJl7OAIJL4ka_fSM_gYkE'
         }
       };
+      this.config.tokenName = 'token';
       this.config.loginRedirect = null;
 
       this.shared.saveToken(response, deferred);
