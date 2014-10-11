@@ -191,6 +191,14 @@
             return oauth.unlink(provider);
           };
 
+          $auth.getToken = function() {
+
+          };
+
+          $auth.getPayload = function() {
+
+          };
+
           return $auth;
         }];
 
@@ -203,6 +211,15 @@
       function($q, $window, $location, config) {
         var shared = {};
 
+        shared.getToken = function() {
+
+        };
+
+        shared.getPayload = function() {
+
+        };
+
+        // TODO rename to setToken
         shared.saveToken = function(response, deferred, isLinking) {
           var token = response.data[config.tokenName];
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
