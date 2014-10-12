@@ -192,11 +192,11 @@
           };
 
           $auth.getToken = function() {
-
+            return shared.getToken();
           };
 
           $auth.getPayload = function() {
-
+            return shared.getPayload();
           };
 
           return $auth;
