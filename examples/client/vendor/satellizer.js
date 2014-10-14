@@ -191,6 +191,14 @@
             return oauth.unlink(provider);
           };
 
+          $auth.getToken = function() {
+            return shared.getToken();
+          };
+
+          $auth.getPayload = function() {
+            return shared.getPayload();
+          };
+
           return $auth;
         }];
 
@@ -203,6 +211,23 @@
       function($q, $window, $location, config) {
         var shared = {};
 
+        shared.getToken = function() {
+          var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
+          return $window.localStorage[tokenName];
+        };
+
+        shared.getPayload = function() {
+          var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
+          var token = $window.localStorage[tokenName];
+
+          if (token) {
+            var base64Url = token.split('.')[1];
+            var base64 = base64Url.replace('-', '+').replace('_', '/');
+            return JSON.parse($window.atob(base64));
+          }
+        };
+
+        // TODO rename to setToken
         shared.saveToken = function(response, deferred, isLinking) {
           var token = response.data[config.tokenName];
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
@@ -426,7 +451,7 @@
                   }
                 }
 
-                keyValuePairs.push([paramName, encodeURIComponent(paramValue)]);
+                keyValuePairs.push([paramName, paramValue]);
               });
             });
 
@@ -621,7 +646,7 @@
 })(window, window.angular);
 
 // Base64.js polyfill (https://github.com/davidchambers/Base64.js/)
-(function () {
+(function() {
   var object = typeof exports != 'undefined' ? exports : this; // #8: web workers
   var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 

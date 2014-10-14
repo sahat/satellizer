@@ -451,7 +451,7 @@
                   }
                 }
 
-                keyValuePairs.push([paramName, encodeURIComponent(paramValue)]);
+                keyValuePairs.push([paramName, paramValue]);
               });
             });
 
@@ -646,7 +646,7 @@
 })(window, window.angular);
 
 // Base64.js polyfill (https://github.com/davidchambers/Base64.js/)
-(function () {
+(function() {
   var object = typeof exports != 'undefined' ? exports : this; // #8: web workers
   var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 
