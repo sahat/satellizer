@@ -58,7 +58,7 @@ describe('satellizer.shared', function() {
       this.config.tokenName = 'token';
       this.config.loginRedirect = null;
 
-      this.shared.saveToken(response, deferred);
+      this.shared.setToken(response, deferred);
 
       expect(this.$location.path()).toBe('');
     });

@@ -228,7 +228,7 @@
         };
 
         // TODO rename to setToken
-        shared.saveToken = function(response, deferred, isLinking) {
+        shared.setToken = function(response, deferred, isLinking) {
           var token = response.data[config.tokenName];
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
 
@@ -315,7 +315,7 @@
 
           provider.open(config.providers[name], userData || {})
             .then(function(response) {
-              shared.saveToken(response, deferred, isLinking);
+              shared.setToken(response, deferred, isLinking);
             })
             .then(null, function(response) {
               deferred.reject(response);
@@ -345,7 +345,7 @@
 
           $http.post(config.loginUrl, user)
             .then(function(response) {
-              shared.saveToken(response, deferred);
+              shared.setToken(response, deferred);
             })
             .then(null, function(response) {
               deferred.reject(response);
@@ -360,7 +360,7 @@
           $http.post(config.signupUrl, user)
             .then(function(response) {
               if (config.loginOnSignup) {
-                shared.saveToken(response, deferred);
+                shared.setToken(response, deferred);
               } else {
                 $location.path(config.signupRedirect);
                 deferred.resolve(response);
@@ -562,7 +562,7 @@
                 var qs = Object.keys($location.search()).length ? $location.search() : utils.parseQueryString(params);
                 var qsHash = utils.parseQueryString(hash);
                 angular.extend(qs, qsHash);
-                
+
                 if (qs.oauth_token && qs.oauth_verifier) {
                   deferred.resolve({ oauth_token: qs.oauth_token, oauth_verifier: qs.oauth_verifier });
                 } else if (qs.code) {
