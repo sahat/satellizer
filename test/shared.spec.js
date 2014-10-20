@@ -84,6 +84,17 @@ describe('satellizer.shared', function() {
 
   });
 
+  describe('setToken()', function() {
+
+    it('should throw error if no token is provided', function() {
+      var response = { data: {} };
+      expect(function() {
+        this.shared.setToken(response);
+      }).toThrow();
+    });
+
+  });
+
   describe('parseUser()', function() {
 
     it('should not redirect if loginRedirect is null', function() {
