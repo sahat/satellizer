@@ -30,6 +30,20 @@ describe('satellizer.shared', function() {
 
   });
 
+  describe('getToken()', function() {
+
+    it('should be defined', function() {
+      expect(this.shared.getToken).toBeDefined();
+    });
+
+    it('should get a token from Local Storage', function() {
+      var tokenName = [this.config.tokenPrefix, this.config.tokenName].join('_');
+      var token = this.shared.getToken();
+      expect(token).toEqual(this.$window.localStorage[tokenName]);
+    });
+
+  });
+
   describe('isAuthenticated()', function() {
 
     it('should be defined', function() {
