@@ -300,7 +300,9 @@ authentication process works.
 - [`$auth.isAuthenticated()`](#authisauthenticated)
 - [`$auth.link(provider, [userData])`](#authlinkprovider-userdata)
 - [`$auth.unlink(provider)`](#authunlinkprovider)
-
+- [`$auth.getToken()`](#authgettoken)
+- [`$auth.getPayload()`](#authgetpayload)
+ 
 #### `$auth.login(user)`
 
 Sign in via email and password where:
@@ -406,6 +408,24 @@ Unlinks an OAuth provider from the account by sending a **GET** request to the
 
 ```js
 $auth.unlink('github');
+```
+
+#### `$auth.getToken()`
+
+Returns a token from Local Storage.
+
+```js
+$auth.getToken();
+// eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEyMzQ1Njc4OTAsIm5hbWUiOiJKb2huIERvZSJ9.kRkUHzvZMWXjgB4zkO3d6P1imkdp0ogebLuxnTCiYUU
+```
+
+#### `$auth.getPayload()`
+
+Returns a payload object, i.e. decoded middle part of the JSON Web Token.
+
+```js
+$auth.getPayload();
+// { exp: 1414978281, iat: 1413765081, sub: "544457a3eb129ee822a38fdd" }
 ```
 
 ## TODO
