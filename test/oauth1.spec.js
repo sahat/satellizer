@@ -32,7 +32,12 @@ describe('satellizer.oauth1', function() {
         authorizationEndpoint: 'https://api.twitter.com/oauth/authenticate'
       });
 
-      this.oauth1.exchangeForToken('oauth_token=foo&oauth_verifier=bar');
+      var oauthData = {
+        oauth_token: 'foo',
+        oauth_verifier: 'bar'
+      };
+
+      this.oauth1.exchangeForToken(oauthData);
     });
 
   });
