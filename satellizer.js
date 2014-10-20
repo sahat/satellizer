@@ -227,7 +227,6 @@
           }
         };
 
-        // TODO rename to setToken
         shared.setToken = function(response, deferred, isLinking) {
           var token = response.data[config.tokenName];
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
