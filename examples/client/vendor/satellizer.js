@@ -380,7 +380,8 @@
       '$http',
       'satellizer.popup',
       'satellizer.utils',
-      function($q, $http, popup, utils) {
+      'satellizer.config',
+      function($q, $http, popup, utils, config) {
         return function() {
 
           var defaults = {
@@ -407,13 +408,19 @@
 
             popup.open(url, defaults.popupOptions)
               .then(function(oauthData) {
-                oauth2.exchangeForToken(oauthData, userData)
-                  .then(function(response) {
-                    deferred.resolve(response);
-                  })
-                  .then(null, function(response) {
-                    deferred.reject(response);
-                  });
+                if (defaults.responseType === 'token') {
+                  var response = { data: {} };
+                  response.data[config.tokenName] = oauthData.access_token;
+                  deferred.resolve(response);
+                } else {
+                  oauth2.exchangeForToken(oauthData, userData)
+                    .then(function(response) {
+                      deferred.resolve(response);
+                    })
+                    .then(null, function(response) {
+                      deferred.reject(response);
+                    });
+                }
               })
               .then(null, function(error) {
                 deferred.reject(error);
@@ -549,14 +556,19 @@
         popup.pollPopup = function(deferred) {
           polling = $interval(function() {
             try {
-              if (popupWindow.document.domain === document.domain && popupWindow.location.search) {
+              if (popupWindow.document.domain === document.domain && (popupWindow.location.search || popupWindow.location.hash)) {
                 var params = popupWindow.location.search.substring(1).replace(/\/$/, '');
+                var hash = popupWindow.location.hash.substring(1).replace(/\/$/, '');
                 var qs = Object.keys($location.search()).length ? $location.search() : utils.parseQueryString(params);
-
+                var qsHash = utils.parseQueryString(hash);
+                angular.extend(qs, qsHash);
+                
                 if (qs.oauth_token && qs.oauth_verifier) {
                   deferred.resolve({ oauth_token: qs.oauth_token, oauth_verifier: qs.oauth_verifier });
                 } else if (qs.code) {
                   deferred.resolve({ code: qs.code });
+                } else if (qs.access_token) {
+                  deferred.resolve({ access_token: qs.access_token, expires_in: qs.expires_in });
                 } else if (qs.error) {
                   deferred.reject({ error: qs.error });
                 }
