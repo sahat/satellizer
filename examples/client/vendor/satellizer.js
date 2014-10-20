@@ -563,15 +563,12 @@
                 var qsHash = utils.parseQueryString(hash);
                 angular.extend(qs, qsHash);
 
-                if (qs.oauth_token && qs.oauth_verifier) {
-                  deferred.resolve({ oauth_token: qs.oauth_token, oauth_verifier: qs.oauth_verifier });
-                } else if (qs.code) {
-                  deferred.resolve({ code: qs.code });
-                } else if (qs.access_token) {
-                  deferred.resolve({ access_token: qs.access_token, expires_in: qs.expires_in });
-                } else if (qs.error) {
+                if (qs.error) {
                   deferred.reject({ error: qs.error });
+                } else {
+                  deferred.resolve(qs);
                 }
+
                 popupWindow.close();
                 $interval.cancel(polling);
               }
