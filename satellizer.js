@@ -528,11 +528,12 @@
           polling = $interval(function() {
             try {
               if (popupWindow.document.domain === document.domain && (popupWindow.location.search || popupWindow.location.hash)) {
-                var params = popupWindow.location.search.substring(1).replace(/\/$/, '');
-                var hash = popupWindow.location.hash.substring(1).replace(/\/$/, '');
-                var qs = Object.keys($location.search()).length ? $location.search() : utils.parseQueryString(params);
-                var qsHash = utils.parseQueryString(hash);
-                angular.extend(qs, qsHash);
+                var queryParams = popupWindow.location.search.substring(1).replace(/\/$/, '');
+                var hashParams = popupWindow.location.hash.substring(1).replace(/\/$/, '');
+                var hash = utils.parseQueryString(hashParams);
+                var qs = utils.parseQueryString(queryParams);
+
+                angular.extend(qs, hash);
 
                 if (qs.error) {
                   deferred.reject({ error: qs.error });
