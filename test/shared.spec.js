@@ -4,8 +4,6 @@ describe('satellizer.shared', function() {
 
   beforeEach(inject(['$q', '$httpBackend', '$location', '$window', 'satellizer.shared', 'satellizer.config',
     function($q, $httpBackend, $location, $window, shared, config) {
-      delete config.requestFilter;
-      delete config.responseFilter;
 
       this.$q = $q;
       this.$httpBackend = $httpBackend;
@@ -109,52 +107,6 @@ describe('satellizer.shared', function() {
       this.shared.setToken(response, deferred);
 
       expect(this.$location.path()).toBe('');
-    });
-
-  });
-
-  describe('requestFilter()', function() {
-
-    it('should match urls', function() {
-      expect(this.shared.requestFilter).toBeDefined();
-
-      var filter = this.shared.requestFilter;
-
-      //expect(filter({ url: 'http://localhost:9876' })).toBe(true);
-      //expect(filter({ url: 'http://localhost:9876/api' })).toBe(true);
-      //expect(filter({ url: 'http://localhost:9876/api?url=example.com' })).toBe(true);
-      expect(filter({ url: '/api/example.com' })).toBe(true);
-      expect(filter({ url: '/api?url=example.com' })).toBe(true);
-      expect(filter({ url: '/api?url=www.example.com' })).toBe(true);
-      expect(filter({ url: '/api?url=https://example.com' })).toBe(true);
-
-      expect(filter({ url: 'http://example.com/api' })).toBe(false);
-      expect(filter({ url: 'https://example.com/api' })).toBe(false);
-      expect(filter({ url: 'http://example.com/api?url=http://localhost:9876' })).toBe(false);
-      expect(filter({ url: 'https://example.com/api?url=http://localhost:9876' })).toBe(false);
-    });
-
-  });
-
-  describe('responseFilter()', function() {
-
-    it('should match urls', function() {
-      expect(this.shared.responseFilter).toBeDefined();
-
-      var filter = this.shared.responseFilter;
-
-      //expect(filter({ config: { url: 'http://localhost:9876' } })).toBe(true);
-      //expect(filter({ config: { url: 'http://localhost:9876/api' } })).toBe(true);
-      //expect(filter({ config: { url: 'http://localhost:9876/api?url=example.com' } })).toBe(true);
-      expect(filter({ config: { url: '/api/example.com' } })).toBe(true);
-      expect(filter({ config: { url: '/api?url=example.com' } })).toBe(true);
-      expect(filter({ config: { url: '/api?url=www.example.com' } })).toBe(true);
-      expect(filter({ config: { url: '/api?url=https://example.com' } })).toBe(true);
-
-      expect(filter({ config: { url: 'http://example.com/api' } })).toBe(false);
-      expect(filter({ config: { url: 'https://example.com/api' } })).toBe(false);
-      expect(filter({ config: { url: 'http://example.com/api?url=http://localhost:9876' } })).toBe(false);
-      expect(filter({ config: { url: 'https://example.com/api?url=http://localhost:9876' } })).toBe(false);
     });
 
   });
