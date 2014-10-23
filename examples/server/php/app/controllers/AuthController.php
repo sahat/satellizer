@@ -61,7 +61,8 @@ class AuthController extends \BaseController {
             $user->email = Input::get('email');
             $user->password = Hash::make(Input::get('password'));
             $user->save();
-            return Response::make(200);
+            return Response::json(array('token' => $this->createToken($user)));
+
         }
     }
 
