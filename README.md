@@ -126,8 +126,9 @@ $authProvider.signupUrl = '/auth/signup';
 $authProvider.loginRoute = '/login';
 $authProvider.signupRoute = '/signup';
 $authProvider.tokenName = 'token';
-$authProvider.tokenPrefix = 'satellizer'; // Local storage name prefix
+$authProvider.tokenPrefix = 'satellizer'; // Local Storage name prefix
 $authProvider.unlinkUrl = '/auth/unlink/';
+$authProvider.authHeader = 'Authorization'; // Authorization: Bearer <token>
 
 // Facebook
 $authProvider.facebook({
