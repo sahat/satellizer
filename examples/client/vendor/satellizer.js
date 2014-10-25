@@ -20,6 +20,7 @@
       tokenName: 'token',
       tokenPrefix: 'satellizer',
       unlinkUrl: '/auth/unlink/',
+      authHeader: 'Authorization',
       providers: {
         google: {
           url: '/auth/google',
@@ -123,6 +124,10 @@
         unlinkUrl: {
           get: function() { return config.unlinkUrl; },
           set: function(value) { config.unlinkUrl = value; }
+        },
+        authHeader: {
+          get: function() { return config.authHeader; },
+          set: function(value) { config.authHeader = value; }
         }
       });
 
@@ -598,8 +603,10 @@
         var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
         return {
           request: function(httpConfig) {
-            if (localStorage.getItem(tokenName)) {
-              httpConfig.headers.Authorization = 'Bearer ' + localStorage.getItem(tokenName);
+            var token = localStorage.getItem(tokenName);
+            if (token) {
+              token = config.authHeader === 'Authorization' ? 'Bearer ' + token : token;
+              httpConfig.headers[config.authHeader] = token;
             }
             return httpConfig;
           },
