@@ -9,6 +9,7 @@
 
   angular.module('satellizer', [])
     .constant('satellizer.config', {
+      authHeader: 'Authorization',
       loginOnSignup: true,
       loginRedirect: '/',
       logoutRedirect: '/',
@@ -80,6 +81,10 @@
     })
     .provider('$auth', ['satellizer.config', function(config) {
       Object.defineProperties(this, {
+        authHeader: {
+          get: function() { return config.authHeader; },
+          set: function(value) { config.authHeader = value; }
+        },
         logoutRedirect: {
           get: function() { return config.logoutRedirect; },
           set: function(value) { config.logoutRedirect = value; }
@@ -598,8 +603,10 @@
         var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
         return {
           request: function(httpConfig) {
-            if (localStorage.getItem(tokenName)) {
-              httpConfig.headers.Authorization = 'Bearer ' + localStorage.getItem(tokenName);
+            var token = localStorage.getItem(tokenName);
+            if (token) {
+              token = config.authHeader === 'Authorization' ? 'Bearer ' + token : token;
+              httpConfig.headers[config.authHeader] = token;
             }
             return httpConfig;
           },

@@ -29,6 +29,12 @@ describe('satellizer.config', function() {
     expect(this.$authProvider.signupRedirect).toEqual('/newurl');
   });
 
+  it('should set authHeader', function() {
+    this.$authProvider.authHeader = 'x-new-header';
+    expect(this.config.authHeader).toEqual('x-new-header');
+    expect(this.$authProvider.authHeader).toEqual('x-new-header');
+  });
+
   it('should get loginOnSignup', function() {
     this.$authProvider.loginOnSignup = true;
     expect(this.config.loginOnSignup).toEqual(true);
