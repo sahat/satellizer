@@ -30,9 +30,13 @@ describe('satellizer.config', function() {
   });
 
   it('should set authHeader', function() {
+    var configDefault = this.$authProvider.authHeader;
+
     this.$authProvider.authHeader = 'x-new-header';
     expect(this.config.authHeader).toEqual('x-new-header');
     expect(this.$authProvider.authHeader).toEqual('x-new-header');
+
+    this.$authProvider.authHeader = configDefault;
   });
 
   it('should get loginOnSignup', function() {
