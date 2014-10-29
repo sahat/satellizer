@@ -66,15 +66,19 @@
           type: '2.0',
           popupOptions: { width: 1020, height: 618 }
         },
+        yahoo: {
+          url: '/auth/yahoo',
+          authorizationEndpoint: 'https://api.login.yahoo.com/oauth2/request_auth',
+          redirectUri: currentUrl(),
+          scope: [],
+          scopeDelimiter: ',',
+          type: '2.0',
+          popupOptions: { width: 559, height: 519 }
+        },
         twitter: {
           url: '/auth/twitter',
           type: '1.0',
           popupOptions: { width: 495, height: 645 }
-        },
-        yahoo: {
-          url: '/auth/yahoo',
-          type: '1.0',
-          popupOptions: { width: 559, height: 519 }
         }
       }
     })
@@ -383,7 +387,9 @@
 
             popup.open(url, defaults.popupOptions)
               .then(function(oauthData) {
+                // TODO: Change defaults name to options
                 if (defaults.responseType === 'token') {
+                  // TODO: Check for access_token property after deferred is resolved instead of creating a fake response object
                   var response = { data: {} };
                   response.data[config.tokenName] = oauthData.access_token;
                   deferred.resolve(response);
