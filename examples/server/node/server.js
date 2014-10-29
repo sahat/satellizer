@@ -27,6 +27,7 @@ var userSchema = new mongoose.Schema({
   google: String,
   github: String,
   linkedin: String,
+  yahoo: String,
   twitter: String
 });
 
@@ -401,10 +402,22 @@ app.post('/auth/facebook', function(req, res) {
 
   // Step 1. Exchange authorization code for access token.
   request.get({ url: accessTokenUrl, qs: params }, function(err, response, accessToken) {
+    // TODO: handle error response
+    // {"error":{"message":"Error validating client secret.","type":"OAuthException","code":1}}
+    if (response.statusCode !== 200) {
+      throw new Error(accessToken);
+    }
+
     accessToken = qs.parse(accessToken);
 
     // Step 2. Retrieve profile information about the current user.
     request.get({ url: graphApiUrl, qs: accessToken, json: true }, function(err, response, profile) {
+
+      // TODO: handle error response
+      // 'An active access token must be used to query information about the current user.',
+      if (response.statusCode !== 200) {
+        throw new Error(profile.error.message);
+      }
 
       // Step 3a. Link user accounts.
       if (req.headers.authorization) {
@@ -437,6 +450,76 @@ app.post('/auth/facebook', function(req, res) {
           var user = new User();
           user.facebook = profile.id;
           user.displayName = profile.name;
+          user.save(function(err) {
+            res.send({ token: createToken(user) });
+          });
+        });
+      }
+    });
+  });
+});
+
+/*
+ |--------------------------------------------------------------------------
+ | Login with Yahoo
+ |--------------------------------------------------------------------------
+ */
+app.post('/auth/yahoo', function(req, res) {
+  var accessTokenUrl = 'https://api.login.yahoo.com/oauth2/get_token';
+
+  var params = {
+    redirect_uri: req.body.redirectUri,
+    code: req.body.code,
+    grant_type: 'authorization_code'
+  };
+
+  var headers = {
+    Authorization: 'Basic ' + new Buffer(req.body.clientId + ':' + config.YAHOO_SECRET).toString('base64')
+  };
+
+  console.log(headers);
+  // Step 1. Exchange authorization code for access token.
+  request.post(accessTokenUrl, { form: params, headers: headers, json: true }, function(err, response, body) {
+
+    var socialApiUrl = 'https://social.yahooapis.com/v1/user/' + body.xoauth_yahoo_guid + '/profile?format=json';
+    var headers = {
+      Authorization: 'Bearer ' + body.access_token
+    };
+
+    // Step 2. Retrieve profile information about the current user.
+    request.get({ url: socialApiUrl, headers: headers, json: true }, function(err, response, body) {
+
+      // Step 3a. Link user accounts.
+      if (req.headers.authorization) {
+        User.findOne({ yahoo: body.profile.guid }, function(err, existingUser) {
+          if (existingUser) {
+            return res.status(409).send({ message: 'There is already a Yahoo account that belongs to you' });
+          }
+
+          var token = req.headers.authorization.split(' ')[1];
+          var payload = jwt.decode(token, config.TOKEN_SECRET);
+
+          User.findById(payload.sub, function(err, user) {
+            if (!user) {
+              return res.status(400).send({ message: 'User not found' });
+            }
+            user.yahoo = body.profile.guid;
+            user.displayName = user.displayName || body.profile.nickname;
+            user.save(function(err) {
+              res.send({ token: createToken(user) });
+            });
+          });
+        });
+      } else {
+        // Step 3b. Create a new user account or return an existing one.
+        User.findOne({ yahoo: body.profile.guid }, function(err, existingUser) {
+          if (existingUser) {
+            return res.send({ token: createToken(existingUser) });
+          }
+
+          var user = new User();
+          user.yahoo = body.profile.guid;
+          user.displayName = body.profile.nickname;
           user.save(function(err) {
             res.send({ token: createToken(user) });
           });
