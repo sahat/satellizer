@@ -58,7 +58,6 @@
           popupOptions: { width: 527, height: 582 }
         },
         github: {
-          name: 'github',
           url: '/auth/github',
           authorizationEndpoint: 'https://github.com/login/oauth/authorize',
           redirectUri: currentUrl(),
