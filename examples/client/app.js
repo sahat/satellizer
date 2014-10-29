@@ -51,6 +51,11 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ui.router', 'mgcrea.ngStra
       clientId: '77cw786yignpzj'
     });
 
+    $authProvider.yahoo({
+      clientId: 'dj0yJmk9dkNGM0RTOHpOM0ZsJmQ9WVdrOVlVTm9hVk0wTkRRbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD0wMA--',
+      redirectUri: 'https://satellizer.herokuapp.com'
+    });
+
     $authProvider.twitter({
       url: '/auth/twitter'
     });
