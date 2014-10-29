@@ -216,8 +216,7 @@ def google():
         token = create_jwt_token(user)
         return jsonify(token=token)
     u = User(google=profile['sub'],
-             first_name=profile['given_name'],
-             last_name=profile['family_name'])
+             display_name=profile['displayName'])
     db.session.add(u)
     db.session.commit()
     token = create_jwt_token(u)
@@ -250,8 +249,7 @@ def linkedin():
         token = create_jwt_token(user)
         return jsonify(token=token)
     u = User(linkedin=profile['id'],
-             first_name=profile['firstName'],
-             last_name=profile['lastName'])
+             display_name=profile['firstName'] + ' ' + profile['lastName'])
     db.session.add(u)
     db.session.commit()
     token = create_jwt_token(u)
@@ -277,7 +275,7 @@ def twitter():
             token = create_jwt_token(user)
             return jsonify(token=token)
         u = User(twitter=profile['user_id'],
-                 first_name=profile['screen_name'])
+                 display_name=profile['screen_name'])
         db.session.add(u)
         db.session.commit()
         token = create_jwt_token(u)
