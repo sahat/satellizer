@@ -72,6 +72,10 @@ angular.module('MyApp', ['satellizer'])
       clientId: '77cw786yignpzj'
     });
 
+    $authProvider.yahoo({
+      clientId: 'dj0yJmk9dkNGM0RTOHpOM0ZsJmQ9WVdrOVlVTm9hVk0wTkRRbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD0wMA--'
+    });
+
     $authProvider.twitter({
       url: '/auth/twitter'
     });
@@ -107,6 +111,7 @@ angular.module('MyApp')
 <button ng-click="authenticate('linkedin')">Sign in with LinkedIn</button>
 <button ng-click="authenticate('twitter')">Sign in with Twitter</button>
 <button ng-click="authenticate('foursquare')">Sign in with Foursquare</button>
+<button ng-click="authenticate('yahoo')">Sign in with Yahoo</button>
 ```
 
 **:exclamation: Note:** For server-side usage please refer to the [examples](https://github.com/sahat/satellizer/tree/master/examples/server)
@@ -128,7 +133,7 @@ $authProvider.signupRoute = '/signup';
 $authProvider.tokenName = 'token';
 $authProvider.tokenPrefix = 'satellizer'; // Local Storage name prefix
 $authProvider.unlinkUrl = '/auth/unlink/';
-$authProvider.authHeader = 'Authorization'; // Authorization: Bearer <token>
+$authProvider.authHeader = 'Authorization';
 
 // Facebook
 $authProvider.facebook({
@@ -213,6 +218,11 @@ $authProvider.oauth1({
   popupOptions: null
 });
 ```
+
+**:exclamation: Note:** If for some reason you are unable to send a token to
+your server in the following format - `Authorization: Bearer <token>`, then use
+`$authProvider.authHeader` method to override this behavior, e.g. set its value to
+**x-access-token** or another custom header that your backend may require.
 
 ## Browser Support
 
