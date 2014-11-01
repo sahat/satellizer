@@ -68,7 +68,6 @@ if (app.get('env') === 'production') {
     protocol == 'https' ? next() : res.redirect('https://' + req.hostname + req.url);
   });
 }
-
 app.use(express.static(path.join(__dirname, '../../client')));
 
 
@@ -82,14 +81,11 @@ function ensureAuthenticated(req, res, next) {
   if (!req.headers.authorization) {
     return res.status(401).send({ message: 'Please make sure your request has an Authorization header' });
   }
-
   var token = req.headers.authorization.split(' ')[1];
   var payload = jwt.decode(token, config.TOKEN_SECRET);
-
   if (payload.exp <= moment().unix()) {
     return res.status(401).send({ message: 'Token has expired' });
   }
-
   req.user = payload.sub;
   next();
 }
@@ -148,7 +144,6 @@ app.post('/auth/login', function(req, res) {
     if (!user) {
       return res.status(401).send({ message: 'Wrong email and/or password' });
     }
-
     user.comparePassword(req.body.password, function(err, isMatch) {
       if (!isMatch) {
         return res.status(401).send({ message: 'Wrong email and/or password' });
@@ -168,13 +163,11 @@ app.post('/auth/signup', function(req, res) {
     if (existingUser) {
       return res.status(409).send({ message: 'Email is already taken' });
     }
-
     var user = new User({
       displayName: req.body.displayName,
       email: req.body.email,
       password: req.body.password
     });
-
     user.save(function() {
       res.send({ token: createToken(user) });
     });
@@ -189,18 +182,16 @@ app.post('/auth/signup', function(req, res) {
 app.post('/auth/google', function(req, res) {
   var accessTokenUrl = 'https://accounts.google.com/o/oauth2/token';
   var peopleApiUrl = 'https://www.googleapis.com/plus/v1/people/me/openIdConnect';
-
   var params = {
-    client_id: req.body.clientId,
-    redirect_uri: req.body.redirectUri,
-    client_secret: config.GOOGLE_SECRET,
     code: req.body.code,
+    client_id: req.body.clientId,
+    client_secret: config.GOOGLE_SECRET,
+    redirect_uri: req.body.redirectUri,
     grant_type: 'authorization_code'
   };
 
   // Step 1. Exchange authorization code for access token.
   request.post(accessTokenUrl, { json: true, form: params }, function(err, response, token) {
-
     var accessToken = token.access_token;
     var headers = { Authorization: 'Bearer ' + accessToken };
 
@@ -213,18 +204,17 @@ app.post('/auth/google', function(req, res) {
           if (existingUser) {
             return res.status(409).send({ message: 'There is already a Google account that belongs to you' });
           }
-
           var token = req.headers.authorization.split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
-
           User.findById(payload.sub, function(err, user) {
             if (!user) {
               return res.status(400).send({ message: 'User not found' });
             }
             user.google = profile.sub;
             user.displayName = user.displayName || profile.name;
-            user.save(function(err) {
-              res.send({ token: createToken(user) });
+            user.save(function() {
+              var token = createToken(user);
+              res.send({ token: token });
             });
           });
         });
@@ -234,12 +224,12 @@ app.post('/auth/google', function(req, res) {
           if (existingUser) {
             return res.send({ token: createToken(existingUser) });
           }
-
           var user = new User();
           user.google = profile.sub;
           user.displayName = profile.name;
           user.save(function(err) {
-            res.send({ token: createToken(user) });
+            var token = createToken(user);
+            res.send({ token: token });
           });
         });
       }
@@ -255,18 +245,16 @@ app.post('/auth/google', function(req, res) {
 app.post('/auth/github', function(req, res) {
   var accessTokenUrl = 'https://github.com/login/oauth/access_token';
   var userApiUrl = 'https://api.github.com/user';
-
   var params = {
+    code: req.body.code,
     client_id: req.body.clientId,
-    redirect_uri: req.body.redirectUri,
     client_secret: config.GITHUB_SECRET,
-    code: req.body.code
+    redirect_uri: req.body.redirectUri
   };
 
   // Step 1. Exchange authorization code for access token.
   request.get({ url: accessTokenUrl, qs: params }, function(err, response, accessToken) {
     accessToken = qs.parse(accessToken);
-
     var headers = { 'User-Agent': 'Satellizer' };
 
     // Step 2. Retrieve profile information about the current user.
@@ -278,18 +266,17 @@ app.post('/auth/github', function(req, res) {
           if (existingUser) {
             return res.status(409).send({ message: 'There is already a GitHub account that belongs to you' });
           }
-
           var token = req.headers.authorization.split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
-
           User.findById(payload.sub, function(err, user) {
             if (!user) {
               return res.status(400).send({ message: 'User not found' });
             }
             user.github = profile.id;
             user.displayName = user.displayName || profile.name;
-            user.save(function(err) {
-              res.send({ token: createToken(user) });
+            user.save(function() {
+              var token = createToken(user);
+              res.send({ token: token });
             });
           });
         });
@@ -297,14 +284,15 @@ app.post('/auth/github', function(req, res) {
         // Step 3b. Create a new user account or return an existing one.
         User.findOne({ github: profile.id }, function(err, existingUser) {
           if (existingUser) {
-            return res.send({ token: createToken(existingUser) });
+            var token = createToken(existingUser);
+            return res.send({ token: token });
           }
-
           var user = new User();
           user.github = profile.id;
           user.displayName = profile.name;
-          user.save(function(err) {
-            res.send({ token: createToken(user) });
+          user.save(function() {
+            var token = createToken(user);
+            res.send({ token: token });
           });
         });
       }
@@ -320,22 +308,19 @@ app.post('/auth/github', function(req, res) {
 app.post('/auth/linkedin', function(req, res) {
   var accessTokenUrl = 'https://www.linkedin.com/uas/oauth2/accessToken';
   var peopleApiUrl = 'https://api.linkedin.com/v1/people/~:(id,first-name,last-name,email-address)';
-
   var params = {
-    client_id: req.body.clientId,
-    redirect_uri: req.body.redirectUri,
-    client_secret: config.LINKEDIN_SECRET,
     code: req.body.code,
+    client_id: req.body.clientId,
+    client_secret: config.LINKEDIN_SECRET,
+    redirect_uri: req.body.redirectUri,
     grant_type: 'authorization_code'
   };
 
   // Step 1. Exchange authorization code for access token.
   request.post(accessTokenUrl, { form: params, json: true }, function(err, response, body) {
-
     if (response.statusCode !== 200) {
       return res.status(response.statusCode).send({ message: body.error_description });
     }
-
     var params = {
       oauth2_access_token: body.access_token,
       format: 'json'
@@ -350,18 +335,17 @@ app.post('/auth/linkedin', function(req, res) {
           if (existingUser) {
             return res.status(409).send({ message: 'There is already a LinkedIn account that belongs to you' });
           }
-
           var token = req.headers.authorization.split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
-
           User.findById(payload.sub, function(err, user) {
             if (!user) {
               return res.status(400).send({ message: 'User not found' });
             }
             user.linkedin = profile.id;
             user.displayName = user.displayName || profile.firstName + ' ' + profile.lastName;
-            user.save(function(err) {
-              res.send({ token: createToken(user) });
+            user.save(function() {
+              var token = createToken(user);
+              res.send({ token: token });
             });
           });
         });
@@ -371,12 +355,12 @@ app.post('/auth/linkedin', function(req, res) {
           if (existingUser) {
             return res.send({ token: createToken(existingUser) });
           }
-
           var user = new User();
           user.linkedin = profile.id;
           user.displayName = profile.firstName + ' ' + profile.lastName;
-          user.save(function(err) {
-            res.send({ token: createToken(user) });
+          user.save(function() {
+            var token = createToken(user);
+            res.send({ token: token });
           });
         });
       }
@@ -392,31 +376,24 @@ app.post('/auth/linkedin', function(req, res) {
 app.post('/auth/facebook', function(req, res) {
   var accessTokenUrl = 'https://graph.facebook.com/oauth/access_token';
   var graphApiUrl = 'https://graph.facebook.com/me';
-
   var params = {
+    code: req.body.code,
     client_id: req.body.clientId,
-    redirect_uri: req.body.redirectUri,
     client_secret: config.FACEBOOK_SECRET,
-    code: req.body.code
+    redirect_uri: req.body.redirectUri
   };
 
   // Step 1. Exchange authorization code for access token.
   request.get({ url: accessTokenUrl, qs: params }, function(err, response, accessToken) {
-    // TODO: handle error response
-    // {"error":{"message":"Error validating client secret.","type":"OAuthException","code":1}}
     if (response.statusCode !== 200) {
-      throw new Error(accessToken);
+      return res.status(500).send({ message: accessToken.error.message });
     }
-
     accessToken = qs.parse(accessToken);
 
     // Step 2. Retrieve profile information about the current user.
     request.get({ url: graphApiUrl, qs: accessToken, json: true }, function(err, response, profile) {
-
-      // TODO: handle error response
-      // 'An active access token must be used to query information about the current user.',
       if (response.statusCode !== 200) {
-        throw new Error(profile.error.message);
+        return res.status(500).send({ message: profile.error.message });
       }
 
       // Step 3a. Link user accounts.
@@ -425,18 +402,17 @@ app.post('/auth/facebook', function(req, res) {
           if (existingUser) {
             return res.status(409).send({ message: 'There is already a Facebook account that belongs to you' });
           }
-
           var token = req.headers.authorization.split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
-
           User.findById(payload.sub, function(err, user) {
             if (!user) {
               return res.status(400).send({ message: 'User not found' });
             }
             user.facebook = profile.id;
             user.displayName = user.displayName || profile.name;
-            user.save(function(err) {
-              res.send({ token: createToken(user) });
+            user.save(function() {
+              var token = createToken(user);
+              res.send({ token: token });
             });
           });
         });
@@ -444,14 +420,15 @@ app.post('/auth/facebook', function(req, res) {
         // Step 3b. Create a new user account or return an existing one.
         User.findOne({ facebook: profile.id }, function(err, existingUser) {
           if (existingUser) {
-            return res.send({ token: createToken(existingUser) });
+            var token = createToken(existingUser);
+            return res.send({ token: token });
           }
-
           var user = new User();
           user.facebook = profile.id;
           user.displayName = profile.name;
-          user.save(function(err) {
-            res.send({ token: createToken(user) });
+          user.save(function() {
+            var token = createToken(user);
+            res.send({ token: token });
           });
         });
       }
@@ -466,25 +443,19 @@ app.post('/auth/facebook', function(req, res) {
  */
 app.post('/auth/yahoo', function(req, res) {
   var accessTokenUrl = 'https://api.login.yahoo.com/oauth2/get_token';
-
-  var params = {
-    redirect_uri: req.body.redirectUri,
+  var clientId = req.body.clientId;
+  var clientSecret = config.YAHOO_SECRET;
+  var formData = {
     code: req.body.code,
+    redirect_uri: req.body.redirectUri,
     grant_type: 'authorization_code'
   };
+  var headers = { Authorization: 'Basic ' + new Buffer(clientId + ':' + clientSecret).toString('base64') };
 
-  var headers = {
-    Authorization: 'Basic ' + new Buffer(req.body.clientId + ':' + config.YAHOO_SECRET).toString('base64')
-  };
-
-  console.log(headers);
   // Step 1. Exchange authorization code for access token.
-  request.post(accessTokenUrl, { form: params, headers: headers, json: true }, function(err, response, body) {
-
+  request.post({ url: accessTokenUrl, form: formData, headers: headers, json: true }, function(err, response, body) {
     var socialApiUrl = 'https://social.yahooapis.com/v1/user/' + body.xoauth_yahoo_guid + '/profile?format=json';
-    var headers = {
-      Authorization: 'Bearer ' + body.access_token
-    };
+    var headers = { Authorization: 'Bearer ' + body.access_token };
 
     // Step 2. Retrieve profile information about the current user.
     request.get({ url: socialApiUrl, headers: headers, json: true }, function(err, response, body) {
@@ -495,18 +466,17 @@ app.post('/auth/yahoo', function(req, res) {
           if (existingUser) {
             return res.status(409).send({ message: 'There is already a Yahoo account that belongs to you' });
           }
-
           var token = req.headers.authorization.split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
-
           User.findById(payload.sub, function(err, user) {
             if (!user) {
               return res.status(400).send({ message: 'User not found' });
             }
             user.yahoo = body.profile.guid;
             user.displayName = user.displayName || body.profile.nickname;
-            user.save(function(err) {
-              res.send({ token: createToken(user) });
+            user.save(function() {
+              var token = createToken(user);
+              res.send({ token: token });
             });
           });
         });
@@ -516,12 +486,12 @@ app.post('/auth/yahoo', function(req, res) {
           if (existingUser) {
             return res.send({ token: createToken(existingUser) });
           }
-
           var user = new User();
           user.yahoo = body.profile.guid;
           user.displayName = body.profile.nickname;
-          user.save(function(err) {
-            res.send({ token: createToken(user) });
+          user.save(function() {
+            var token = createToken(user);
+            res.send({ token: token });
           });
         });
       }
@@ -572,10 +542,8 @@ app.get('/auth/twitter', function(req, res) {
           if (existingUser) {
             return res.status(409).send({ message: 'There is already a Twitter account that belongs to you' });
           }
-
           var token = req.headers.authorization.split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
-
           User.findById(payload.sub, function(err, user) {
             if (!user) {
               return res.status(400).send({ message: 'User not found' });
@@ -591,13 +559,15 @@ app.get('/auth/twitter', function(req, res) {
         // Step 4b. Create a new user account or return an existing one.
         User.findOne({ twitter: profile.user_id }, function(err, existingUser) {
           if (existingUser) {
-            return res.send({ token: createToken(existingUser) });
+            var token = createToken(existingUser);
+            return res.send({ token: token });
           }
           var user = new User();
           user.twitter = profile.user_id;
           user.displayName = profile.screen_name;
-          user.save(function(err) {
-            res.send({ token: createToken(user) });
+          user.save(function() {
+            var token = createToken(user);
+            res.send({ token: token });
           });
         });
       }
@@ -612,25 +582,24 @@ app.get('/auth/twitter', function(req, res) {
  */
 app.post('/auth/foursquare', function(req, res) {
   var accessTokenUrl = 'https://foursquare.com/oauth2/access_token';
-  var userProfileUrl = 'https://api.foursquare.com/v2/users/self';
-
-  var payload = {
-    client_id: req.body.clientId,
-    redirect_uri: req.body.redirectUri,
-    client_secret: config.FOURSQUARE_SECRET,
+  var profileUrl = 'https://api.foursquare.com/v2/users/self';
+  var formData = {
     code: req.body.code,
+    client_id: req.body.clientId,
+    client_secret: config.FOURSQUARE_SECRET,
+    redirect_uri: req.body.redirectUri,
     grant_type: 'authorization_code'
   };
 
   // Step 1. Exchange authorization code for access token.
-  request.post(accessTokenUrl, { json: true, form: payload }, function(err, response, body) {
+  request.post({ url: accessTokenUrl, form: formData, json: true }, function(err, response, body) {
     var params = {
       v: '20140806',
       oauth_token: body.access_token
     };
 
     // Step 2. Retrieve information about the current user.
-    request.get({ url: userProfileUrl, qs: params, json: true }, function(err, response, profile) {
+    request.get({ url: profileUrl, qs: params, json: true }, function(err, response, profile) {
       profile = profile.response.user;
 
       // Step 3a. Link user accounts.
@@ -639,18 +608,17 @@ app.post('/auth/foursquare', function(req, res) {
           if (existingUser) {
             return res.status(409).send({ message: 'There is already a Foursquare account that belongs to you' });
           }
-
           var token = req.headers.authorization.split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
-
           User.findById(payload.sub, function(err, user) {
             if (!user) {
               return res.status(400).send({ message: 'User not found' });
             }
             user.foursquare = profile.id;
             user.displayName = user.displayName || profile.firstName + ' ' + profile.lastName;
-            user.save(function(err) {
-              res.send({ token: createToken(user) });
+            user.save(function() {
+              var token = createToken(user);
+              res.send({ token: token });
             });
           });
         });
@@ -658,14 +626,15 @@ app.post('/auth/foursquare', function(req, res) {
         // Step 3b. Create a new user account or return an existing one.
         User.findOne({ foursquare: profile.id }, function(err, existingUser) {
           if (existingUser) {
-            return res.send({ token: createToken(existingUser) });
+            var token = createToken(existingUser);
+            return res.send({ token: token });
           }
-
           var user = new User();
           user.foursquare = profile.id;
           user.displayName = profile.firstName + ' ' + profile.lastName;
-          user.save(function(err) {
-            res.send({ token: createToken(user) });
+          user.save(function() {
+            var token = createToken(user);
+            res.send({ token: token });
           });
         });
       }
@@ -686,9 +655,8 @@ app.get('/auth/unlink/:provider', ensureAuthenticated, function(req, res) {
     if (!user) {
       return res.status(400).send({ message: 'User not found' });
     }
-
     user[provider] = undefined;
-    user.save(function(err) {
+    user.save(function() {
       res.status(200).end();
     });
   });
