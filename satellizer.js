@@ -227,7 +227,7 @@
           }
         };
 
-        shared.setToken = function(response, deferred, isLinking) {
+        shared.setToken = function(response, isLinking) {
           var token = response.data[config.tokenName];
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
 
@@ -240,8 +240,6 @@
           if (config.loginRedirect && !isLinking) {
             $location.path(config.loginRedirect);
           }
-
-          deferred.resolve(response);
         };
 
         shared.isAuthenticated = function() {
@@ -263,17 +261,13 @@
         };
 
         shared.logout = function() {
-          var deferred = $q.defer();
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
           delete $window.localStorage[tokenName];
 
           if (config.logoutRedirect) {
             $location.path(config.logoutRedirect);
           }
-
-          deferred.resolve();
-
-          return deferred.promise;
+          return $q.when();
         };
 
         return shared;
@@ -289,18 +283,14 @@
         var oauth = {};
 
         oauth.authenticate = function(name, isLinking, userData) {
-          var deferred = $q.defer();
           var provider = config.providers[name].type === '1.0' ? new Oauth1() : new Oauth2();
 
-          provider.open(config.providers[name], userData || {})
+          return provider.open(config.providers[name], userData || {})
             .then(function(response) {
-              shared.setToken(response, deferred, isLinking);
+              shared.setToken(response, isLinking);
+              return response;
             })
-            .then(null, function(response) {
-              deferred.reject(response);
-            });
 
-          return deferred.promise;
         };
 
         oauth.unlink = function(provider) {
@@ -320,36 +310,23 @@
         var local = {};
 
         local.login = function(user) {
-          var deferred = $q.defer();
-
-          $http.post(config.loginUrl, user)
+          return $http.post(config.loginUrl, user)
             .then(function(response) {
-              shared.setToken(response, deferred);
+              shared.setToken(response);
+              return response;
             })
-            .then(null, function(response) {
-              deferred.reject(response);
-            });
-
-          return deferred.promise;
         };
 
         local.signup = function(user) {
-          var deferred = $q.defer();
-
-          $http.post(config.signupUrl, user)
+          return $http.post(config.signupUrl, user)
             .then(function(response) {
               if (config.loginOnSignup) {
-                shared.setToken(response, deferred);
+                shared.setToken(response);
               } else {
                 $location.path(config.signupRedirect);
-                deferred.resolve(response);
               }
+              return response;
             })
-            .then(null, function(response) {
-              deferred.reject(response);
-            });
-
-          return deferred.promise;
         };
 
         return local;
@@ -382,32 +359,21 @@
 
           oauth2.open = function(options, userData) {
             angular.extend(defaults, options);
-            var deferred = $q.defer();
             var url = oauth2.buildUrl();
 
-            popup.open(url, defaults.popupOptions)
+            return popup.open(url, defaults.popupOptions)
               .then(function(oauthData) {
                 // TODO: Change defaults name to options
                 if (defaults.responseType === 'token') {
                   // TODO: Check for access_token property after deferred is resolved instead of creating a fake response object
                   var response = { data: {} };
                   response.data[config.tokenName] = oauthData.access_token;
-                  deferred.resolve(response);
+                  return response;
                 } else {
-                  oauth2.exchangeForToken(oauthData, userData)
-                    .then(function(response) {
-                      deferred.resolve(response);
-                    })
-                    .then(null, function(response) {
-                      deferred.reject(response);
-                    });
+                  return oauth2.exchangeForToken(oauthData, userData)
                 }
               })
-              .then(null, function(error) {
-                deferred.reject(error);
-              });
 
-            return deferred.promise;
           };
 
           oauth2.exchangeForToken = function(oauthData, userData) {
@@ -468,24 +434,10 @@
 
         oauth1.open = function(options, userData) {
           angular.extend(defaults, options);
-
-          var deferred = $q.defer();
-
-          popup.open(defaults.url, defaults.popupOptions)
+          return popup.open(defaults.url, defaults.popupOptions)
             .then(function(response) {
-              oauth1.exchangeForToken(response, userData)
-                .then(function(response) {
-                  deferred.resolve(response);
-                })
-                .then(null, function(response) {
-                  deferred.reject(response);
-                });
+              return oauth1.exchangeForToken(response, userData)
             })
-            .then(null, function(response) {
-              deferred.reject(response);
-            });
-
-          return deferred.promise;
         };
 
         oauth1.exchangeForToken = function(oauthData, userData) {
@@ -520,7 +472,6 @@
         popup.popupWindow = popupWindow;
 
         popup.open = function(url, options) {
-          var deferred = $q.defer();
           var optionsString = popup.stringifyOptions(popup.prepareOptions(options || {}));
 
           popupWindow = window.open(url, '_blank', optionsString);
@@ -529,12 +480,11 @@
             popupWindow.focus();
           }
 
-          popup.pollPopup(deferred);
-
-          return deferred.promise;
+          return popup.pollPopup();
         };
 
-        popup.pollPopup = function(deferred) {
+        popup.pollPopup = function() {
+          var deferred = $q.defer();
           polling = $interval(function() {
             try {
               if (popupWindow.document.domain === document.domain && (popupWindow.location.search || popupWindow.location.hash)) {
@@ -561,6 +511,7 @@
               deferred.reject({ data: 'Authorization Failed' });
             }
           }, 35);
+          return deferred.promise;
         };
 
         popup.prepareOptions = function(options) {

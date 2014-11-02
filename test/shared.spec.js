@@ -95,7 +95,6 @@ describe('satellizer.shared', function() {
   describe('parseUser()', function() {
 
     it('should not redirect if loginRedirect is null', function() {
-      var deferred = this.$q.defer();
       var response = {
         data: {
           token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsb…YzMn0.YATZN37JENCQWeNAoN4M7KxJl7OAIJL4ka_fSM_gYkE'
@@ -104,7 +103,7 @@ describe('satellizer.shared', function() {
       this.config.tokenName = 'token';
       this.config.loginRedirect = null;
 
-      this.shared.setToken(response, deferred);
+      this.shared.setToken(response);
 
       expect(this.$location.path()).toBe('');
     });
