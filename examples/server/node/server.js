@@ -384,7 +384,7 @@ app.post('/auth/facebook', function(req, res) {
   };
 
   // Step 1. Exchange authorization code for access token.
-  request.get({ url: accessTokenUrl, qs: params }, function(err, response, accessToken) {
+  request.get({ url: accessTokenUrl, qs: params, json: true }, function(err, response, accessToken) {
     if (response.statusCode !== 200) {
       return res.status(500).send({ message: accessToken.error.message });
     }
