@@ -227,7 +227,7 @@
           }
         };
 
-        shared.setToken = function(response, deferred, isLinking) {
+        shared.setToken = function(response, isLinking) {
           var token = response.data[config.tokenName];
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
 
@@ -240,8 +240,6 @@
           if (config.loginRedirect && !isLinking) {
             $location.path(config.loginRedirect);
           }
-
-          deferred.resolve(response);
         };
 
         shared.isAuthenticated = function() {
@@ -263,17 +261,13 @@
         };
 
         shared.logout = function() {
-          var deferred = $q.defer();
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
           delete $window.localStorage[tokenName];
 
           if (config.logoutRedirect) {
             $location.path(config.logoutRedirect);
           }
-
-          deferred.resolve();
-
-          return deferred.promise;
+          return $q.when();
         };
 
         return shared;
@@ -289,18 +283,14 @@
         var oauth = {};
 
         oauth.authenticate = function(name, isLinking, userData) {
-          var deferred = $q.defer();
           var provider = config.providers[name].type === '1.0' ? new Oauth1() : new Oauth2();
 
-          provider.open(config.providers[name], userData || {})
+          return provider.open(config.providers[name], userData || {})
             .then(function(response) {
-              shared.setToken(response, deferred, isLinking);
+              shared.setToken(response, isLinking);
+              return response;
             })
-            .then(null, function(response) {
-              deferred.reject(response);
-            });
 
-          return deferred.promise;
         };
 
         oauth.unlink = function(provider) {
@@ -320,36 +310,23 @@
         var local = {};
 
         local.login = function(user) {
-          var deferred = $q.defer();
-
-          $http.post(config.loginUrl, user)
+          return $http.post(config.loginUrl, user)
             .then(function(response) {
-              shared.setToken(response, deferred);
+              shared.setToken(response);
+              return response;
             })
-            .then(null, function(response) {
-              deferred.reject(response);
-            });
-
-          return deferred.promise;
         };
 
         local.signup = function(user) {
-          var deferred = $q.defer();
-
-          $http.post(config.signupUrl, user)
+          return $http.post(config.signupUrl, user)
             .then(function(response) {
               if (config.loginOnSignup) {
-                shared.setToken(response, deferred);
+                shared.setToken(response);
               } else {
                 $location.path(config.signupRedirect);
-                deferred.resolve(response);
               }
+              return response;
             })
-            .then(null, function(response) {
-              deferred.reject(response);
-            });
-
-          return deferred.promise;
         };
 
         return local;
@@ -382,32 +359,21 @@
 
           oauth2.open = function(options, userData) {
             angular.extend(defaults, options);
-            var deferred = $q.defer();
             var url = oauth2.buildUrl();
 
-            popup.open(url, defaults.popupOptions)
+            return popup.open(url, defaults.popupOptions)
               .then(function(oauthData) {
                 // TODO: Change defaults name to options
                 if (defaults.responseType === 'token') {
                   // TODO: Check for access_token property after deferred is resolved instead of creating a fake response object
                   var response = { data: {} };
                   response.data[config.tokenName] = oauthData.access_token;
-                  deferred.resolve(response);
+                  return response;
                 } else {
-                  oauth2.exchangeForToken(oauthData, userData)
-                    .then(function(response) {
-                      deferred.resolve(response);
-                    })
-                    .then(null, function(response) {
-                      deferred.reject(response);
-                    });
+                  return oauth2.exchangeForToken(oauthData, userData)
                 }
               })
-              .then(null, function(error) {
-                deferred.reject(error);
-              });
 
-            return deferred.promise;
           };
 
           oauth2.exchangeForToken = function(oauthData, userData) {
@@ -468,24 +434,10 @@
 
         oauth1.open = function(options, userData) {
           angular.extend(defaults, options);
-
-          var deferred = $q.defer();
-
-          popup.open(defaults.url, defaults.popupOptions)
+          return popup.open(defaults.url, defaults.popupOptions)
             .then(function(response) {
-              oauth1.exchangeForToken(response, userData)
-                .then(function(response) {
-                  deferred.resolve(response);
-                })
-                .then(null, function(response) {
-                  deferred.reject(response);
-                });
+              return oauth1.exchangeForToken(response, userData)
             })
-            .then(null, function(response) {
-              deferred.reject(response);
-            });
-
-          return deferred.promise;
         };
 
         oauth1.exchangeForToken = function(oauthData, userData) {
@@ -520,7 +472,6 @@
         popup.popupWindow = popupWindow;
 
         popup.open = function(url, options) {
-          var deferred = $q.defer();
           var optionsString = popup.stringifyOptions(popup.prepareOptions(options || {}));
 
           popupWindow = window.open(url, '_blank', optionsString);
@@ -529,12 +480,11 @@
             popupWindow.focus();
           }
 
-          popup.pollPopup(deferred);
-
-          return deferred.promise;
+          return popup.pollPopup();
         };
 
-        popup.pollPopup = function(deferred) {
+        popup.pollPopup = function() {
+          var deferred = $q.defer();
           polling = $interval(function() {
             try {
               if (popupWindow.document.domain === document.domain && (popupWindow.location.search || popupWindow.location.hash)) {
@@ -561,6 +511,7 @@
               deferred.reject({ data: 'Authorization Failed' });
             }
           }, 35);
+          return deferred.promise;
         };
 
         popup.prepareOptions = function(options) {
@@ -626,16 +577,15 @@
       }]);
     }]);
 
-  // Helper functions
   function currentUrl() {
     return window.location.origin || window.location.protocol + '//' + window.location.host;
   }
 
 })(window, window.angular);
 
-// Base64.js polyfill (https://github.com/davidchambers/Base64.js/)
+// Base64.js Polyfill (@davidchambers)
 (function() {
-  var object = typeof exports != 'undefined' ? exports : this; // #8: web workers
+  var object = typeof exports != 'undefined' ? exports : this;
   var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
 
   function InvalidCharacterError(message) {
@@ -644,22 +594,11 @@
   InvalidCharacterError.prototype = new Error;
   InvalidCharacterError.prototype.name = 'InvalidCharacterError';
 
-  // encoder
-  // [https://gist.github.com/999166] by [https://github.com/nignag]
   object.btoa || (
-    object.btoa = function (input) {
+    object.btoa = function(input) {
       var str = String(input);
-      for (
-        // initialize result and counter
-        var block, charCode, idx = 0, map = chars, output = '';
-        // if the next str index does not exist:
-        //   change the mapping table to "="
-        //   check if d has no fractional digits
-        str.charAt(idx | 0) || (map = '=', idx % 1);
-        // "8 - idx % 1 * 8" generates the sequence 2, 4, 6, 8
-        output += map.charAt(63 & block >> 8 - idx % 1 * 8)
-      ) {
-        charCode = str.charCodeAt(idx += 3/4);
+      for (var block, charCode, idx = 0, map = chars, output = ''; str.charAt(idx | 0) || (map = '=', idx % 1); output += map.charAt(63 & block >> 8 - idx % 1 * 8)) {
+        charCode = str.charCodeAt(idx += 3 / 4);
         if (charCode > 0xFF) {
           throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
         }
@@ -668,26 +607,13 @@
       return output;
     });
 
-  // decoder
-  // [https://gist.github.com/1020396] by [https://github.com/atk]
   object.atob || (
-    object.atob = function (input) {
+    object.atob = function(input) {
       var str = String(input).replace(/=+$/, '');
       if (str.length % 4 == 1) {
         throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.");
       }
-      for (
-        // initialize result and counters
-        var bc = 0, bs, buffer, idx = 0, output = '';
-        // get next character
-        buffer = str.charAt(idx++);
-        // character found in table? initialize bit storage and add its ascii value;
-        ~buffer && (bs = bc % 4 ? bs * 64 + buffer : buffer,
-          // and if not first of each 4 characters,
-          // convert the first 8 bits to one ascii character
-        bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0
-      ) {
-        // try to find character in table (0-63, not found => -1)
+      for (var bc = 0, bs, buffer, idx = 0, output = ''; buffer = str.charAt(idx++); ~buffer && (bs = bc % 4 ? bs * 64 + buffer : buffer, bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0) {
         buffer = chars.indexOf(buffer);
       }
       return output;
