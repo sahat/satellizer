@@ -7,6 +7,8 @@
 (function(window, angular, undefined) {
   'use strict';
 
+  var currentUrl = window.location.origin || window.location.protocol + '//' + window.location.host;
+
   angular.module('satellizer', [])
     .constant('satellizer.config', {
       loginOnSignup: true,
@@ -25,7 +27,7 @@
         google: {
           url: '/auth/google',
           authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
-          redirectUri: currentUrl(),
+          redirectUri: currentUrl,
           scope: ['profile', 'email'],
           scopePrefix: 'openid',
           scopeDelimiter: ' ',
@@ -38,7 +40,7 @@
         facebook: {
           url: '/auth/facebook',
           authorizationEndpoint: 'https://www.facebook.com/dialog/oauth',
-          redirectUri: currentUrl() + '/',
+          redirectUri: currentUrl + '/',
           scope: ['email'],
           scopeDelimiter: ',',
           requiredUrlParams: ['display', 'scope'],
@@ -49,7 +51,7 @@
         linkedin: {
           url: '/auth/linkedin',
           authorizationEndpoint: 'https://www.linkedin.com/uas/oauth2/authorization',
-          redirectUri: currentUrl(),
+          redirectUri: currentUrl,
           requiredUrlParams: ['state'],
           scope: ['r_emailaddress'],
           scopeDelimiter: ' ',
@@ -60,7 +62,7 @@
         github: {
           url: '/auth/github',
           authorizationEndpoint: 'https://github.com/login/oauth/authorize',
-          redirectUri: currentUrl(),
+          redirectUri: currentUrl,
           scope: [],
           scopeDelimiter: ' ',
           type: '2.0',
@@ -69,7 +71,7 @@
         yahoo: {
           url: '/auth/yahoo',
           authorizationEndpoint: 'https://api.login.yahoo.com/oauth2/request_auth',
-          redirectUri: currentUrl(),
+          redirectUri: currentUrl,
           scope: [],
           scopeDelimiter: ',',
           type: '2.0',
@@ -576,10 +578,6 @@
         };
       }]);
     }]);
-
-  function currentUrl() {
-    return window.location.origin || window.location.protocol + '//' + window.location.host;
-  }
 
 })(window, window.angular);
 
