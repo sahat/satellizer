@@ -304,8 +304,8 @@ authentication process works.
 
 ## API Reference
 
-- [`$auth.login(user)`](#authlogin)
-- [`$auth.signup(user)`](#authsignup)
+- [`$auth.login(user)`](#authloginuser)
+- [`$auth.signup(user)`](#authsignupuser)
 - [`$auth.authenticate(name, [userData])`](#authauthenticatename-userdata)
 - [`$auth.logout()`](#authlogout)
 - [`$auth.isAuthenticated()`](#authisauthenticated)
