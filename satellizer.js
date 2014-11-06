@@ -230,7 +230,7 @@
         };
 
         shared.setToken = function(response, isLinking) {
-          var token = response.data[config.tokenName];
+          var token = response.access_token || response.data[config.tokenName];
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
 
           if (!token) {
@@ -365,12 +365,8 @@
 
             return popup.open(url, defaults.popupOptions)
               .then(function(oauthData) {
-                // TODO: Change defaults name to options
                 if (defaults.responseType === 'token') {
-                  // TODO: Check for access_token property after deferred is resolved instead of creating a fake response object
-                  var response = { data: {} };
-                  response.data[config.tokenName] = oauthData.access_token;
-                  return response;
+                  return oauthData;
                 } else {
                   return oauth2.exchangeForToken(oauthData, userData)
                 }
