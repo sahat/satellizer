@@ -565,10 +565,6 @@
             return httpConfig;
           },
           responseError: function(response) {
-            // TODO: check if coming from the same origin or pre-approved domain
-            if (response.status === 401) {
-              localStorage.removeItem(tokenName);
-            }
             return $q.reject(response);
           }
         };
