@@ -237,7 +237,7 @@ your server in the following format - `Authorization: Bearer <token>`, then use
 
     </tr>
     <tr>
-      <td align="center">8+</td>
+      <td align="center">9+</td>
       <td align="center">✓</td>
       <td align="center">✓</td>
       <td align="center">✓</td>
