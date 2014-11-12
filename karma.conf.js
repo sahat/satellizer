@@ -3,7 +3,7 @@ module.exports = function(config) {
     files: [
       'bower_components/angular/angular.js',
       'bower_components/angular-mocks/angular-mocks.js',
-      'satellizer.js',
+      'dist/satellizer.js',
       'test/*.spec.js'
     ],
 
