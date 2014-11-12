@@ -30,6 +30,7 @@
   "devDependencies": {
     "gulp": "^3.8.7",
     "gulp-complexity": "^0.2.1",
+    "gulp-concat": "^2.4.1",
     "gulp-ng-annotate": "^0.3.0",
     "gulp-plumber": "^0.6.4",
     "gulp-rename": "^1.2.0",
