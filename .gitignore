@@ -239,7 +239,6 @@ __pycache__/
 env/
 build/
 develop-eggs/
-dist/
 eggs/
 lib/
 lib64/
@@ -397,7 +396,6 @@ Thumbs.db
 .cache/
 .history/
 .lib/
-dist/*
 target/
 lib_managed/
 src_managed/
@@ -422,5 +420,4 @@ test-result
 server.pid
 *.iml
 *.eml
-/dist/
 .cache
