@@ -197,6 +197,10 @@
             return shared.getToken();
           };
 
+          $auth.setToken = function(token, isLinking) {
+            shared.setToken({access_token: token}, isLinking);
+          };
+
           $auth.getPayload = function() {
             return shared.getPayload();
           };
