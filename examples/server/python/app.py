@@ -66,7 +66,6 @@ db.create_all()
 
 def create_jwt_token(user):
     payload = {
-        'iss': 'localhost',
         'sub': user.id,
         'iat': datetime.now(),
         'exp': datetime.now() + timedelta(days=14)
