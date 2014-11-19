@@ -3,9 +3,10 @@ angular.module('satellizer')
     '$q',
     '$http',
     'satellizer.popup',
+    'satellizer.iframe',
     'satellizer.utils',
     'satellizer.config',
-    function($q, $http, popup, utils, config) {
+    function($q, $http, popup, iframe, utils, config) {
       return function() {
 
         var defaults = {
@@ -25,12 +26,17 @@ angular.module('satellizer')
 
         var oauth2 = {};
 
-        oauth2.open = function(options, userData) {
+        oauth2.open = function(options, userData, immediate) {
           angular.extend(defaults, options);
-          var url = oauth2.buildUrl();
+          var url = oauth2.buildUrl(immediate);
 
-          return popup.open(url, defaults.popupOptions)
-            .then(function(oauthData) {
+          var subWindow;
+          if (immediate) {
+            subWindow = iframe.open(url);
+          } else {
+            subWindow = popup.open(url, defaults.popupOptions);
+          }
+          return subWindow.then(function(oauthData) {
               if (defaults.responseType === 'token') {
                 return oauthData;
               } else {
@@ -50,13 +56,13 @@ angular.module('satellizer')
           return $http.post(defaults.url, data);
         };
 
-        oauth2.buildUrl = function() {
+        oauth2.buildUrl = function(immediate) {
           var baseUrl = defaults.authorizationEndpoint;
-          var qs = oauth2.buildQueryString();
-          return [baseUrl, qs].join('?');
+          var qs = oauth2.buildQueryString(immediate);
+          return baseUrl + '?' + qs;
         };
 
-        oauth2.buildQueryString = function() {
+        oauth2.buildQueryString = function(immediate) {
           var keyValuePairs = [];
           var urlParams = ['defaultUrlParams', 'requiredUrlParams', 'optionalUrlParams'];
 
@@ -76,6 +82,12 @@ angular.module('satellizer')
               keyValuePairs.push([paramName, paramValue]);
             });
           });
+
+          if (immediate) {
+            keyValuePairs.redirect_uri = (window.location.origin || window.location.protocol + '//' + window.location.host)
+                                    + config.immediateRedirect;
+            keyValuePairs.prompt = 'none';
+          }
 
           return keyValuePairs.map(function(pair) {
             return pair.join('=');

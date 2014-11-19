@@ -4,6 +4,7 @@ angular.module('satellizer')
     loginRedirect: '/',
     logoutRedirect: '/',
     signupRedirect: '/login',
+    immediateRedirect: '/auth/immediate',
     loginUrl: '/auth/login',
     signupUrl: '/auth/signup',
     loginRoute: '/login',

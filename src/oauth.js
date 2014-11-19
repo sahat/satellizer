@@ -9,10 +9,10 @@ angular.module('satellizer')
     function($q, $http, config, shared, Oauth1, Oauth2) {
       var oauth = {};
 
-      oauth.authenticate = function(name, isLinking, userData) {
+      oauth.authenticate = function(name, isLinking, userData, immediate) {
         var provider = config.providers[name].type === '1.0' ? new Oauth1() : new Oauth2();
 
-        return provider.open(config.providers[name], userData || {})
+        return provider.open(config.providers[name], userData || {}, immediate)
           .then(function(response) {
             shared.setToken(response, isLinking);
             return response;

@@ -30,12 +30,7 @@ angular.module('satellizer')
         polling = $interval(function() {
           try {
             if (popupWindow.document.domain === document.domain && (popupWindow.location.search || popupWindow.location.hash)) {
-              var queryParams = popupWindow.location.search.substring(1).replace(/\/$/, '');
-              var hashParams = popupWindow.location.hash.substring(1).replace(/\/$/, '');
-              var hash = utils.parseQueryString(hashParams);
-              var qs = utils.parseQueryString(queryParams);
-
-              angular.extend(qs, hash);
+              var qs = utils.parseLocationString(popupWindow.location);
 
               if (qs.error) {
                 deferred.reject({ error: qs.error });

@@ -176,6 +176,16 @@ app.post('/auth/signup', function(req, res) {
 
 /*
  |--------------------------------------------------------------------------
+ | Immediate Callback
+ |--------------------------------------------------------------------------
+ */
+app.post('/auth/immediate', function(req, res) {
+  res.header('Content-Type', 'text/html; charset=utf-8');
+  res.send('<!doctype html><html><title></title><script>top.__immediateAuth(location);</script></html>');
+});
+
+/*
+ |--------------------------------------------------------------------------
  | Login with Google
  |--------------------------------------------------------------------------
  */

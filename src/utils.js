@@ -17,4 +17,14 @@ angular.module('satellizer')
       });
       return obj;
     };
+
+    this.parseLocationString = function(location) {
+      var queryParams = location.search.substring(1).replace(/\/$/, '');
+      var hashParams = location.hash.substring(1).replace(/\/$/, '');
+      var hash = utils.parseQueryString(hashParams);
+      var qs = utils.parseQueryString(queryParams);
+
+      angular.extend(qs, hash);
+      return qs;
+    };
   });

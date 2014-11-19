@@ -17,6 +17,10 @@ angular.module('satellizer')
         get: function() { return config.loginOnSignup; },
         set: function(value) { config.loginOnSignup = value; }
       },
+      immediateRedirect: {
+        get: function() { return config.immediateRedirect; },
+        set: function(value) { config.immediateRedirect = value; }
+      },
       loginUrl: {
         get: function() { return config.loginUrl; },
         set: function(value) { config.loginUrl = value; }
@@ -80,8 +84,8 @@ angular.module('satellizer')
       function($q, shared, local, oauth) {
         var $auth = {};
 
-        $auth.authenticate = function(name, userData) {
-          return oauth.authenticate(name, false, userData);
+        $auth.authenticate = function(name, userData, immediate) {
+          return oauth.authenticate(name, false, userData, immediate);
         };
 
         $auth.login = function(user) {
@@ -100,8 +104,8 @@ angular.module('satellizer')
           return shared.isAuthenticated();
         };
 
-        $auth.link = function(name, userData) {
-          return oauth.authenticate(name, true, userData);
+        $auth.link = function(name, userData, immediate) {
+          return oauth.authenticate(name, true, userData, immediate);
         };
 
         $auth.unlink = function(provider) {
