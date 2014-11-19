@@ -21,8 +21,8 @@ angular.module('satellizer')
     this.parseLocationString = function(location) {
       var queryParams = location.search.substring(1).replace(/\/$/, '');
       var hashParams = location.hash.substring(1).replace(/\/$/, '');
-      var hash = utils.parseQueryString(hashParams);
-      var qs = utils.parseQueryString(queryParams);
+      var hash = this.parseQueryString(hashParams);
+      var qs = this.parseQueryString(queryParams);
 
       angular.extend(qs, hash);
       return qs;

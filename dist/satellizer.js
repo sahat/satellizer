@@ -43,6 +43,10 @@ angular.module('satellizer')
         get: function() { return config.loginOnSignup; },
         set: function(value) { config.loginOnSignup = value; }
       },
+      immediateRedirect: {
+        get: function() { return config.immediateRedirect; },
+        set: function(value) { config.immediateRedirect = value; }
+      },
       loginUrl: {
         get: function() { return config.loginUrl; },
         set: function(value) { config.loginUrl = value; }
@@ -106,8 +110,8 @@ angular.module('satellizer')
       function($q, shared, local, oauth) {
         var $auth = {};
 
-        $auth.authenticate = function(name, userData) {
-          return oauth.authenticate(name, false, userData);
+        $auth.authenticate = function(name, userData, immediate) {
+          return oauth.authenticate(name, false, userData, immediate);
         };
 
         $auth.login = function(user) {
@@ -126,8 +130,8 @@ angular.module('satellizer')
           return shared.isAuthenticated();
         };
 
-        $auth.link = function(name, userData) {
-          return oauth.authenticate(name, true, userData);
+        $auth.link = function(name, userData, immediate) {
+          return oauth.authenticate(name, true, userData, immediate);
         };
 
         $auth.unlink = function(provider) {
@@ -189,6 +193,7 @@ angular.module('satellizer')
     loginRedirect: '/',
     logoutRedirect: '/',
     signupRedirect: '/login',
+    immediateRedirect: '/auth/immediate',
     loginUrl: '/auth/login',
     signupUrl: '/auth/signup',
     loginRoute: '/login',
@@ -260,6 +265,38 @@ angular.module('satellizer')
   });
 
 angular.module('satellizer')
+  .factory('satellizer.iframe', [
+    '$q',
+    '$window',
+    'satellizer.utils',
+      function ($q, $window, utils) {
+        return {
+          open: function (url) {
+            var iframe = $window.document.createElement('iframe');
+            iframe.hidden = true;
+            iframe.src = url;
+
+            var deferred = $q.defer();
+            $window.__immediateAuth = function (location) {
+              $window.document.body.removeChild(iframe);
+              delete $window.__immediateAuth;
+              var qs = utils.parseLocationString(location);
+
+              if (qs.error) {
+                deferred.reject({error: qs.error});
+              } else {
+                deferred.resolve(qs);
+              }
+            };
+
+            $window.document.body.appendChild(iframe);
+
+            return deferred.promise;
+          }
+        };
+      }]);
+
+angular.module('satellizer')
   .factory('satellizer.local', [
     '$q',
     '$http',
@@ -304,10 +341,10 @@ angular.module('satellizer')
     function($q, $http, config, shared, Oauth1, Oauth2) {
       var oauth = {};
 
-      oauth.authenticate = function(name, isLinking, userData) {
+      oauth.authenticate = function(name, isLinking, userData, immediate) {
         var provider = config.providers[name].type === '1.0' ? new Oauth1() : new Oauth2();
 
-        return provider.open(config.providers[name], userData || {})
+        return provider.open(config.providers[name], userData || {}, immediate)
           .then(function(response) {
             shared.setToken(response, isLinking);
             return response;
@@ -334,7 +371,10 @@ angular.module('satellizer')
 
       var oauth1 = {};
 
-      oauth1.open = function(options, userData) {
+      oauth1.open = function(options, userData, immediate) {
+        if (immediate) {
+          return $q.reject('OAuth1 does not support immediate authorization');
+        }
         angular.extend(defaults, options);
         return popup.open(defaults.url, defaults.popupOptions)
           .then(function(response) {
@@ -365,9 +405,10 @@ angular.module('satellizer')
     '$q',
     '$http',
     'satellizer.popup',
+    'satellizer.iframe',
     'satellizer.utils',
     'satellizer.config',
-    function($q, $http, popup, utils, config) {
+    function($q, $http, popup, iframe, utils, config) {
       return function() {
 
         var defaults = {
@@ -387,12 +428,17 @@ angular.module('satellizer')
 
         var oauth2 = {};
 
-        oauth2.open = function(options, userData) {
+        oauth2.open = function(options, userData, immediate) {
           angular.extend(defaults, options);
-          var url = oauth2.buildUrl();
+          var url = oauth2.buildUrl(immediate);
 
-          return popup.open(url, defaults.popupOptions)
-            .then(function(oauthData) {
+          var subWindow;
+          if (immediate) {
+            subWindow = iframe.open(url);
+          } else {
+            subWindow = popup.open(url, defaults.popupOptions);
+          }
+          return subWindow.then(function(oauthData) {
               if (defaults.responseType === 'token') {
                 return oauthData;
               } else {
@@ -412,13 +458,13 @@ angular.module('satellizer')
           return $http.post(defaults.url, data);
         };
 
-        oauth2.buildUrl = function() {
+        oauth2.buildUrl = function(immediate) {
           var baseUrl = defaults.authorizationEndpoint;
-          var qs = oauth2.buildQueryString();
-          return [baseUrl, qs].join('?');
+          var qs = oauth2.buildQueryString(immediate);
+          return baseUrl + '?' + qs;
         };
 
-        oauth2.buildQueryString = function() {
+        oauth2.buildQueryString = function(immediate) {
           var keyValuePairs = [];
           var urlParams = ['defaultUrlParams', 'requiredUrlParams', 'optionalUrlParams'];
 
@@ -438,6 +484,12 @@ angular.module('satellizer')
               keyValuePairs.push([paramName, paramValue]);
             });
           });
+
+          if (immediate) {
+            keyValuePairs.redirect_uri = (window.location.origin || window.location.protocol + '//' + window.location.host)
+                                    + config.immediateRedirect;
+            keyValuePairs.prompt = 'none';
+          }
 
           return keyValuePairs.map(function(pair) {
             return pair.join('=');
@@ -480,12 +532,7 @@ angular.module('satellizer')
         polling = $interval(function() {
           try {
             if (popupWindow.document.domain === document.domain && (popupWindow.location.search || popupWindow.location.hash)) {
-              var queryParams = popupWindow.location.search.substring(1).replace(/\/$/, '');
-              var hashParams = popupWindow.location.hash.substring(1).replace(/\/$/, '');
-              var hash = utils.parseQueryString(hashParams);
-              var qs = utils.parseQueryString(queryParams);
-
-              angular.extend(qs, hash);
+              var qs = utils.parseLocationString(popupWindow.location);
 
               if (qs.error) {
                 deferred.reject({ error: qs.error });
@@ -617,5 +664,15 @@ angular.module('satellizer')
         }
       });
       return obj;
+    };
+
+    this.parseLocationString = function(location) {
+      var queryParams = location.search.substring(1).replace(/\/$/, '');
+      var hashParams = location.hash.substring(1).replace(/\/$/, '');
+      var hash = utils.parseQueryString(hashParams);
+      var qs = utils.parseQueryString(queryParams);
+
+      angular.extend(qs, hash);
+      return qs;
     };
   });

@@ -79,14 +79,22 @@ angular.module('satellizer')
                 }
               }
 
-              keyValuePairs.push([paramName, paramValue]);
+              if (immediate) {
+                if (paramName === 'redirect_uri') {
+                  paramValue = (window.location.origin || window.location.protocol + '//' + window.location.host)
+                                      + config.immediateRedirect;
+                }
+                if (paramName !== 'display') {
+                  keyValuePairs.push([paramName, paramValue]);
+                }
+              } else {
+                keyValuePairs.push([paramName, paramValue]);
+              }
             });
           });
 
           if (immediate) {
-            keyValuePairs.redirect_uri = (window.location.origin || window.location.protocol + '//' + window.location.host)
-                                    + config.immediateRedirect;
-            keyValuePairs.prompt = 'none';
+            keyValuePairs.push(['prompt', 'none']);
           }
 
           return keyValuePairs.map(function(pair) {
