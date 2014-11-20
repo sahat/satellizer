@@ -7,6 +7,7 @@
     "test": "karma start"
   },
   "homepage": "https://github.com/sahat/satellizer",
+  "bugs": "https://github.com/sahat/satellizer/issues",
   "repository": {
     "type": "git",
     "url": "https://github.com/sahat/satellizer.git"
@@ -40,9 +41,6 @@
     "karma-jasmine": "^0.1.5",
     "karma-phantomjs-launcher": "^0.1.4"
   },
-  "bugs": {
-    "url": "https://github.com/sahat/satellizer/issues"
-  },
   "license": "MIT",
   "tags": [
     "authentication",
@@ -56,12 +54,15 @@
     "google",
     "linkedin",
     "twitter",
+    "foursquare",
+    "github",
+    "yahoo",
     "oauth",
     "oauth 1.0",
     "oauth 2.0",
     "oauth2",
     "oauth1",
     "sign-in",
-    "social"
+    "social",
   ]
 }
