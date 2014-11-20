@@ -72,8 +72,6 @@ if (app.get('env') === 'production') {
 }
 app.use(express.static(path.join(__dirname, '../../client')));
 
-
-
 /*
  |--------------------------------------------------------------------------
  | Login Required Middleware
@@ -112,7 +110,7 @@ function createToken(user) {
  |--------------------------------------------------------------------------
  */
 app.get('/api/me', ensureAuthenticated, function(req, res) {
-  User.findById(req.user, function (err, user) {
+  User.findById(req.user, function(err, user) {
     res.send(user);
   });
 });
@@ -373,65 +371,69 @@ app.post('/auth/linkedin', function(req, res) {
 /*
  |--------------------------------------------------------------------------
  | Login with Windows Live
+ | // Step 1. Exchange authorization code for access token.
+ | // Step 2. Retrieve profile information about the current user.
+ | // Step 3. [if] Link user accounts.
+ | // Step 3. [else] Create a new user or return an existing account.
  |--------------------------------------------------------------------------
  */
 app.post('/auth/live', function(req, res) {
   async.waterfall([
-      function getAccessToken(done) { // Step 1. Exchange authorization code for access token.
-        var accessTokenUrl = 'https://login.live.com/oauth20_token.srf';
-        var params = {
-          code: req.body.code,
-          client_id: req.body.clientId,
-          client_secret: config.WINDOWS_LIVE_SECRET,
-          redirect_uri: req.body.redirectUri,
-          grant_type: 'authorization_code'
-        };
-        request.post(accessTokenUrl, { form: params, json: true }, function(err, response, accessToken) {
-          done(err, accessToken);
-        });
-      },
-      function getUserData(accessToken, done) {
-      // Step 2. Retrieve profile information about the current user.
-        var profileUrl = 'https://apis.live.net/v5.0/me?access_token=' + accessToken.access_token;
-        request.get({ url: profileUrl, json: true }, function(err, response, profile) {
-          console.log(profile);
-          done(err, profile);
-        });
-      },
-      function(profile) {
-      // Step 3a. Link user accounts.
-        User.findOne({ live: profile.id }, function(err, existingUser) {
-          if (!req.headers.authorization) {
-            if (existingUser) {
-              return res.send({token: createToken(existingUser)});
-            }
-            var user = new User();
-            user.live = profile.id;
-            user.displayName = profile.name;
-            user.save(function() {
-              var token = createToken(user);
-              res.send({token: token});
-            });
-          } else {
-            if (existingUser) {
-              return res.status(409).send({message: 'There is already a Windows Live account that belongs to you'});
-            }
-            var token = req.headers.authorization.split(' ')[1];
-            var payload = jwt.decode(token, config.TOKEN_SECRET);
-            User.findById(payload.sub, function(err, user) {
-              if (!user) {
-                return res.status(400).send({message: 'User not found'});
-              }
-              user.live = profile.id;
-              user.displayName = user.name;
-              user.save(function() {
-                var token = createToken(user);
-                res.send({token: token});
-              });
-            });
+    function(done) {
+      var accessTokenUrl = 'https://login.live.com/oauth20_token.srf';
+      var params = {
+        code: req.body.code,
+        client_id: req.body.clientId,
+        client_secret: config.WINDOWS_LIVE_SECRET,
+        redirect_uri: req.body.redirectUri,
+        grant_type: 'authorization_code'
+      };
+      request.post(accessTokenUrl, { form: params, json: true }, function(err, response, accessToken) {
+        done(null, accessToken);
+      });
+    },
+    function(accessToken, done) {
+      var profileUrl = 'https://apis.live.net/v5.0/me?access_token=' + accessToken.access_token;
+      request.get({ url: profileUrl, json: true }, function(err, response, profile) {
+        console.log(profile);
+        done(err, profile);
+      });
+    },
+    function(profile) {
+      if (!req.headers.authorization) {
+        User.findOne({ live: profile.id }, function(err, user) {
+          if (user) {
+            return res.send({ token: createToken(user) });
           }
+          var newUser = new User();
+          newUser.live = profile.id;
+          newUser.displayName = profile.name;
+          newUser.save(function() {
+            var token = createToken(newUser);
+            res.send({ token: token });
+          });
+        });
+      } else {
+        User.findOne({ live: profile.id }, function(err, user) {
+          if (user) {
+            return res.status(409).send({ message: 'There is already a Windows Live account that belongs to you' });
+          }
+          var token = req.headers.authorization.split(' ')[1];
+          var payload = jwt.decode(token, config.TOKEN_SECRET);
+          User.findById(payload.sub, function(err, existingUser) {
+            if (!existingUser) {
+              return res.status(400).send({ message: 'User not found' });
+            }
+            existingUser.live = profile.id;
+            existingUser.displayName = existingUser.name;
+            existingUser.save(function() {
+              var token = createToken(existingUser);
+              res.send({ token: token });
+            });
+          });
         });
       }
+    }
   ]);
 });
 
@@ -463,7 +465,7 @@ app.post('/auth/facebook', function(req, res) {
         return res.status(500).send({ message: profile.error.message });
       }
 
-      // Step 3a. Link user accounts.
+
       if (req.headers.authorization) {
         User.findOne({ facebook: profile.id }, function(err, existingUser) {
           if (existingUser) {
