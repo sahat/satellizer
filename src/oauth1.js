@@ -10,7 +10,10 @@ angular.module('satellizer')
 
       var oauth1 = {};
 
-      oauth1.open = function(options, userData) {
+      oauth1.open = function(options, userData, immediate) {
+        if (immediate) {
+          return $q.reject('OAuth1 does not support immediate authorization');
+        }
         angular.extend(defaults, options);
         return popup.open(defaults.url, defaults.popupOptions)
           .then(function(response) {

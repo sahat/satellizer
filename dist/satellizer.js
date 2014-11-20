@@ -43,6 +43,10 @@ angular.module('satellizer')
         get: function() { return config.loginOnSignup; },
         set: function(value) { config.loginOnSignup = value; }
       },
+      immediateRedirect: {
+        get: function() { return config.immediateRedirect; },
+        set: function(value) { config.immediateRedirect = value; }
+      },
       loginUrl: {
         get: function() { return config.loginUrl; },
         set: function(value) { config.loginUrl = value; }
@@ -106,8 +110,8 @@ angular.module('satellizer')
       function($q, shared, local, oauth) {
         var $auth = {};
 
-        $auth.authenticate = function(name, userData) {
-          return oauth.authenticate(name, false, userData);
+        $auth.authenticate = function(name, userData, immediate) {
+          return oauth.authenticate(name, false, userData, immediate);
         };
 
         $auth.login = function(user) {
@@ -126,8 +130,8 @@ angular.module('satellizer')
           return shared.isAuthenticated();
         };
 
-        $auth.link = function(name, userData) {
-          return oauth.authenticate(name, true, userData);
+        $auth.link = function(name, userData, immediate) {
+          return oauth.authenticate(name, true, userData, immediate);
         };
 
         $auth.unlink = function(provider) {
@@ -189,6 +193,7 @@ angular.module('satellizer')
     loginRedirect: '/',
     logoutRedirect: '/',
     signupRedirect: '/login',
+    immediateRedirect: '/auth/immediate',
     loginUrl: '/auth/login',
     signupUrl: '/auth/signup',
     loginRoute: '/login',
@@ -260,6 +265,46 @@ angular.module('satellizer')
   });
 
 angular.module('satellizer')
+  .factory('satellizer.iframe', [
+    '$q',
+    '$window',
+    'satellizer.utils',
+      function ($q, $window, utils) {
+        return {
+          open: function (url) {
+            var iframe = $window.document.createElement('iframe');
+            iframe.hidden = true;
+            iframe.src = url;
+
+            iframe.addEventListener('load', function(x) {
+              // if we reach here it should mean that we haven't removed
+              // the iframe in __immediateAuth, which means that something -bad- happened
+              // (e.g., non-existing address or iframe-deny, but this will NOT catch 404)
+              $window.document.body.removeChild(iframe);
+              deferred.reject({error: 'unable to load immediate auth redirect'});
+            });
+
+            var deferred = $q.defer();
+            $window.__immediateAuth = function (location) {
+              $window.document.body.removeChild(iframe);
+              delete $window.__immediateAuth;
+              var qs = utils.parseLocationString(location);
+
+              if (qs.error) {
+                deferred.reject({error: qs.error});
+              } else {
+                deferred.resolve(qs);
+              }
+            };
+
+            $window.document.body.appendChild(iframe);
+
+            return deferred.promise;
+          }
+        };
+      }]);
+
+angular.module('satellizer')
   .factory('satellizer.local', [
     '$q',
     '$http',
@@ -304,10 +349,10 @@ angular.module('satellizer')
     function($q, $http, config, shared, Oauth1, Oauth2) {
       var oauth = {};
 
-      oauth.authenticate = function(name, isLinking, userData) {
+      oauth.authenticate = function(name, isLinking, userData, immediate) {
         var provider = config.providers[name].type === '1.0' ? new Oauth1() : new Oauth2();
 
-        return provider.open(config.providers[name], userData || {})
+        return provider.open(config.providers[name], userData || {}, immediate)
           .then(function(response) {
             shared.setToken(response, isLinking);
             return response;
@@ -334,7 +379,10 @@ angular.module('satellizer')
 
       var oauth1 = {};
 
-      oauth1.open = function(options, userData) {
+      oauth1.open = function(options, userData, immediate) {
+        if (immediate) {
+          return $q.reject('OAuth1 does not support immediate authorization');
+        }
         angular.extend(defaults, options);
         return popup.open(defaults.url, defaults.popupOptions)
           .then(function(response) {
@@ -365,9 +413,10 @@ angular.module('satellizer')
     '$q',
     '$http',
     'satellizer.popup',
+    'satellizer.iframe',
     'satellizer.utils',
     'satellizer.config',
-    function($q, $http, popup, utils, config) {
+    function($q, $http, popup, iframe, utils, config) {
       return function() {
 
         var defaults = {
@@ -384,16 +433,29 @@ angular.module('satellizer')
           defaultUrlParams: ['response_type', 'client_id', 'redirect_uri'],
           responseType: 'code'
         };
+        var sharedOptions;
 
         var oauth2 = {};
 
-        oauth2.open = function(options, userData) {
-          angular.extend(defaults, options);
-          var url = oauth2.buildUrl();
+        oauth2.open = function(options, userData, immediate) {
+          angular.extend(sharedOptions = {}, defaults , options);
+          if (immediate) {
+            delete sharedOptions.display;
+            sharedOptions.prompt = 'none';
+            sharedOptions.redirectUri = (window.location.origin || window.location.protocol + '//' + window.location.host)
+                                  + config.immediateRedirect;
+            sharedOptions.defaultUrlParams.push('prompt');
+          }
+          var url = oauth2.buildUrl(immediate);
 
-          return popup.open(url, defaults.popupOptions)
-            .then(function(oauthData) {
-              if (defaults.responseType === 'token') {
+          var subWindow;
+          if (immediate) {
+            subWindow = iframe.open(url);
+          } else {
+            subWindow = popup.open(url, sharedOptions.popupOptions);
+          }
+          return subWindow.then(function(oauthData) {
+              if (sharedOptions.responseType === 'token') {
                 return oauthData;
               } else {
                 return oauth2.exchangeForToken(oauthData, userData)
@@ -405,37 +467,39 @@ angular.module('satellizer')
         oauth2.exchangeForToken = function(oauthData, userData) {
           var data = angular.extend({}, userData, {
             code: oauthData.code,
-            clientId: defaults.clientId,
-            redirectUri: defaults.redirectUri
+            clientId: sharedOptions.clientId,
+            redirectUri: sharedOptions.redirectUri
           });
 
-          return $http.post(defaults.url, data);
+          return $http.post(sharedOptions.url, data);
         };
 
-        oauth2.buildUrl = function() {
-          var baseUrl = defaults.authorizationEndpoint;
-          var qs = oauth2.buildQueryString();
-          return [baseUrl, qs].join('?');
+        oauth2.buildUrl = function(immediate) {
+          var baseUrl = sharedOptions.authorizationEndpoint;
+          var qs = oauth2.buildQueryString(immediate);
+          return baseUrl + '?' + qs;
         };
 
-        oauth2.buildQueryString = function() {
+        oauth2.buildQueryString = function(immediate) {
           var keyValuePairs = [];
           var urlParams = ['defaultUrlParams', 'requiredUrlParams', 'optionalUrlParams'];
 
           angular.forEach(urlParams, function(params) {
-            angular.forEach(defaults[params], function(paramName) {
+            angular.forEach(sharedOptions[params], function(paramName) {
               var camelizedName = utils.camelCase(paramName);
-              var paramValue = defaults[camelizedName];
+              var paramValue = sharedOptions[camelizedName];
 
               if (paramName === 'scope' && Array.isArray(paramValue)) {
-                paramValue = paramValue.join(defaults.scopeDelimiter);
+                paramValue = paramValue.join(sharedOptions.scopeDelimiter);
 
-                if (defaults.scopePrefix) {
-                  paramValue = [defaults.scopePrefix, paramValue].join(defaults.scopeDelimiter);
+                if (sharedOptions.scopePrefix) {
+                  paramValue = [sharedOptions.scopePrefix, paramValue].join(sharedOptions.scopeDelimiter);
                 }
               }
 
-              keyValuePairs.push([paramName, paramValue]);
+              if (typeof(paramValue) !== 'undefined') {
+                keyValuePairs.push([paramName, paramValue]);
+              }
             });
           });
 
@@ -480,12 +544,7 @@ angular.module('satellizer')
         polling = $interval(function() {
           try {
             if (popupWindow.document.domain === document.domain && (popupWindow.location.search || popupWindow.location.hash)) {
-              var queryParams = popupWindow.location.search.substring(1).replace(/\/$/, '');
-              var hashParams = popupWindow.location.hash.substring(1).replace(/\/$/, '');
-              var hash = utils.parseQueryString(hashParams);
-              var qs = utils.parseQueryString(queryParams);
-
-              angular.extend(qs, hash);
+              var qs = utils.parseLocationString(popupWindow.location);
 
               if (qs.error) {
                 deferred.reject({ error: qs.error });
@@ -617,5 +676,15 @@ angular.module('satellizer')
         }
       });
       return obj;
+    };
+
+    this.parseLocationString = function(location) {
+      var queryParams = location.search.substring(1).replace(/\/$/, '');
+      var hashParams = location.hash.substring(1).replace(/\/$/, '');
+      var hash = this.parseQueryString(hashParams);
+      var qs = this.parseQueryString(queryParams);
+
+      angular.extend(qs, hash);
+      return qs;
     };
   });
