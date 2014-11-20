@@ -118,7 +118,7 @@ class AuthController extends \BaseController {
 
             if ($user->first())
             {
-                return Response::json(array('token' => $this->createToken($user)));
+                return Response::json(array('token' => $this->createToken($user->first())));
             }
 
             $user = new User;
@@ -183,7 +183,7 @@ class AuthController extends \BaseController {
 
             if ($user->first())
             {
-                return Response::json(array('token' => $this->createToken($user)));
+                return Response::json(array('token' => $this->createToken($user->first())));
             }
 
             $user = new User;
@@ -250,7 +250,7 @@ class AuthController extends \BaseController {
 
             if ($user->first())
             {
-                return Response::json(array('token' => $this->createToken($user)));
+                return Response::json(array('token' => $this->createToken($user->first())));
             }
 
             $user = new User;
@@ -338,7 +338,7 @@ class AuthController extends \BaseController {
 
                 if ($user->first())
                 {
-                    return Response::json(array('token' => $this->createToken($user)));
+                    return Response::json(array('token' => $this->createToken($user->first())));
                 }
 
                 $user = new User;
@@ -408,7 +408,7 @@ class AuthController extends \BaseController {
 
             if ($user->first())
             {
-                return Response::json(array('token' => $this->createToken($user)));
+                return Response::json(array('token' => $this->createToken($user->first())));
             }
 
             $user = new User;
@@ -477,7 +477,7 @@ class AuthController extends \BaseController {
 
             if ($user->first())
             {
-                return Response::json(array('token' => $this->createToken($user)));
+                return Response::json(array('token' => $this->createToken($user->first())));
             }
 
             $user = new User;
