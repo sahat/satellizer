@@ -10,6 +10,14 @@ angular.module('satellizer')
             iframe.hidden = true;
             iframe.src = url;
 
+            iframe.addEventListener('load', function(x) {
+              // if we reach here it should mean that we haven't removed
+              // the iframe in __immediateAuth, which means that something -bad- happened
+              // (e.g., non-existing address or iframe-deny, but this will NOT catch 404)
+              $window.document.body.removeChild(iframe);
+              deferred.reject({error: 'unable to load immediate auth redirect'});
+            });
+
             var deferred = $q.defer();
             $window.__immediateAuth = function (location) {
               $window.document.body.removeChild(iframe);
