@@ -300,6 +300,17 @@ a {
   background-color: #303030;
 }
 
+.btn-live {
+  color: #fff;
+  background-color: #2672ec;
+}
+
+.btn-live:hover,
+.btn-live:focus {
+  color: #fff;
+  background-color: #125acd;
+}
+
 /*********************
 * Animations
 *********************/
