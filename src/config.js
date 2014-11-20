@@ -77,7 +77,7 @@ angular.module('satellizer')
         redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
         scope: ['wl.basic'],
         scopeDelimiter: ' ',
-        optionalUrlParams: ['display'],
+        requiredUrlParams: ['display', 'scope'],
         display: 'popup',
         type: '2.0',
         popupOptions: { width: 500, height: 560 }
