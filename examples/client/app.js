@@ -59,6 +59,10 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ui.router', 'mgcrea.ngStra
       url: '/auth/twitter'
     });
 
+    $authProvider.live({
+      clientId: '000000004C12E68D'
+    });
+
     $authProvider.oauth2({
       name: 'foursquare',
       url: '/auth/foursquare',
