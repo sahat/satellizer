@@ -25,11 +25,11 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ui.router', 'mgcrea.ngStra
         templateUrl: 'partials/profile.html',
         controller: 'ProfileCtrl',
         resolve: {
-          authenticated: ['$location', '$auth', function($location, $auth) {
+          authenticated: function($location, $auth) {
             if (!$auth.isAuthenticated()) {
               return $location.path('/login');
             }
-          }]
+          }
         }
       });
 
