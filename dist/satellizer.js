@@ -138,6 +138,10 @@ angular.module('satellizer')
           return shared.getToken();
         };
 
+        $auth.setToken = function(token, isLinking) {
+          shared.setToken({ access_token: token }, isLinking);
+        };
+
         $auth.getPayload = function() {
           return shared.getPayload();
         };
@@ -255,6 +259,17 @@ angular.module('satellizer')
         url: '/auth/twitter',
         type: '1.0',
         popupOptions: { width: 495, height: 645 }
+      },
+      live: {
+        url: '/auth/live',
+        authorizationEndpoint: 'https://login.live.com/oauth20_authorize.srf',
+        redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
+        scope: ['wl.basic'],
+        scopeDelimiter: ' ',
+        requiredUrlParams: ['display', 'scope'],
+        display: 'popup',
+        type: '2.0',
+        popupOptions: { width: 500, height: 560 }
       }
     }
   });
