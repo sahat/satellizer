@@ -6,9 +6,21 @@ var plumber = require('gulp-plumber');
 var complexity = require('gulp-complexity');
 
 gulp.task('concat', function() {
-  gulp.src(['src/satellizer.js', 'src/*.js'])
+  gulp.src([
+    'src/index.js',
+    'src/config.js',
+    'src/shared.js',
+    'src/auth.js',
+    'src/popup.js',
+    'src/local.js',
+    'src/oauth.js',
+    'src/oauth1.js',
+    'src/oauth2.js',
+    'src/utils.js',
+    'src/base64.js'
+  ])
     .pipe(concat('satellizer.js'))
-    .pipe(gulp.dest('dist'))
+    .pipe(gulp.dest('dist'));
 });
 
 gulp.task('minify', function() {
@@ -16,7 +28,7 @@ gulp.task('minify', function() {
     .pipe(plumber())
     .pipe(uglify())
     .pipe(rename('satellizer.min.js'))
-    .pipe(gulp.dest('dist'))
+    .pipe(gulp.dest('dist'));
 });
 
 gulp.task('copy', function() {
@@ -35,12 +47,12 @@ gulp.task('watch', function() {
 
 gulp.task('php', function() {
   return gulp.src('examples/client/**/*.*')
-    .pipe(gulp.dest('examples/server/php/public'))
+    .pipe(gulp.dest('examples/server/php/public'));
 });
 
 gulp.task('java', function() {
   return gulp.src('examples/client/**/*.*')
-    .pipe(gulp.dest('examples/server/java/src/main/resources/assets'))
+    .pipe(gulp.dest('examples/server/java/src/main/resources/assets'));
 });
 
 gulp.task('default', ['concat', 'copy', 'minify', 'watch']);
