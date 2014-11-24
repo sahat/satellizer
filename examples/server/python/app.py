@@ -28,12 +28,14 @@ class User(db.Model):
     password = db.Column(db.String(120))
     display_name = db.Column(db.String(120))
     facebook = db.Column(db.String(120))
+    github = db.Column(db.String(120))
     google = db.Column(db.String(120))
     linkedin = db.Column(db.String(120))
     twitter = db.Column(db.String(120))
 
     def __init__(self, email=None, password=None, display_name=None,
-                 facebook=None, google=None, linkedin=None, twitter=None):
+                 facebook=None, github=None, google=None, linkedin=None,
+                 twitter=None):
         if email:
             self.email = email.lower()
         if password:
@@ -64,7 +66,7 @@ class User(db.Model):
 db.create_all()
 
 
-def create_jwt_token(user):
+def create_token(user):
     payload = {
         'sub': user.id,
         'iat': datetime.now(),
@@ -122,7 +124,7 @@ def login():
         response = jsonify(message='Wrong Email or Password')
         response.status_code = 401
         return response
-    token = create_jwt_token(user)
+    token = create_token(user)
     return jsonify(token=token)
 
 
@@ -131,7 +133,7 @@ def signup():
     user = User(email=request.json['email'], password=request.json['password'])
     db.session.add(user)
     db.session.commit()
-    token = create_jwt_token(user)
+    token = create_token(user)
     return jsonify(token=token)
 
 
@@ -174,20 +176,76 @@ def facebook():
         u = User(facebook=profile['id'], display_name=profile['name'])
         db.session.add(u)
         db.session.commit()
-        token = create_jwt_token(u)
+        token = create_token(u)
         return jsonify(token=token)
 
     # Step 4. Create a new account or return an existing one.
     user = User.query.filter_by(facebook=profile['id']).first()
     if user:
-        token = create_jwt_token(user)
+        token = create_token(user)
         return jsonify(token=token)
 
     u = User(facebook=profile['id'], display_name=profile['name'])
     db.session.add(u)
     db.session.commit()
-    token = create_jwt_token(u)
+    token = create_token(u)
     return jsonify(token=token)
+
+@app.route('/auth/github', methods=['POST'])
+def github():
+    access_token_url = 'https://github.com/login/oauth/access_token'
+    users_api_url = 'https://api.github.com/user'
+
+    params = {
+        'client_id': request.json['clientId'],
+        'redirect_uri': request.json['redirectUri'],
+        'client_secret': app.config['GITHUB_SECRET'],
+        'code': request.json['code']
+    }
+
+    # Step 1. Exchange authorization code for access token.
+    r = requests.get(access_token_url, params=params)
+    access_token = dict(parse_qsl(r.text))
+    headers = {'User-Agent': 'Satellizer'}
+
+    # Step 2. Retrieve information about the current user.
+    r = requests.get(users_api_url, params=access_token, headers=headers)
+    profile = json.loads(r.text)
+
+    # Step 3. (optional) Link accounts.
+    if request.headers.get('Authorization'):
+        user = User.query.filter_by(facebook=profile['id']).first()
+        if user:
+            response = jsonify(message='There is already a GitHub account that belongs to you')
+            response.status_code = 409
+            return response
+
+        payload = parse_token(request)
+
+        user = User.query.filter_by(id=payload['sub']).first()
+        if not user:
+            response = jsonify(message='User not found')
+            response.status_code = 400
+            return response
+
+        u = User(github=profile['id'], display_name=profile['name'])
+        db.session.add(u)
+        db.session.commit()
+        token = create_token(u)
+        return jsonify(token=token)
+
+    # Step 4. Create a new account or return an existing one.
+    user = User.query.filter_by(github=profile['id']).first()
+    if user:
+        token = create_token(user)
+        return jsonify(token=token)
+
+    u = User(github=profile['id'], display_name=profile['name'])
+    db.session.add(u)
+    db.session.commit()
+    token = create_token(u)
+    return jsonify(token=token)
+
 
 
 @app.route('/auth/google', methods=['POST'])
@@ -212,13 +270,13 @@ def google():
 
     user = User.query.filter_by(google=profile['sub']).first()
     if user:
-        token = create_jwt_token(user)
+        token = create_token(user)
         return jsonify(token=token)
     u = User(google=profile['sub'],
              display_name=profile['displayName'])
     db.session.add(u)
     db.session.commit()
-    token = create_jwt_token(u)
+    token = create_token(u)
     return jsonify(token=token)
 
 
@@ -245,13 +303,13 @@ def linkedin():
 
     user = User.query.filter_by(linkedin=profile['id']).first()
     if user:
-        token = create_jwt_token(user)
+        token = create_token(user)
         return jsonify(token=token)
     u = User(linkedin=profile['id'],
              display_name=profile['firstName'] + ' ' + profile['lastName'])
     db.session.add(u)
     db.session.commit()
-    token = create_jwt_token(u)
+    token = create_token(u)
     return jsonify(token=token)
 
 
@@ -271,13 +329,13 @@ def twitter():
 
         user = User.query.filter_by(twitter=profile['user_id']).first()
         if user:
-            token = create_jwt_token(user)
+            token = create_token(user)
             return jsonify(token=token)
         u = User(twitter=profile['user_id'],
                  display_name=profile['screen_name'])
         db.session.add(u)
         db.session.commit()
-        token = create_jwt_token(u)
+        token = create_token(u)
         return jsonify(token=token)
     else:
         oauth = OAuth1(app.config['TWITTER_CONSUMER_KEY'],
