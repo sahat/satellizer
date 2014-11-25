@@ -37,22 +37,12 @@ gulp.task('copy', function() {
 });
 
 gulp.task('complexity', function() {
-  return gulp.src('dist/satellizer.js')
+  return gulp.src('src/*.js')
     .pipe(complexity());
 });
 
 gulp.task('watch', function() {
   gulp.watch('src/*.js', ['concat', 'copy', 'minify']);
-});
-
-gulp.task('php', function() {
-  return gulp.src('examples/client/**/*.*')
-    .pipe(gulp.dest('examples/server/php/public'));
-});
-
-gulp.task('java', function() {
-  return gulp.src('examples/client/**/*.*')
-    .pipe(gulp.dest('examples/server/java/src/main/resources/assets'));
 });
 
 gulp.task('default', ['concat', 'copy', 'minify', 'watch']);
