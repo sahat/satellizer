@@ -1,0 +1,5 @@
+RewriteEngine On
+
+# By default Apache doesn't provide the Authorization header to the request
+RewriteCond %{HTTP:Authorization} ^(.+)$
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
