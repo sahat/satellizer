@@ -1,6 +1,6 @@
 var gulp = require('gulp');
 var concat = require('gulp-concat');
-var rename = require("gulp-rename");
+var rename = require('gulp-rename');
 var uglify = require('gulp-uglify');
 var plumber = require('gulp-plumber');
 var complexity = require('gulp-complexity');
@@ -9,14 +9,15 @@ gulp.task('concat', function() {
   gulp.src([
     'src/index.js',
     'src/config.js',
-    'src/shared.js',
     'src/auth.js',
+    'src/shared.js',
     'src/popup.js',
     'src/local.js',
     'src/oauth.js',
     'src/oauth1.js',
     'src/oauth2.js',
     'src/utils.js',
+    'src/interceptor.js',
     'src/base64.js'
   ])
     .pipe(concat('satellizer.js'))
