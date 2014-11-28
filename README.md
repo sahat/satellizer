@@ -76,6 +76,10 @@ angular.module('MyApp', ['satellizer'])
       clientId: 'dj0yJmk9dkNGM0RTOHpOM0ZsJmQ9WVdrOVlVTm9hVk0wTkRRbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD0wMA--'
     });
 
+    $authProvider.live({
+      clientId: '000000004C12E68D'
+    });
+
     $authProvider.twitter({
       url: '/auth/twitter'
     });
@@ -112,6 +116,7 @@ angular.module('MyApp')
 <button ng-click="authenticate('twitter')">Sign in with Twitter</button>
 <button ng-click="authenticate('foursquare')">Sign in with Foursquare</button>
 <button ng-click="authenticate('yahoo')">Sign in with Yahoo</button>
+<button ng-click="authenticate('live')">Sign in with Windows Live</button>
 ```
 
 **:exclamation: Note:** For server-side usage please refer to the [examples](https://github.com/sahat/satellizer/tree/master/examples/server)
@@ -185,7 +190,6 @@ $authProvider.twitter({
 
 // GitHub
 $authProvider.github({
-  name: 'github',
   url: '/auth/github',
   authorizationEndpoint: 'https://github.com/login/oauth/authorize',
   redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
@@ -194,6 +198,19 @@ $authProvider.github({
   type: '2.0',
   popupOptions: { width: 1020, height: 618 }
 });
+
+// Windows Live
+$authProvider.live: {
+  url: '/auth/live',
+  authorizationEndpoint: 'https://login.live.com/oauth20_authorize.srf',
+  redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
+  scope: ['wl.basic'],
+  scopeDelimiter: ' ',
+  requiredUrlParams: ['display', 'scope'],
+  display: 'popup',
+  type: '2.0',
+  popupOptions: { width: 500, height: 560 }
+}
 
 // OAuth 2.0
 $authProvider.oauth2({
@@ -448,7 +465,7 @@ $auth.getPayload();
 - [x] Node.js (Express) implementation
 - [x] PHP (Laravel) implementation
 - [x] Python (Flask) implementation
-- [ ] Ruby (Sinatra and/or Rails) implementation
+- [ ] Ruby (Sinatra) implementation
 - [ ] Scala (Play!) implementation
 
 ## Contributing
