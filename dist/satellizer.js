@@ -20,6 +20,7 @@ angular.module('satellizer')
     tokenPrefix: 'satellizer',
     unlinkUrl: '/auth/unlink/',
     authHeader: 'Authorization',
+    platform: 'browser',
     providers: {
       google: {
         url: '/auth/google',
@@ -143,6 +144,10 @@ angular.module('satellizer')
       authHeader: {
         get: function() { return config.authHeader; },
         set: function(value) { config.authHeader = value; }
+      },
+      platform: {
+        get: function() { return config.platform; },
+        set: function(value) { config.platform = value; }
       }
     });
 
@@ -297,8 +302,9 @@ angular.module('satellizer')
     '$interval',
     '$window',
     '$location',
+    'satellizer.config',
     'satellizer.utils',
-    function($q, $interval, $window, $location, utils) {
+    function($q, $interval, $window, $location, config, utils) {
       var popupWindow = null;
       var polling = null;
 
@@ -320,33 +326,67 @@ angular.module('satellizer')
 
       popup.pollPopup = function() {
         var deferred = $q.defer();
-        polling = $interval(function() {
-          try {
-            if (popupWindow.document.domain === document.domain && (popupWindow.location.search || popupWindow.location.hash)) {
-              var queryParams = popupWindow.location.search.substring(1).replace(/\/$/, '');
-              var hashParams = popupWindow.location.hash.substring(1).replace(/\/$/, '');
-              var hash = utils.parseQueryString(hashParams);
-              var qs = utils.parseQueryString(queryParams);
 
-              angular.extend(qs, hash);
-
-              if (qs.error) {
-                deferred.reject({ error: qs.error });
-              } else {
-                deferred.resolve(qs);
-              }
-
-              popupWindow.close();
-              $interval.cancel(polling);
+        if (config.platform === 'mobile') {
+          popupWindow.addEventListener('loadstart', function(event) {
+            if (event.url.indexOf('http://localhost/') !== 0) {
+              return;
             }
-          } catch (error) {
-          }
+            console.log('pokertubeLog: inside popup event listener - ' + event.url);
 
-          if (popupWindow.closed) {
-            $interval.cancel(polling);
-            deferred.reject({ data: 'Authorization Failed' });
-          }
-        }, 35);
+            var parser = document.createElement('a');
+
+            parser.href = event.url;
+
+            var queryParams = parser.search.substring(1).replace(/\/$/, '');
+            var hashParams = parser.hash.substring(1).replace(/\/$/, '');
+            var hash = utils.parseQueryString(hashParams);
+            var qs = utils.parseQueryString(queryParams);
+
+            angular.extend(qs, hash);
+
+            if (qs.error) {
+              console.log('pokertubeLog: error - ' + JSON.stringify(qs));
+              deferred.reject({ error: qs.error });
+            } else {
+              console.log('pokertubeLog: success - ' + JSON.stringify(qs));
+              deferred.resolve({ code: qs.code });
+            }
+
+            popupWindow.close();
+          });
+        }
+
+        if (config.platform === 'browser') {
+          polling = $interval(function() {
+            try {
+              if (popupWindow.document.domain === document.domain && (popupWindow.location.search || popupWindow.location.hash)) {
+                var queryParams = popupWindow.location.search.substring(1).replace(/\/$/, '');
+                var hashParams = popupWindow.location.hash.substring(1).replace(/\/$/, '');
+                var hash = utils.parseQueryString(hashParams);
+                var qs = utils.parseQueryString(queryParams);
+
+                angular.extend(qs, hash);
+
+                if (qs.error) {
+                  deferred.reject({ error: qs.error });
+                } else {
+                  deferred.resolve(qs);
+                }
+
+                popupWindow.close();
+                $interval.cancel(polling);
+              }
+            } catch (error) {
+            }
+
+            if (popupWindow.closed) {
+              $interval.cancel(polling);
+              deferred.reject({ data: 'Authorization Failed' });
+            }
+          }, 35);
+        }
+
         return deferred.promise;
       };
 
@@ -422,9 +462,10 @@ angular.module('satellizer')
 
         return provider.open(config.providers[name], userData || {})
           .then(function(response) {
+            console.log('pokertubeLog: token exchange success - ' + JSON.stringify(response));
             shared.setToken(response, isLinking);
             return response;
-          });
+          }, function(reason) { console.log('pokertubeLog: token exchange error - ' + JSON.stringify(reason)); });
 
       };
 
@@ -509,18 +550,21 @@ angular.module('satellizer')
               if (defaults.responseType === 'token') {
                 return oauthData;
               } else {
+                console.log('pokertubeLog: resolve - ' + JSON.stringify(oauthData));
                 return oauth2.exchangeForToken(oauthData, userData)
               }
-            });
+            }, function(reason) { console.log('pokertubeLog: reject - ' + JSON.stringify(reason)); });
 
         };
 
         oauth2.exchangeForToken = function(oauthData, userData) {
+          console.log('pokertubeLog: oauthData - ', JSON.stringify(oauthData));
           var data = angular.extend({}, userData, {
             code: oauthData.code,
             clientId: defaults.clientId,
             redirectUri: defaults.redirectUri
           });
+          console.log('pokertubeLog: data - ', JSON.stringify(data));
 
           return $http.post(defaults.url, data);
         };
