@@ -4,4 +4,9 @@
  * License: MIT
  */
 
-angular.module('satellizer', []);
+angular.module('satellizer', [])
+  .config([
+    '$httpProvider',
+    function($httpProvider) {
+      $httpProvider.interceptors.push('satellizer.interceptor');
+    }]);
