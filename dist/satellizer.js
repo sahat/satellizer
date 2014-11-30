@@ -5,14 +5,15 @@
  */
 
 angular.module('satellizer', [])
-  .config([
-    '$httpProvider',
-    function($httpProvider) {
-      $httpProvider.interceptors.push('satellizer.interceptor');
-    }]);
+  .config(['$httpProvider', 'satellizer.config', function($httpProvider, config) {
+    if (config.httpInterceptor) {
+      $httpProvider.interceptors.push('satellizerInterceptor');
+    }
+  }]);
 
 angular.module('satellizer')
   .constant('satellizer.config', {
+    httpInterceptor: true,
     loginOnSignup: true,
     loginRedirect: '/',
     logoutRedirect: '/',
@@ -588,11 +589,7 @@ angular.module('satellizer')
   });
 
 angular.module('satellizer')
-  .factory('satellizer.interceptor', [
-    '$q',
-    '$authProvider',
-    'satellizer.config',
-    function($q, $authProvider, config) {
+  .factory('satellizerInterceptor', ['$q', 'satellizer.config', function($q, config) {
       var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
       return {
         request: function(httpConfig) {
@@ -608,7 +605,6 @@ angular.module('satellizer')
         }
       };
     }]);
-
 // Base64.js Polyfill (@davidchambers)
 (function() {
   var object = typeof exports != 'undefined' ? exports : this;

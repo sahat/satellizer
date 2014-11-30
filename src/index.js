@@ -5,8 +5,8 @@
  */
 
 angular.module('satellizer', [])
-  .config([
-    '$httpProvider',
-    function($httpProvider) {
-      $httpProvider.interceptors.push('satellizer.interceptor');
-    }]);
+  .config(['$httpProvider', 'satellizer.config', function($httpProvider, config) {
+    if (config.httpInterceptor) {
+      $httpProvider.interceptors.push('satellizerInterceptor');
+    }
+  }]);
