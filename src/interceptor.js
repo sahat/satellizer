@@ -1,9 +1,5 @@
 angular.module('satellizer')
-  .factory('satellizer.interceptor', [
-    '$q',
-    '$authProvider',
-    'satellizer.config',
-    function($q, $authProvider, config) {
+  .factory('satellizerInterceptor', ['$q', 'satellizer.config', function($q, config) {
       var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
       return {
         request: function(httpConfig) {
