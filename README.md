@@ -329,6 +329,7 @@ authentication process works.
 - [`$auth.link(provider, [userData])`](#authlinkprovider-userdata)
 - [`$auth.unlink(provider)`](#authunlinkprovider)
 - [`$auth.getToken()`](#authgettoken)
+- [`$auth.setToken()`](#authsettoken)
 - [`$auth.getPayload()`](#authgetpayload)
  
 #### `$auth.login(user)`
@@ -446,6 +447,11 @@ Returns a token from Local Storage.
 $auth.getToken();
 // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEyMzQ1Njc4OTAsIm5hbWUiOiJKb2huIERvZSJ9.kRkUHzvZMWXjgB4zkO3d6P1imkdp0ogebLuxnTCiYUU
 ```
+
+#### `$auth.setToken()`
+
+Saves a token to Local Storage. Refer to https://github.com/sahat/satellizer/pull/186 for more information.
+
 
 #### `$auth.getPayload()`
 
