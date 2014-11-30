@@ -4,7 +4,12 @@
  * License: MIT
  */
 
-angular.module('satellizer', []);
+angular.module('satellizer', [])
+  .config([
+    '$httpProvider',
+    function($httpProvider) {
+      $httpProvider.interceptors.push('satellizer.interceptor');
+    }]);
 
 angular.module('satellizer')
   .constant('satellizer.config', {
@@ -451,7 +456,7 @@ angular.module('satellizer')
         angular.extend(defaults, options);
         return popup.open(defaults.url, defaults.popupOptions)
           .then(function(response) {
-            return oauth1.exchangeForToken(response, userData)
+            return oauth1.exchangeForToken(response, userData);
           });
       };
 
@@ -509,7 +514,7 @@ angular.module('satellizer')
               if (defaults.responseType === 'token') {
                 return oauthData;
               } else {
-                return oauth2.exchangeForToken(oauthData, userData)
+                return oauth2.exchangeForToken(oauthData, userData);
               }
             });
 
@@ -583,27 +588,25 @@ angular.module('satellizer')
   });
 
 angular.module('satellizer')
-  .config([
-    '$httpProvider',
+  .factory('satellizer.interceptor', [
+    '$q',
     '$authProvider',
     'satellizer.config',
-    function($httpProvider, $authProvider, config) {
-      $httpProvider.interceptors.push(['$q', function($q) {
-        var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
-        return {
-          request: function(httpConfig) {
-            var token = localStorage.getItem(tokenName);
-            if (token) {
-              token = config.authHeader === 'Authorization' ? 'Bearer ' + token : token;
-              httpConfig.headers[config.authHeader] = token;
-            }
-            return httpConfig;
-          },
-          responseError: function(response) {
-            return $q.reject(response);
+    function($q, $authProvider, config) {
+      var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
+      return {
+        request: function(httpConfig) {
+          var token = localStorage.getItem(tokenName);
+          if (token) {
+            token = config.authHeader === 'Authorization' ? 'Bearer ' + token : token;
+            httpConfig.headers[config.authHeader] = token;
           }
-        };
-      }]);
+          return httpConfig;
+        },
+        responseError: function(response) {
+          return $q.reject(response);
+        }
+      };
     }]);
 
 // Base64.js Polyfill (@davidchambers)
