@@ -1,5 +1,6 @@
 angular.module('satellizer')
   .constant('satellizer.config', {
+    httpInterceptor: true,
     loginOnSignup: true,
     loginRedirect: '/',
     logoutRedirect: '/',
