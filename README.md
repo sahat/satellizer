@@ -57,7 +57,7 @@ angular.module('MyApp', ['satellizer'])
   .config(function($authProvider) {
     
     $authProvider.facebook({
-      clientId: '624059410963642',
+      clientId: '624059410963642'
     });
     
     $authProvider.google({
