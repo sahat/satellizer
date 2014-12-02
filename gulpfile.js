@@ -26,4 +26,4 @@ gulp.task('watch', function() {
   gulp.watch('src/*.js', ['concat', 'copy', 'minify']);
 });
 
-gulp.task('default', ['concat', 'copy', 'minify', 'watch']);
+gulp.task('default', ['copy', 'minify', 'watch']);
