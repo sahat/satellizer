@@ -7,8 +7,6 @@
 (function(window, angular, undefined) {
   'use strict';
 
-  var currentUrl = window.location.origin || window.location.protocol + '//' + window.location.host;
-
   angular.module('satellizer', [])
     .constant('satellizer.config', {
       httpInterceptor: true,
@@ -28,7 +26,7 @@
         google: {
           url: '/auth/google',
           authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
-          redirectUri: currentUrl,
+          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
           scope: ['profile', 'email'],
           scopePrefix: 'openid',
           scopeDelimiter: ' ',
@@ -41,7 +39,7 @@
         facebook: {
           url: '/auth/facebook',
           authorizationEndpoint: 'https://www.facebook.com/dialog/oauth',
-          redirectUri: currentUrl + '/',
+          redirectUri: window.location.origin + '/' || window.location.protocol + '//' + window.location.host + '/',
           scope: ['email'],
           scopeDelimiter: ',',
           requiredUrlParams: ['display', 'scope'],
@@ -52,7 +50,7 @@
         linkedin: {
           url: '/auth/linkedin',
           authorizationEndpoint: 'https://www.linkedin.com/uas/oauth2/authorization',
-          redirectUri: currentUrl,
+          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
           requiredUrlParams: ['state'],
           scope: ['r_emailaddress'],
           scopeDelimiter: ' ',
@@ -63,7 +61,7 @@
         github: {
           url: '/auth/github',
           authorizationEndpoint: 'https://github.com/login/oauth/authorize',
-          redirectUri: currentUrl,
+          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
           scope: [],
           scopeDelimiter: ' ',
           type: '2.0',
@@ -72,7 +70,7 @@
         yahoo: {
           url: '/auth/yahoo',
           authorizationEndpoint: 'https://api.login.yahoo.com/oauth2/request_auth',
-          redirectUri: currentUrl,
+          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
           scope: [],
           scopeDelimiter: ',',
           type: '2.0',
@@ -82,6 +80,17 @@
           url: '/auth/twitter',
           type: '1.0',
           popupOptions: { width: 495, height: 645 }
+        },
+        live: {
+          url: '/auth/live',
+          authorizationEndpoint: 'https://login.live.com/oauth20_authorize.srf',
+          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
+          scope: ['wl.basic'],
+          scopeDelimiter: ' ',
+          requiredUrlParams: ['display', 'scope'],
+          display: 'popup',
+          type: '2.0',
+          popupOptions: { width: 500, height: 560 }
         }
       }
     })
@@ -198,6 +207,10 @@
             return shared.getToken();
           };
 
+          $auth.setToken = function(token, isLinking) {
+            shared.setToken({ access_token: token }, isLinking);
+          };
+
           $auth.getPayload = function() {
             return shared.getPayload();
           };
@@ -292,7 +305,7 @@
             .then(function(response) {
               shared.setToken(response, isLinking);
               return response;
-            })
+            });
 
         };
 
@@ -317,7 +330,7 @@
             .then(function(response) {
               shared.setToken(response);
               return response;
-            })
+            });
         };
 
         local.signup = function(user) {
@@ -329,7 +342,7 @@
                 $location.path(config.signupRedirect);
               }
               return response;
-            })
+            });
         };
 
         return local;
@@ -369,9 +382,9 @@
                 if (defaults.responseType === 'token') {
                   return oauthData;
                 } else {
-                  return oauth2.exchangeForToken(oauthData, userData)
+                  return oauth2.exchangeForToken(oauthData, userData);
                 }
-              })
+              });
 
           };
 
@@ -435,8 +448,8 @@
           angular.extend(defaults, options);
           return popup.open(defaults.url, defaults.popupOptions)
             .then(function(response) {
-              return oauth1.exchangeForToken(response, userData)
-            })
+              return oauth1.exchangeForToken(response, userData);
+            });
         };
 
         oauth1.exchangeForToken = function(oauthData, userData) {
