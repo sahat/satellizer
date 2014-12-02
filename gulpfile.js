@@ -1,29 +1,49 @@
-var gulp = require('gulp');
-var rename = require('gulp-rename');
-var uglify = require('gulp-uglify');
-var plumber = require('gulp-plumber');
-var complexity = require('gulp-complexity');
+(function() {
 
-gulp.task('minify', function() {
-  return gulp.src('satellizer.js')
-    .pipe(plumber())
-    .pipe(uglify())
-    .pipe(rename('satellizer.min.js'))
-    .pipe(gulp.dest('.'));
-});
+    'use strict';
 
-gulp.task('copy', function() {
-  return gulp.src(['satellizer.js', 'satellizer.min.js'])
-    .pipe(gulp.dest('examples/client/vendor'));
-});
+    var gulp       = require('gulp'),
+        rename     = require('gulp-rename'),
+        uglify     = require('gulp-uglify'),
+        // plumber    = require('gulp-plumber'),
+        complexity = require('gulp-complexity'),
+        header     = require('gulp-header'),
+        pkg        = require('./package.json');
 
-gulp.task('complexity', function() {
-  return gulp.src('satellizer.js')
-    .pipe(complexity());
-});
+    // Banner for building
+    var banner = ['/**',
+                  ' * <%= pkg.name %> - <%= pkg.description %>',
+                  ' * @version <%= pkg.version %>',
+                  ' * @link <%= pkg.homepage %>',
+                  ' * @license <%= pkg.license %>',
+                  ' */',
+                  ''].join('\n');
 
-gulp.task('watch', function() {
-  gulp.watch('src/*.js', ['concat', 'copy', 'minify']);
-});
+    gulp.task('minify', function() {
+        return gulp.src('satellizer.js')
+        // .pipe(plumber())
+        .pipe(uglify())
+        .pipe(header(banner, { pkg: pkg }))
+        .pipe(rename({
+            suffix: '.min'
+        }))
+        .pipe(gulp.dest('.'));
+    });
 
-gulp.task('default', ['copy', 'minify', 'watch']);
+    gulp.task('copy', ['minify'], function() {
+        return gulp.src(['satellizer.js', 'satellizer.min.js'])
+        .pipe(gulp.dest('examples/client/vendor'));
+    });
+
+    gulp.task('complexity', function() {
+        return gulp.src('satellizer.js')
+        .pipe(complexity());
+    });
+
+    gulp.task('watch', function() {
+        gulp.watch('src/*.js', ['concat', 'copy', 'minify']);
+    });
+
+    gulp.task('default', ['copy', 'watch']);
+
+}());
