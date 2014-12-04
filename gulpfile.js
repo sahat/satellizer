@@ -3,17 +3,27 @@ var rename = require('gulp-rename');
 var uglify = require('gulp-uglify');
 var plumber = require('gulp-plumber');
 var complexity = require('gulp-complexity');
+var header = require('gulp-header');
+var pkg = require('./package.json');
+
+var banner = ['/**',
+  ' * Satellizer <%= pkg.version %>',
+  ' * (c) 2014 <%= pkg.author.name %>',
+  ' * License: <%= pkg.license %>',
+  ' */',
+  ''].join('\n');
 
 gulp.task('minify', function() {
   return gulp.src('satellizer.js')
     .pipe(plumber())
     .pipe(uglify())
-    .pipe(rename('satellizer.min.js'))
+    .pipe(header(banner, { pkg: pkg }))
+    .pipe(rename({ suffix: '.min' }))
     .pipe(gulp.dest('.'));
 });
 
-gulp.task('copy', function() {
-  return gulp.src(['satellizer.js', 'satellizer.min.js'])
+gulp.task('copy', ['minify'], function() {
+  return gulp.src('satellizer.js')
     .pipe(gulp.dest('examples/client/vendor'));
 });
 
@@ -23,7 +33,7 @@ gulp.task('complexity', function() {
 });
 
 gulp.task('watch', function() {
-  gulp.watch('src/*.js', ['concat', 'copy', 'minify']);
+  gulp.watch('satellizer.js', ['copy', 'minify']);
 });
 
-gulp.task('default', ['copy', 'minify', 'watch']);
+gulp.task('default', ['copy', 'watch']);
