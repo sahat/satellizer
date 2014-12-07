@@ -124,9 +124,9 @@ describe('satellizer.config', function() {
   });
 
   it('should set platform', function() {
-    this.$authProvider.platform = 'browser';
-    expect(this.config.platform).toEqual('browser');
-    expect(this.$authProvider.platform).toEqual('browser');
+    this.$authProvider.platform = 'mobile';
+    expect(this.config.platform).toEqual('mobile');
+    expect(this.$authProvider.platform).toEqual('mobile');
   });
 
 });
