@@ -17,7 +17,7 @@ describe('$auth', function() {
   describe('authenticate()', function() {
 
     it('should be defined', function() {
-      expect(this.$auth.authenticate()).toBeDefined();
+      expect(this.$auth.authenticate).toBeDefined();
     });
 
   });
@@ -25,7 +25,7 @@ describe('$auth', function() {
   describe('isAuthenticated()', function() {
 
     it('should be defined', function() {
-      expect(this.$auth.isAuthenticated()).toBeDefined();
+      expect(this.$auth.isAuthenticated).toBeDefined();
     });
 
   });
@@ -33,7 +33,7 @@ describe('$auth', function() {
   describe('getToken()', function() {
 
     it('should be defined', function() {
-      expect(this.$auth.getToken()).toBeDefined();
+      expect(this.$auth.getToken).toBeDefined();
     });
 
   });
@@ -42,7 +42,7 @@ describe('$auth', function() {
 
     it('should be defined', function() {
       var token = 'foo';
-      expect(this.$auth.setToken(token)).toBeDefined();
+      expect(this.$auth.setToken).toBeDefined();
     });
 
   });
@@ -50,7 +50,7 @@ describe('$auth', function() {
   describe('getPayload()', function() {
 
     it('should be defined', function() {
-      expect(this.$auth.getPayload()).toBeDefined();
+      expect(this.$auth.getPayload).toBeDefined();
     });
 
   });
