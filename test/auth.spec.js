@@ -17,7 +17,40 @@ describe('$auth', function() {
   describe('authenticate()', function() {
 
     it('should be defined', function() {
-      expect(this.$auth.authenticate).toBeDefined();
+      expect(this.$auth.authenticate()).toBeDefined();
+    });
+
+  });
+
+  describe('isAuthenticated()', function() {
+
+    it('should be defined', function() {
+      expect(this.$auth.isAuthenticated()).toBeDefined();
+    });
+
+  });
+
+  describe('getToken()', function() {
+
+    it('should be defined', function() {
+      expect(this.$auth.getToken()).toBeDefined();
+    });
+
+  });
+
+  describe('setToken()', function() {
+
+    it('should be defined', function() {
+      var token = 'foo';
+      expect(this.$auth.setToken(token)).toBeDefined();
+    });
+
+  });
+
+  describe('getPayload()', function() {
+
+    it('should be defined', function() {
+      expect(this.$auth.getPayload()).toBeDefined();
     });
 
   });
