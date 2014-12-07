@@ -4,7 +4,7 @@
 [![Build Status](http://img.shields.io/travis/sahat/satellizer.svg?style=flat)](https://travis-ci.org/sahat/satellizer) 
 [![Code Climate](http://img.shields.io/codeclimate/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer) 
 [![Test Coverage](http://img.shields.io/codeclimate/coverage/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
-[![Version](http://img.shields.io/badge/version-0.8.6-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
+[![Version](http://img.shields.io/badge/version-0.8.7-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
 
 **:space_invader: Live Demo:** [https://satellizer.herokuapp.com](https://satellizer.herokuapp.com)
 
@@ -46,7 +46,7 @@ npm install satellizer --save
 or use the CDN:
 
 ```html
-<script src="//cdn.jsdelivr.net/satellizer/0.8.6/satellizer.min.js"></script>
+<script src="//cdn.jsdelivr.net/satellizer/0.8.7/satellizer.min.js"></script>
 ```
 
 ## Usage
@@ -57,7 +57,7 @@ angular.module('MyApp', ['satellizer'])
   .config(function($authProvider) {
     
     $authProvider.facebook({
-      clientId: '624059410963642',
+      clientId: '624059410963642'
     });
     
     $authProvider.google({
@@ -329,6 +329,7 @@ authentication process works.
 - [`$auth.link(provider, [userData])`](#authlinkprovider-userdata)
 - [`$auth.unlink(provider)`](#authunlinkprovider)
 - [`$auth.getToken()`](#authgettoken)
+- [`$auth.setToken()`](#authsettoken)
 - [`$auth.getPayload()`](#authgetpayload)
  
 #### `$auth.login(user)`
@@ -446,6 +447,11 @@ Returns a token from Local Storage.
 $auth.getToken();
 // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEyMzQ1Njc4OTAsIm5hbWUiOiJKb2huIERvZSJ9.kRkUHzvZMWXjgB4zkO3d6P1imkdp0ogebLuxnTCiYUU
 ```
+
+#### `$auth.setToken()`
+
+Saves a token to Local Storage. Refer to https://github.com/sahat/satellizer/pull/186 for more information.
+
 
 #### `$auth.getPayload()`
 

@@ -1,49 +1,39 @@
 var gulp = require('gulp');
-var concat = require('gulp-concat');
 var rename = require('gulp-rename');
 var uglify = require('gulp-uglify');
 var plumber = require('gulp-plumber');
 var complexity = require('gulp-complexity');
+var header = require('gulp-header');
+var pkg = require('./package.json');
 
-gulp.task('concat', function() {
-  gulp.src([
-    'src/index.js',
-    'src/config.js',
-    'src/auth.js',
-    'src/shared.js',
-    'src/popup.js',
-    'src/local.js',
-    'src/oauth.js',
-    'src/oauth1.js',
-    'src/oauth2.js',
-    'src/utils.js',
-    'src/interceptor.js',
-    'src/base64.js'
-  ])
-    .pipe(concat('satellizer.js'))
-    .pipe(gulp.dest('dist'));
-});
+var banner = ['/**',
+  ' * Satellizer <%= pkg.version %>',
+  ' * (c) 2014 <%= pkg.author.name %>',
+  ' * License: <%= pkg.license %>',
+  ' */',
+  ''].join('\n');
 
 gulp.task('minify', function() {
-  return gulp.src('dist/satellizer.js')
+  return gulp.src('satellizer.js')
     .pipe(plumber())
     .pipe(uglify())
-    .pipe(rename('satellizer.min.js'))
-    .pipe(gulp.dest('dist'));
+    .pipe(header(banner, { pkg: pkg }))
+    .pipe(rename({ suffix: '.min' }))
+    .pipe(gulp.dest('.'));
 });
 
-gulp.task('copy', function() {
-  return gulp.src(['dist/satellizer.js', 'dist/satellizer.min.js'])
+gulp.task('copy', ['minify'], function() {
+  return gulp.src('satellizer.js')
     .pipe(gulp.dest('examples/client/vendor'));
 });
 
 gulp.task('complexity', function() {
-  return gulp.src('src/*.js')
+  return gulp.src('satellizer.js')
     .pipe(complexity());
 });
 
 gulp.task('watch', function() {
-  gulp.watch('src/*.js', ['concat', 'copy', 'minify']);
+  gulp.watch('satellizer.js', ['copy', 'minify']);
 });
 
-gulp.task('default', ['concat', 'copy', 'minify', 'watch']);
+gulp.task('default', ['copy', 'watch']);
