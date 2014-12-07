@@ -1,0 +1,30 @@
+<ion-view title="Playlists">
+  <ion-nav-buttons side="left">
+    <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
+  </ion-nav-buttons>
+  <ion-content class="has-header">
+    <div ng-if="!authenticated">
+      <button ng-click="authenticate('facebook')" class="button button-block">
+        Connect with Facebook
+      </button>
+      <button ng-if="!authenticated" ng-click="authenticate('google')" class="button button-block">
+        Connect with Google
+      </button>
+    </div>
+    <div ng-if="authenticated">
+      <div class="card">
+        <div class="item item-text-wrap">
+          You are currently logged in.
+        </div>
+      </div>
+      <button ng-click="logout()" class="button button-block">
+        Log Out
+      </button>
+    </div>
+    <ion-list>
+      <ion-item ng-repeat="playlist in playlists" href="#/app/playlists/{{playlist.id}}">
+        {{playlist.title}}
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>
