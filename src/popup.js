@@ -14,7 +14,7 @@ angular.module('satellizer')
 
       popup.popupWindow = popupWindow;
 
-      popup.open = function(url, options) {
+      popup.open = function(url, options, redirectUri) {
         var optionsString = popup.stringifyOptions(popup.prepareOptions(options || {}));
 
         popupWindow = window.open(url, '_blank', optionsString);
@@ -57,7 +57,6 @@ angular.module('satellizer')
 
           popupWindow.close();
         });
-
 
         return deferred.promise;
       };

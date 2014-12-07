@@ -29,7 +29,7 @@ angular.module('satellizer')
           angular.extend(defaults, options);
           var url = oauth2.buildUrl();
 
-          return popup.open(url, defaults.popupOptions)
+          return popup.open(url, defaults.popupOptions, defaults.redirectUri)
             .then(function(oauthData) {
               if (defaults.responseType === 'token') {
                 return oauthData;

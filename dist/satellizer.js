@@ -312,7 +312,7 @@ angular.module('satellizer')
 
       popup.popupWindow = popupWindow;
 
-      popup.open = function(url, options) {
+      popup.open = function(url, options, redirectUri) {
         var optionsString = popup.stringifyOptions(popup.prepareOptions(options || {}));
 
         popupWindow = window.open(url, '_blank', optionsString);
@@ -355,7 +355,6 @@ angular.module('satellizer')
 
           popupWindow.close();
         });
-
 
         return deferred.promise;
       };
@@ -546,7 +545,7 @@ angular.module('satellizer')
           angular.extend(defaults, options);
           var url = oauth2.buildUrl();
 
-          return popup.open(url, defaults.popupOptions)
+          return popup.open(url, defaults.popupOptions, defaults.redirectUri)
             .then(function(oauthData) {
               if (defaults.responseType === 'token') {
                 return oauthData;
