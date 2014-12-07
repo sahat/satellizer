@@ -6,7 +6,7 @@ angular.module('satellizer')
     '$location',
     'satellizer.config',
     'satellizer.utils',
-    function($q, $interval, $window, $location, utils) {
+    function($q, $interval, $window, $location, config, utils) {
       var popupWindow = null;
       var polling = null;
 
