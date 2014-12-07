@@ -123,5 +123,11 @@ describe('satellizer.config', function() {
     expect(this.config.providers['goodreads'].url).toBe('/auth/goodreads');
   });
 
+  it('should set platform', function() {
+    this.$authProvider.platform = 'browser';
+    expect(this.config.platform).toEqual('browser');
+    expect(this.$authProvider.platform).toEqual('browser');
+  });
+
 });
 
