@@ -12,6 +12,7 @@ angular.module('satellizer')
     tokenPrefix: 'satellizer',
     unlinkUrl: '/auth/unlink/',
     authHeader: 'Authorization',
+    platform: 'browser',
     providers: {
       google: {
         url: '/auth/google',

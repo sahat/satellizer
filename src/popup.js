@@ -4,6 +4,7 @@ angular.module('satellizer')
     '$interval',
     '$window',
     '$location',
+    'satellizer.config',
     'satellizer.utils',
     function($q, $interval, $window, $location, utils) {
       var popupWindow = null;
@@ -22,37 +23,73 @@ angular.module('satellizer')
           popupWindow.focus();
         }
 
+	if (config.platform === 'mobile') {
+          return popup.eventListener(redirectUri);
+        }
+
         return popup.pollPopup();
+      };
+
+      popup.eventListener = function(redirectUri) {
+        var deferred = $q.defer();
+
+        popupWindow.addEventListener('loadstart', function(event) {
+          if (event.url.indexOf(redirectUri) !== 0) {
+            return;
+          }
+
+          var parser = document.createElement('a');
+
+          parser.href = event.url;
+
+          var queryParams = parser.search.substring(1).replace(/\/$/, '');
+          var hashParams = parser.hash.substring(1).replace(/\/$/, '');
+          var hash = utils.parseQueryString(hashParams);
+          var qs = utils.parseQueryString(queryParams);
+
+          angular.extend(qs, hash);
+
+          if (qs.error) {
+            deferred.reject({ error: qs.error });
+          } else {
+            deferred.resolve({ code: qs.code });
+          }
+
+          popupWindow.close();
+        });
+
+
+        return deferred.promise;
       };
 
       popup.pollPopup = function() {
         var deferred = $q.defer();
         polling = $interval(function() {
-          try {
-            if (popupWindow.document.domain === document.domain && (popupWindow.location.search || popupWindow.location.hash)) {
-              var queryParams = popupWindow.location.search.substring(1).replace(/\/$/, '');
-              var hashParams = popupWindow.location.hash.substring(1).replace(/\/$/, '');
-              var hash = utils.parseQueryString(hashParams);
-              var qs = utils.parseQueryString(queryParams);
+	  try {
+	    if (popupWindow.document.domain === document.domain && (popupWindow.location.search || popupWindow.location.hash)) {
+	      var queryParams = popupWindow.location.search.substring(1).replace(/\/$/, '');
+	      var hashParams = popupWindow.location.hash.substring(1).replace(/\/$/, '');
+	      var hash = utils.parseQueryString(hashParams);
+	      var qs = utils.parseQueryString(queryParams);
 
-              angular.extend(qs, hash);
+	      angular.extend(qs, hash);
 
-              if (qs.error) {
-                deferred.reject({ error: qs.error });
-              } else {
-                deferred.resolve(qs);
-              }
+	      if (qs.error) {
+		deferred.reject({ error: qs.error });
+	      } else {
+		deferred.resolve(qs);
+	      }
 
-              popupWindow.close();
-              $interval.cancel(polling);
-            }
-          } catch (error) {
-          }
+	      popupWindow.close();
+	      $interval.cancel(polling);
+	    }
+	  } catch (error) {
+	  }
 
-          if (popupWindow.closed) {
-            $interval.cancel(polling);
-            deferred.reject({ data: 'Authorization Failed' });
-          }
+	  if (popupWindow.closed) {
+	    $interval.cancel(polling);
+	    deferred.reject({ data: 'Authorization Failed' });
+	  }
         }, 35);
         return deferred.promise;
       };

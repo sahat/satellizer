@@ -48,6 +48,10 @@ angular.module('satellizer')
       authHeader: {
         get: function() { return config.authHeader; },
         set: function(value) { config.authHeader = value; }
+      },
+      platform: {
+        get: function() { return config.platform; },
+        set: function(value) { config.platform = value; }
       }
     });
 
