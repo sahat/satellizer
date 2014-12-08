@@ -6,6 +6,7 @@
     "start": "node ./examples/server/node/server.js",
     "test": "karma start"
   },
+  "main": "satellizer.min.js",
   "homepage": "https://github.com/sahat/satellizer",
   "bugs": "https://github.com/sahat/satellizer/issues",
   "repository": {
