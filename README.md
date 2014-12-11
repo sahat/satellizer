@@ -473,7 +473,7 @@ via `$authProvider.oauth1()` or `$authProvider.oauth2()` methods.
 - **userData** - Optional object for sending additional data to the server along with
 `code`, `clientId`, `redirectUri` (OAuth 2.0) or `oauth_token`, `oauth_verifier` (OAuth 1.0).
 
-**:hourglass: Note:** Linking accounts business logic is handled entirely on the server.
+**:bulb: Note:** Linking accounts business logic is handled entirely on the server.
 
 #### Usage
 
@@ -487,9 +487,12 @@ $auth.link('github');
 
 #### `$auth.unlink(provider)`
 
-Unlinks an OAuth provider from the signed-in account. It sends a `GET` request to the **/auth/unlink/<provider>**.
+Unlinks an OAuth provider from the signed-in account. It sends a GET request to `/auth/unlink/:provider`.
 
-**:hourglass: Note:** Use `$authProvider.unlinkUrl` configuration property to change the default unlink path above.
+- **provider** - One of the built-in provider names or a custom provider name created
+via `$authProvider.oauth1()` or `$authProvider.oauth2()` methods.
+
+**:bulb: Note:** You can override the default *unlink path* above via `$authProvider.unlinkUrl` configuration property.
 
 #### Usage
 
