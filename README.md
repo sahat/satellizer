@@ -321,7 +321,7 @@ authentication process works.
 
 <hr>
 
-<img src="http://blogs.unity3d.com/wp-content/uploads/2013/12/New-Microsoft-Logo.png" height="70">
+<img src="http://blogs.unity3d.com/wp-content/uploads/2013/12/New-Microsoft-Logo.png" width="150">
 - Visit [Live Connect App Management](http://go.microsoft.com/fwlink/p/?LinkId=193157).
 - Click on **Create application**
 - Enter an *Application name*, then click on **I accept** button
@@ -330,7 +330,9 @@ authentication process works.
 - Click **Save**
 - Go to **App Settings** tab to get *Client ID* and *Client Secret*
 
-**:exclamation: Note:** Unfortunately, Microsoft does not consider `localhost` or `127.0.0.1` to be a valid URL. As a workaround for local development add `127.0.0.1 mylocalwebsite.net` to **/etc/hosts** file and specify *mylocalwebsite.net* as your *Redirect URL* on **API Settings** tab.
+> **Note:** Microsoft does not consider `localhost` or `127.0.0.1` to be a valid URL.
+As a workaround for local development add `127.0.0.1 mylocalwebsite.net` to **/etc/hosts** file
+and specify `mylocalwebsite.net` as your *Redirect URL* on **API Settings** tab.
 
 
 ## API Reference
@@ -362,8 +364,9 @@ $auth.login({
 });
 ```
 
-**:bulb: Note:** This method returns a promise.
+**:hourglass: Note:** This method returns a promise.
 
+<hr>
 
 #### `$auth.signup(user)`
 
@@ -387,8 +390,9 @@ $auth.signup({
 });
 ```
 
-**:bulb: Note:** This method returns a promise.
+**:hourglass: Note:** This method returns a promise.
 
+<hr>
 
 #### `$auth.authenticate(name, [userData])`
 
@@ -411,8 +415,9 @@ $auth.authenticate('google').then(function(response) {
 });
 ```
 
-**:bulb: Note:** This method returns a promise.
+**:hourglass: Note:** This method returns a promise.
 
+<hr>
 
 #### `$auth.logout()`
 
@@ -424,8 +429,9 @@ Deletes a JWT from Local Storage.
 $auth.logout();
 ```
 
-**:bulb: Note:** This method returns a promise.
+**:hourglass: Note:** This method returns a promise.
 
+<hr>
 
 #### `$auth.isAuthenticated()`
 
@@ -454,6 +460,8 @@ $scope.isAuthenticated = function() {
 </ul>
 ```
 
+<hr>
+
 #### `$auth.link(provider, [userData])`
 
 Links an OAuth provider with the signed-in account. It is practically the same as
@@ -465,7 +473,7 @@ via `$authProvider.oauth1()` or `$authProvider.oauth2()` methods.
 - **userData** - Optional object for sending additional data to the server along with
 `code`, `clientId`, `redirectUri` (OAuth 2.0) or `oauth_token`, `oauth_verifier` (OAuth 1.0).
 
-**:bulb: Note:** Linking accounts business logic is handled entirely on the server.
+**:hourglass: Note:** Linking accounts business logic is handled entirely on the server.
 
 #### Usage
 
@@ -475,6 +483,7 @@ $auth.link('github');
 
 **:bulb: Note:** This method returns a promise.
 
+<hr>
 
 #### `$auth.unlink(provider)`
 
@@ -488,8 +497,9 @@ Unlinks an OAuth provider from the signed-in account. It sends a `GET` request t
 $auth.unlink('github');
 ```
 
-**:bulb: Note:** This method returns a promise.
+**:hourglass: Note:** This method returns a promise.
 
+<hr>
 
 #### `$auth.getToken()`
 
@@ -502,6 +512,7 @@ $auth.getToken();
 // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEyMzQ1Njc4OTAsIm5hbWUiOiJKb2huIERvZSJ9.kRkUHzvZMWXjgB4zkO3d6P1imkdp0ogebLuxnTCiYUU
 ```
 
+<hr>
 
 #### `$auth.getPayload()`
 
@@ -514,6 +525,7 @@ $auth.getPayload();
 // { exp: 1414978281, iat: 1413765081, sub: "544457a3eb129ee822a38fdd" }
 ```
 
+<hr>
 
 #### `$auth.setToken()`
 
