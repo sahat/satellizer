@@ -481,7 +481,7 @@ via `$authProvider.oauth1()` or `$authProvider.oauth2()` methods.
 $auth.link('github');
 ```
 
-**:bulb: Note:** This method returns a promise.
+**:hourglass: Note:** This method returns a promise.
 
 <hr>
 
@@ -489,7 +489,7 @@ $auth.link('github');
 
 Unlinks an OAuth provider from the signed-in account. It sends a `GET` request to the **/auth/unlink/<provider>**.
 
-**:bulb Note:** Use `$authProvider.unlinkUrl` configuration property to change the default unlink path above.
+**:hourglass: Note:** Use `$authProvider.unlinkUrl` configuration property to change the default unlink path above.
 
 #### Usage
 
