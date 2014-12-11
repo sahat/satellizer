@@ -319,6 +319,20 @@ authentication process works.
 - Check the box **Allow this application to be used to Sign in with Twitter**
 - Click **Update this Twitter's applications settings**
 
+<hr>
+
+<img src="http://blogs.unity3d.com/wp-content/uploads/2013/12/New-Microsoft-Logo.png" height="70">
+- Visit [Live Connect App Management](http://go.microsoft.com/fwlink/p/?LinkId=193157).
+- Click on **Create application**
+- Enter an *Application name*, then click on **I accept** button
+- Go to **API Settings** tab
+- Enter a *Redirect URL*
+- Click **Save**
+- Go to **App Settings** tab to get *Client ID* and *Client Secret*
+
+**:exclamation: Note:** Unfortunately, Microsoft does not consider `localhost` or `127.0.0.1` to be a valid URL. As a workaround for local development add `127.0.0.1 mylocalwebsite.net` to **/etc/hosts** file and specify *mylocalwebsite.net* as your *Redirect URL* on **API Settings** tab.
+
+
 ## API Reference
 
 - [`$auth.login(user)`](#authloginuser)
