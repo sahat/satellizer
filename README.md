@@ -329,17 +329,17 @@ authentication process works.
 - [`$auth.link(provider, [userData])`](#authlinkprovider-userdata)
 - [`$auth.unlink(provider)`](#authunlinkprovider)
 - [`$auth.getToken()`](#authgettoken)
-- [`$auth.setToken()`](#authsettoken)
 - [`$auth.getPayload()`](#authgetpayload)
- 
+- [`$auth.setToken()`](#authsettoken)
+
 #### `$auth.login(user)`
 
 Sign in via email and password where:
-- **user** - data object with *email* and *password* properties.
+- **user** - Plain JavaScript object.
 
 ##### Returns
-- **response** - the response object from a server. On the server you could
-pass extra info like a `user` object in addition to `token` and retrieve it here.
+
+- **response** - The `$http` response object from the server.
 
 ```js
 $auth.login({
@@ -348,34 +348,48 @@ $auth.login({
 });
 ```
 
+**:bulb: Note:** This method returns a promise.
+
+
 #### `$auth.signup(user)`
 
-Creates a new local account where: 
-- **user** - data object with *email* and *password* properties.
+Creates a local account with email and password. You can use whatever fields you want as long as
+you implement them on the server.
 
-##### Returns
-- **response** - the response object from a server. On the server you could
-pass extra info like a `user` object in addition to `token` and retrieve it here.
+- **user** - Plain JavaScript object.
+
+#### Returns
+
+- **response** - The `$http` response object from the server.
+
+#### Usage
 
 ```js
 $auth.signup({
   email: $scope.email,
   password: $scope.password
+}).then(function(response) {
+  console.log(response.data);
 });
 ```
 
+**:bulb: Note:** This method returns a promise.
+
+
 #### `$auth.authenticate(name, [userData])`
 
-Starts the *OAuth 1.0* or *OAuth 2.0* authentication flow by opening a popup where:
-- **name** - one of the predefined provider names or a custom provider name created
-via `$authProvider.oauth1()` or `$authProvider.oauth2()`.
-- **userData** - optional object if you need to send some additional data to
-the server along with `code`, `clientId` and `redirectUri` in the case of
-*OAuth 2.0* or `oauth_token` and `oauth_verifier` in the case of *OAuth 1.0*.
+Starts the *OAuth 1.0* or the *OAuth 2.0* authentication flow by opening a popup window:
 
-##### Returns
-- **response** - the response object from a server. On the server you could
-pass extra info like a `user` object in addition to `token` and retrieve it here.
+- **provider** - One of the built-in provider names or a custom provider name created
+via `$authProvider.oauth1()` or `$authProvider.oauth2()` methods.
+- **userData** - Optional object for sending additional data to the server along with
+`code`, `clientId`, `redirectUri` (OAuth 2.0) or `oauth_token`, `oauth_verifier` (OAuth 1.0).
+
+#### Returns
+
+- **response** - The `$http` response object from the server.
+
+#### Usage
 
 ```js
 $auth.authenticate('google').then(function(response) {
@@ -383,27 +397,40 @@ $auth.authenticate('google').then(function(response) {
 });
 ```
 
+**:bulb: Note:** This method returns a promise.
+
+
 #### `$auth.logout()`
 
-Logs out current user by deleting the token from *Local Storage*.
+Deletes a JWT from Local Storage.
+
+#### Usage
 
 ```js
 $auth.logout();
 ```
 
+**:bulb: Note:** This method returns a promise.
+
+
 #### `$auth.isAuthenticated()`
 
-Returns `true` or `false` depending on if the user is signed in or not.
+Returns `true` if a JWT is present in Local Storage and it is not expired, otherwise returns `false`.
 
-*Controller:*
+**:exclamation: Note:** This method expects the [exp](http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html#expDef)
+claim to check for the expiration time.
+
+#### Usage
+
 ```js
+// Controller
 $scope.isAuthenticated = function() {
   return $auth.isAuthenticated();
 };
 ```
 
-*Template:*
 ```html
+<!-- Template -->
 <ul class="nav navbar-nav pull-right" ng-if="!isAuthenticated()">
   <li><a href="/#/login">Login</a></li>
   <li><a href="/#/signup">Sign up</a></li>
@@ -415,52 +442,69 @@ $scope.isAuthenticated = function() {
 
 #### `$auth.link(provider, [userData])`
 
-Links an OAuth provider to the account. Same as [$auth.authenticate()](#authauthenticatename-userdata)
-with the exception that it does not redirect to `$authProvider.loginRedirect` path.
-- **provider** - one of the predefined provider names or a custom provider name created
-via `$authProvider.oauth1()` or `$authProvider.oauth2()`.
-- **userData** - optional object if you need to send some additional data to
-the server along with `code`, `clientId` and `redirectUri` in the case of
-*OAuth 2.0* or `oauth_token` and `oauth_verifier` in the case of *OAuth 1.0*.
+Links an OAuth provider with the signed-in account. It is practically the same as
+[$auth.authenticate()](#authauthenticatename-userdata) with the exception that it does not
+redirect to `$authProvider.loginRedirect` route path.
 
-**:bulb: Note:** Account linking business logic is handled entirely on the server.
+- **provider** - One of the built-in provider names or a custom provider name created
+via `$authProvider.oauth1()` or `$authProvider.oauth2()` methods.
+- **userData** - Optional object for sending additional data to the server along with
+`code`, `clientId`, `redirectUri` (OAuth 2.0) or `oauth_token`, `oauth_verifier` (OAuth 1.0).
 
+**:bulb: Note:** Linking accounts business logic is handled entirely on the server.
+
+#### Usage
 
 ```js
 $auth.link('github');
 ```
 
+**:bulb: Note:** This method returns a promise.
+
+
 #### `$auth.unlink(provider)`
 
-Unlinks an OAuth provider from the account by sending a **GET** request to the
-**/auth/unlink/<provider>** URL.
+Unlinks an OAuth provider from the signed-in account. It sends a `GET` request to the **/auth/unlink/<provider>**.
+
+**:bulb Note:** Use `$authProvider.unlinkUrl` configuration property to change the default unlink path above.
+
+#### Usage
 
 ```js
 $auth.unlink('github');
 ```
 
+**:bulb: Note:** This method returns a promise.
+
+
 #### `$auth.getToken()`
 
-Returns a token from Local Storage.
+Returns a JWT from Local Storage.
+
+#### Usage
 
 ```js
 $auth.getToken();
 // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEyMzQ1Njc4OTAsIm5hbWUiOiJKb2huIERvZSJ9.kRkUHzvZMWXjgB4zkO3d6P1imkdp0ogebLuxnTCiYUU
 ```
 
-#### `$auth.setToken()`
-
-Saves a token to Local Storage. Refer to https://github.com/sahat/satellizer/pull/186 for more information.
-
 
 #### `$auth.getPayload()`
 
-Returns a payload object, i.e. decoded middle part of the JSON Web Token.
+Returns a JWT Claims Set, i.e. the middle part of a JSON Web Token.
+
+#### Usage
 
 ```js
 $auth.getPayload();
 // { exp: 1414978281, iat: 1413765081, sub: "544457a3eb129ee822a38fdd" }
 ```
+
+
+#### `$auth.setToken()`
+
+Saves a JWT or an `access_token` to Local Storage.
+
 
 ## TODO
 
