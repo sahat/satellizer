@@ -45,7 +45,7 @@
           requiredUrlParams: ['display', 'scope'],
           display: 'popup',
           type: '2.0',
-          popupOptions: { width: 481, height: 269 }
+          popupOptions: { width: 580, height: 400 }
         },
         linkedin: {
           url: '/auth/linkedin',
