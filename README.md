@@ -36,10 +36,10 @@ commands:
 
 ```bash
 # Bower
-bower install satellizer --save
+bower install satellizer
 
 # NPM
-npm install satellizer --save
+npm install satellizer
 ```
 
 **Note:** Alternatively, you may download the [latest release](https://github.com/sahat/satellizer/releases)
