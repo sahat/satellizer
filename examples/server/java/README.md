@@ -27,24 +27,31 @@ As with all the modules the db example is wired up in the `initialize` function 
 
 To test the example application run the following commands.
 
+* Setup your sanitizer client example.
+
+    mkdir src/main/resources/assets
+    cp -r ../../client/* src/main/resources/assets
+
 * To package the example run.
 
         mvn package
 
 * To setup the h2 database run.
 
-        java -jar target/dropwizard-example-0.8.0-SNAPSHOT.jar db migrate example.yml
+        java -jar target/dropwizard-example-0.7.1.jar db migrate example.yml
 
 * To run the server run.
 
-        java -jar target/dropwizard-example-0.8.0-SNAPSHOT.jar server example.yml
+        java -jar target/dropwizard-example-0.7.1.jar server example.yml
 
-* To hit the Hello World example (hit refresh a few times).
+* To hit this url to access the service example.
 
-	http://localhost:8080/hello-world
+	http://localhost:3000/
 
-* To post data into the application.
+* To post data into the application you have use your login credentials in example (first line should be done once).
 
-	curl -H "Content-Type: application/json" -X POST -d '{"fullName":"Other Person","jobTitle":"Other Title"}' http://localhost:8080/people
-	
-	open http://localhost:8080/people
+    curl -s -H "Content-Type: application/json" -X POST -d '{"email":"test@test.com","password":"testtest"}' http://localhost:3000/auth/login | grep -ioE '"[^"]*"' | tail -1 | grep -ioE '[^"]*[^"]' | awk '{print "Authorization : OAuth " $1}' > a.txt
+
+	curl -H "Content-Type: application/json" -H "$(cat a.txt)" -X PUT -d '{"displayName":"Other Person","email":"other@test.com"}' http://localhost:3000/api/me
+
+    curl -H "$(cat a.txt)" http://localhost:3000/api/me

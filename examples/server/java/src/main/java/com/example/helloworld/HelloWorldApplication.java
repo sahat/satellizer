@@ -55,7 +55,7 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
         bootstrap.addBundle(new AssetsBundle("/assets/controllers", "/controllers", null, "controllers"));
         bootstrap.addBundle(new AssetsBundle("/assets/services", "/services", null, "services"));
         bootstrap.addBundle(new AssetsBundle("/assets/vendor", "/vendor", null, "vendor"));
-        bootstrap.addBundle(new AssetsBundle("/assets/views", "/views", null, "views"));
+        bootstrap.addBundle(new AssetsBundle("/assets/partials", "/partials", null, "partials"));
 	}
 
 	@Override
