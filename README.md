@@ -165,7 +165,7 @@ $authProvider.google({
   optionalUrlParams: ['display'],
   display: 'popup',
   type: '2.0',
-  popupOptions: { width: 452, height: 633 }
+  popupOptions: { width: 580, height: 400 }
 });
 
 // LinkedIn
