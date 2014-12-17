@@ -10,6 +10,7 @@ from flask import Flask, g, send_file, request, redirect, url_for, jsonify
 from flask.ext.sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from requests_oauthlib import OAuth1
+from jwt import DecodeError, ExpiredSignature
 
 # Configuration
 
@@ -89,9 +90,13 @@ def login_required(f):
             response.status_code = 401
             return response
 
-        payload = parse_token(request)
-
-        if datetime.fromtimestamp(payload['exp']) < datetime.now():
+        try:
+            payload = parse_token(request)
+        except DecodeError:
+            response = jsonify(message='Token is invalid')
+            response.status_code = 401
+            return response
+        except ExpiredSignature:
             response = jsonify(message='Token has expired')
             response.status_code = 401
             return response
