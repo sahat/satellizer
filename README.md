@@ -36,10 +36,10 @@ commands:
 
 ```bash
 # Bower
-bower install satellizer --save
+bower install satellizer
 
 # NPM
-npm install satellizer --save
+npm install satellizer
 ```
 
 **Note:** Alternatively, you may download the [latest release](https://github.com/sahat/satellizer/releases)
@@ -165,7 +165,7 @@ $authProvider.google({
   optionalUrlParams: ['display'],
   display: 'popup',
   type: '2.0',
-  popupOptions: { width: 452, height: 633 }
+  popupOptions: { width: 580, height: 400 }
 });
 
 // LinkedIn
