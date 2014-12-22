@@ -338,7 +338,7 @@
             .then(function(response) {
               if (config.loginOnSignup) {
                 shared.setToken(response);
-              } else {
+              } else if (config.signupRedirect) {
                 $location.path(config.signupRedirect);
               }
               return response;
