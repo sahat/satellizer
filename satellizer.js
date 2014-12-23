@@ -211,6 +211,10 @@
             shared.setToken({ access_token: token }, isLinking);
           };
 
+          $auth.removeToken = function() {
+            return shared.removeToken();
+          };
+
           $auth.getPayload = function() {
             return shared.getPayload();
           };
@@ -256,6 +260,11 @@
           if (config.loginRedirect && !isLinking) {
             $location.path(config.loginRedirect);
           }
+        };
+
+        shared.removeToken = function() {
+          var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
+          delete $window.localStorage[tokenName];
         };
 
         shared.isAuthenticated = function() {

@@ -47,6 +47,14 @@ describe('$auth', function() {
 
   });
 
+  describe('removeToken()', function() {
+
+    it('should be defined', function() {
+      expect(this.$auth.removeToken).toBeDefined();
+    });
+
+  });
+
   describe('getPayload()', function() {
 
     it('should be defined', function() {
