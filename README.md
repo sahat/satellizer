@@ -347,6 +347,7 @@ and specify `mylocalwebsite.net` as your *Redirect URL* on **API Settings** tab.
 - [`$auth.getToken()`](#authgettoken)
 - [`$auth.getPayload()`](#authgetpayload)
 - [`$auth.setToken()`](#authsettoken)
+- [`$auth.removeToken()`](#authremovetoken)
 
 #### `$auth.login(user)`
 
@@ -534,6 +535,12 @@ $auth.getPayload();
 
 Saves a JWT or an `access_token` to Local Storage.
 
+<hr>
+
+#### `$auth.removeToken()`
+
+Removes a JWT from Local Storage.
+
 
 ## TODO
 
@@ -570,7 +577,7 @@ and [torii](https://github.com/Vestorly/torii) and [angular-oauth](https://githu
 
 The MIT License (MIT)
 
-Copyright (c) 2014 Sahat Yalkabov
+Copyright (c) 2014-2015 Sahat Yalkabov
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of 
 this software and associated documentation files (the "Software"), to deal in 
