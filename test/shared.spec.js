@@ -92,6 +92,19 @@ describe('satellizer.shared', function() {
 
   });
 
+  describe('removeToken()', function() {
+
+    it('should remove a token', function() {
+      var tokenName = [this.config.tokenPrefix, this.config.tokenName].join('_');
+      localStorage.setItem(tokenName, 'f0af717251950dbd4d73154fdf0a474a5c5119adad999683f5b450c460726aa');
+      expect(this.$window.localStorage[tokenName]).toBeDefined();
+
+      this.shared.removeToken();
+      expect(this.$window.localStorage[tokenName]).toBeUndefined();
+    });
+
+  });
+
   describe('parseUser()', function() {
 
     it('should not redirect if loginRedirect is null', function() {
