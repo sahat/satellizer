@@ -346,7 +346,7 @@ and specify `mylocalwebsite.net` as your *Redirect URL* on **API Settings** tab.
 - [`$auth.unlink(provider)`](#authunlinkprovider)
 - [`$auth.getToken()`](#authgettoken)
 - [`$auth.getPayload()`](#authgetpayload)
-- [`$auth.setToken()`](#authsettoken)
+- [`$auth.setToken(token, [isLinking])`](#authsettokentoken-islinking)
 - [`$auth.removeToken()`](#authremovetoken)
 
 #### `$auth.login(user)`
@@ -531,9 +531,12 @@ $auth.getPayload();
 
 <hr>
 
-#### `$auth.setToken()`
+#### `$auth.setToken(token, [isLinking])`
 
-Saves a JWT or an `access_token` to Local Storage.
+Saves a JWT or an access token to Local Storage. *It is mostly used internally.*
+
+- **token** - An object that takes a JWT (`response.data[config.tokenName]`) or an access token (`response.access_token`).
+- **isLinking** - An optional boolean value that controls whether or not to redirect to `loginRedirect` route after saving a token. Defaults to `false`.
 
 <hr>
 
