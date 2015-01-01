@@ -219,7 +219,7 @@ def github():
 
     # Step 3. (optional) Link accounts.
     if request.headers.get('Authorization'):
-        user = User.query.filter_by(facebook=profile['id']).first()
+        user = User.query.filter_by(github=profile['id']).first()
         if user:
             response = jsonify(message='There is already a GitHub account that belongs to you')
             response.status_code = 409
