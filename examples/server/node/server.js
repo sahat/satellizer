@@ -4,6 +4,8 @@
  * License: MIT
  */
 
+require('newrelic');
+
 var path = require('path');
 var qs = require('querystring');
 
