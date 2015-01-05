@@ -1,9 +1,8 @@
 /**
- * Satellizer
+ * Satellizer 0.8.8
  * (c) 2014 Sahat Yalkabov
  * License: MIT
  */
-
 (function(window, angular, undefined) {
   'use strict';
 
@@ -30,9 +29,10 @@
           scope: ['profile', 'email'],
           scopePrefix: 'openid',
           scopeDelimiter: ' ',
-          requiredUrlParams: ['scope'],
+          requiredUrlParams: ['scope', 'state'],
           optionalUrlParams: ['display'],
           display: 'popup',
+          state: 'YOYO',
           type: '2.0',
           popupOptions: { width: 452, height: 633 }
         },
@@ -368,6 +368,7 @@
           var defaults = {
             url: null,
             name: null,
+            state: null,
             scope: null,
             scopeDelimiter: null,
             clientId: null,
@@ -385,10 +386,14 @@
 
           oauth2.open = function(options, userData) {
             angular.extend(defaults, options);
+
             var url = oauth2.buildUrl();
 
             return popup.open(url, defaults.popupOptions)
               .then(function(oauthData) {
+                if (oauthData.state && oauthData.state !== defaults.state) {
+                  throw new Error('Invalid state parameter');
+                }
                 if (defaults.responseType === 'token') {
                   return oauthData;
                 } else {
