@@ -29,10 +29,9 @@
           scope: ['profile', 'email'],
           scopePrefix: 'openid',
           scopeDelimiter: ' ',
-          requiredUrlParams: ['scope', 'state'],
+          requiredUrlParams: ['scope'],
           optionalUrlParams: ['display'],
           display: 'popup',
-          state: 'YOYO',
           type: '2.0',
           popupOptions: { width: 452, height: 633 }
         },
@@ -359,10 +358,11 @@
     .factory('satellizer.Oauth2', [
       '$q',
       '$http',
+      '$window',
       'satellizer.popup',
       'satellizer.utils',
       'satellizer.config',
-      function($q, $http, popup, utils) {
+      function($q, $http, $window, popup, utils, config) {
         return function() {
 
           var defaults = {
@@ -387,12 +387,16 @@
           oauth2.open = function(options, userData) {
             angular.extend(defaults, options);
 
+            if (defaults.state) {
+              $window.localStorage.state = defaults.state();
+            }
+
             var url = defaults.authorizationEndpoint + '?' + oauth2.buildQueryString();
 
             return popup.open(url, defaults.popupOptions)
               .then(function(oauthData) {
-                if (oauthData.state && oauthData.state !== defaults.state) {
-                  throw new Error('Invalid state parameter');
+                if (oauthData.state && oauthData.state !== $window.localStorage.state) {
+                  return $q.reject({ data: 'Invalid state parameter' });
                 }
                 if (defaults.responseType === 'token') {
                   return oauthData;
@@ -411,7 +415,6 @@
             });
 
             angular.forEach(defaults.responseParams, function(param) {
-              console.log(param);
               data[param] = oauthData[param];
             });
 
@@ -426,6 +429,10 @@
               angular.forEach(defaults[params], function(paramName) {
                 var camelizedName = utils.camelCase(paramName);
                 var paramValue = defaults[camelizedName];
+
+                if (paramName === 'state') {
+                  paramValue = $window.localStorage.state;
+                }
 
                 if (paramName === 'scope' && Array.isArray(paramValue)) {
                   paramValue = paramValue.join(defaults.scopeDelimiter);
