@@ -374,6 +374,7 @@
             redirectUri: null,
             popupOptions: null,
             authorizationEndpoint: null,
+            responseParams: null,
             requiredUrlParams: null,
             optionalUrlParams: null,
             defaultUrlParams: ['response_type', 'client_id', 'redirect_uri'],
@@ -404,7 +405,12 @@
               redirectUri: defaults.redirectUri
             });
 
-            return $http.post(defaults.url, data, {withCredentials: true});
+            angular.forEach(defaults.responseParams, function(param) {
+              console.log(param);
+              data[param] = oauthData[param];
+            });
+
+            return $http.post(defaults.url, data, { withCredentials: true });
           };
 
           oauth2.buildUrl = function() {
