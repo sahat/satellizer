@@ -362,7 +362,7 @@
       'satellizer.popup',
       'satellizer.utils',
       'satellizer.config',
-      function($q, $http, popup, utils, config) {
+      function($q, $http, popup, utils) {
         return function() {
 
           var defaults = {
