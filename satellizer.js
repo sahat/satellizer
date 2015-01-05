@@ -387,7 +387,7 @@
           oauth2.open = function(options, userData) {
             angular.extend(defaults, options);
 
-            var url = oauth2.buildUrl();
+            var url = defaults.authorizationEndpoint + '?' + oauth2.buildQueryString();
 
             return popup.open(url, defaults.popupOptions)
               .then(function(oauthData) {
@@ -416,12 +416,6 @@
             });
 
             return $http.post(defaults.url, data, { withCredentials: true });
-          };
-
-          oauth2.buildUrl = function() {
-            var baseUrl = defaults.authorizationEndpoint;
-            var qs = oauth2.buildQueryString();
-            return [baseUrl, qs].join('?');
           };
 
           oauth2.buildQueryString = function() {
