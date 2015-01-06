@@ -247,6 +247,7 @@
         };
 
         shared.setToken = function(response, isLinking) {
+          isLinking = isLinking || true; // default to true
           var token = response.access_token || response.data[config.tokenName];
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
 
