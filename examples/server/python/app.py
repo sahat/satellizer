@@ -278,7 +278,7 @@ def google():
         token = create_token(user)
         return jsonify(token=token)
     u = User(google=profile['sub'],
-             display_name=profile['displayName'])
+             display_name=profile['name'])
     db.session.add(u)
     db.session.commit()
     token = create_token(u)
