@@ -6,14 +6,18 @@ class AuthController extends \BaseController {
 
     public function unlink($provider)
     {
-        $user = User::find(Request::get('id'));
+        $token = explode(' ', Request::header('Authorization'))[1];
+        $payloadObject = JWT::decode($token, Config::get('secrets.TOKEN_SECRET'));
+        $payload = json_decode(json_encode($payloadObject), true);
+        
+        $user = User::find($payload['sub']);
 
         if (!$user)
         {
             Response::json(array('message' => 'User not found'));
         }
 
-        unset($user->$provider);
+        $user->$provider = '';
         $user->save();
         return Response::json(array('token' => $this->createToken($user)));
     }

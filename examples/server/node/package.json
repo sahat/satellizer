@@ -2,6 +2,7 @@
   "name": "satellizer",
   "main": "server.js",
   "dependencies": {
+    "async": "^0.9.0",
     "bcryptjs": "^0.7.12",
     "body-parser": "^1.6.2",
     "express": "^4.8.2",

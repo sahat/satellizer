@@ -201,7 +201,7 @@ $authProvider.github({
 });
 
 // Windows Live
-$authProvider.live: {
+$authProvider.live({
   url: '/auth/live',
   authorizationEndpoint: 'https://login.live.com/oauth20_authorize.srf',
   redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
@@ -211,7 +211,7 @@ $authProvider.live: {
   display: 'popup',
   type: '2.0',
   popupOptions: { width: 500, height: 560 }
-}
+});
 
 // OAuth 2.0
 $authProvider.oauth2({
