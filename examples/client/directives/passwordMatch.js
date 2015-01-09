@@ -7,7 +7,6 @@ angular.module('MyApp')
       },
       link: function(scope, element, attributes, ngModel) {
         ngModel.$validators.compareTo = function(modelValue) {
-          console.log(modelValue, scope.otherModelValue);
           return modelValue === scope.otherModelValue;
         };
         scope.$watch('otherModelValue', function() {
