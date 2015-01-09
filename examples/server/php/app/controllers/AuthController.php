@@ -44,15 +44,18 @@ class AuthController extends \BaseController {
 
     public function signup()
     {
-        $input['email'] = Input::get('email');
         $input['displayName'] = Input::get('displayName');
+        $input['email'] = Input::get('email');
         $input['password'] = Input::get('password');
+
         $rules = array('displayName' => 'required',
                        'email' => 'required|email|unique:users,email',
-                       'password' => 'required|min:8');
+                       'password' => 'required');
+
         $validator = Validator::make($input, $rules);
+
         if ($validator->fails()) {
-            return Response::json(array('success'=>'false', 'error'=>$validator->messages()), 404);
+            return Response::json(array('message' => $validator->messages()), 400);
         }
         else
         {
