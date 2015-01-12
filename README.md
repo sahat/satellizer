@@ -213,6 +213,17 @@ $authProvider.live({
   popupOptions: { width: 500, height: 560 }
 });
 
+// Yahoo
+$authProvider.yahoo({
+  url: '/auth/yahoo',
+  authorizationEndpoint: 'https://api.login.yahoo.com/oauth2/request_auth',
+  redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
+  scope: [],
+  scopeDelimiter: ',',
+  type: '2.0',
+  popupOptions: { width: 559, height: 519 }
+});
+
 // OAuth 2.0
 $authProvider.oauth2({
   url: null,
