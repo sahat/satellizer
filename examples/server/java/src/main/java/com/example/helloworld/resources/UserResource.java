@@ -1,5 +1,6 @@
 package com.example.helloworld.resources;
 
+import com.nimbusds.jose.JOSEException;
 import io.dropwizard.hibernate.UnitOfWork;
 import io.dropwizard.jersey.errors.ErrorMessage;
 
@@ -35,7 +36,7 @@ public class UserResource {
 
 	@GET
 	@UnitOfWork
-	public Response getUser(@Context HttpServletRequest request) throws ParseException {
+	public Response getUser(@Context HttpServletRequest request) throws ParseException, JOSEException {
 		Optional<User> foundUser = getAuthUser(request);
 		
 		if (!foundUser.isPresent()) {
@@ -54,7 +55,7 @@ public class UserResource {
 
 	@PUT
 	@UnitOfWork
-	public Response updateUser(@Valid User user, @Context HttpServletRequest request) throws ParseException {
+	public Response updateUser(@Valid User user, @Context HttpServletRequest request) throws ParseException, JOSEException {
 		Optional<User> foundUser = getAuthUser(request);
 		
 		if (!foundUser.isPresent()) {
@@ -74,7 +75,7 @@ public class UserResource {
 	/*
 	 * Helper methods
 	 */	
-	private Optional<User> getAuthUser(HttpServletRequest request) throws ParseException {
+	private Optional<User> getAuthUser(HttpServletRequest request) throws ParseException, JOSEException {
 		String subject = AuthUtils.getSubject(request.getHeader(AuthUtils.AUTH_HEADER_KEY));
 		return dao.findById(Long.parseLong(subject));
 	}
