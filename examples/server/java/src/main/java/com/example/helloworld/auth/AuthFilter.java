@@ -12,6 +12,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.nimbusds.jose.JOSEException;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 
@@ -21,7 +22,9 @@ public class AuthFilter implements Filter {
 	
 	private static final String AUTH_ERROR_MSG = "Please make sure your request has an Authorization header",
 								EXPIRE_ERROR_MSG = "Token has expired",
-								JWT_ERROR_MSG = "Unable to parse JWT";
+								JWT_ERROR_MSG = "Unable to parse JWT",
+								JWT_INVALID_MSG = "Invalid JWT token"
+	;
 								
 
 	@Override
@@ -40,7 +43,13 @@ public class AuthFilter implements Filter {
 				claimSet = (JWTClaimsSet) AuthUtils.decodeToken(authHeader);
 			} catch (ParseException e) {
 				httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, JWT_ERROR_MSG);
+				return;
+			} catch (JOSEException e) {
+				httpResponse.sendError(HttpServletResponse.SC_BAD_REQUEST, JWT_INVALID_MSG);
+				return;
 			}
+
+
 			// ensure that the token is not expired
 			if (new DateTime(claimSet.getExpirationTime()).isBefore(DateTime.now())) {
 				httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, EXPIRE_ERROR_MSG);
