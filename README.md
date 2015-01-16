@@ -234,6 +234,7 @@ $authProvider.oauth2({
   redirectUri: null,
   popupOptions: null,
   authorizationEndpoint: null,
+  responseParams: null,
   requiredUrlParams: null,
   optionalUrlParams: null,
   defaultUrlParams: ['response_type', 'client_id', 'redirect_uri'],
