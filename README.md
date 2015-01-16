@@ -6,12 +6,12 @@
 [![Test Coverage](http://img.shields.io/codeclimate/coverage/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
 [![Version](http://img.shields.io/badge/version-0.8.8-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
 
-**:space_invader: Live Demo:** [https://satellizer.herokuapp.com](https://satellizer.herokuapp.com)
+**Live Demo:** [https://satellizer.herokuapp.com](https://satellizer.herokuapp.com)
 
 **Satellizer** is a simple to use, end-to-end, token-based authentication module 
 for [AngularJS](http://angularjs.org) with built-in support for Google, Facebook,
-LinkedIn, Twitter authentication providers, plus Email and Password sign-in 
-method. You are not limited to the sign-in options above, in fact you can add
+LinkedIn, Twitter, Yahoo, Windows Live authentication providers, as well as Email and Password
+sign-in. You are not limited to the sign-in options above, in fact you can add
 any *OAuth 1.0* or *OAuth 2.0* provider by passing provider-specific information
 during the configuration step.
 
@@ -119,7 +119,7 @@ angular.module('MyApp')
 <button ng-click="authenticate('live')">Sign in with Windows Live</button>
 ```
 
-**:exclamation: Note:** For server-side usage please refer to the [examples](https://github.com/sahat/satellizer/tree/master/examples/server)
+**Note:** For server-side usage please refer to the [examples](https://github.com/sahat/satellizer/tree/master/examples/server)
 directory.
 
 ## Configuration
@@ -248,7 +248,7 @@ $authProvider.oauth1({
 });
 ```
 
-**:exclamation: Note:** If for some reason you are unable to send a token to
+**Note:** If for some reason you are unable to send a token to
 your server in the following format - `Authorization: Bearer <token>`, then use
 `$authProvider.authHeader` method to override this behavior, e.g. set its value to
 **x-access-token** or another custom header that your backend may require.
@@ -275,7 +275,7 @@ your server in the following format - `Authorization: Bearer <token>`, then use
   </tbody>
 </table>
 
-**:exclamation: Note:** If you stumble upon a browser version that does not work with *Satellizer* please [open an issue](https://github.com/sahat/satellizer/issues) so I could update the checkmark with the lowest supported version.
+**Note:** If you stumble upon a browser version that does not work with *Satellizer* please [open an issue](https://github.com/sahat/satellizer/issues) so I could update the checkmark with the lowest supported version.
 
 
 ## How It Works
@@ -291,7 +291,7 @@ authentication process works.
 - [Signup](https://github.com/sahat/satellizer/wiki/Signup)
 - [Logout](https://github.com/sahat/satellizer/wiki/Logout)
 
-**:bulb: Note:** To learn more about JSON Web Token (JWT) visit [JWT.io](http://jwt.io/).
+**Note:** To learn more about JSON Web Token (JWT) visit [JWT.io](http://jwt.io/).
 
 ## Obtaining OAuth Keys
 
@@ -305,8 +305,7 @@ authentication process works.
  - **Authorized Javascript origins**: *http://localhost:3000*
  - **Authorized redirect URI**: *http://localhost:3000*
 
-**:exclamation: Note:** Make sure you have turned on **Contacts API** and 
-**Google+ API** in the *APIs* tab.
+**Note:** Make sure you have turned on **Contacts API** and **Google+ API** in the *APIs* tab.
 
 <hr>
 
@@ -377,7 +376,7 @@ $auth.login({
 });
 ```
 
-**:hourglass: Note:** This method returns a promise.
+**Note:** This method returns a promise.
 
 <hr>
 
@@ -403,7 +402,7 @@ $auth.signup({
 });
 ```
 
-**:hourglass: Note:** This method returns a promise.
+**Note:** This method returns a promise.
 
 <hr>
 
@@ -428,7 +427,7 @@ $auth.authenticate('google').then(function(response) {
 });
 ```
 
-**:hourglass: Note:** This method returns a promise.
+**Note:** This method returns a promise.
 
 <hr>
 
@@ -442,7 +441,7 @@ Deletes a JWT from Local Storage.
 $auth.logout();
 ```
 
-**:hourglass: Note:** This method returns a promise.
+**Note:** This method returns a promise.
 
 <hr>
 
@@ -450,7 +449,7 @@ $auth.logout();
 
 Returns `true` if a JWT is present in Local Storage and it is not expired, otherwise returns `false`.
 
-**:exclamation: Note:** This method expects the [exp](http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html#expDef)
+**Note:** This method expects the [exp](http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html#expDef)
 claim to check for the expiration time.
 
 #### Usage
@@ -486,7 +485,7 @@ via `$authProvider.oauth1()` or `$authProvider.oauth2()` methods.
 - **userData** - Optional object for sending additional data to the server along with
 `code`, `clientId`, `redirectUri` (OAuth 2.0) or `oauth_token`, `oauth_verifier` (OAuth 1.0).
 
-**:bulb: Note:** Linking accounts business logic is handled entirely on the server.
+**Note:** Linking accounts business logic is handled entirely on the server.
 
 #### Usage
 
@@ -494,7 +493,7 @@ via `$authProvider.oauth1()` or `$authProvider.oauth2()` methods.
 $auth.link('github');
 ```
 
-**:hourglass: Note:** This method returns a promise.
+**Note:** This method returns a promise.
 
 <hr>
 
@@ -505,7 +504,7 @@ Unlinks an OAuth provider from the signed-in account. It sends a GET request to 
 - **provider** - One of the built-in provider names or a custom provider name created
 via `$authProvider.oauth1()` or `$authProvider.oauth2()` methods.
 
-**:bulb: Note:** You can override the default *unlink path* above via `$authProvider.unlinkUrl` configuration property.
+**Note:** You can override the default *unlink path* above via `$authProvider.unlinkUrl` configuration property.
 
 #### Usage
 
@@ -513,7 +512,7 @@ via `$authProvider.oauth1()` or `$authProvider.oauth2()` methods.
 $auth.unlink('github');
 ```
 
-**:hourglass: Note:** This method returns a promise.
+**Note:** This method returns a promise.
 
 <hr>
 
