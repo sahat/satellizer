@@ -2,6 +2,7 @@ package com.example.helloworld.auth;
 
 import java.text.ParseException;
 
+import com.nimbusds.jose.crypto.MACVerifier;
 import org.joda.time.DateTime;
 
 import com.example.helloworld.core.Token;
@@ -20,12 +21,17 @@ public final class AuthUtils {
 	private static final String TOKEN_SECRET = "aliceinwonderland";
 	public static final String AUTH_HEADER_KEY = "Authorization";
 	
-	public static String getSubject(String authHeader) throws ParseException {
+	public static String getSubject(String authHeader) throws ParseException, JOSEException {
 		return decodeToken(authHeader).getSubject();
 	}
 	
-	public static ReadOnlyJWTClaimsSet decodeToken(String authHeader) throws ParseException {
-		return SignedJWT.parse(getSerializedToken(authHeader)).getJWTClaimsSet();
+	public static ReadOnlyJWTClaimsSet decodeToken(String authHeader) throws ParseException, JOSEException {
+		SignedJWT signedJWT = SignedJWT.parse(getSerializedToken(authHeader));
+		if (signedJWT.verify(new MACVerifier(TOKEN_SECRET))) {
+			return signedJWT.getJWTClaimsSet();
+		} else {
+			throw new JOSEException("Signature verification failed");
+		}
 	}
 	
 	public static Token createToken(String host, long sub) throws JOSEException {
