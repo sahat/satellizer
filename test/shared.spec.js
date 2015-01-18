@@ -75,7 +75,7 @@ describe('satellizer.shared', function() {
     it('test coverage', function() {
       var tokenName = [this.config.tokenPrefix, this.config.tokenName].join('_');
       localStorage.setItem(tokenName, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEyMzQ1Njc4OTAsIm5hbWUiOiJKb2huIERvZSJ9.kRkUHzvZMWXjgB4zkO3d6P1imkdp0ogebLuxnTCiYUU');
-      expect(this.shared.isAuthenticated()).toBe(false);
+      expect(this.shared.isAuthenticated()).toBe(true);
     });
 
 
