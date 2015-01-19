@@ -61,7 +61,8 @@
           url: '/auth/github',
           authorizationEndpoint: 'https://github.com/login/oauth/authorize',
           redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
-          scope: [],
+          optionalUrlParams: ['scope'],
+          scope: ['user:email']
           scopeDelimiter: ' ',
           type: '2.0',
           popupOptions: { width: 1020, height: 618 }
@@ -84,7 +85,7 @@
           url: '/auth/live',
           authorizationEndpoint: 'https://login.live.com/oauth20_authorize.srf',
           redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
-          scope: ['wl.basic'],
+          scope: ['wl.basic', 'wl.emails']
           scopeDelimiter: ' ',
           requiredUrlParams: ['display', 'scope'],
           display: 'popup',
