@@ -409,9 +409,8 @@
                 }
                 if (defaults.responseType === 'token') {
                   return oauthData;
-                } else {
-                  return oauth2.exchangeForToken(oauthData, userData);
                 }
+                return oauth2.exchangeForToken(oauthData, userData);
               });
 
           };
