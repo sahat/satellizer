@@ -23,6 +23,7 @@
       authHeader: 'Authorization',
       providers: {
         google: {
+          name: 'google',
           url: '/auth/google',
           authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
           redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
@@ -36,6 +37,7 @@
           popupOptions: { width: 452, height: 633 }
         },
         facebook: {
+          name: 'facebook',
           url: '/auth/facebook',
           authorizationEndpoint: 'https://www.facebook.com/dialog/oauth',
           redirectUri: window.location.origin + '/' || window.location.protocol + '//' + window.location.host + '/',
@@ -47,6 +49,7 @@
           popupOptions: { width: 580, height: 400 }
         },
         linkedin: {
+          name: 'linkedin',
           url: '/auth/linkedin',
           authorizationEndpoint: 'https://www.linkedin.com/uas/oauth2/authorization',
           redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
@@ -58,6 +61,7 @@
           popupOptions: { width: 527, height: 582 }
         },
         github: {
+          name: 'github',
           url: '/auth/github',
           authorizationEndpoint: 'https://github.com/login/oauth/authorize',
           redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
@@ -68,6 +72,7 @@
           popupOptions: { width: 1020, height: 618 }
         },
         yahoo: {
+          name: 'yahoo',
           url: '/auth/yahoo',
           authorizationEndpoint: 'https://api.login.yahoo.com/oauth2/request_auth',
           redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
@@ -77,11 +82,13 @@
           popupOptions: { width: 559, height: 519 }
         },
         twitter: {
+          name: 'twitter',
           url: '/auth/twitter',
           type: '1.0',
           popupOptions: { width: 495, height: 645 }
         },
         live: {
+          name: 'live',
           url: '/auth/live',
           authorizationEndpoint: 'https://login.live.com/oauth20_authorize.srf',
           redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
@@ -388,8 +395,9 @@
           oauth2.open = function(options, userData) {
             angular.extend(defaults, options);
 
-            if (defaults.state) {
-              $window.localStorage.state = defaults.state();
+            if (angular.isFunction(defaults.state)) {
+              var stateName = defaults.name + '_state';
+              $window.localStorage[stateName] = defaults.state();
             }
 
             var url = defaults.authorizationEndpoint + '?' + oauth2.buildQueryString();
