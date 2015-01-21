@@ -36,7 +36,6 @@ class AuthController extends \BaseController {
 
         if (Hash::check($password, $user->password))
         {
-            // The passwords match...
             unset($user->password);
             return Response::json(array('token' => $this->createToken($user)));
         }
