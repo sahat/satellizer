@@ -428,6 +428,10 @@
               redirectUri: defaults.redirectUri
             });
 
+            if (oauthData.state) {
+              data.state = oauthData.state;
+            }
+
             angular.forEach(defaults.responseParams, function(param) {
               data[param] = oauthData[param];
             });
@@ -447,7 +451,6 @@
                 if (paramName === 'state') {
                   var stateName = defaults.name + '_state';
                   paramValue = $window.localStorage[stateName];
-                  delete $window.localStorage[stateName];
                 }
 
                 if (paramName === 'scope' && Array.isArray(paramValue)) {
