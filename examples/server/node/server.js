@@ -57,6 +57,9 @@ userSchema.methods.comparePassword = function(password, done) {
 var User = mongoose.model('User', userSchema);
 
 mongoose.connect(config.MONGO_URI);
+mongoose.connection.on('error', function() {
+  console.error('MongoDB Connection Error. Please make sure that MongoDB is running.');
+});
 
 var app = express();
 
