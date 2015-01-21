@@ -259,7 +259,7 @@
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
 
           if (!token) {
-            throw new Error('Expecting a token named "' + config.tokenName + '" but instead got: ' + JSON.stringify(response.data));
+            throw new Error('Expecting a token named "' + config.tokenName + '" but instead got: ' + JSON.stringify(response.data + '.'));
           }
 
           $window.localStorage[tokenName] = token;
@@ -316,13 +316,18 @@
 
         oauth.authenticate = function(name, isLinking, userData) {
           var provider = config.providers[name].type === '1.0' ? new Oauth1() : new Oauth2();
+          var deferred = $q.defer();
 
-          return provider.open(config.providers[name], userData || {})
+          provider.open(config.providers[name], userData || {})
             .then(function(response) {
               shared.setToken(response, isLinking);
-              return response;
+              deferred.resolve(response);
+            })
+            .catch(function(error) {
+              deferred.reject(error);
             });
 
+          return deferred.promise;
         };
 
         oauth.unlink = function(provider) {
@@ -395,8 +400,9 @@
           oauth2.open = function(options, userData) {
             angular.extend(defaults, options);
 
+            var stateName = defaults.name + '_state';
+
             if (angular.isFunction(defaults.state)) {
-              var stateName = defaults.name + '_state';
               $window.localStorage[stateName] = defaults.state();
             }
 
@@ -404,11 +410,11 @@
 
             return popup.open(url, defaults.popupOptions)
               .then(function(oauthData) {
-                if (oauthData.state && oauthData.state !== $window.localStorage.state) {
-                  return $q.reject({ data: 'Invalid state parameter' });
-                }
                 if (defaults.responseType === 'token') {
                   return oauthData;
+                }
+                if (oauthData.state && oauthData.state !== $window.localStorage[stateName]) {
+                  return $q.reject('OAuth 2.0 state parameter mismatch.');
                 }
                 return oauth2.exchangeForToken(oauthData, userData);
               });
@@ -439,7 +445,9 @@
                 var paramValue = defaults[camelizedName];
 
                 if (paramName === 'state') {
-                  paramValue = $window.localStorage.state;
+                  var stateName = defaults.name + '_state';
+                  paramValue = $window.localStorage[stateName];
+                  delete $window.localStorage[stateName];
                 }
 
                 if (paramName === 'scope' && Array.isArray(paramValue)) {
