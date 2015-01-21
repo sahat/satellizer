@@ -722,7 +722,6 @@ app.post('/auth/foursquare', function(req, res) {
  | Unlink Provider
  |--------------------------------------------------------------------------
  */
-
 app.get('/auth/unlink/:provider', ensureAuthenticated, function(req, res) {
   var provider = req.params.provider;
   User.findById(req.user, function(err, user) {
