@@ -283,12 +283,12 @@
               var base64Url = token.split('.')[1];
               var base64 = base64Url.replace('-', '+').replace('_', '/');
               var exp = JSON.parse($window.atob(base64)).exp;
-              return Math.round(new Date().getTime() / 1000) <= exp;
-            } else {
-              return true;
+              if (exp) {
+                return Math.round(new Date().getTime() / 1000) <= exp;
+              }
             }
+            return true;
           }
-
           return false;
         };
 
