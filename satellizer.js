@@ -150,6 +150,10 @@
         authHeader: {
           get: function() { return config.authHeader; },
           set: function(value) { config.authHeader = value; }
+        },
+        httpInterceptor: {
+          get: function() { return config.httpInterceptor; },
+          set: function(value) { config.httpInterceptor = value; }
         }
       });
 
@@ -607,24 +611,22 @@
       };
     })
     .config(['$httpProvider', 'satellizer.config', function($httpProvider, config) {
-      if (config.httpInterceptor) {
-        $httpProvider.interceptors.push(['$q', function($q) {
-          var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
-          return {
-            request: function(httpConfig) {
-              var token = localStorage.getItem(tokenName);
-              if (token) {
-                token = config.authHeader === 'Authorization' ? 'Bearer ' + token : token;
-                httpConfig.headers[config.authHeader] = token;
-              }
-              return httpConfig;
-            },
-            responseError: function(response) {
-              return $q.reject(response);
+      $httpProvider.interceptors.push(['$q', function($q) {
+        var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
+        return {
+          request: function(httpConfig) {
+            var token = localStorage.getItem(tokenName);
+            if (token && config.httpInterceptor) {
+              token = config.authHeader === 'Authorization' ? 'Bearer ' + token : token;
+              httpConfig.headers[config.authHeader] = token;
             }
-          };
-        }]);
-      }
+            return httpConfig;
+          },
+          responseError: function(response) {
+            return $q.reject(response);
+          }
+        };
+      }]);
     }]);
 
 })(window, window.angular);
