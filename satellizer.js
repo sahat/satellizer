@@ -103,6 +103,14 @@
     })
     .provider('$auth', ['satellizer.config', function(config) {
       Object.defineProperties(this, {
+        loginOnSignup: {
+          get: function() { return config.loginOnSignup; },
+          set: function(value) { config.loginOnSignup = value; }
+        },
+        httpInterceptor: {
+          get: function() { return config.httpInterceptor; },
+          set: function(value) { config.httpInterceptor = value; }
+        },
         logoutRedirect: {
           get: function() { return config.logoutRedirect; },
           set: function(value) { config.logoutRedirect = value; }
@@ -114,10 +122,6 @@
         signupRedirect: {
           get: function() { return config.signupRedirect; },
           set: function(value) { config.signupRedirect = value; }
-        },
-        loginOnSignup: {
-          get: function() { return config.loginOnSignup; },
-          set: function(value) { config.loginOnSignup = value; }
         },
         loginUrl: {
           get: function() { return config.loginUrl; },
@@ -150,10 +154,6 @@
         authHeader: {
           get: function() { return config.authHeader; },
           set: function(value) { config.authHeader = value; }
-        },
-        httpInterceptor: {
-          get: function() { return config.httpInterceptor; },
-          set: function(value) { config.httpInterceptor = value; }
         }
       });
 

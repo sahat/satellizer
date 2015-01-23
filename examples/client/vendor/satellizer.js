@@ -103,6 +103,14 @@
     })
     .provider('$auth', ['satellizer.config', function(config) {
       Object.defineProperties(this, {
+        loginOnSignup: {
+          get: function() { return config.loginOnSignup; },
+          set: function(value) { config.loginOnSignup = value; }
+        },
+        httpInterceptor: {
+          get: function() { return config.httpInterceptor; },
+          set: function(value) { config.httpInterceptor = value; }
+        },
         logoutRedirect: {
           get: function() { return config.logoutRedirect; },
           set: function(value) { config.logoutRedirect = value; }
@@ -114,10 +122,6 @@
         signupRedirect: {
           get: function() { return config.signupRedirect; },
           set: function(value) { config.signupRedirect = value; }
-        },
-        loginOnSignup: {
-          get: function() { return config.loginOnSignup; },
-          set: function(value) { config.loginOnSignup = value; }
         },
         loginUrl: {
           get: function() { return config.loginUrl; },
@@ -607,24 +611,22 @@
       };
     })
     .config(['$httpProvider', 'satellizer.config', function($httpProvider, config) {
-      if (config.httpInterceptor) {
-        $httpProvider.interceptors.push(['$q', function($q) {
-          var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
-          return {
-            request: function(httpConfig) {
-              var token = localStorage.getItem(tokenName);
-              if (token) {
-                token = config.authHeader === 'Authorization' ? 'Bearer ' + token : token;
-                httpConfig.headers[config.authHeader] = token;
-              }
-              return httpConfig;
-            },
-            responseError: function(response) {
-              return $q.reject(response);
+      $httpProvider.interceptors.push(['$q', function($q) {
+        var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
+        return {
+          request: function(httpConfig) {
+            var token = localStorage.getItem(tokenName);
+            if (token && config.httpInterceptor) {
+              token = config.authHeader === 'Authorization' ? 'Bearer ' + token : token;
+              httpConfig.headers[config.authHeader] = token;
             }
-          };
-        }]);
-      }
+            return httpConfig;
+          },
+          responseError: function(response) {
+            return $q.reject(response);
+          }
+        };
+      }]);
     }]);
 
 })(window, window.angular);
