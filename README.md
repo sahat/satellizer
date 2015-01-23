@@ -543,12 +543,12 @@ $auth.getPayload();
 
 <hr>
 
-#### `$auth.setToken(token, [isLinking])`
+#### `$auth.setToken(token, [redirect])`
 
-Saves a JWT or an access token to Local Storage. *It is mostly used internally.*
+Saves a JWT or an access token to Local Storage. *It uses `shared.setToken` internally.*
 
 - **token** - An object that takes a JWT (`response.data[config.tokenName]`) or an access token (`response.access_token`).
-- **isLinking** - An optional boolean value that controls whether or not to redirect to `loginRedirect` route after saving a token. Defaults to `false`.
+- **redirect** - An optional boolean value that controls whether or not to redirect to `loginRedirect` route after saving a token. Defaults to `false`.
 
 <hr>
 

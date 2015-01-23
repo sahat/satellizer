@@ -218,8 +218,8 @@
             return shared.getToken();
           };
 
-          $auth.setToken = function(token, isLinking) {
-            shared.setToken({ access_token: token }, isLinking);
+          $auth.setToken = function(token, redirect) {
+            shared.setToken({ access_token: token }, redirect);
           };
 
           $auth.removeToken = function() {
