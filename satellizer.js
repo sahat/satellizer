@@ -431,6 +431,7 @@
               clientId: defaults.clientId,
               redirectUri: defaults.redirectUri
             });
+            var method = defaults.exchangeTokenMethod || 'post';
 
             if (oauthData.state) {
               data.state = oauthData.state;
@@ -440,7 +441,7 @@
               data[param] = oauthData[param];
             });
 
-            return $http.post(defaults.url, data, { withCredentials: true });
+            return utils.request(method, defaults.url, data, { withCredentials: true });
           };
 
           oauth2.buildQueryString = function() {
@@ -477,7 +478,7 @@
           return oauth2;
         };
       }])
-    .factory('satellizer.Oauth1', ['$q', '$http', 'satellizer.popup', function($q, $http, popup) {
+    .factory('satellizer.Oauth1', ['$q', '$http', 'satellizer.popup', 'satellizer.utils', function($q, $http, popup, utils) {
       return function() {
 
         var defaults = {
@@ -498,16 +499,8 @@
 
         oauth1.exchangeForToken = function(oauthData, userData) {
           var data = angular.extend({}, userData, oauthData);
-          var qs = oauth1.buildQueryString(data);
-          return $http.get(defaults.url + '?' + qs);
-        };
-
-        oauth1.buildQueryString = function(obj) {
-          var str = [];
-          angular.forEach(obj, function(value, key) {
-            str.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
-          });
-          return str.join('&');
+          var method = defaults.exchangeTokenMethod || 'get';
+          return utils.request(method, defaults.url, data);
         };
 
         return oauth1;
@@ -591,7 +584,7 @@
 
         return popup;
       }])
-    .service('satellizer.utils', function() {
+    .service('satellizer.utils', ['$http', function($http) {
       this.camelCase = function(name) {
         return name.replace(/([\:\-\_]+(.))/g, function(_, separator, letter, offset) {
           return offset ? letter.toUpperCase() : letter;
@@ -609,7 +602,19 @@
         });
         return obj;
       };
-    })
+
+      this.request = function(method, url, data, config) {
+        if (method == 'get') {
+          var qs = [];
+          angular.forEach(data, function(value, key) {
+            qs.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+          });
+          return $http.get(url + '?' + qs.join('&'), config);
+        } else {
+          return $http[method](url, data, config || {});
+        }
+      }
+    }])
     .config(['$httpProvider', 'satellizer.config', function($httpProvider, config) {
       $httpProvider.interceptors.push(['$q', function($q) {
         var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;

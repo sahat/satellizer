@@ -2,9 +2,10 @@ describe('satellizer.oauth1', function() {
 
   beforeEach(module('satellizer'));
 
-  beforeEach(inject(['$httpBackend', '$interval', 'satellizer.Oauth1', function($httpBackend, $interval, Oauth1) {
+  beforeEach(inject(['$httpBackend', '$interval', '$http', 'satellizer.Oauth1', function($httpBackend, $interval, $http, Oauth1) {
     this.$httpBackend = $httpBackend;
     this.$interval = $interval;
+    this.$http = $http;
     this.oauth1 = new Oauth1();
   }]));
 
@@ -38,6 +39,25 @@ describe('satellizer.oauth1', function() {
       };
 
       this.oauth1.exchangeForToken(oauthData);
+    });
+
+    it('should respect exchangeTokenMethod option', function() {
+      this.oauth1.open({
+        url: '/auth/twitter',
+        authorizationEndpoint: 'https://api.twitter.com/oauth/authenticate',
+        exchangeTokenMethod: 'post'
+      });
+
+      spyOn(this.$http, 'post');
+
+      var oauthData = {
+        oauth_token: 'foo',
+        oauth_verifier: 'bar'
+      };
+
+      this.oauth1.exchangeForToken(oauthData);
+
+      expect(this.$http.post).toHaveBeenCalledWith('/auth/twitter', oauthData, {});
     });
 
   });

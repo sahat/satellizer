@@ -2,8 +2,9 @@ describe('satellizer.utils', function() {
 
   beforeEach(module('satellizer'));
 
-  beforeEach(inject(['satellizer.utils', function(utils) {
+  beforeEach(inject(['satellizer.utils', '$http', function(utils, $http) {
     this.utils = utils;
+    this.$http = $http;
   }]));
 
   describe('parseQueryString()', function() {
@@ -17,6 +18,27 @@ describe('satellizer.utils', function() {
       var obj = this.utils.parseQueryString(qs);
 
       expect(obj).toEqual({ hello: 'world', foo: 'bar' });
+    });
+  });
+
+  describe('request()', function() {
+
+    it('should be defined', function() {
+      expect(this.utils.request).toBeDefined();
+    });
+
+    it('should append data for get request', function() {
+      spyOn(this.$http, 'get');
+      this.utils.request('get', '/my/url', {a: 1}, {});
+
+      expect(this.$http.get).toHaveBeenCalledWith('/my/url?a=1', {});
+    });
+
+    it('should proxy to $http for other request method', function() {
+      spyOn(this.$http, 'post');
+      this.utils.request('post', '/my/url', {a: 1}, {});
+
+      expect(this.$http.post).toHaveBeenCalledWith('/my/url', {a: 1}, {});
     });
   });
 
