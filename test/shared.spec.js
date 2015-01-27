@@ -90,13 +90,13 @@ describe('satellizer.shared', function() {
       }).toThrow();
     });
 
-    it('should set the token when rootElement is provided', function() {
-      this.config.rootElement = 'rootElement'
+    it('should set the token when tokenRoot is provided', function() {
+      this.config.tokenRoot = 'tokenRoot'
       var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsb…YzMn0.YATZN37JENCQWeNAoN4M7KxJl7OAIJL4ka_fSM_gYkE'
 
       var response = {
         data: {
-          rootElement: {
+          tokenRoot: {
             access_token: token
           }
         }

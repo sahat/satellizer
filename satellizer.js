@@ -17,7 +17,7 @@
       signupUrl: '/auth/signup',
       loginRoute: '/login',
       signupRoute: '/signup',
-      rootElement: false,
+      tokenRoot: false,
       tokenName: 'token',
       tokenPrefix: 'satellizer',
       unlinkUrl: '/auth/unlink/',
@@ -140,9 +140,9 @@
           get: function() { return config.signupRoute; },
           set: function(value) { config.signupRoute = value; }
         },
-        rootElement: {
-          get: function() { return config.rootElement; },
-          set: function(value) { config.rootElement = value; }
+        tokenRoot: {
+          get: function() { return config.tokenRoot; },
+          set: function(value) { config.tokenRoot = value; }
         },
         tokenName: {
           get: function() { return config.tokenName; },
@@ -265,12 +265,12 @@
 
         shared.setToken = function(response, isLinking) {
           var token = response.access_token ||
-            config.rootElement && response.data[config.rootElement] ?
-            response.data[config.rootElement][config.tokenName] : response.data[config.tokenName];
+            config.tokenRoot && response.data[config.tokenRoot] ?
+            response.data[config.tokenRoot][config.tokenName] : response.data[config.tokenName];
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
 
           if (!token) {
-            tokenName = config.rootElement ? config.rootElement + '.' + config.tokenName : config.tokenName
+            tokenName = config.tokenRoot ? config.tokenRoot + '.' + config.tokenName : config.tokenName
             throw new Error('Expecting a token named "' + tokenName + '" but instead got: ' + JSON.stringify(response.data));
           }
 
