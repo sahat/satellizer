@@ -90,6 +90,22 @@ describe('satellizer.shared', function() {
       }).toThrow();
     });
 
+    it('should set the token when rootElement is provided', function() {
+      this.config.rootElement = 'rootElement'
+      var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsb…YzMn0.YATZN37JENCQWeNAoN4M7KxJl7OAIJL4ka_fSM_gYkE'
+
+      var response = {
+        data: {
+          rootElement: {
+            access_token: token
+          }
+        }
+      };
+      this.shared.setToken(response);
+
+      expect(token).toEqual(this.shared.getToken());
+    });
+
   });
 
   describe('removeToken()', function() {
