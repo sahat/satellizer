@@ -136,6 +136,7 @@ $authProvider.loginUrl = '/auth/login';
 $authProvider.signupUrl = '/auth/signup';
 $authProvider.loginRoute = '/login';
 $authProvider.signupRoute = '/signup';
+$authProvider.rootElement = false; // set the token parent element ( JSON root )
 $authProvider.tokenName = 'token';
 $authProvider.tokenPrefix = 'satellizer'; // Local Storage name prefix
 $authProvider.unlinkUrl = '/auth/unlink/';

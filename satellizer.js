@@ -17,6 +17,7 @@
       signupUrl: '/auth/signup',
       loginRoute: '/login',
       signupRoute: '/signup',
+      rootElement: false,
       tokenName: 'token',
       tokenPrefix: 'satellizer',
       unlinkUrl: '/auth/unlink/',
@@ -139,6 +140,10 @@
           get: function() { return config.signupRoute; },
           set: function(value) { config.signupRoute = value; }
         },
+        rootElement: {
+          get: function() { return config.rootElement; },
+          set: function(value) { config.rootElement = value; }
+        },
         tokenName: {
           get: function() { return config.tokenName; },
           set: function(value) { config.tokenName = value; }
@@ -259,11 +264,14 @@
         };
 
         shared.setToken = function(response, isLinking) {
-          var token = response.access_token || response.data[config.tokenName];
+          var token = response.access_token ||
+            config.rootElement && response.data[config.rootElement] ?
+            response.data[config.rootElement][config.tokenName] : response.data[config.tokenName];
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
 
           if (!token) {
-            throw new Error('Expecting a token named "' + config.tokenName + '" but instead got: ' + JSON.stringify(response.data + '.'));
+            tokenName = config.rootElement ? config.rootElement + '.' + config.tokenName : config.tokenName
+            throw new Error('Expecting a token named "' + tokenName + '" but instead got: ' + JSON.stringify(response.data));
           }
 
           $window.localStorage[tokenName] = token;
