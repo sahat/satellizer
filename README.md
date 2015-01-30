@@ -1,14 +1,14 @@
 ![Project Logo](https://lh6.googleusercontent.com/-YmfKZZLZKL0/U-KVPFSbiOI/AAAAAAAAEZA/maoYT8iJCnA/w1089-h513-no/sshot-1.png)
 
-# [Satellizer](https://github.com/sahat/satellizer/) 
-[![Build Status](http://img.shields.io/travis/sahat/satellizer.svg?style=flat)](https://travis-ci.org/sahat/satellizer) 
-[![Code Climate](http://img.shields.io/codeclimate/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer) 
+# [Satellizer](https://github.com/sahat/satellizer/)
+[![Build Status](http://img.shields.io/travis/sahat/satellizer.svg?style=flat)](https://travis-ci.org/sahat/satellizer)
+[![Code Climate](http://img.shields.io/codeclimate/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
 [![Test Coverage](http://img.shields.io/codeclimate/coverage/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
 [![Version](http://img.shields.io/badge/version-0.9.0-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
 
 **Live Demo:** [https://satellizer.herokuapp.com](https://satellizer.herokuapp.com)
 
-**Satellizer** is a simple to use, end-to-end, token-based authentication module 
+**Satellizer** is a simple to use, end-to-end, token-based authentication module
 for [AngularJS](http://angularjs.org) with built-in support for Google, Facebook,
 LinkedIn, Twitter, Yahoo, Windows Live authentication providers, as well as Email and Password
 sign-in. You are not limited to the sign-in options above, in fact you can add
@@ -31,7 +31,7 @@ during the configuration step.
 
 ## Installation
 
-The easiest way to get **Satellizer** is by running one of the following 
+The easiest way to get **Satellizer** is by running one of the following
 commands:
 
 ```bash
@@ -55,19 +55,19 @@ or use the CDN:
 ```js
 angular.module('MyApp', ['satellizer'])
   .config(function($authProvider) {
-    
+
     $authProvider.facebook({
       clientId: '624059410963642'
     });
-    
+
     $authProvider.google({
       clientId: '631036554609-v5hm2amv4pvico3asfi97f54sc51ji4o.apps.googleusercontent.com'
     });
-    
+
     $authProvider.github({
       clientId: '0ba2600b1dbdb756688b'
     });
-    
+
     $authProvider.linkedin({
       clientId: '77cw786yignpzj'
     });
@@ -91,7 +91,7 @@ angular.module('MyApp', ['satellizer'])
       clientId: 'MTCEJ3NGW2PNNB31WOSBFDSAD4MTHYVAZ1UKIULXZ2CVFC2K',
       authorizationEndpoint: 'https://foursquare.com/oauth2/authenticate',
     });
-    
+
   });
 ```
 
@@ -99,11 +99,11 @@ angular.module('MyApp', ['satellizer'])
 ```js
 angular.module('MyApp')
   .controller('LoginCtrl', function($scope, $auth) {
-    
+
     $scope.authenticate = function(provider) {
       $auth.authenticate(provider);
     };
-    
+
   });
 ```
 
@@ -141,6 +141,7 @@ $authProvider.tokenName = 'token';
 $authProvider.tokenPrefix = 'satellizer'; // Local Storage name prefix
 $authProvider.unlinkUrl = '/auth/unlink/';
 $authProvider.authHeader = 'Authorization';
+$authProvider.withCredentials = true; // Send POST request with credentials
 
 // Facebook
 $authProvider.facebook({
@@ -283,8 +284,8 @@ your server in the following format - `Authorization: Bearer <token>`, then use
 ## How It Works
 
 **Satellizer** relies on *token-based authentication* using
-[JSON Web Tokens](https://auth0.com/blog/2014/01/07/angularjs-authentication-with-cookies-vs-token/) 
-instead of cookies. Each **Wiki** link below goes in-depth into how the 
+[JSON Web Tokens](https://auth0.com/blog/2014/01/07/angularjs-authentication-with-cookies-vs-token/)
+instead of cookies. Each **Wiki** link below goes in-depth into how the
 authentication process works.
 
 - [Login with OAuth 2.0](https://github.com/sahat/satellizer/wiki/Login-with-OAuth-2.0)
@@ -595,9 +596,9 @@ The MIT License (MIT)
 
 Copyright (c) 2015 Sahat Yalkabov
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of 
-this software and associated documentation files (the "Software"), to deal in 
-the Software without restriction, including without limitation the rights to 
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
 use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
 the Software, and to permit persons to whom the Software is furnished to do so,
 subject to the following conditions:
@@ -605,9 +606,9 @@ subject to the following conditions:
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR 
-COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER 
-IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

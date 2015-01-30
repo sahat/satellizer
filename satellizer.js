@@ -22,6 +22,7 @@
       tokenPrefix: 'satellizer',
       unlinkUrl: '/auth/unlink/',
       authHeader: 'Authorization',
+      withCredentials: true,
       providers: {
         google: {
           name: 'google',
@@ -159,6 +160,10 @@
         authHeader: {
           get: function() { return config.authHeader; },
           set: function(value) { config.authHeader = value; }
+        },
+        withCredentials: {
+          get: function() { return config.withCredentials; },
+          set: function(value) { config.withCredentials = value; }
         }
       });
 
@@ -447,7 +452,7 @@
               data[param] = oauthData[param];
             });
 
-            return $http.post(defaults.url, data, { withCredentials: true });
+            return $http.post(defaults.url, data, { withCredentials : config.withCredentials });
           };
 
           oauth2.buildQueryString = function() {
