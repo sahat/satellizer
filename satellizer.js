@@ -420,6 +420,8 @@
 
             if (angular.isFunction(defaults.state)) {
               $window.localStorage[stateName] = defaults.state();
+            } else if(angular.isString(defaults.state)) {
+              $window.localStorage[stateName] = defaults.state;
             }
 
             var url = defaults.authorizationEndpoint + '?' + oauth2.buildQueryString();

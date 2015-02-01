@@ -1,5 +1,5 @@
 /**
- * Satellizer 0.9.0
+ * Satellizer 0.9.1
  * (c) 2015 Sahat Yalkabov
  * License: MIT
  */
@@ -17,6 +17,7 @@
       signupUrl: '/auth/signup',
       loginRoute: '/login',
       signupRoute: '/signup',
+      tokenRoot: false,
       tokenName: 'token',
       tokenPrefix: 'satellizer',
       unlinkUrl: '/auth/unlink/',
@@ -139,6 +140,10 @@
         signupRoute: {
           get: function() { return config.signupRoute; },
           set: function(value) { config.signupRoute = value; }
+        },
+        tokenRoot: {
+          get: function() { return config.tokenRoot; },
+          set: function(value) { config.tokenRoot = value; }
         },
         tokenName: {
           get: function() { return config.tokenName; },
@@ -264,11 +269,13 @@
         };
 
         shared.setToken = function(response, isLinking) {
-          var token = response.access_token || response.data[config.tokenName];
+          var token = response.access_token || config.tokenRoot && response.data[config.tokenRoot] ?
+            response.data[config.tokenRoot][config.tokenName] : response.data[config.tokenName];
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
 
           if (!token) {
-            throw new Error('Expecting a token named "' + config.tokenName + '" but instead got: ' + JSON.stringify(response.data + '.'));
+            tokenName = config.tokenRoot ? config.tokenRoot + '.' + config.tokenName : config.tokenName
+            throw new Error('Expecting a token named "' + tokenName + '" but instead got: ' + JSON.stringify(response.data));
           }
 
           $window.localStorage[tokenName] = token;
@@ -413,6 +420,8 @@
 
             if (angular.isFunction(defaults.state)) {
               $window.localStorage[stateName] = defaults.state();
+            } else if(angular.isString(defaults.state)) {
+              $window.localStorage[stateName] = defaults.state;
             }
 
             var url = defaults.authorizationEndpoint + '?' + oauth2.buildQueryString();
