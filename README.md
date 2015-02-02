@@ -140,6 +140,7 @@ $authProvider.tokenRoot = false; // set the token parent element if the token is
 $authProvider.tokenName = 'token';
 $authProvider.tokenPrefix = 'satellizer'; // Local Storage name prefix
 $authProvider.unlinkUrl = '/auth/unlink/';
+$authProvider.unlinkMethod = 'get';
 $authProvider.authHeader = 'Authorization';
 $authProvider.withCredentials = true; // Send POST request with credentials
 
@@ -508,6 +509,9 @@ Unlinks an OAuth provider from the signed-in account. It sends a GET request to 
 via `$authProvider.oauth1()` or `$authProvider.oauth2()` methods.
 
 **Note:** You can override the default *unlink path* above via `$authProvider.unlinkUrl` configuration property.
+
+**Note:** It uses `GET` method by default, but can be changed via `$authProvider.unlinkMethod = 'post'`. If you are going
+to use `POST`, **provider** obviously should be an object, not a string.
 
 #### Usage
 
