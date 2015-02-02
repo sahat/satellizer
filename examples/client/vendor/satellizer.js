@@ -21,6 +21,7 @@
       tokenName: 'token',
       tokenPrefix: 'satellizer',
       unlinkUrl: '/auth/unlink/',
+      unlinkMethod: 'get',
       authHeader: 'Authorization',
       withCredentials: true,
       providers: {
@@ -164,6 +165,10 @@
         withCredentials: {
           get: function() { return config.withCredentials; },
           set: function(value) { config.withCredentials = value; }
+        },
+        unlinkMethod: {
+          get: function() { return config.unlinkMethod; },
+          set: function(value) { config.unlinkMethod = value; }
         }
       });
 
@@ -347,7 +352,11 @@
         };
 
         oauth.unlink = function(provider) {
-          return $http.get(config.unlinkUrl + provider);
+          if (config.unlinkMethod === 'get') {
+            return $http.get(config.unlinkUrl + provider);
+          } else if (config.unlinkMethod === 'post') {
+            return $http.post(config.unlinkUrl, provider);
+          }
         };
 
         return oauth;
