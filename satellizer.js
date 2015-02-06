@@ -178,31 +178,33 @@
         };
       }, this);
 
-      var oauth = function(params) {
+      this.providerConfigMacro = function(params) {
         config.providers[params.name] = config.providers[params.name] || {};
-        angular.extend(config.providers[params.name], params);
+        return angular.extend(config.providers[params.name], params);
       };
 
-      this.oauth1 = function(params) {
-        oauth(params);
-        config.providers[params.name].type = '1.0';
-      };
+      var strategyProviders = [];
 
-      this.oauth2 = function(params) {
-        oauth(params);
-        config.providers[params.name].type = '2.0';
+      this.addStrategyProvider = function(pP) {
+        strategyProviders.push(pP);
       };
 
       this.$get = [
         '$q',
         'satellizer.shared',
         'satellizer.local',
-        'satellizer.oauth',
-        function($q, shared, local, oauth) {
+        'satellizer.provider_auth',
+        '$injector',
+        function($q, shared, local, providerAuth, $injector) {
           var $auth = {};
 
+          angular.forEach(strategyProviders, function(pP) {
+            var strategy = $injector.invoke(pP);
+            providerAuth.addStrategy(new strategy());
+          });
+
           $auth.authenticate = function(name, userData) {
-            return oauth.authenticate(name, false, userData);
+            return providerAuth.authenticate(name, false, userData);
           };
 
           $auth.login = function(user) {
@@ -222,11 +224,11 @@
           };
 
           $auth.link = function(name, userData) {
-            return oauth.authenticate(name, true, userData);
+            return providerAuth.authenticate(name, true, userData);
           };
 
           $auth.unlink = function(provider) {
-            return oauth.unlink(provider);
+            return providerAuth.unlink(provider);
           };
 
           $auth.getToken = function() {
@@ -325,18 +327,33 @@
 
         return shared;
       }])
-    .factory('satellizer.oauth', [
+    .factory('satellizer.oauth', ['satellizer.provider_auth', function(_) { return _; }])
+    .factory('satellizer.provider_auth', [
       '$q',
       '$http',
       'satellizer.config',
       'satellizer.shared',
-      'satellizer.Oauth1',
-      'satellizer.Oauth2',
-      function($q, $http, config, shared, Oauth1, Oauth2) {
-        var oauth = {};
+      function($q, $http, config, shared) {
+        var providerAuth = {};
+        var strategies = [];
 
-        oauth.authenticate = function(name, isLinking, userData) {
-          var provider = config.providers[name].type === '1.0' ? new Oauth1() : new Oauth2();
+        providerAuth.addStrategy = function(strategy) {
+          strategies.push(strategy);
+        };
+
+        providerAuth.resolveToStrategy = function(providerConfig) {
+          var match = null;
+          angular.forEach(strategies, function(s) {
+            if(!match && s.applies(providerConfig)) {
+              match = s;
+            }
+          });
+          return match;
+        };
+
+        providerAuth.authenticate = function(name, isLinking, userData) {
+
+          var provider = providerAuth.resolveToStrategy(config.providers[name]);
           var deferred = $q.defer();
 
           provider.open(config.providers[name], userData || {})
@@ -351,7 +368,7 @@
           return deferred.promise;
         };
 
-        oauth.unlink = function(provider) {
+        providerAuth.unlink = function(provider) {
           if (config.unlinkMethod === 'get') {
             return $http.get(config.unlinkUrl + provider);
           } else if (config.unlinkMethod === 'post') {
@@ -359,7 +376,7 @@
           }
         };
 
-        return oauth;
+        return providerAuth;
       }])
     .factory('satellizer.local', [
       '$q',
@@ -393,14 +410,16 @@
 
         return local;
       }])
-    .factory('satellizer.Oauth2', [
+  .config(['$authProvider', '$provide', function($authProvider, $provide) {
+    var strategyProvider = [
       '$q',
       '$http',
       '$window',
       'satellizer.popup',
       'satellizer.utils',
       'satellizer.config',
-      function($q, $http, $window, popup, utils, config) {
+      'satellizer.provider_auth',
+      function($q, $http, $window, popup, utils, config, providerAuth) {
         return function() {
 
           var defaults = {
@@ -497,10 +516,22 @@
             }).join('&');
           };
 
+          oauth2.applies = function(providerConfig) {
+            return providerConfig.type === '2.0';
+          };
+
           return oauth2;
         };
-      }])
-    .factory('satellizer.Oauth1', ['$q', '$http', 'satellizer.popup', function($q, $http, popup) {
+      }];
+    $authProvider.addStrategyProvider(strategyProvider);
+    $provide.factory('satellizer.Oauth2', strategyProvider);
+
+    $authProvider.oauth2 = function(params) {
+      this.providerConfigMacro(params).type = '2.0';
+    };
+  }])
+  .config(['$authProvider', '$provide', function($authProvider, $provide) {
+    var strategyProvider = ['$q', '$http', 'satellizer.popup', function($q, $http, popup) {
       return function() {
 
         var defaults = {
@@ -533,9 +564,22 @@
           return str.join('&');
         };
 
+        oauth1.applies = function(providerConfig) {
+          return providerConfig.type === '1.0';
+        };
+
         return oauth1;
       };
-    }])
+    }];
+
+    $authProvider.addStrategyProvider(strategyProvider);
+    $provide.factory('satellizer.Oauth1', strategyProvider);
+
+    $authProvider.oauth1 = function(params) {
+      this.providerConfigMacro(params).type = '1.0';
+    };
+
+  }])
     .factory('satellizer.popup', [
       '$q',
       '$interval',
