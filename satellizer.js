@@ -274,8 +274,9 @@
         };
 
         shared.setToken = function(response, isLinking) {
-          var token = response.access_token || config.tokenRoot && response.data[config.tokenRoot] ?
-            response.data[config.tokenRoot][config.tokenName] : response.data[config.tokenName];
+          var token;
+          token = (response.access_token) || (config.tokenRoot && response.data[config.tokenRoot] ?
+            response.data[config.tokenRoot][config.tokenName] : response.data[config.tokenName]);
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
 
           if (!token) {
