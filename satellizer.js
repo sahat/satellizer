@@ -352,11 +352,12 @@
         };
 
         providerAuth.authenticate = function(name, isLinking, userData) {
+          var strategy = providerAuth.resolveToStrategy(config.providers[name]);
+          if(strategy === null) return $q.reject('Failed to resolve provider config to strategy');
 
-          var provider = providerAuth.resolveToStrategy(config.providers[name]);
           var deferred = $q.defer();
 
-          provider.open(config.providers[name], userData || {})
+          strategy.open(config.providers[name], userData || {})
             .then(function(response) {
               shared.setToken(response, isLinking);
               deferred.resolve(response);

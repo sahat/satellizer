@@ -67,21 +67,32 @@ describe('satellizer.provider_auth', function() {
         },
         anotherMockProvider: {
           type: 'another'
+        },
+        noGoProvider: {
+          type: 'unknown'
         }
       };
 
       this.providerAuth.addStrategy(this.mockStrategy);
+      this.providerAuth.addStrategy(this.anotherMockStrategy);
     });
 
 
     describe('resolveToStrategy()', function() {
       beforeEach(function() {
         spyOn(this.providerAuth, 'resolveToStrategy').andCallThrough();
-        this.strategy = this.providerAuth.resolveToStrategy(this.config.providers['mockProvider']);
       });
 
-      it('should resolve correctly', function() {
-        expect(this.strategy.id).toEqual('mock')
+      it('should resolve correctly, given legit config', function() {
+        expect(
+          this.providerAuth.resolveToStrategy(this.config.providers['mockProvider']).id
+        ).toEqual('mock')
+      });
+
+      it('should resolve correctly, given unknown config', function() {
+        expect(
+          this.providerAuth.resolveToStrategy({type: 'unknown'})
+        ).toBeNull();
       });
     });
 
@@ -101,7 +112,7 @@ describe('satellizer.provider_auth', function() {
         expect(this.mockStrategy.applies).toHaveBeenCalled();
       });
 
-      it('should deliver token', function() {
+      it('should deliver token, given legit config', function() {
         var holder = {
           assertToken: function(response) {
             expect(response.data.tokenRoot.access_token).toBe('foo')
@@ -113,6 +124,20 @@ describe('satellizer.provider_auth', function() {
         this.$timeout.flush();
 
         expect(holder.assertToken).toHaveBeenCalled();
+      });
+
+      it('should fail, given unknown config', function() {
+        var holder = {
+          handleError: function(response) {
+            expect(response).toMatch(/Failed to resolve/);
+          }
+        };
+        spyOn(holder, 'handleError').andCallThrough();
+
+        this.providerAuth.authenticate('noGoProvider', false, {}).catch(holder.handleError);
+        this.$timeout.flush();
+
+        expect(holder.handleError).toHaveBeenCalled();
       });
     });
   });
