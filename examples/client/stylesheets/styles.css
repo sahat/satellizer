@@ -154,6 +154,11 @@ a {
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
 }
 
+.profile-picture {
+  height: 100px;
+  display: block;
+}
+
 .btn {
   font-weight: bold;
   border-radius: 2px;
