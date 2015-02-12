@@ -1,5 +1,5 @@
 /**
- * Satellizer 0.9.1
+ * Satellizer 0.9.2
  * (c) 2015 Sahat Yalkabov
  * License: MIT
  */
@@ -95,7 +95,7 @@
           url: '/auth/live',
           authorizationEndpoint: 'https://login.live.com/oauth20_authorize.srf',
           redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
-          scope: ['wl.basic', 'wl.emails'],
+          scope: ['wl.emails'],
           scopeDelimiter: ' ',
           requiredUrlParams: ['display', 'scope'],
           display: 'popup',
@@ -274,8 +274,9 @@
         };
 
         shared.setToken = function(response, isLinking) {
-          var token = response.access_token || config.tokenRoot && response.data[config.tokenRoot] ?
-            response.data[config.tokenRoot][config.tokenName] : response.data[config.tokenName];
+          var token;
+          token = (response.access_token) || (config.tokenRoot && response.data[config.tokenRoot] ?
+            response.data[config.tokenRoot][config.tokenName] : response.data[config.tokenName]);
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
 
           if (!token) {
@@ -318,7 +319,7 @@
           delete $window.localStorage[tokenName];
 
           if (config.logoutRedirect) {
-            $location.path(config.logoutRedirect);
+            $location.url(config.logoutRedirect);
           }
           return $q.when();
         };

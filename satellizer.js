@@ -319,7 +319,7 @@
           delete $window.localStorage[tokenName];
 
           if (config.logoutRedirect) {
-            $location.path(config.logoutRedirect);
+            $location.url(config.logoutRedirect);
           }
           return $q.when();
         };

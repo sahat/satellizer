@@ -95,6 +95,13 @@ describe('$auth', function() {
       expect(this.$location.path()).toEqual('/');
     });
 
+    it('should clear URL params and hash after being redirected', function() {
+      this.$location.search('test', '123');
+      this.$location.hash('hash');
+      this.$auth.logout();
+      expect(this.$location.url()).toEqual('/');
+    });
+
   });
 
   describe('login()', function() {
