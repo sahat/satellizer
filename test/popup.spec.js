@@ -27,6 +27,7 @@ describe('satellizer.popup', function() {
   });
 
   it('should open a new popup', function() {
+    var options = { popupOptions: { width: 481, height: 269 } };
     var open = this.popup.open();
     this.$interval.flush(300);
     expect(angular.isObject(open)).toBe(true);
