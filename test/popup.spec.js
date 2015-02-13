@@ -14,7 +14,7 @@ describe('satellizer.popup', function() {
   });
 
   it('should add left and top offset options', function() {
-    //var options = { width: 481, height: 269 };
+    var options = { width: 481, height: 269 };
     var preparedOptions = this.popup.prepareOptions(options);
     expect(preparedOptions.left).toBeDefined();
     expect(preparedOptions.top).toBeDefined();
