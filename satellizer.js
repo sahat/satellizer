@@ -572,7 +572,7 @@
                 var cordovaMetadata = cordova.require("cordova/plugin_list").metadata;
                 if(cordovaMetadata.hasOwnProperty("org.apache.cordova.inappbrowser") === true) {
                   popupWindow.addEventListener("loadstart", function(event) {
-                    if((event.url).indexOf(defaults.redirectUri) === 0) {
+                    if((event.url).indexOf(options.redirectUri) === 0) {
                       var qs = null;
 
                       //parsing the redirect link without window.location.search and window.location.hash
