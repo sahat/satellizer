@@ -551,7 +551,8 @@
         popup.popupWindow = popupWindow;
 
         popup.open = function(url, options) {
-          var popupOptions = options.popupOptions;
+          var popupOptions = {};
+          popupOptions = options.popupOptions;
           var optionsString = popup.stringifyOptions(popup.prepareOptions(popupOptions || {}));
 
           popupWindow = window.open(url, '_blank', optionsString);
