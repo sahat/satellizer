@@ -27,9 +27,9 @@ describe('satellizer.popup', function() {
   });
 
   it('should open a new popup', function() {
-    //var options = {};
-    //options.popupOptions = { width: 481, height: 269 } ;
-    var open = this.popup.open();
+    var options = {};
+    options.popupOptions = { width: 481, height: 269 } ;
+    var open = this.popup.open(undefined, options);
     this.$interval.flush(300);
     expect(angular.isObject(open)).toBe(true);
   });
