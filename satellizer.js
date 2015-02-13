@@ -551,9 +551,9 @@
         popup.popupWindow = popupWindow;
 
         popup.open = function(url, defaults) {
-          var popupOptions = {};
-          popupOptions = defaults.popupOptions;
-          var optionsString = popup.stringifyOptions(popup.prepareOptions(popupOptions || {}));
+          var options = {};
+          options = defaults;
+          var optionsString = popup.stringifyOptions(popup.prepareOptions(options.popupOptions || {}));
 
           popupWindow = window.open(url, '_blank', optionsString);
 
@@ -561,10 +561,10 @@
             popupWindow.focus();
           }
 
-          return popup.pollPopup(defaults);
+          return popup.pollPopup(options);
         };
 
-        popup.pollPopup = function(defaults) {
+        popup.pollPopup = function(options) {
           var deferred = $q.defer();
           polling = $interval(function() {
             try {
