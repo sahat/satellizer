@@ -550,9 +550,9 @@
 
         popup.popupWindow = popupWindow;
 
-        popup.open = function(url, options) {
+        popup.open = function(url, defaults) {
           var popupOptions = {};
-          popupOptions = options.popupOptions;
+          popupOptions = defaults.popupOptions;
           var optionsString = popup.stringifyOptions(popup.prepareOptions(popupOptions || {}));
 
           popupWindow = window.open(url, '_blank', optionsString);
@@ -561,10 +561,10 @@
             popupWindow.focus();
           }
 
-          return popup.pollPopup(options);
+          return popup.pollPopup(defaults);
         };
 
-        popup.pollPopup = function(options) {
+        popup.pollPopup = function(defaults) {
           var deferred = $q.defer();
           polling = $interval(function() {
             try {
@@ -572,7 +572,7 @@
                 var cordovaMetadata = cordova.require("cordova/plugin_list").metadata;
                 if(cordovaMetadata.hasOwnProperty("org.apache.cordova.inappbrowser") === true) {
                   popupWindow.addEventListener("loadstart", function(event) {
-                    if((event.url).indexOf(options.redirectUri) === 0) {
+                    if((event.url).indexOf(defaults.redirectUri) === 0) {
                       var qs = null;
 
                       //parsing the redirect link without window.location.search and window.location.hash
