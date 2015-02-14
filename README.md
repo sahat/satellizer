@@ -127,7 +127,7 @@ directory.
 Below is a complete listing of all default configuration options.
 
 ```js
-$authProvider.httpInterceptor = true, // Add Authorization header to HTTP request
+$authProvider.httpInterceptor = true; // Add Authorization header to HTTP request
 $authProvider.loginOnSignup = true;
 $authProvider.loginRedirect = '/';
 $authProvider.logoutRedirect = '/';

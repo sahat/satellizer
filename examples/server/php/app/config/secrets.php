@@ -2,5 +2,6 @@
 
 
 return array(
-    'FACEBOOK_SECRET' => 'App Secret'
+    'FACEBOOK_SECRET' => 'App Secret',
+    'TOKEN_SECRET'    => 'token_secret'
 );
