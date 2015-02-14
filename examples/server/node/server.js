@@ -281,6 +281,7 @@ app.post('/auth/github', function(req, res) {
               return res.status(400).send({ message: 'User not found' });
             }
             user.github = profile.id;
+            user.picture = user.picture || profile.avatar_url;
             user.displayName = user.displayName || profile.name;
             user.save(function() {
               var token = createToken(user);
@@ -297,6 +298,7 @@ app.post('/auth/github', function(req, res) {
           }
           var user = new User();
           user.github = profile.id;
+          user.picture = profile.avatar_url;
           user.displayName = profile.name;
           user.save(function() {
             var token = createToken(user);
