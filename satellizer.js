@@ -280,7 +280,7 @@
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
 
           if (!token) {
-            tokenName = config.tokenRoot ? config.tokenRoot + '.' + config.tokenName : config.tokenName
+            tokenName = config.tokenRoot ? config.tokenRoot + '.' + config.tokenName : config.tokenName;
             throw new Error('Expecting a token named "' + tokenName + '" but instead got: ' + JSON.stringify(response.data));
           }
 
@@ -551,9 +551,7 @@
 
         popup.popupWindow = popupWindow;
 
-        popup.open = function(url, defaults) {
-          var options = {};
-          options = defaults;
+        popup.open = function(url, options) {
           var optionsString = popup.stringifyOptions(popup.prepareOptions(options.popupOptions || {}));
 
           popupWindow = window.open(url, '_blank', optionsString);
@@ -569,41 +567,41 @@
           var deferred = $q.defer();
           polling = $interval(function() {
             try {
-              if(window.cordova) {
-                var cordovaMetadata = cordova.require("cordova/plugin_list").metadata;
-                if(cordovaMetadata.hasOwnProperty("org.apache.cordova.inappbrowser") === true) {
-                  popupWindow.addEventListener("loadstart", function(event) {
-                    if((event.url).indexOf(options.redirectUri) === 0) {
+              if (window.cordova) {
+                var cordovaMetadata = cordova.require('cordova/plugin_list').metadata;
+                if (cordovaMetadata.hasOwnProperty('org.apache.cordova.inappbrowser') === true) {
+                  popupWindow.addEventListener('loadstart', function(event) {
+                    if ((event.url).indexOf(options.redirectUri) === 0) {
                       var qs = null;
 
                       //parsing the redirect link without window.location.search and window.location.hash
                       //the uri may contain '#' or '?' or both in any order
                       var splitted = event.url.split(/\?|#/);
                       qs = utils.parseQueryString(splitted[1].replace(/\/$/, ''));
-                      if(splitted[2]){
+                      if (splitted[2]){
                         angular.extend(qs, utils.parseQueryString(splitted[2].replace(/\/$/, '')));
                       }
 
-                      if(qs.code !== undefined && qs.code !== null) {
+                      if (qs.code) {
                         deferred.resolve(qs);
                       } else {
-                          deferred.reject({ data: "Problem authenticating"});
+                        deferred.reject({ data: 'Problem authenticating'});
                       }
 
                       popupWindow.close();
                       $interval.cancel(polling);
                     }
                   });
-                  popupWindow.addEventListener('exit', function(event) {
-                    deferred.reject({data: "The sign in flow was canceled"});
+                  popupWindow.addEventListener('exit', function() {
+                    deferred.reject({data: 'The sign in flow was canceled'});
                   });
-                  popupWindow.addEventListener('loaderror', function(event) {
-                    deferred.reject({data: "There was a problem authenticating"});
+                  popupWindow.addEventListener('loaderror', function() {
+                    deferred.reject({data: 'There was a problem authenticating'});
                   });
                 } else {
-                    deferred.reject({data: "Could not find InAppBrowser plugin"});
+                  deferred.reject({data: 'Could not find InAppBrowser plugin'});
                 }
-              }else if (popupWindow.document.domain === document.domain && (popupWindow.location.search || popupWindow.location.hash)) {
+              } else if (popupWindow.document.domain === document.domain && (popupWindow.location.search || popupWindow.location.hash)) {
                 var queryParams = popupWindow.location.search.substring(1).replace(/\/$/, '');
                 var hashParams = popupWindow.location.hash.substring(1).replace(/\/$/, '');
                 var hash = utils.parseQueryString(hashParams);
