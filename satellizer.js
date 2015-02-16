@@ -585,7 +585,10 @@
               }
             } catch (error) {}
 
-            if (popupWindow.closed) {
+            if (!popupWindow) {
+              $interval.cancel(polling);
+              deferred.reject({ data: 'Provider Popup Blocked' });
+            } else if (popupWindow.closed) {
               $interval.cancel(polling);
               deferred.reject({ data: 'Authorization Failed' });
             }
