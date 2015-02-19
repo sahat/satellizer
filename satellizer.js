@@ -1,9 +1,8 @@
 /**
- * Satellizer
- * (c) 2014 Sahat Yalkabov
+ * Satellizer 0.9.2
+ * (c) 2015 Sahat Yalkabov
  * License: MIT
  */
-
 (function(window, angular, undefined) {
   'use strict';
 
@@ -18,13 +17,17 @@
       signupUrl: '/auth/signup',
       loginRoute: '/login',
       signupRoute: '/signup',
+      tokenRoot: false,
       tokenName: 'token',
       tokenPrefix: 'satellizer',
       unlinkUrl: '/auth/unlink/',
+      unlinkMethod: 'get',
       authHeader: 'Authorization',
+      withCredentials: true,
       platform: 'browser',
       providers: {
         google: {
+          name: 'google',
           url: '/auth/google',
           authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
           redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
@@ -38,6 +41,7 @@
           popupOptions: { width: 452, height: 633 }
         },
         facebook: {
+          name: 'facebook',
           url: '/auth/facebook',
           authorizationEndpoint: 'https://www.facebook.com/dialog/oauth',
           redirectUri: window.location.origin + '/' || window.location.protocol + '//' + window.location.host + '/',
@@ -46,9 +50,10 @@
           requiredUrlParams: ['display', 'scope'],
           display: 'popup',
           type: '2.0',
-          popupOptions: { width: 481, height: 269 }
+          popupOptions: { width: 580, height: 400 }
         },
         linkedin: {
+          name: 'linkedin',
           url: '/auth/linkedin',
           authorizationEndpoint: 'https://www.linkedin.com/uas/oauth2/authorization',
           redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
@@ -60,15 +65,18 @@
           popupOptions: { width: 527, height: 582 }
         },
         github: {
+          name: 'github',
           url: '/auth/github',
           authorizationEndpoint: 'https://github.com/login/oauth/authorize',
           redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
-          scope: [],
+          optionalUrlParams: ['scope'],
+          scope: ['user:email'],
           scopeDelimiter: ' ',
           type: '2.0',
           popupOptions: { width: 1020, height: 618 }
         },
         yahoo: {
+          name: 'yahoo',
           url: '/auth/yahoo',
           authorizationEndpoint: 'https://api.login.yahoo.com/oauth2/request_auth',
           redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
@@ -78,15 +86,17 @@
           popupOptions: { width: 559, height: 519 }
         },
         twitter: {
+          name: 'twitter',
           url: '/auth/twitter',
           type: '1.0',
           popupOptions: { width: 495, height: 645 }
         },
         live: {
+          name: 'live',
           url: '/auth/live',
           authorizationEndpoint: 'https://login.live.com/oauth20_authorize.srf',
           redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
-          scope: ['wl.basic'],
+          scope: ['wl.emails'],
           scopeDelimiter: ' ',
           requiredUrlParams: ['display', 'scope'],
           display: 'popup',
@@ -97,6 +107,14 @@
     })
     .provider('$auth', ['satellizer.config', function(config) {
       Object.defineProperties(this, {
+        loginOnSignup: {
+          get: function() { return config.loginOnSignup; },
+          set: function(value) { config.loginOnSignup = value; }
+        },
+        httpInterceptor: {
+          get: function() { return config.httpInterceptor; },
+          set: function(value) { config.httpInterceptor = value; }
+        },
         logoutRedirect: {
           get: function() { return config.logoutRedirect; },
           set: function(value) { config.logoutRedirect = value; }
@@ -108,10 +126,6 @@
         signupRedirect: {
           get: function() { return config.signupRedirect; },
           set: function(value) { config.signupRedirect = value; }
-        },
-        loginOnSignup: {
-          get: function() { return config.loginOnSignup; },
-          set: function(value) { config.loginOnSignup = value; }
         },
         loginUrl: {
           get: function() { return config.loginUrl; },
@@ -129,6 +143,10 @@
           get: function() { return config.signupRoute; },
           set: function(value) { config.signupRoute = value; }
         },
+        tokenRoot: {
+          get: function() { return config.tokenRoot; },
+          set: function(value) { config.tokenRoot = value; }
+        },
         tokenName: {
           get: function() { return config.tokenName; },
           set: function(value) { config.tokenName = value; }
@@ -144,6 +162,14 @@
         authHeader: {
           get: function() { return config.authHeader; },
           set: function(value) { config.authHeader = value; }
+        },
+        withCredentials: {
+          get: function() { return config.withCredentials; },
+          set: function(value) { config.withCredentials = value; }
+        },
+        unlinkMethod: {
+          get: function() { return config.unlinkMethod; },
+          set: function(value) { config.unlinkMethod = value; }
         },
         platform: {
           get: function() { return config.platform; },
@@ -212,8 +238,12 @@
             return shared.getToken();
           };
 
-          $auth.setToken = function(token, isLinking) {
-            shared.setToken({ access_token: token }, isLinking);
+          $auth.setToken = function(token, redirect) {
+            shared.setToken({ access_token: token }, redirect);
+          };
+
+          $auth.removeToken = function() {
+            return shared.removeToken();
           };
 
           $auth.getPayload = function() {
@@ -249,11 +279,13 @@
         };
 
         shared.setToken = function(response, isLinking) {
-          var token = response.access_token || response.data[config.tokenName];
+          var token = (response.access_token) || (config.tokenRoot && response.data[config.tokenRoot] ?
+            response.data[config.tokenRoot][config.tokenName] : response.data[config.tokenName]);
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
 
           if (!token) {
-            throw new Error('Expecting a token named "' + config.tokenName + '" but instead got: ' + JSON.stringify(response.data));
+            tokenName = config.tokenRoot ? config.tokenRoot + '.' + config.tokenName : config.tokenName
+            throw new Error('Expecting a token named "' + tokenName + '" but instead got: ' + JSON.stringify(response.data));
           }
 
           $window.localStorage[tokenName] = token;
@@ -261,6 +293,11 @@
           if (config.loginRedirect && !isLinking) {
             $location.path(config.loginRedirect);
           }
+        };
+
+        shared.removeToken = function() {
+          var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
+          delete $window.localStorage[tokenName];
         };
 
         shared.isAuthenticated = function() {
@@ -272,12 +309,12 @@
               var base64Url = token.split('.')[1];
               var base64 = base64Url.replace('-', '+').replace('_', '/');
               var exp = JSON.parse($window.atob(base64)).exp;
-              return Math.round(new Date().getTime() / 1000) <= exp;
-            } else {
-              return true;
+              if (exp) {
+                return Math.round(new Date().getTime() / 1000) <= exp;
+              }
             }
+            return true;
           }
-
           return false;
         };
 
@@ -286,7 +323,7 @@
           delete $window.localStorage[tokenName];
 
           if (config.logoutRedirect) {
-            $location.path(config.logoutRedirect);
+            $location.url(config.logoutRedirect);
           }
           return $q.when();
         };
@@ -305,17 +342,26 @@
 
         oauth.authenticate = function(name, isLinking, userData) {
           var provider = config.providers[name].type === '1.0' ? new Oauth1() : new Oauth2();
+          var deferred = $q.defer();
 
-          return provider.open(config.providers[name], userData || {})
+          provider.open(config.providers[name], userData || {})
             .then(function(response) {
               shared.setToken(response, isLinking);
-              return response;
+              deferred.resolve(response);
+            })
+            .catch(function(error) {
+              deferred.reject(error);
             });
 
+          return deferred.promise;
         };
 
         oauth.unlink = function(provider) {
-          return $http.get(config.unlinkUrl + provider);
+          if (config.unlinkMethod === 'get') {
+            return $http.get(config.unlinkUrl + provider);
+          } else if (config.unlinkMethod === 'post') {
+            return $http.post(config.unlinkUrl, provider);
+          }
         };
 
         return oauth;
@@ -343,7 +389,7 @@
             .then(function(response) {
               if (config.loginOnSignup) {
                 shared.setToken(response);
-              } else {
+              } else if (config.signupRedirect) {
                 $location.path(config.signupRedirect);
               }
               return response;
@@ -355,21 +401,24 @@
     .factory('satellizer.Oauth2', [
       '$q',
       '$http',
+      '$window',
       'satellizer.popup',
       'satellizer.utils',
       'satellizer.config',
-      function($q, $http, popup, utils, config) {
+      function($q, $http, $window, popup, utils, config) {
         return function() {
 
           var defaults = {
             url: null,
             name: null,
+            state: null,
             scope: null,
             scopeDelimiter: null,
             clientId: null,
             redirectUri: null,
             popupOptions: null,
             authorizationEndpoint: null,
+            responseParams: null,
             requiredUrlParams: null,
             optionalUrlParams: null,
             defaultUrlParams: ['response_type', 'client_id', 'redirect_uri'],
@@ -380,15 +429,26 @@
 
           oauth2.open = function(options, userData) {
             angular.extend(defaults, options);
-            var url = oauth2.buildUrl();
+
+            var stateName = defaults.name + '_state';
+
+            if (angular.isFunction(defaults.state)) {
+              $window.localStorage[stateName] = defaults.state();
+            } else if(angular.isString(defaults.state)) {
+              $window.localStorage[stateName] = defaults.state;
+            }
+
+            var url = defaults.authorizationEndpoint + '?' + oauth2.buildQueryString();
 
             return popup.open(url, defaults.popupOptions, defaults.redirectUri)
               .then(function(oauthData) {
                 if (defaults.responseType === 'token') {
                   return oauthData;
-                } else {
-                  return oauth2.exchangeForToken(oauthData, userData);
                 }
+                if (oauthData.state && oauthData.state !== $window.localStorage[stateName]) {
+                  return $q.reject('OAuth 2.0 state parameter mismatch.');
+                }
+                return oauth2.exchangeForToken(oauthData, userData);
               });
 
           };
@@ -400,13 +460,15 @@
               redirectUri: defaults.redirectUri
             });
 
-            return $http.post(defaults.url, data);
-          };
+            if (oauthData.state) {
+              data.state = oauthData.state;
+            }
 
-          oauth2.buildUrl = function() {
-            var baseUrl = defaults.authorizationEndpoint;
-            var qs = oauth2.buildQueryString();
-            return [baseUrl, qs].join('?');
+            angular.forEach(defaults.responseParams, function(param) {
+              data[param] = oauthData[param];
+            });
+
+            return $http.post(defaults.url, data, { withCredentials : config.withCredentials });
           };
 
           oauth2.buildQueryString = function() {
@@ -417,6 +479,11 @@
               angular.forEach(defaults[params], function(paramName) {
                 var camelizedName = utils.camelCase(paramName);
                 var paramValue = defaults[camelizedName];
+
+                if (paramName === 'state') {
+                  var stateName = defaults.name + '_state';
+                  paramValue = $window.localStorage[stateName];
+                }
 
                 if (paramName === 'scope' && Array.isArray(paramValue)) {
                   paramValue = paramValue.join(defaults.scopeDelimiter);
@@ -558,7 +625,10 @@
               }
             } catch (error) {}
 
-            if (popupWindow.closed) {
+            if (!popupWindow) {
+              $interval.cancel(polling);
+              deferred.reject({ data: 'Provider Popup Blocked' });
+            } else if (popupWindow.closed) {
               $interval.cancel(polling);
               deferred.reject({ data: 'Authorization Failed' });
             }
@@ -607,24 +677,22 @@
       };
     })
     .config(['$httpProvider', 'satellizer.config', function($httpProvider, config) {
-      if (config.httpInterceptor) {
-        $httpProvider.interceptors.push(['$q', function($q) {
-          var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
-          return {
-            request: function(httpConfig) {
-              var token = localStorage.getItem(tokenName);
-              if (token) {
-                token = config.authHeader === 'Authorization' ? 'Bearer ' + token : token;
-                httpConfig.headers[config.authHeader] = token;
-              }
-              return httpConfig;
-            },
-            responseError: function(response) {
-              return $q.reject(response);
+      $httpProvider.interceptors.push(['$q', function($q) {
+        var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
+        return {
+          request: function(httpConfig) {
+            var token = localStorage.getItem(tokenName);
+            if (token && config.httpInterceptor) {
+              token = config.authHeader === 'Authorization' ? 'Bearer ' + token : token;
+              httpConfig.headers[config.authHeader] = token;
             }
-          };
-        }]);
-      }
+            return httpConfig;
+          },
+          responseError: function(response) {
+            return $q.reject(response);
+          }
+        };
+      }]);
     }]);
 
 })(window, window.angular);

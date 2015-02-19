@@ -15,6 +15,13 @@
   "unused": "vars",
   "strict": false,
   "globals": {
-    "angular": true
+    "angular": true,
+    "describe": true,
+    "it": true,
+    "expect": true,
+    "before": true,
+    "beforeEach": true,
+    "after": true,
+    "afterEach": true
   }
 }

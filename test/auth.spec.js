@@ -22,6 +22,47 @@ describe('$auth', function() {
 
   });
 
+  describe('isAuthenticated()', function() {
+
+    it('should be defined', function() {
+      expect(this.$auth.isAuthenticated).toBeDefined();
+    });
+
+  });
+
+  describe('getToken()', function() {
+
+    it('should be defined', function() {
+      expect(this.$auth.getToken).toBeDefined();
+    });
+
+  });
+
+  describe('setToken()', function() {
+
+    it('should be defined', function() {
+      var token = 'foo';
+      expect(this.$auth.setToken).toBeDefined();
+    });
+
+  });
+
+  describe('removeToken()', function() {
+
+    it('should be defined', function() {
+      expect(this.$auth.removeToken).toBeDefined();
+    });
+
+  });
+
+  describe('getPayload()', function() {
+
+    it('should be defined', function() {
+      expect(this.$auth.getPayload).toBeDefined();
+    });
+
+  });
+
   describe('link()', function() {
 
     it('should be defined', function() {
@@ -52,6 +93,13 @@ describe('$auth', function() {
       this.$auth.logout();
       expect(this.$window.localStorage['satellizer_token']).toBeUndefined();
       expect(this.$location.path()).toEqual('/');
+    });
+
+    it('should clear URL params and hash after being redirected', function() {
+      this.$location.search('test', '123');
+      this.$location.hash('hash');
+      this.$auth.logout();
+      expect(this.$location.url()).toEqual('/');
     });
 
   });

@@ -198,7 +198,7 @@ public class AuthResource {
 	@UnitOfWork
 	public Response unlink(@PathParam("provider") String provider,
 			@Context HttpServletRequest request) throws ParseException, IllegalArgumentException,
-			IllegalAccessException, NoSuchFieldException, SecurityException {
+			IllegalAccessException, NoSuchFieldException, SecurityException, JOSEException {
 		String subject = AuthUtils.getSubject(request.getHeader(AuthUtils.AUTH_HEADER_KEY));
 		Optional<User> foundUser = dao.findById(Long.parseLong(subject));
 

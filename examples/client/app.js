@@ -25,10 +25,16 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ui.router', 'mgcrea.ngStra
         templateUrl: 'partials/profile.html',
         controller: 'ProfileCtrl',
         resolve: {
-          authenticated: function($location, $auth) {
+          authenticated: function($q, $location, $auth) {
+            var deferred = $q.defer();
+
             if (!$auth.isAuthenticated()) {
-              return $location.path('/login');
+              $location.path('/login');
+            } else {
+              deferred.resolve();
             }
+
+            return deferred.promise;
           }
         }
       });

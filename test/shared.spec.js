@@ -75,7 +75,7 @@ describe('satellizer.shared', function() {
     it('test coverage', function() {
       var tokenName = [this.config.tokenPrefix, this.config.tokenName].join('_');
       localStorage.setItem(tokenName, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEyMzQ1Njc4OTAsIm5hbWUiOiJKb2huIERvZSJ9.kRkUHzvZMWXjgB4zkO3d6P1imkdp0ogebLuxnTCiYUU');
-      expect(this.shared.isAuthenticated()).toBe(false);
+      expect(this.shared.isAuthenticated()).toBe(true);
     });
 
 
@@ -88,6 +88,35 @@ describe('satellizer.shared', function() {
       expect(function() {
         this.shared.setToken(response);
       }).toThrow();
+    });
+
+    it('should set the token when tokenRoot is provided', function() {
+      this.config.tokenRoot = 'tokenRoot'
+      var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsb…YzMn0.YATZN37JENCQWeNAoN4M7KxJl7OAIJL4ka_fSM_gYkE'
+
+      var response = {
+        data: {
+          tokenRoot: {
+            access_token: token
+          }
+        }
+      };
+      this.shared.setToken(response);
+
+      expect(token).toEqual(this.shared.getToken());
+    });
+
+  });
+
+  describe('removeToken()', function() {
+
+    it('should remove a token', function() {
+      var tokenName = [this.config.tokenPrefix, this.config.tokenName].join('_');
+      localStorage.setItem(tokenName, 'f0af717251950dbd4d73154fdf0a474a5c5119adad999683f5b450c460726aa');
+      expect(this.$window.localStorage[tokenName]).toBeDefined();
+
+      this.shared.removeToken();
+      expect(this.$window.localStorage[tokenName]).toBeUndefined();
     });
 
   });

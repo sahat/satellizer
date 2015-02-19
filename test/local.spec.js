@@ -103,6 +103,24 @@ describe('satellizer.local', function() {
       expect(rejected).toBe(true);
     });
 
+    it('should not redirect after signup if signupRedirect is false', function() {
+      this.config.loginOnSignup = false
+      this.config.signupRedirect = false
+      var user = {
+        email: 'foo@bar.com',
+        password: '1234'
+      };
+      spyOn(this.$location, 'path');
+
+      this.$httpBackend.expectPOST(this.config.signupUrl).respond(200);
+
+      this.local.signup(user);
+
+      this.$httpBackend.flush();
+
+      expect(this.$location.path).not.toHaveBeenCalled();
+    });
+
   });
 
 

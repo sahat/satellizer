@@ -69,6 +69,12 @@ describe('satellizer.config', function() {
     expect(this.$authProvider.signupRoute).toEqual('/register');
   });
 
+  it('should set tokenRoot', function() {
+    this.$authProvider.tokenRoot = 'tokenRoot';
+    expect(this.config.tokenRoot).toEqual('tokenRoot');
+    expect(this.$authProvider.tokenRoot).toEqual('tokenRoot');
+  });
+
   it('should set tokenName', function() {
     this.$authProvider.tokenName = 'access_token';
     expect(this.config.tokenName).toEqual('access_token');

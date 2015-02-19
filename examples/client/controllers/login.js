@@ -31,7 +31,7 @@ angular.module('MyApp')
         })
         .catch(function(response) {
           $alert({
-            content: response.data.message,
+            content: response.data ? response.data.message : response,
             animation: 'fadeZoomFadeDown',
             type: 'material',
             duration: 3

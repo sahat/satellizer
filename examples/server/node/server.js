@@ -4,6 +4,8 @@
  * License: MIT
  */
 
+//require('newrelic');
+
 var path = require('path');
 var qs = require('querystring');
 
@@ -23,6 +25,7 @@ var userSchema = new mongoose.Schema({
   email: { type: String, unique: true, lowercase: true },
   password: { type: String, select: false },
   displayName: String,
+  picture: String,
   facebook: String,
   foursquare: String,
   google: String,
@@ -55,6 +58,9 @@ userSchema.methods.comparePassword = function(password, done) {
 var User = mongoose.model('User', userSchema);
 
 mongoose.connect(config.MONGO_URI);
+mongoose.connection.on('error', function() {
+  console.error('MongoDB Connection Error. Please make sure that MongoDB is running.');
+});
 
 var app = express();
 
@@ -211,6 +217,7 @@ app.post('/auth/google', function(req, res) {
               return res.status(400).send({ message: 'User not found' });
             }
             user.google = profile.sub;
+            user.picture = user.picture || profile.picture.replace('sz=50', 'sz=200');
             user.displayName = user.displayName || profile.name;
             user.save(function() {
               var token = createToken(user);
@@ -226,6 +233,7 @@ app.post('/auth/google', function(req, res) {
           }
           var user = new User();
           user.google = profile.sub;
+          user.picture = profile.picture.replace('sz=50', 'sz=200');
           user.displayName = profile.name;
           user.save(function(err) {
             var token = createToken(user);
@@ -273,6 +281,7 @@ app.post('/auth/github', function(req, res) {
               return res.status(400).send({ message: 'User not found' });
             }
             user.github = profile.id;
+            user.picture = user.picture || profile.avatar_url;
             user.displayName = user.displayName || profile.name;
             user.save(function() {
               var token = createToken(user);
@@ -289,6 +298,7 @@ app.post('/auth/github', function(req, res) {
           }
           var user = new User();
           user.github = profile.id;
+          user.picture = profile.avatar_url;
           user.displayName = profile.name;
           user.save(function() {
             var token = createToken(user);
@@ -307,7 +317,7 @@ app.post('/auth/github', function(req, res) {
  */
 app.post('/auth/linkedin', function(req, res) {
   var accessTokenUrl = 'https://www.linkedin.com/uas/oauth2/accessToken';
-  var peopleApiUrl = 'https://api.linkedin.com/v1/people/~:(id,first-name,last-name,email-address)';
+  var peopleApiUrl = 'https://api.linkedin.com/v1/people/~:(id,first-name,last-name,email-address,picture-url)';
   var params = {
     code: req.body.code,
     client_id: req.body.clientId,
@@ -342,6 +352,7 @@ app.post('/auth/linkedin', function(req, res) {
               return res.status(400).send({ message: 'User not found' });
             }
             user.linkedin = profile.id;
+            user.picture = user.picture || profile.pictureUrl;
             user.displayName = user.displayName || profile.firstName + ' ' + profile.lastName;
             user.save(function() {
               var token = createToken(user);
@@ -357,6 +368,7 @@ app.post('/auth/linkedin', function(req, res) {
           }
           var user = new User();
           user.linkedin = profile.id;
+          user.picture = profile.pictureUrl;
           user.displayName = profile.firstName + ' ' + profile.lastName;
           user.save(function() {
             var token = createToken(user);
@@ -395,7 +407,6 @@ app.post('/auth/live', function(req, res) {
     function(accessToken, done) {
       var profileUrl = 'https://apis.live.net/v5.0/me?access_token=' + accessToken.access_token;
       request.get({ url: profileUrl, json: true }, function(err, response, profile) {
-        console.log(profile);
         done(err, profile);
       });
     },
@@ -464,8 +475,6 @@ app.post('/auth/facebook', function(req, res) {
       if (response.statusCode !== 200) {
         return res.status(500).send({ message: profile.error.message });
       }
-
-
       if (req.headers.authorization) {
         User.findOne({ facebook: profile.id }, function(err, existingUser) {
           if (existingUser) {
@@ -478,6 +487,7 @@ app.post('/auth/facebook', function(req, res) {
               return res.status(400).send({ message: 'User not found' });
             }
             user.facebook = profile.id;
+            user.picture = user.picture || 'https://graph.facebook.com/' + profile.id + '/picture?type=large';
             user.displayName = user.displayName || profile.name;
             user.save(function() {
               var token = createToken(user);
@@ -494,6 +504,7 @@ app.post('/auth/facebook', function(req, res) {
           }
           var user = new User();
           user.facebook = profile.id;
+          user.picture = 'https://graph.facebook.com/' + profile.id + '/picture?type=large';
           user.displayName = profile.name;
           user.save(function() {
             var token = createToken(user);
@@ -684,6 +695,7 @@ app.post('/auth/foursquare', function(req, res) {
               return res.status(400).send({ message: 'User not found' });
             }
             user.foursquare = profile.id;
+            user.picture = user.picture || profile.photo.prefix + '300x300' + profile.photo.suffix;
             user.displayName = user.displayName || profile.firstName + ' ' + profile.lastName;
             user.save(function() {
               var token = createToken(user);
@@ -700,6 +712,7 @@ app.post('/auth/foursquare', function(req, res) {
           }
           var user = new User();
           user.foursquare = profile.id;
+          user.picture = profile.photo.prefix + '300x300' + profile.photo.suffix;
           user.displayName = profile.firstName + ' ' + profile.lastName;
           user.save(function() {
             var token = createToken(user);
@@ -717,7 +730,6 @@ app.post('/auth/foursquare', function(req, res) {
  | Unlink Provider
  |--------------------------------------------------------------------------
  */
-
 app.get('/auth/unlink/:provider', ensureAuthenticated, function(req, res) {
   var provider = req.params.provider;
   User.findById(req.user, function(err, user) {

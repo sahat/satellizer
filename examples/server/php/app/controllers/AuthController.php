@@ -6,14 +6,18 @@ class AuthController extends \BaseController {
 
     public function unlink($provider)
     {
-        $user = User::find(Request::get('id'));
+        $token = explode(' ', Request::header('Authorization'))[1];
+        $payloadObject = JWT::decode($token, Config::get('secrets.TOKEN_SECRET'));
+        $payload = json_decode(json_encode($payloadObject), true);
+        
+        $user = User::find($payload['sub']);
 
         if (!$user)
         {
             Response::json(array('message' => 'User not found'));
         }
 
-        unset($user->$provider);
+        $user->$provider = '';
         $user->save();
         return Response::json(array('token' => $this->createToken($user)));
     }
@@ -32,7 +36,6 @@ class AuthController extends \BaseController {
 
         if (Hash::check($password, $user->password))
         {
-            // The passwords match...
             unset($user->password);
             return Response::json(array('token' => $this->createToken($user)));
         }
@@ -44,15 +47,18 @@ class AuthController extends \BaseController {
 
     public function signup()
     {
-        $input['email'] = Input::get('email');
         $input['displayName'] = Input::get('displayName');
+        $input['email'] = Input::get('email');
         $input['password'] = Input::get('password');
+
         $rules = array('displayName' => 'required',
                        'email' => 'required|email|unique:users,email',
-                       'password' => 'required|min:8');
+                       'password' => 'required');
+
         $validator = Validator::make($input, $rules);
+
         if ($validator->fails()) {
-            return Response::json(array('success'=>'false', 'error'=>$validator->messages()), 404);
+            return Response::json(array('message' => $validator->messages()), 400);
         }
         else
         {
