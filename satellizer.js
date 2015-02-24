@@ -581,10 +581,10 @@
                         angular.extend(qs, utils.parseQueryString(splitted[2].replace(/\/$/, '')));
                       }
 
-                      if (qs.code) {
-                        deferred.resolve(qs);
+                      if (qs.error) {
+                        deferred.reject({ error: qs.error });
                       } else {
-                        deferred.reject({ data: 'Problem authenticating'});
+                        deferred.resolve(qs);
                       }
 
                       popupWindow.close();
