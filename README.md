@@ -361,7 +361,7 @@ and specify `mylocalwebsite.net` as your *Redirect URL* on **API Settings** tab.
 - [`$auth.unlink(provider)`](#authunlinkprovider)
 - [`$auth.getToken()`](#authgettoken)
 - [`$auth.getPayload()`](#authgetpayload)
-- [`$auth.setToken(token, [isLinking])`](#authsettokentoken-islinking)
+- [`$auth.setToken(token, [redirect])`](#authsettokentoken-redirect)
 - [`$auth.removeToken()`](#authremovetoken)
 
 #### `$auth.login(user)`
