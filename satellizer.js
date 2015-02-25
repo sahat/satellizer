@@ -273,7 +273,7 @@
           }
         };
 
-        shared.setToken = function(response, isLinking) {
+        shared.setToken = function(response, redirect) {
           var token;
           token = (response.access_token) || (config.tokenRoot && response.data[config.tokenRoot] ?
             response.data[config.tokenRoot][config.tokenName] : response.data[config.tokenName]);
@@ -286,7 +286,7 @@
 
           $window.localStorage[tokenName] = token;
 
-          if (config.loginRedirect && !isLinking) {
+          if (config.loginRedirect && !redirect) {
             $location.path(config.loginRedirect);
           }
         };
@@ -336,13 +336,13 @@
       function($q, $http, config, shared, Oauth1, Oauth2) {
         var oauth = {};
 
-        oauth.authenticate = function(name, isLinking, userData) {
+        oauth.authenticate = function(name, redirect, userData) {
           var provider = config.providers[name].type === '1.0' ? new Oauth1() : new Oauth2();
           var deferred = $q.defer();
 
           provider.open(config.providers[name], userData || {})
             .then(function(response) {
-              shared.setToken(response, isLinking);
+              shared.setToken(response, redirect);
               deferred.resolve(response);
             })
             .catch(function(error) {
