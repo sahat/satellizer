@@ -566,8 +566,7 @@ Removes a JWT from Local Storage.
 ## TODO
 
 - [ ] C# (ASP.NET vNext) implementation
-- [ ] Elixir (Phoenix) implementation
-- [ ] Go (Beego) implementation
+- [ ] Go (Goji) implementation
 - [x] Java (Dropwizard) implementation
 - [x] Node.js (Express) implementation
 - [x] PHP (Laravel) implementation
