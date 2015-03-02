@@ -279,7 +279,7 @@
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
 
           if (!token) {
-            tokenName = config.tokenRoot ? config.tokenRoot + '.' + config.tokenName : config.tokenName
+            tokenName = config.tokenRoot ? config.tokenRoot + '.' + config.tokenName : config.tokenName;
             throw new Error('Expecting a token named "' + tokenName + '" but instead got: ' + JSON.stringify(response.data));
           }
 
