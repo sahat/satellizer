@@ -451,7 +451,7 @@
 
             var url = defaults.authorizationEndpoint + '?' + oauth2.buildQueryString();
 
-            return popup.open(url, defaults.popupOptions)
+            return popup.open(url, defaults)
               .then(function(oauthData) {
                 if (defaults.responseType === 'token') {
                   return oauthData;
@@ -529,7 +529,7 @@
 
         oauth1.open = function(options, userData) {
           angular.extend(defaults, options);
-          return popup.open(defaults.url, defaults.popupOptions)
+          return popup.open(defaults.url, defaults)
             .then(function(response) {
               return oauth1.exchangeForToken(response, userData);
             });
@@ -567,22 +567,56 @@
         popup.popupWindow = popupWindow;
 
         popup.open = function(url, options) {
-          var optionsString = popup.stringifyOptions(popup.prepareOptions(options || {}));
-
+          var popupOptions = options.popupOptions; //define popupOptions
+          var optionsString = popup.stringifyOptions(popup.prepareOptions(popupOptions || {}));
           popupWindow = window.open(url, '_blank', optionsString);
 
           if (popupWindow && popupWindow.focus) {
             popupWindow.focus();
           }
 
-          return popup.pollPopup();
+          return popup.pollPopup(options);
         };
 
-        popup.pollPopup = function() {
+        popup.pollPopup = function(options) {
           var deferred = $q.defer();
           polling = $interval(function() {
             try {
-              if (popupWindow.document.domain === document.domain && (popupWindow.location.search || popupWindow.location.hash)) {
+              if (window.cordova) {
+                var cordovaMetadata = cordova.require('cordova/plugin_list').metadata;
+                if (cordovaMetadata.hasOwnProperty('org.apache.cordova.inappbrowser') === true) {
+                  popupWindow.addEventListener('loadstart', function(event) {
+                    if ((event.url).indexOf(options.redirectUri) === 0) {
+                      var qs = null;
+
+                      //parsing the redirect link without window.location.search and window.location.hash
+                      //the uri may contain '#' or '?' or both in any order
+                      var splitted = event.url.split(/\?|#/);
+                      qs = utils.parseQueryString(splitted[1].replace(/\/$/, ''));
+                      if (splitted[2]){
+                        angular.extend(qs, utils.parseQueryString(splitted[2].replace(/\/$/, '')));
+                      }
+
+                      if (qs.error) {
+                        deferred.reject({ error: qs.error });
+                      } else {
+                        deferred.resolve(qs);
+                      }
+
+                      popupWindow.close();
+                      $interval.cancel(polling);
+                    }
+                  });
+                  popupWindow.addEventListener('exit', function() {
+                    deferred.reject({data: 'The sign in flow was canceled'});
+                  });
+                  popupWindow.addEventListener('loaderror', function() {
+                    deferred.reject({data: 'There was a problem authenticating'});
+                  });
+                } else {
+                  deferred.reject({data: 'Could not find InAppBrowser plugin'});
+                }
+              } else if (popupWindow.document.domain === document.domain && (popupWindow.location.search || popupWindow.location.hash)) {
                 var queryParams = popupWindow.location.search.substring(1).replace(/\/$/, '');
                 var hashParams = popupWindow.location.hash.substring(1).replace(/\/$/, '');
                 var hash = utils.parseQueryString(hashParams);
