@@ -24,6 +24,7 @@
       unlinkMethod: 'get',
       authHeader: 'Authorization',
       withCredentials: true,
+      platform: 'browser',
       providers: {
         google: {
           name: 'google',
@@ -169,6 +170,10 @@
         unlinkMethod: {
           get: function() { return config.unlinkMethod; },
           set: function(value) { config.unlinkMethod = value; }
+        },
+        platform: {
+          get: function() { return config.platform; },
+          set: function(value) { config.platform = value; }
         }
       });
 
@@ -449,7 +454,7 @@
 
             var url = defaults.authorizationEndpoint + '?' + oauth2.buildQueryString();
 
-            return popup.open(url, defaults.popupOptions)
+            return popup.open(url, defaults.popupOptions, defaults.redirectUri)
               .then(function(oauthData) {
                 if (defaults.responseType === 'token') {
                   return oauthData;
@@ -555,8 +560,9 @@
       '$interval',
       '$window',
       '$location',
+      'satellizer.config',
       'satellizer.utils',
-      function($q, $interval, $window, $location, utils) {
+      function($q, $interval, $window, $location, config, utils) {
         var popupWindow = null;
         var polling = null;
 
@@ -564,7 +570,7 @@
 
         popup.popupWindow = popupWindow;
 
-        popup.open = function(url, options) {
+        popup.open = function(url, options, redirectUri) {
           var optionsString = popup.stringifyOptions(popup.prepareOptions(options || {}));
 
           popupWindow = window.open(url, '_blank', optionsString);
@@ -573,7 +579,41 @@
             popupWindow.focus();
           }
 
+	  if (config.platform === 'mobile') {
+            return popup.eventListener(redirectUri);
+          }
+
           return popup.pollPopup();
+        };
+
+        popup.eventListener = function(redirectUri) {
+          var deferred = $q.defer();
+
+          popupWindow.addEventListener('loadstart', function(event) {
+            if (event.url.indexOf(redirectUri) !== 0) {
+              return;
+            }
+
+            var parser = document.createElement('a');
+            parser.href = event.url;
+
+            var queryParams = parser.search.substring(1).replace(/\/$/, '');
+            var hashParams = parser.hash.substring(1).replace(/\/$/, '');
+            var hash = utils.parseQueryString(hashParams);
+            var qs = utils.parseQueryString(queryParams);
+
+            angular.extend(qs, hash);
+
+            if (qs.error) {
+              deferred.reject({ error: qs.error });
+            } else {
+              deferred.resolve({ code: qs.code });
+            }
+
+            popupWindow.close();
+          });
+
+          return deferred.promise;
         };
 
         popup.pollPopup = function() {

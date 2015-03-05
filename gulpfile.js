@@ -24,7 +24,8 @@ gulp.task('minify', function() {
 
 gulp.task('copy', ['minify'], function() {
   return gulp.src('satellizer.js')
-    .pipe(gulp.dest('examples/client/vendor'));
+    .pipe(gulp.dest('examples/client/vendor'))
+    .pipe(gulp.dest('examples/ionic/www/lib/satellizer'));
 });
 
 gulp.task('complexity', function() {
