@@ -280,10 +280,8 @@
           if (accessToken) {
             if (angular.isObject(accessToken) && angular.isObject(accessToken.data)) {
               response = accessToken;
-            } else {
-              if (angular.isString(accessToken)) {
-                token = accessToken;
-              }
+            } else if (angular.isString(accessToken)) {
+              token = accessToken;
             }
           }
 
