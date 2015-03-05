@@ -276,7 +276,7 @@
         shared.setToken = function(response, isLinking) {
           var accessToken = response && response.access_token;
           var token;
-          
+
           if (accessToken) {
             if (angular.isObject(accessToken) && angular.isObject(accessToken.data)) {
               response = accessToken;
@@ -289,7 +289,7 @@
             token = config.tokenRoot && response.data[config.tokenRoot] ?
               response.data[config.tokenRoot][config.tokenName] : response.data[config.tokenName];
           }
-          
+
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
 
           if (!token) {
