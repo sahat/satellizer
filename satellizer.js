@@ -2,6 +2,8 @@
  * Satellizer 0.9.2
  * (c) 2015 Sahat Yalkabov
  * License: MIT
+ *
+ * Customized by Brian DeBoer
  */
 (function(window, angular, undefined) {
   'use strict';
@@ -203,7 +205,8 @@
         'satellizer.shared',
         'satellizer.local',
         'satellizer.oauth',
-        function($q, shared, local, oauth) {
+        'satellizer.config',
+        function($q, shared, local, oauth, config) {
           var $auth = {};
 
           $auth.authenticate = function(name, userData) {
@@ -248,6 +251,14 @@
 
           $auth.getPayload = function() {
             return shared.getPayload();
+          };
+
+          $auth.setLoginRedirect = function(redirect) {
+            config.loginRedirect = redirect;
+          };
+
+          $auth.setLogoutRedirect = function(redirect) {
+            config.logoutRedirect = redirect;
           };
 
           return $auth;
