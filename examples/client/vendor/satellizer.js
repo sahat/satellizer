@@ -448,7 +448,7 @@
 
             if (angular.isFunction(defaults.state)) {
               $window.localStorage[stateName] = defaults.state();
-            } else if(angular.isString(defaults.state)) {
+            } else if (angular.isString(defaults.state)) {
               $window.localStorage[stateName] = defaults.state;
             }
 
@@ -482,7 +482,7 @@
               data[param] = oauthData[param];
             });
 
-            return $http.post(defaults.url, data, { withCredentials : config.withCredentials });
+            return $http.post(defaults.url, data, { withCredentials: config.withCredentials });
           };
 
           oauth2.buildQueryString = function() {
@@ -579,7 +579,7 @@
             popupWindow.focus();
           }
 
-	  if (config.platform === 'mobile') {
+          if (config.platform === 'mobile') {
             return popup.eventListener(redirectUri);
           }
 
@@ -637,7 +637,8 @@
                 popupWindow.close();
                 $interval.cancel(polling);
               }
-            } catch (error) {}
+            } catch (error) {
+            }
 
             if (!popupWindow) {
               $interval.cancel(polling);
@@ -719,6 +720,7 @@
   function InvalidCharacterError(message) {
     this.message = message;
   }
+
   InvalidCharacterError.prototype = new Error;
   InvalidCharacterError.prototype.name = 'InvalidCharacterError';
 
