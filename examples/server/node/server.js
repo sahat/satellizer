@@ -1,10 +1,8 @@
 /**
  * Satellizer Node.js Example
- * (c) 2014 Sahat Yalkabov
+ * (c) 2015 Sahat Yalkabov
  * License: MIT
  */
-
-//require('newrelic');
 
 var path = require('path');
 var qs = require('querystring');
@@ -383,14 +381,11 @@ app.post('/auth/linkedin', function(req, res) {
 /*
  |--------------------------------------------------------------------------
  | Login with Windows Live
- | // Step 1. Exchange authorization code for access token.
- | // Step 2. Retrieve profile information about the current user.
- | // Step 3. [if] Link user accounts.
- | // Step 3. [else] Create a new user or return an existing account.
  |--------------------------------------------------------------------------
  */
 app.post('/auth/live', function(req, res) {
   async.waterfall([
+    // Step 1. Exchange authorization code for access token.
     function(done) {
       var accessTokenUrl = 'https://login.live.com/oauth20_token.srf';
       var params = {
@@ -404,6 +399,7 @@ app.post('/auth/live', function(req, res) {
         done(null, accessToken);
       });
     },
+    // Step 2. Retrieve profile information about the current user.
     function(accessToken, done) {
       var profileUrl = 'https://apis.live.net/v5.0/me?access_token=' + accessToken.access_token;
       request.get({ url: profileUrl, json: true }, function(err, response, profile) {
@@ -411,6 +407,7 @@ app.post('/auth/live', function(req, res) {
       });
     },
     function(profile) {
+      // Step 3a. Link user accounts.
       if (!req.headers.authorization) {
         User.findOne({ live: profile.id }, function(err, user) {
           if (user) {
@@ -425,6 +422,7 @@ app.post('/auth/live', function(req, res) {
           });
         });
       } else {
+        // Step 3b. Create a new user or return an existing account.
         User.findOne({ live: profile.id }, function(err, user) {
           if (user) {
             return res.status(409).send({ message: 'There is already a Windows Live account that belongs to you' });
