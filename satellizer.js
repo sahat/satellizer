@@ -525,14 +525,15 @@
         var defaults = {
           url: null,
           name: null,
-          popupOptions: null
+          popupOptions: null,
+          redirectUri: null
         };
 
         var oauth1 = {};
 
         oauth1.open = function(options, userData) {
           angular.extend(defaults, options);
-          return popup.open(defaults.url, defaults.popupOptions)
+          return popup.open(defaults.url, defaults.popupOptions, defaults.redirectUri)
             .then(function(response) {
               return oauth1.exchangeForToken(response, userData);
             });
@@ -597,6 +598,7 @@
             var parser = document.createElement('a');
             parser.href = event.url;
 
+            if(parser.search || parser.hash){
             var queryParams = parser.search.substring(1).replace(/\/$/, '');
             var hashParams = parser.hash.substring(1).replace(/\/$/, '');
             var hash = utils.parseQueryString(hashParams);
@@ -607,10 +609,17 @@
             if (qs.error) {
               deferred.reject({ error: qs.error });
             } else {
-              deferred.resolve({ code: qs.code });
+                deferred.resolve(qs);
             }
 
             popupWindow.close();
+            }
+          });
+          popupWindow.addEventListener('exit', function() {
+            deferred.reject({data: 'Provider Popup was closed'});
+          });
+          popupWindow.addEventListener('loaderror', function() {
+            deferred.reject({data: 'Authorization Failed'});
           });
 
           return deferred.promise;
