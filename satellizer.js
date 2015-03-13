@@ -210,8 +210,8 @@
             return oauth.authenticate(name, false, userData);
           };
 
-          $auth.login = function(user) {
-            return local.login(user);
+          $auth.login = function(user, redirect) {
+            return local.login(user, redirect);
           };
 
           $auth.signup = function(user) {
@@ -278,7 +278,7 @@
           }
         };
 
-        shared.setToken = function(response, isLinking) {
+        shared.setToken = function(response, redirect) {
           var accessToken = response && response.access_token;
           var token;
 
@@ -304,8 +304,11 @@
 
           $window.localStorage[tokenName] = token;
 
-          if (config.loginRedirect && !isLinking) {
+          if (config.loginRedirect && !redirect) {
             $location.path(config.loginRedirect);
+          }
+          else if (redirect && angular.isString(redirect)) {
+            $location.path(encodeURI(redirect));
           }
         };
 
@@ -390,10 +393,10 @@
       function($q, $http, $location, utils, shared, config) {
         var local = {};
 
-        local.login = function(user) {
+        local.login = function(user, redirect) {
           return $http.post(config.loginUrl, user)
             .then(function(response) {
-              shared.setToken(response);
+              shared.setToken(response, redirect);
               return response;
             });
         };
