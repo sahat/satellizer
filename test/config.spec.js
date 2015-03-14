@@ -11,6 +11,38 @@ describe('satellizer.config', function() {
     this.config = config;
   }]));
 
+  it('should set httpInterceptor', function() {
+    this.$authProvider.httpInterceptor = false;
+    expect(this.config.httpInterceptor).toEqual(false);
+    expect(this.$authProvider.httpInterceptor).toEqual(false);
+
+    this.$authProvider.httpInterceptor = true;
+  });
+
+  it('should set withCredentials', function() {
+    this.$authProvider.withCredentials = false;
+    expect(this.config.withCredentials).toEqual(false);
+    expect(this.$authProvider.withCredentials).toEqual(false);
+
+    this.$authProvider.withCredentials = true;
+  });
+
+  it('should set unlinkMethod', function() {
+    this.$authProvider.unlinkMethod = 'post';
+    expect(this.config.unlinkMethod).toEqual('post');
+    expect(this.$authProvider.unlinkMethod).toEqual('post');
+
+    this.$authProvider.unlinkMethod = 'get';
+  });
+
+  it('should set httpInterceptor', function() {
+    this.$authProvider.httpInterceptor = false;
+    expect(this.config.httpInterceptor).toEqual(false);
+    expect(this.$authProvider.httpInterceptor).toEqual(false);
+
+    this.$authProvider.httpInterceptor = true;
+  });
+
   it('should set logoutRedirect', function() {
     this.$authProvider.logoutRedirect = '/signout';
     expect(this.config.logoutRedirect).toEqual('/signout');
