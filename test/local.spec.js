@@ -41,6 +41,30 @@ describe('satellizer.local', function() {
 //      });
 //    });
 
+    it('should redirect to the redirect parameter on successful login', function() {
+      var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7Il9pZCI6IjUzZjYxZTEwNmZjNjFhNmMxM2I1Mjc4ZCIsImVtYWlsIjoic2FoYXQ_QG1lLmNvbSIsIl9fdiI6MH0sImlhdCI6MTQwODgyMTA5MTY3NiwiZXhwIjoxNDA5NDI1ODkxNjc2fQ.0l-ql-ZVjHiILMcMegNb3bNqapt3TZwjHy_ieduioiQ';
+      var user = {
+        email: 'sahat?@me.com',
+        password: '1234'
+      };
+      var redirect = '/new/path';
+      this.config.tokenRoot = 'tokenRoot';
+      this.config.loginUrl = '/auth/login';
+      var response = {
+        tokenRoot: {
+          access_token: token
+        }
+      };
+
+      this.$httpBackend.expectPOST('/auth/login').respond(response);
+
+      this.local.login(user, redirect);
+
+      this.$httpBackend.flush();
+
+      expect(this.$location.path()).toBe(redirect);
+    });
+
     it('should fail login with incorrect credentials', function() {
       var result = null;
       var user = {

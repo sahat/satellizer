@@ -210,8 +210,8 @@
             return oauth.authenticate(name, false, userData);
           };
 
-          $auth.login = function(user) {
-            return local.login(user);
+          $auth.login = function(user, redirect) {
+            return local.login(user, redirect);
           };
 
           $auth.signup = function(user) {
@@ -278,7 +278,7 @@
           }
         };
 
-        shared.setToken = function(response, isLinking) {
+        shared.setToken = function(response, redirect) {
           var accessToken = response && response.access_token;
           var token;
 
@@ -304,8 +304,10 @@
 
           $window.localStorage[tokenName] = token;
 
-          if (config.loginRedirect && !isLinking) {
+          if (config.loginRedirect && !redirect) {
             $location.path(config.loginRedirect);
+          }  else if (redirect && angular.isString(redirect)) {
+              $location.path(encodeURI(redirect));
           }
         };
 
@@ -390,10 +392,10 @@
       function($q, $http, $location, utils, shared, config) {
         var local = {};
 
-        local.login = function(user) {
+        local.login = function(user, redirect) {
           return $http.post(config.loginUrl, user)
             .then(function(response) {
-              shared.setToken(response);
+              shared.setToken(response, redirect);
               return response;
             });
         };
@@ -525,14 +527,15 @@
         var defaults = {
           url: null,
           name: null,
-          popupOptions: null
+          popupOptions: null,
+          redirectUri: null
         };
 
         var oauth1 = {};
 
         oauth1.open = function(options, userData) {
           angular.extend(defaults, options);
-          return popup.open(defaults.url, defaults.popupOptions)
+          return popup.open(defaults.url, defaults.popupOptions, defaults.redirectUri)
             .then(function(response) {
               return oauth1.exchangeForToken(response, userData);
             });
@@ -597,20 +600,30 @@
             var parser = document.createElement('a');
             parser.href = event.url;
 
-            var queryParams = parser.search.substring(1).replace(/\/$/, '');
-            var hashParams = parser.hash.substring(1).replace(/\/$/, '');
-            var hash = utils.parseQueryString(hashParams);
-            var qs = utils.parseQueryString(queryParams);
+            if (parser.search || parser.hash) {
+              var queryParams = parser.search.substring(1).replace(/\/$/, '');
+              var hashParams = parser.hash.substring(1).replace(/\/$/, '');
+              var hash = utils.parseQueryString(hashParams);
+              var qs = utils.parseQueryString(queryParams);
 
-            angular.extend(qs, hash);
+              angular.extend(qs, hash);
 
-            if (qs.error) {
-              deferred.reject({ error: qs.error });
-            } else {
-              deferred.resolve({ code: qs.code });
+              if (qs.error) {
+                deferred.reject({ error: qs.error });
+              } else {
+                deferred.resolve(qs);
+              }
+
+              popupWindow.close();
             }
+          });
 
-            popupWindow.close();
+          popupWindow.addEventListener('exit', function() {
+            deferred.reject({ data: 'Provider Popup was closed' });
+          });
+
+          popupWindow.addEventListener('loaderror', function() {
+            deferred.reject({ data: 'Authorization Failed' });
           });
 
           return deferred.promise;

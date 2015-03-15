@@ -137,6 +137,29 @@ describe('$auth', function() {
 //    expect(angular.isFunction($auth.login)).toBe(true);
     });
 
+    it('should be able to call loign with a redirect parameter', function() {
+      var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7Il9pZCI6IjUzZjYxZTEwNmZjNjFhNmMxM2I1Mjc4ZCIsImVtYWlsIjoic2FoYXQ_QG1lLmNvbSIsIl9fdiI6MH0sImlhdCI6MTQwODgyMTA5MTY3NiwiZXhwIjoxNDA5NDI1ODkxNjc2fQ.0l-ql-ZVjHiILMcMegNb3bNqapt3TZwjHy_ieduioiQ';
+      var user = {
+        email: 'sahat?@me.com',
+        password: '1234'
+      };
+      var redirect = '/new/path';
+      this.config.tokenRoot = 'tokenRoot';
+      this.config.loginUrl = '/auth/login';
+      var response = {
+        tokenRoot: {
+          token: token
+        }
+      };
+
+      this.$httpBackend.expectPOST('/auth/login').respond(response);
+
+      this.$auth.login(user, redirect);
+
+      this.$httpBackend.flush();
+
+      expect(this.$location.path()).toBe(redirect);
+    });
   });
 
   describe('signup()', function() {
