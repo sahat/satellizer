@@ -306,9 +306,8 @@
 
           if (config.loginRedirect && !redirect) {
             $location.path(config.loginRedirect);
-          }
-          else if (redirect && angular.isString(redirect)) {
-            $location.path(encodeURI(redirect));
+          }  else if (redirect && angular.isString(redirect)) {
+              $location.path(encodeURI(redirect));
           }
         };
 
@@ -601,28 +600,30 @@
             var parser = document.createElement('a');
             parser.href = event.url;
 
-            if(parser.search || parser.hash){
-            var queryParams = parser.search.substring(1).replace(/\/$/, '');
-            var hashParams = parser.hash.substring(1).replace(/\/$/, '');
-            var hash = utils.parseQueryString(hashParams);
-            var qs = utils.parseQueryString(queryParams);
+            if (parser.search || parser.hash) {
+              var queryParams = parser.search.substring(1).replace(/\/$/, '');
+              var hashParams = parser.hash.substring(1).replace(/\/$/, '');
+              var hash = utils.parseQueryString(hashParams);
+              var qs = utils.parseQueryString(queryParams);
 
-            angular.extend(qs, hash);
+              angular.extend(qs, hash);
 
-            if (qs.error) {
-              deferred.reject({ error: qs.error });
-            } else {
+              if (qs.error) {
+                deferred.reject({ error: qs.error });
+              } else {
                 deferred.resolve(qs);
-            }
+              }
 
-            popupWindow.close();
+              popupWindow.close();
             }
           });
+
           popupWindow.addEventListener('exit', function() {
-            deferred.reject({data: 'Provider Popup was closed'});
+            deferred.reject({ data: 'Provider Popup was closed' });
           });
+
           popupWindow.addEventListener('loaderror', function() {
-            deferred.reject({data: 'Authorization Failed'});
+            deferred.reject({ data: 'Authorization Failed' });
           });
 
           return deferred.promise;
