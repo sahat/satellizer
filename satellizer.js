@@ -218,8 +218,8 @@
             return local.signup(user);
           };
 
-          $auth.logout = function() {
-            return shared.logout();
+          $auth.logout = function(redirect) {
+            return shared.logout(redirect);
           };
 
           $auth.isAuthenticated = function() {
@@ -335,13 +335,17 @@
           return false;
         };
 
-        shared.logout = function() {
+        shared.logout = function(redirect) {
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
           delete $window.localStorage[tokenName];
 
-          if (config.logoutRedirect) {
+          if (config.logoutRedirect && !redirect) {
             $location.url(config.logoutRedirect);
           }
+          else if (angular.isString(redirect)) {
+            $location.url(redirect);
+          }
+
           return $q.when();
         };
 
