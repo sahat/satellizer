@@ -1,5 +1,5 @@
 /**
- * Satellizer 0.9.3
+ * Satellizer 0.9.2
  * (c) 2015 Sahat Yalkabov
  * License: MIT
  */
@@ -356,13 +356,13 @@
       function($q, $http, config, shared, Oauth1, Oauth2) {
         var oauth = {};
 
-        oauth.authenticate = function(name, isLinking, userData) {
+        oauth.authenticate = function(name, redirect, userData) {
           var provider = config.providers[name].type === '1.0' ? new Oauth1() : new Oauth2();
           var deferred = $q.defer();
 
           provider.open(config.providers[name], userData || {})
             .then(function(response) {
-              shared.setToken(response, isLinking);
+              shared.setToken(response, redirect);
               deferred.resolve(response);
             })
             .catch(function(error) {
