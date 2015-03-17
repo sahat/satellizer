@@ -102,6 +102,12 @@ describe('$auth', function() {
       expect(this.$location.url()).toEqual('/');
     });
 
+    it('should redirect to the given URL', function() {
+      var redirect = '/new/path';
+      this.$auth.logout(redirect);
+      expect(this.$location.url()).toEqual(redirect);
+    });
+
   });
 
   describe('login()', function() {
