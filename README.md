@@ -355,7 +355,7 @@ and specify `mylocalwebsite.net` as your *Redirect URL* on **API Settings** tab.
 - [`$auth.login(user)`](#authloginuser)
 - [`$auth.signup(user)`](#authsignupuser)
 - [`$auth.authenticate(name, [userData])`](#authauthenticatename-userdata)
-- [`$auth.logout()`](#authlogout)
+- [`$auth.logout([redirect])`](#authlogout-redirect)
 - [`$auth.isAuthenticated()`](#authisauthenticated)
 - [`$auth.link(provider, [userData])`](#authlinkprovider-userdata)
 - [`$auth.unlink(provider)`](#authunlinkprovider)
@@ -435,9 +435,11 @@ $auth.authenticate('google').then(function(response) {
 
 <hr>
 
-#### `$auth.logout()`
+#### `$auth.logout([redirect])`
 
 Deletes a JWT from Local Storage.
+
+- **redirect** - Optional URL string for redirecting after successful logout.
 
 #### Usage
 
