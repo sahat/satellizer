@@ -26,6 +26,12 @@ describe('satellizer.shared', function() {
       expect(this.$location.path()).toEqual(this.config.logoutRedirect);
     });
 
+    it('should redirect to the given URL', function() {
+      var redirect = '/new/path';
+      this.shared.logout(redirect);
+      expect(this.$location.path()).toEqual(redirect);
+    });
+
   });
 
   describe('getToken()', function() {
