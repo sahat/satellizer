@@ -107,14 +107,15 @@
     })
     .provider('$auth', ['satellizer.config', function(config) {
       Object.defineProperties(this, {
-        loginOnSignup: {
-          get: function() { return config.loginOnSignup; },
-          set: function(value) { config.loginOnSignup = value; }
-        },
         httpInterceptor: {
           get: function() { return config.httpInterceptor; },
           set: function(value) { config.httpInterceptor = value; }
         },
+        loginOnSignup: {
+          get: function() { return config.loginOnSignup; },
+          set: function(value) { config.loginOnSignup = value; }
+        },
+
         logoutRedirect: {
           get: function() { return config.logoutRedirect; },
           set: function(value) { config.logoutRedirect = value; }
