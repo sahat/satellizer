@@ -6,47 +6,6 @@
 (function(window, angular, undefined) {
   'use strict';
 
-  var Storage = (function() {
-
-    function supportsLocalStorage() {
-      try {
-        return 'localStorage' in window && window['localStorage'] !== null;
-      } catch(e){
-        return false;
-      }
-    }
-
-    function storage() {
-      return {
-        get: function(key) {
-          return localStorage.getItem(key);
-        },
-        set: function(key, value) {
-          return localStorage.setItem(key, value);
-        },
-        remove: function(key) {
-          return localStorage.removeItem(key);
-        }
-      };
-    }
-
-    function fakeStorage() {
-      return {
-        get: function() {},
-        set: function() {},
-        remove: function() {}
-      };
-    }
-
-    if (supportsLocalStorage()) {
-      return storage();
-    } else {
-      console.warn('Warning: Browser Local Storage is disabled or unavailable. Satellizer will not work correctly.');
-      return fakeStorage();
-    }
-
-  })();
-
   angular.module('satellizer', [])
     .constant('satellizer.config', {
       httpInterceptor: true,
@@ -300,17 +259,18 @@
       '$window',
       '$location',
       'satellizer.config',
-      function($q, $window, $location, config) {
+      'satellizer.storage',
+      function($q, $window, $location, config, storage) {
         var shared = {};
 
         shared.getToken = function() {
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
-          return Storage.get(tokenName);
+          return storage.get(tokenName);
         };
 
         shared.getPayload = function() {
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
-          var token = Storage.get(tokenName);
+          var token = storage.get(tokenName);
 
           if (token && token.split('.').length === 3) {
             var base64Url = token.split('.')[1];
@@ -343,7 +303,7 @@
             throw new Error('Expecting a token named "' + tokenName + '" but instead got: ' + JSON.stringify(response.data));
           }
 
-          Storage.set(tokenName, token);
+          storage.set(tokenName, token);
 
           if (config.loginRedirect && !redirect) {
             $location.path(config.loginRedirect);
@@ -354,12 +314,12 @@
 
         shared.removeToken = function() {
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
-          Storage.remove(tokenName);
+          storage.remove(tokenName);
         };
 
         shared.isAuthenticated = function() {
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
-          var token = Storage.get(tokenName);
+          var token = storage.get(tokenName);
 
           if (token) {
             if (token.split('.').length === 3) {
@@ -377,7 +337,7 @@
 
         shared.logout = function(redirect) {
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
-          Storage.remove(tokenName);
+          storage.remove(tokenName);
 
           if (config.logoutRedirect && !redirect) {
             $location.url(config.logoutRedirect);
@@ -466,7 +426,8 @@
       'satellizer.popup',
       'satellizer.utils',
       'satellizer.config',
-      function($q, $http, $window, popup, utils, config) {
+      'satellizer.storage',
+      function($q, $http, $window, popup, utils, config, storage) {
         return function() {
 
           var defaults = {
@@ -494,9 +455,9 @@
             var stateName = defaults.name + '_state';
 
             if (angular.isFunction(defaults.state)) {
-              Storage.set(stateName, defaults.state());
+              storage.set(stateName, defaults.state());
             } else if (angular.isString(defaults.state)) {
-              Storage.set(stateName, defaults.state);
+              storage.set(stateName, defaults.state);
             }
 
             var url = defaults.authorizationEndpoint + '?' + oauth2.buildQueryString();
@@ -506,7 +467,7 @@
                 if (defaults.responseType === 'token') {
                   return oauthData;
                 }
-                if (oauthData.state && oauthData.state !== Storage.get(stateName)) {
+                if (oauthData.state && oauthData.state !== storage.get(stateName)) {
                   return $q.reject('OAuth 2.0 state parameter mismatch.');
                 }
                 return oauth2.exchangeForToken(oauthData, userData);
@@ -543,7 +504,7 @@
 
                 if (paramName === 'state') {
                   var stateName = defaults.name + '_state';
-                  paramValue = Storage.get(stateName);
+                  paramValue = storage.get(stateName);
                 }
 
                 if (paramName === 'scope' && Array.isArray(paramValue)) {
@@ -775,11 +736,13 @@
     })
     .factory('satellizer.interceptor', [
       '$q',
-      'satellizer.config', function($q, config) {
+      'satellizer.config',
+      'satellizer.storage',
+      function($q, config, storage) {
         var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
         return {
           request: function(httpConfig) {
-            var token = Storage.get(tokenName);
+            var token = storage.get(tokenName);
             if (token && config.httpInterceptor) {
               token = config.authHeader === 'Authorization' ? 'Bearer ' + token : token;
               httpConfig.headers[config.authHeader] = token;
