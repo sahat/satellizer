@@ -749,6 +749,30 @@
         return obj;
       };
     })
+    .factory('satellizer.storage', function() {
+      if (supportsLocalStorage()) {
+        return {
+          get: function(key) { return localStorage.getItem(key); },
+          set: function(key, value) { return localStorage.setItem(key, value); },
+          remove: function(key) { return localStorage.removeItem(key); }
+        };
+      } else {
+        console.warn('Warning: Browser Local Storage is disabled or unavailable. Satellizer will not work correctly.');
+        return {
+          get: function(key) {},
+          set: function(key, value) {},
+          remove: function(key) {}
+        };
+      }
+
+      function supportsLocalStorage() {
+        try {
+          return 'localStorage' in window && window['localStorage'] !== null;
+        } catch(e){
+          return false;
+        }
+      }
+    })
     .factory('satellizer.interceptor', [
       '$q',
       'satellizer.config', function($q, config) {
