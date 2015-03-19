@@ -33,8 +33,8 @@ describe('$http', function() {
   it('should handle the default Authorization header', function() {
     var self = this;
 
-    this.local.login()
-    this.$httpBackend.flush()
+    this.local.login();
+    this.$httpBackend.flush();
 
     this.$httpBackend.expectGET('/some/arbitrary/endpoint', function(headers) {
       var token = headers[self.config.authHeader];
@@ -51,8 +51,8 @@ describe('$http', function() {
     var self = this;
     this.$authProvider.authHeader = 'x-new-header';
 
-    this.local.login()
-    this.$httpBackend.flush()
+    this.local.login();
+    this.$httpBackend.flush();
 
     this.$httpBackend.expectGET('/some/arbitrary/endpoint', function(headers) {
       var token = headers[self.config.authHeader];
