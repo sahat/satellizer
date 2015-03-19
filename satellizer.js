@@ -749,8 +749,9 @@
         return obj;
       };
     })
-    .config(['$httpProvider', 'satellizer.config', function($httpProvider, config) {
-      $httpProvider.interceptors.push(['$q', function($q) {
+    .factory('satellizer.interceptor', [
+      '$q',
+      'satellizer.config', function($q, config) {
         var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
         return {
           request: function(httpConfig) {
@@ -765,7 +766,9 @@
             return $q.reject(response);
           }
         };
-      }]);
+      }])
+    .config(['$httpProvider', function($httpProvider) {
+      $httpProvider.interceptors.push('satellizer.interceptor');
     }]);
 
 })(window, window.angular);
