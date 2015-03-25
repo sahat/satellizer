@@ -25,6 +25,7 @@
       authHeader: 'Authorization',
       withCredentials: true,
       platform: 'browser',
+      AuthorizationPrefix: 'Bearer',
       providers: {
         google: {
           name: 'google',
@@ -745,7 +746,7 @@
           request: function(httpConfig) {
             var token = storage.get(tokenName);
             if (token && config.httpInterceptor) {
-              token = config.authHeader === 'Authorization' ? 'Bearer ' + token : token;
+              token = config.authHeader === 'Authorization' ? config.AuthorizationPrefix + ' ' + token : token;
               httpConfig.headers[config.authHeader] = token;
             }
             return httpConfig;
