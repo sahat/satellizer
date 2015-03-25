@@ -143,6 +143,7 @@ $authProvider.unlinkUrl = '/auth/unlink/';
 $authProvider.unlinkMethod = 'get';
 $authProvider.authHeader = 'Authorization';
 $authProvider.withCredentials = true; // Send POST request with credentials
+$authProvider.authorizationPrefix: 'Bearer';
 
 // Facebook
 $authProvider.facebook({
