@@ -176,6 +176,10 @@
         platform: {
           get: function() { return config.platform; },
           set: function(value) { config.platform = value; }
+        },
+          AuthorizationPrefix: {
+          get: function() { return config.AuthorizationPrefix; },
+          set: function(value) { config.AuthorizationPrefix = value; }
         }
       });
 
