@@ -25,7 +25,7 @@
       authHeader: 'Authorization',
       withCredentials: true,
       platform: 'browser',
-      AuthorizationPrefix: 'Bearer',
+      authorizationPrefix: 'Bearer',
       providers: {
         google: {
           name: 'google',
@@ -177,9 +177,9 @@
           get: function() { return config.platform; },
           set: function(value) { config.platform = value; }
         },
-          AuthorizationPrefix: {
-          get: function() { return config.AuthorizationPrefix; },
-          set: function(value) { config.AuthorizationPrefix = value; }
+          authorizationPrefix: {
+          get: function() { return config.authorizationPrefix; },
+          set: function(value) { config.authorizationPrefix = value; }
         }
       });
 
@@ -750,7 +750,7 @@
           request: function(httpConfig) {
             var token = storage.get(tokenName);
             if (token && config.httpInterceptor) {
-              token = config.authHeader === 'Authorization' ? config.AuthorizationPrefix + ' ' + token : token;
+              token = config.authHeader === 'Authorization' ? config.authorizationPrefix + ' ' + token : token;
               httpConfig.headers[config.authHeader] = token;
             }
             return httpConfig;
