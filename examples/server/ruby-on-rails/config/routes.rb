@@ -1,13 +1,9 @@
 Rails.application.routes.draw do
-  scope :auth, controller: :auth do
-    post :login
-    post :signup
-    post :google
-    post :facebook
-  end
+  post :login, to: 'auth#login'
+  post :signup, to: 'auth#signup'
+  post :google, to: 'auth#google'
+  post :facebook, to: 'auth#facebook'
 
-  get 'api/me', to: 'api#show'
-  put 'api/me', to: 'api#update'
-
-  root to: redirect('/index.html')
+  get '/me', to: 'api#show'
+  put '/me', to: 'api#update'
 end
