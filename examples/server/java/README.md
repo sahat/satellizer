@@ -38,11 +38,11 @@ To test the example application run the following commands.
 
 * To setup the h2 database run.
 
-        java -jar target/dropwizard-example-0.7.1.jar db migrate example.yml
+        java -jar target/dropwizard-example-1.0.0.jar db migrate example.yml
 
 * To run the server run.
 
-        java -jar target/dropwizard-example-0.7.1.jar server example.yml
+        java -jar target/dropwizard-example-1.0.0.jar server example.yml
 
 * To hit this url to access the service example.
 
