@@ -37,58 +37,5 @@ angular.module('MyApp')
       });
     };
 
-    /**
-     * Link third-party provider.
-     */
-    $scope.link = function(provider) {
-      $auth.link(provider)
-        .then(function() {
-          $alert({
-            content: 'You have successfully linked ' + provider + ' account',
-            animation: 'fadeZoomFadeDown',
-            type: 'material',
-            duration: 3
-          });
-        })
-        .then(function() {
-          $scope.getProfile();
-        })
-        .catch(function(response) {
-          $alert({
-            content: response.data.message,
-            animation: 'fadeZoomFadeDown',
-            type: 'material',
-            duration: 3
-          });
-        });
-    };
-
-    /**
-     * Unlink third-party provider.
-     */
-    $scope.unlink = function(provider) {
-      $auth.unlink(provider)
-        .then(function() {
-          $alert({
-            content: 'You have successfully unlinked ' + provider + ' account',
-            animation: 'fadeZoomFadeDown',
-            type: 'material',
-            duration: 3
-          });
-        })
-        .then(function() {
-          $scope.getProfile();
-        })
-        .catch(function(response) {
-          $alert({
-            content: response.data ? response.data.message : 'Could not unlink ' + provider + ' account',
-            animation: 'fadeZoomFadeDown',
-            type: 'material',
-            duration: 3
-          });
-        });
-    };
-
     $scope.getProfile();
-
   });
