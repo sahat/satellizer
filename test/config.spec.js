@@ -27,14 +27,6 @@ describe('satellizer.config', function() {
     this.$authProvider.withCredentials = true;
   });
 
-  it('should set unlinkMethod', function() {
-    this.$authProvider.unlinkMethod = 'post';
-    expect(this.config.unlinkMethod).toEqual('post');
-    expect(this.$authProvider.unlinkMethod).toEqual('post');
-
-    this.$authProvider.unlinkMethod = 'get';
-  });
-
   it('should set httpInterceptor', function() {
     this.$authProvider.httpInterceptor = false;
     expect(this.config.httpInterceptor).toEqual(false);
@@ -117,48 +109,6 @@ describe('satellizer.config', function() {
     this.$authProvider.tokenPrefix = 'myApp';
     expect(this.config.tokenPrefix).toEqual('myApp');
     expect(this.$authProvider.tokenPrefix).toEqual('myApp');
-  });
-
-  it('should set unlinkUrl', function() {
-    this.$authProvider.unlinkUrl = '/disconnect/';
-    expect(this.config.unlinkUrl).toEqual('/disconnect/');
-    expect(this.$authProvider.unlinkUrl).toEqual('/disconnect/');
-  });
-
-  it('should update facebook with new params', function() {
-    this.$authProvider.facebook({ clientId: '1234' });
-    expect(this.config.providers.facebook.clientId).toBe('1234');
-  });
-
-  it('should update google with new params', function() {
-    this.$authProvider.google({ state: 'secret' });
-    expect(this.config.providers.google.state).toBe('secret');
-  });
-
-  it('should update github with new params', function() {
-    this.$authProvider.github({ clientId: '1234' });
-    expect(this.config.providers.github.clientId).toBe('1234');
-  });
-
-  it('should update linkedin with new params', function() {
-    this.$authProvider.linkedin({ state: 'secret' });
-    expect(this.config.providers.linkedin.state).toBe('secret');
-  });
-
-  it('should update twitter with new params', function() {
-    this.$authProvider.twitter({ url: '/api/twitter' });
-    expect(this.config.providers.twitter.url).toBe('/api/twitter');
-  });
-
-  it('should create new oauth2 provider', function() {
-    this.$authProvider.oauth2({ name: 'instagram', url: '/auth/instagram' });
-    expect(this.config.providers['instagram'].name).toBe('instagram');
-    expect(this.config.providers['instagram'].url).toBe('/auth/instagram');
-  });
-
-  it('should add a new oauth1 provider', function() {
-    this.$authProvider.oauth1({ name: 'goodreads', url: '/auth/goodreads' });
-    expect(this.config.providers['goodreads'].url).toBe('/auth/goodreads');
   });
 
   it('should set platform', function() {

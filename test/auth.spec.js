@@ -14,14 +14,6 @@ describe('$auth', function() {
     expect(this.$auth).toBeDefined();
   });
 
-  describe('authenticate()', function() {
-
-    it('should be defined', function() {
-      expect(this.$auth.authenticate).toBeDefined();
-    });
-
-  });
-
   describe('isAuthenticated()', function() {
 
     it('should be defined', function() {
@@ -59,30 +51,6 @@ describe('$auth', function() {
 
     it('should be defined', function() {
       expect(this.$auth.getPayload).toBeDefined();
-    });
-
-  });
-
-  describe('link()', function() {
-
-    it('should be defined', function() {
-      expect(this.$auth.link).toBeDefined();
-    });
-
-    it('should link third-party provider', function() {
-      this.$auth.link('facebook');
-    });
-
-  });
-
-  describe('unlink()', function() {
-
-    it('should be defined', function() {
-      expect(this.$auth.unlink).toBeDefined();
-    });
-
-    it('should unlink third-party provider', function() {
-      this.$auth.unlink('facebook');
     });
 
   });
