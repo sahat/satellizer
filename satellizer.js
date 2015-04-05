@@ -263,14 +263,13 @@
       'satellizer.storage',
       function($q, $window, $location, config, storage) {
         var shared = {};
+        var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
 
         shared.getToken = function() {
-          var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
           return storage.get(tokenName);
         };
 
         shared.getPayload = function() {
-          var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
           var token = storage.get(tokenName);
 
           if (token && token.split('.').length === 3) {
@@ -297,11 +296,9 @@
               response.data[config.tokenRoot][config.tokenName] : response.data[config.tokenName];
           }
 
-          var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
-
           if (!token) {
-            tokenName = config.tokenRoot ? config.tokenRoot + '.' + config.tokenName : config.tokenName;
-            throw new Error('Expecting a token named "' + tokenName + '" but instead got: ' + JSON.stringify(response.data));
+            var tokenPath = config.tokenRoot ? config.tokenRoot + '.' + config.tokenName : config.tokenName;
+            throw new Error('Expecting a token named "' + tokenPath + '" but instead got: ' + JSON.stringify(response.data));
           }
 
           storage.set(tokenName, token);
@@ -314,12 +311,10 @@
         };
 
         shared.removeToken = function() {
-          var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
           storage.remove(tokenName);
         };
 
         shared.isAuthenticated = function() {
-          var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
           var token = storage.get(tokenName);
 
           if (token) {
@@ -337,7 +332,6 @@
         };
 
         shared.logout = function(redirect) {
-          var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
           storage.remove(tokenName);
 
           if (config.logoutRedirect && !redirect) {
