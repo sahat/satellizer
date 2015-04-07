@@ -452,8 +452,8 @@ app.post('/auth/live', function(req, res) {
  |--------------------------------------------------------------------------
  */
 app.post('/auth/facebook', function(req, res) {
-  var accessTokenUrl = 'https://graph.facebook.com/oauth/access_token';
-  var graphApiUrl = 'https://graph.facebook.com/me';
+  var accessTokenUrl = 'https://graph.facebook.com/v2.3/oauth/access_token';
+  var graphApiUrl = 'https://graph.facebook.com/v2.3/me';
   var params = {
     code: req.body.code,
     client_id: req.body.clientId,
@@ -485,7 +485,7 @@ app.post('/auth/facebook', function(req, res) {
               return res.status(400).send({ message: 'User not found' });
             }
             user.facebook = profile.id;
-            user.picture = user.picture || 'https://graph.facebook.com/' + profile.id + '/picture?type=large';
+            user.picture = user.picture || 'https://graph.facebook.com/v2.3/' + profile.id + '/picture?type=large';
             user.displayName = user.displayName || profile.name;
             user.save(function() {
               var token = createToken(user);

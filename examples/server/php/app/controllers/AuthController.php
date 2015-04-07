@@ -74,8 +74,8 @@ class AuthController extends \BaseController {
 
     public function facebook()
     {
-        $accessTokenUrl = 'https://graph.facebook.com/oauth/access_token';
-        $graphApiUrl = 'https://graph.facebook.com/me';
+        $accessTokenUrl = 'https://graph.facebook.com/v2.3/oauth/access_token';
+        $graphApiUrl = 'https://graph.facebook.com/v2.3/me';
 
         $params = array(
             'code' => Input::get('code'),
