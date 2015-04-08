@@ -23,6 +23,11 @@
       unlinkUrl: '/auth/unlink/',
       unlinkMethod: 'get',
       authHeader: 'Authorization',
+      authFields: {
+        clientId: 'clientId',
+        code: 'code',
+        redirectUri: 'redirectUri'
+      },
       withCredentials: true,
       platform: 'browser',
       providers: {
@@ -163,6 +168,10 @@
         authHeader: {
           get: function() { return config.authHeader; },
           set: function(value) { config.authHeader = value; }
+        },
+        authFields: {
+          get: function() { return config.authFields; },
+          set: function(value) { config.authFields = value; }
         },
         withCredentials: {
           get: function() { return config.withCredentials; },
@@ -477,11 +486,12 @@
           };
 
           oauth2.exchangeForToken = function(oauthData, userData) {
-            var data = angular.extend({}, userData, {
-              code: oauthData.code,
-              clientId: defaults.clientId,
-              redirectUri: defaults.redirectUri
-            });
+            var serverData = {};
+            serverData[config.authFields.code] = oauthData.code;
+            serverData[config.authFields.clientId] = defaults.clientId;
+            serverData[config.authFields.redirectUri] = defaults.redirectUri;
+
+            var data = angular.extend({}, userData, serverData);
 
             if (oauthData.state) {
               data.state = oauthData.state;
