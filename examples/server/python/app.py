@@ -144,8 +144,8 @@ def signup():
 
 @app.route('/auth/facebook', methods=['POST'])
 def facebook():
-    access_token_url = 'https://graph.facebook.com/oauth/access_token'
-    graph_api_url = 'https://graph.facebook.com/me'
+    access_token_url = 'https://graph.facebook.com/v2.3/oauth/access_token'
+    graph_api_url = 'https://graph.facebook.com/v2.3/me'
 
     params = {
         'client_id': request.json['clientId'],

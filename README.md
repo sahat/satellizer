@@ -147,7 +147,7 @@ $authProvider.withCredentials = true; // Send POST request with credentials
 // Facebook
 $authProvider.facebook({
   url: '/auth/facebook',
-  authorizationEndpoint: 'https://www.facebook.com/dialog/oauth',
+  authorizationEndpoint: 'https://www.facebook.com/v2.3/dialog/oauth',
   redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host + '/',
   scope: 'email',
   scopeDelimiter: ',',

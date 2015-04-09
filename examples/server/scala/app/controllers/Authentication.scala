@@ -43,8 +43,8 @@ object Authentication extends Controller with MongoController {
   def facebook() = Action.async(parse.json) { implicit request =>
     val clientId = "your-facebook-app-id"
     val clientSecret = "your-facebook-app-secret"
-    val accessTokenUrl = "https://graph.facebook.com/oauth/access_token"
-    val graphApiUrl = "https://graph.facebook.com/me"
+    val accessTokenUrl = "https://graph.facebook.com/v2.3/oauth/access_token"
+    val graphApiUrl = "https://graph.facebook.com/v2.3/me"
     AuthData.fromRequest match {
       case JsSuccess(data, _) =>
         // Step 1. Exchange authorization code for access token.
