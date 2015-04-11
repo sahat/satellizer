@@ -33,5 +33,18 @@ describe('satellizer.oauth2', function() {
 
   });
 
+  describe('buildQueryString()', function() {
+
+    it('should be defined', function() {
+      expect(this.oauth2.buildQueryString).toBeDefined();
+    });
+
+    it('should URI-encode state value', function() {
+      this.oauth2.open({defaultUrlParams: ['state'], state: 'foo+bar'});
+      expect(this.oauth2.buildQueryString()).toBe('state=foo%2Bbar');
+    });
+
+  });
+
 });
 
