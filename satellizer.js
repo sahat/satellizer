@@ -506,7 +506,7 @@
 
                 if (paramName === 'state') {
                   var stateName = defaults.name + '_state';
-                  paramValue = storage.get(stateName);
+                  paramValue = encodeURIComponent(storage.get(stateName));
                 }
 
                 if (paramName === 'scope' && Array.isArray(paramValue)) {
