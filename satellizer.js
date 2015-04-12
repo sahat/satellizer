@@ -25,6 +25,7 @@
       authHeader: 'Authorization',
       withCredentials: true,
       platform: 'browser',
+      storage: 'localStorage',
       providers: {
         google: {
           name: 'google',
@@ -711,30 +712,43 @@
         return obj;
       };
     })
-    .factory('satellizer.storage', function() {
-      if (supportsLocalStorage()) {
-        return {
-          get: function(key) { return localStorage.getItem(key); },
-          set: function(key, value) { return localStorage.setItem(key, value); },
-          remove: function(key) { return localStorage.removeItem(key); }
-        };
-      } else {
-        console.warn('Warning: Browser Local Storage is disabled or unavailable. Satellizer will not work correctly.');
-        return {
-          get: function(key) {},
-          set: function(key, value) {},
-          remove: function(key) {}
-        };
-      }
+    .factory('satellizer.storage', ['satellizer.config', function(config) {
+      switch (config.storage) {
+        case 'localStorage':
+          if ('localStorage' in window && window['localStorage'] !== null) {
+            return {
+              get: function(key) { return localStorage.getItem(key); },
+              set: function(key, value) { return localStorage.setItem(key, value); },
+              remove: function(key) { return localStorage.removeItem(key); }
+            };
+          } else {
+            console.warn('Warning: Local Storage is disabled or unavailable. Satellizer will not work correctly.');
+            return {
+              get: function(key) { return undefined; },
+              set: function(key, value) { return undefined; },
+              remove: function(key) { return undefined; }
+            };
+          }
+          break;
 
-      function supportsLocalStorage() {
-        try {
-          return 'localStorage' in window && window['localStorage'] !== null;
-        } catch(e){
-          return false;
-        }
+        case 'sessionStorage':
+          if ('sessionStorage' in window && window['sessionStorage'] !== null) {
+            return {
+              get: function(key) { return sessionStorage.getItem(key); },
+              set: function(key, value) { return sessionStorage.setItem(key, value); },
+              remove: function(key) { return sessionStorage.removeItem(key); }
+            };
+          } else {
+            console.warn('Warning: Session Storage is disabled or unavailable. Satellizer will not work correctly.');
+            return {
+              get: function(key) { return undefined; },
+              set: function(key, value) { return undefined; },
+              remove: function(key) { return undefined; }
+            };
+          }
+          break;
       }
-    })
+    }])
     .factory('satellizer.interceptor', [
       '$q',
       'satellizer.config',

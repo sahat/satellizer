@@ -142,7 +142,9 @@ $authProvider.tokenPrefix = 'satellizer'; // Local Storage name prefix
 $authProvider.unlinkUrl = '/auth/unlink/';
 $authProvider.unlinkMethod = 'get';
 $authProvider.authHeader = 'Authorization';
-$authProvider.withCredentials = true; // Send POST request with credentials
+$authProvider.withCredentials = true;
+$authProvider.platform = 'browser'; // or 'mobile'
+$authProvider.storage = 'localStorage'; // or 'sessionStorage'
 
 // Facebook
 $authProvider.facebook({
@@ -573,7 +575,7 @@ Removes a JWT from Local Storage.
 - [x] Node.js (Express) implementation
 - [x] PHP (Laravel) implementation
 - [x] Python (Flask) implementation
-- [ ] Ruby (Sinatra) implementation
+- [x] Ruby (Ruby on Rails) implementation
 - [ ] Scala (Play!) implementation
 
 ## Contributing
