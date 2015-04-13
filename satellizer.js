@@ -641,7 +641,11 @@
           var deferred = $q.defer();
           polling = $interval(function() {
             try {
-              if (popupWindow.document.domain === document.domain && (popupWindow.location.search || popupWindow.location.hash)) {
+              
+              var documentOrigin = document.location.host + ': ' + document.location.port,
+                  popupWindowOrigin = popupWindow.location.host + ': ' + popupWindow.location.port;
+
+              if (popupWindowOrigin === documentOrigin && (popupWindow.location.search || popupWindow.location.hash)) {
                 var queryParams = popupWindow.location.search.substring(1).replace(/\/$/, '');
                 var hashParams = popupWindow.location.hash.substring(1).replace(/\/$/, '');
                 var hash = utils.parseQueryString(hashParams);
