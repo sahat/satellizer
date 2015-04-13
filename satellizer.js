@@ -642,8 +642,8 @@
           polling = $interval(function() {
             try {
               
-              var documentOrigin = document.location.host + ': ' + document.location.port,
-                  popupWindowOrigin = popupWindow.location.host + ': ' + popupWindow.location.port;
+              var documentOrigin = document.location.host + ':' + document.location.port,
+                  popupWindowOrigin = popupWindow.location.host + ':' + popupWindow.location.port;
 
               if (popupWindowOrigin === documentOrigin && (popupWindow.location.search || popupWindow.location.hash)) {
                 var queryParams = popupWindow.location.search.substring(1).replace(/\/$/, '');
