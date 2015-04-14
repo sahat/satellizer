@@ -1,6 +1,6 @@
 /**
- * @license AngularJS v1.3.13
- * (c) 2010-2014 Google, Inc. http://angularjs.org
+ * @license AngularJS v1.4.0-rc.0
+ * (c) 2010-2015 Google, Inc. http://angularjs.org
  * License: MIT
  */
 (function(window, angular, undefined) {'use strict';
@@ -10,7 +10,7 @@ var $resourceMinErr = angular.$$minErr('$resource');
 // Helper functions and regex to lookup a dotted path on an object
 // stopping at undefined/null.  The path must be composed of ASCII
 // identifiers (just like $parse)
-var MEMBER_NAME_REGEX = /^(\.[a-zA-Z_$][0-9a-zA-Z_$]*)+$/;
+var MEMBER_NAME_REGEX = /^(\.[a-zA-Z_$@][0-9a-zA-Z_$@]*)+$/;
 
 function isValidDottedPath(path) {
   return (path != null && path !== '' && path !== 'hasOwnProperty' &&
@@ -90,7 +90,7 @@ function shallowClearAndCopy(src, dst) {
      }]);
  * ```
  *
- * @param {string} url A parametrized URL template with parameters prefixed by `:` as in
+ * @param {string} url A parameterized URL template with parameters prefixed by `:` as in
  *   `/user/:username`. If you are using a URL with a port number (e.g.
  *   `http://example.com:8080/api`), it will be respected.
  *
@@ -212,6 +212,7 @@ function shallowClearAndCopy(src, dst) {
  *   - HTTP GET "class" actions: `Resource.action([parameters], [success], [error])`
  *   - non-GET "class" actions: `Resource.action([parameters], postData, [success], [error])`
  *   - non-GET instance actions:  `instance.$action([parameters], [success], [error])`
+ *
  *
  *   Success callback is called with (value, responseHeaders) arguments. Error callback is called
  *   with (httpResponse) argument.
