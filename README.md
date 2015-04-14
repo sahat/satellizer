@@ -144,6 +144,7 @@ $authProvider.tokenPrefix = 'satellizer'; // Local Storage name prefix
 $authProvider.unlinkUrl = '/auth/unlink/';
 $authProvider.unlinkMethod = 'get';
 $authProvider.authHeader = 'Authorization';
+$authProvider.authToken = 'Bearer';
 $authProvider.withCredentials = true;
 $authProvider.platform = 'browser'; // or 'mobile'
 $authProvider.storage = 'localStorage'; // or 'sessionStorage'

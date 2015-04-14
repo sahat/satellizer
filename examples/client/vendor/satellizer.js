@@ -23,6 +23,7 @@
       unlinkUrl: '/auth/unlink/',
       unlinkMethod: 'get',
       authHeader: 'Authorization',
+      authToken: 'Bearer',
       withCredentials: true,
       platform: 'browser',
       storage: 'localStorage',
@@ -164,6 +165,10 @@
         authHeader: {
           get: function() { return config.authHeader; },
           set: function(value) { config.authHeader = value; }
+        },
+        authToken: {
+          get: function() { return config.authToken; },
+          set: function(value) { config.authToken = value; }
         },
         withCredentials: {
           get: function() { return config.withCredentials; },
@@ -759,7 +764,9 @@
           request: function(httpConfig) {
             var token = storage.get(tokenName);
             if (token && config.httpInterceptor) {
-              token = config.authHeader === 'Authorization' ? 'Bearer ' + token : token;
+              if (config.authHeader && config.authToken) {
+                token = config.authToken + ' ' + token;
+              }
               httpConfig.headers[config.authHeader] = token;
             }
             return httpConfig;
