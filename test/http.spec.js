@@ -49,15 +49,15 @@ describe('$http', function() {
 
   it('should handle a custom header', function() {
     var self = this;
-    this.$authProvider.authHeader = 'x-new-header';
+    this.$authProvider.authHeader = 'x-access-token';
 
     this.local.login();
     this.$httpBackend.flush();
 
     this.$httpBackend.expectGET('/some/arbitrary/endpoint', function(headers) {
       var token = headers[self.config.authHeader];
+      expect(self.config.authHeader).toBe('x-access-token');
       expect(token).toBeDefined();
-      expect(token).not.toMatch(/Bearer\s+\w+/);
       return headers;
     }).respond(200);
 
