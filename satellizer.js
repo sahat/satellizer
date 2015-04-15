@@ -8,6 +8,7 @@
 
   angular.module('satellizer', [])
     .constant('satellizer.config', {
+      baseUrl: '/',
       httpInterceptor: true,
       loginOnSignup: true,
       loginRedirect: '/',
@@ -405,7 +406,7 @@
         var local = {};
 
         local.login = function(user, redirect) {
-          return $http.post(config.loginUrl, user)
+          return $http.post(utils.joinUrl(config.baseUrl, config.loginUrl), user)
             .then(function(response) {
               shared.setToken(response, redirect);
               return response;
@@ -413,7 +414,7 @@
         };
 
         local.signup = function(user) {
-          return $http.post(config.signupUrl, user)
+          return $http.post(utils.joinUrl(config.baseUrl, config.signupUrl), user)
             .then(function(response) {
               if (config.loginOnSignup) {
                 shared.setToken(response);
@@ -497,7 +498,7 @@
               data[param] = oauthData[param];
             });
 
-            return $http.post(defaults.url, data, { withCredentials: config.withCredentials });
+            return $http.post(utils.joinUrl(config.baseUrl, defaults.url), data, { withCredentials: config.withCredentials });
           };
 
           oauth2.buildQueryString = function() {
@@ -534,43 +535,53 @@
           return oauth2;
         };
       }])
-    .factory('satellizer.Oauth1', ['$q', '$http', 'satellizer.popup', function($q, $http, popup) {
-      return function() {
+    .factory('satellizer.Oauth1', [
+      '$q',
+      '$http',
+      'satellizer.popup',
+      'satellizer.config',
+      'satellizer.utils',
+      function($q, $http, popup, config, utils) {
+        return function() {
 
-        var defaults = {
-          url: null,
-          name: null,
-          popupOptions: null,
-          redirectUri: null
-        };
+          var defaults = {
+            url: null,
+            name: null,
+            popupOptions: null,
+            redirectUri: null
+          };
 
-        var oauth1 = {};
+          var oauth1 = {};
 
-        oauth1.open = function(options, userData) {
-          angular.extend(defaults, options);
-          return popup.open(defaults.url, defaults.popupOptions, defaults.redirectUri)
-            .then(function(response) {
-              return oauth1.exchangeForToken(response, userData);
+          oauth1.open = function(options, userData) {
+            angular.extend(defaults, options);
+
+            return popup.open(utils.joinUrl(config.baseUrl, defaults.url), defaults.popupOptions, defaults.redirectUri)
+              .then(function(response) {
+                return oauth1.exchangeForToken(response, userData);
+              });
+          };
+
+          oauth1.exchangeForToken = function(oauthData, userData) {
+            var data = angular.extend({}, userData, oauthData);
+            var qs = oauth1.buildQueryString(data);
+
+            return $http.get(utils.joinUrl(config.baseUrl, defaults.url) + '?' + qs);
+          };
+
+          oauth1.buildQueryString = function(obj) {
+            var str = [];
+
+            angular.forEach(obj, function(value, key) {
+              str.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
             });
-        };
 
-        oauth1.exchangeForToken = function(oauthData, userData) {
-          var data = angular.extend({}, userData, oauthData);
-          var qs = oauth1.buildQueryString(data);
-          return $http.get(defaults.url + '?' + qs);
-        };
+            return str.join('&');
+          };
 
-        oauth1.buildQueryString = function(obj) {
-          var str = [];
-          angular.forEach(obj, function(value, key) {
-            str.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
-          });
-          return str.join('&');
+          return oauth1;
         };
-
-        return oauth1;
-      };
-    }])
+      }])
     .factory('satellizer.popup', [
       '$q',
       '$interval',
@@ -715,6 +726,20 @@
           }
         });
         return obj;
+      };
+
+      this.joinUrl = function() {
+        var joined = Array.prototype.slice.call(arguments, 0).join('/');
+
+        var normalize = function(str) {
+          return str
+            .replace(/[\/]+/g, '/')
+            .replace(/\/\?/g, '?')
+            .replace(/\/\#/g, '#')
+            .replace(/\:\//g, '://');
+        };
+
+        return normalize(joined);
       };
     })
     .factory('satellizer.storage', ['satellizer.config', function(config) {
