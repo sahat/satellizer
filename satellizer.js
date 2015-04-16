@@ -270,6 +270,9 @@
       'satellizer.storage',
       function($q, $window, $location, config, storage) {
         var shared = {};
+        function padRight(input, length, char) {
+          return input+Array(length-input.length+1).join(char ||" ")
+        }
 
         shared.getToken = function() {
           var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
@@ -282,7 +285,8 @@
 
           if (token && token.split('.').length === 3) {
             var base64Url = token.split('.')[1];
-            var base64 = base64Url.replace('-', '+').replace('_', '/');
+            var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            base64 = padRight(base64, base64.length + (4 - base64.length % 4) % 4, '=');
             return JSON.parse($window.atob(base64));
           }
         };
@@ -332,7 +336,8 @@
           if (token) {
             if (token.split('.').length === 3) {
               var base64Url = token.split('.')[1];
-              var base64 = base64Url.replace('-', '+').replace('_', '/');
+              var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+              base64 = padRight(base64, base64.length + (4 - base64.length % 4) % 4, '=');
               var exp = JSON.parse($window.atob(base64)).exp;
               if (exp) {
                 return Math.round(new Date().getTime() / 1000) <= exp;
