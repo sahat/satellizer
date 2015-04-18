@@ -2,6 +2,18 @@
 
 return [
 
+	'token_secret' => 'some random string',
+	'facebook_secret' => '',
+	'foursquare_secret' => '',
+	'google_secret' => '',
+	'github_secret' => '',
+	'linkedin_secret' => '',
+	'live_secret' => '',
+	'twitter_key' => '',
+	'twitter_secret' => '',
+	'twitter_callback' => '',
+	'yahoo_secret' => '',
+
 	/*
 	|--------------------------------------------------------------------------
 	| Application Debug Mode
