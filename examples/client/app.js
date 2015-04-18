@@ -42,7 +42,7 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ui.router', 'mgcrea.ngStra
     $urlRouterProvider.otherwise('/');
 
     $authProvider.facebook({
-      clientId: '657854390977827'
+      clientId: '603122136500203'
     });
 
     $authProvider.google({
@@ -50,7 +50,7 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ui.router', 'mgcrea.ngStra
     });
 
     $authProvider.github({
-      clientId: '0ba2600b1dbdb756688b'
+      clientId: '45ab07066fb6a805ed74'
     });
 
     $authProvider.linkedin({
