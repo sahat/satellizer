@@ -1,15 +1,34 @@
 <?php namespace App\Http\Controllers;
 
+use Hash;
+use Config;
+use Validator;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Routing\Controller;
+use JWT;
+use GuzzleHttp;
 use GuzzleHttp\Subscriber\Oauth\Oauth1;
+use App\User;
 
 class AuthController extends Controller {
+
+    protected function createToken($user)
+    {
+        $payload = [
+            'sub' => $user->id,
+            'iat' => time(),
+            'exp' => time() + (2 * 7 * 24 * 60 * 60)
+        ];
+        return JWT::encode($payload, Config::get('app.token_secret'));
+    }
 
     public function unlink($provider)
     {
         $token = explode(' ', Request::header('Authorization'))[1];
-        $payloadObject = JWT::decode($token, Config::get('secrets.TOKEN_SECRET'));
+        $payloadObject = JWT::decode($token, Config::get('app.token_secret'));
         $payload = json_decode(json_encode($payloadObject), true);
-        
+
         $user = User::find($payload['sub']);
 
         if (!$user)
@@ -22,66 +41,70 @@ class AuthController extends Controller {
         return Response::json(array('token' => $this->createToken($user)));
     }
 
-    public function login()
+    public function login(Request $request)
     {
-        $email = Input::get('email');
-        $password = Input::get('password');
+        $email = $request->input('email');
+        $password = $request->input('password');
 
         $user = User::where('email', '=', $email)->first();
 
         if (!$user)
         {
-            return Response::json(array('message' => 'Wrong email and/or password'), 401);
+            return Rresponse()->json(['message' => 'Wrong email and/or password'], 401);
         }
 
         if (Hash::check($password, $user->password))
         {
             unset($user->password);
-            return Response::json(array('token' => $this->createToken($user)));
+            return response()->json(['token' => $this->createToken($user)]);
         }
         else
         {
-            return Response::json(array('message' => 'Wrong email and/or password'), 401);
+            return response()->json(['message' => 'Wrong email and/or password'], 401);
         }
     }
 
-    public function signup()
+    /**
+     * Create Email and Password Account.
+     */
+    public function signup(Request $request)
     {
-        $input['displayName'] = Input::get('displayName');
-        $input['email'] = Input::get('email');
-        $input['password'] = Input::get('password');
-
-        $rules = array('displayName' => 'required',
-                       'email' => 'required|email|unique:users,email',
-                       'password' => 'required');
-
-        $validator = Validator::make($input, $rules);
+        $validator = Validator::make(
+            [
+                'displayName' => $request->input('displayName'),
+                'email' => $request->input('email'),
+                'password' => $request->input('password')
+            ],
+            [
+                'displayName' => 'required',
+                'email' => 'required|email|unique:users,email',
+                'password' => 'required'
+            ]
+        );
 
         if ($validator->fails()) {
-            return Response::json(array('message' => $validator->messages()), 400);
+            return response()->json(['message' => $validator->messages()], 400);
         }
-        else
-        {
-            $user = new User;
-            $user->displayName = Input::get('displayName');
-            $user->email = Input::get('email');
-            $user->password = Hash::make(Input::get('password'));
-            $user->save();
-            return Response::json(array('token' => $this->createToken($user)));
 
-        }
+        $user = new User;
+        $user->displayName = $request->input('displayName');
+        $user->email = $request->input('email');
+        $user->password = Hash::make($request->input('password'));
+        $user->save();
+
+        return response()->json(['token' => $this->createToken($user)]);
     }
 
-    public function facebook()
+    public function facebook(Request $request)
     {
         $accessTokenUrl = 'https://graph.facebook.com/v2.3/oauth/access_token';
         $graphApiUrl = 'https://graph.facebook.com/v2.3/me';
 
         $params = array(
-            'code' => Input::get('code'),
-            'client_id' => Input::get('clientId'),
-            'redirect_uri' => Input::get('redirectUri'),
-            'client_secret' => Config::get('secrets.FACEBOOK_SECRET')
+            'code' => $request->input('code'),
+            'client_id' => $request->input('clientId'),
+            'redirect_uri' => $request->input('redirectUri'),
+            'client_secret' => Config::get('app.facebook_secret')
         );
 
         $client = new GuzzleHttp\Client();
@@ -107,7 +130,7 @@ class AuthController extends Controller {
             }
 
             $token = explode(' ', Request::header('Authorization'))[1];
-            $payloadObject = JWT::decode($token, Config::get('secrets.TOKEN_SECRET'));
+            $payloadObject = JWT::decode($token, Config::get('app.token_secret'));
             $payload = json_decode(json_encode($payloadObject), true);
 
             $user = User::find($payload['sub']);
@@ -142,11 +165,11 @@ class AuthController extends Controller {
         $peopleApiUrl = 'https://www.googleapis.com/plus/v1/people/me/openIdConnect';
 
         $params = array(
-            'code' => Input::get('code'),
-            'client_id' => Input::get('clientId'),
-            'redirect_uri' => Input::get('redirectUri'),
+            'code' => $request->input('code'),
+            'client_id' => $request->input('clientId'),
+            'redirect_uri' => $request->input('redirectUri'),
             'grant_type' => 'authorization_code',
-            'client_secret' => Config::get('secrets.GOOGLE_SECRET')
+            'client_secret' => Config::get('app.GOOGLE_SECRET')
         );
 
         $client = new GuzzleHttp\Client();
@@ -172,7 +195,7 @@ class AuthController extends Controller {
             }
 
             $token = explode(' ', Request::header('Authorization'))[1];
-            $payloadObject = JWT::decode($token, Config::get('secrets.TOKEN_SECRET'));
+            $payloadObject = JWT::decode($token, Config::get('app.TOKEN_SECRET'));
             $payload = json_decode(json_encode($payloadObject), true);
 
             $user = User::find($payload['sub']);
@@ -207,11 +230,11 @@ class AuthController extends Controller {
         $peopleApiUrl = 'https://api.linkedin.com/v1/people/~:(id,first-name,last-name,email-address)';
 
         $params = array(
-            'code' => Input::get('code'),
-            'client_id' => Input::get('clientId'),
-            'redirect_uri' => Input::get('redirectUri'),
+            'code' => $request->input('code'),
+            'client_id' => $request->input('clientId'),
+            'redirect_uri' => $request->input('redirectUri'),
             'grant_type' => 'authorization_code',
-            'client_secret' => Config::get('secrets.LINKEDIN_SECRET'),
+            'client_secret' => Config::get('app.LINKEDIN_SECRET'),
         );
 
         $client = new GuzzleHttp\Client();
@@ -239,7 +262,7 @@ class AuthController extends Controller {
             }
 
             $token = explode(' ', Request::header('Authorization'))[1];
-            $payloadObject = JWT::decode($token, Config::get('secrets.TOKEN_SECRET'));
+            $payloadObject = JWT::decode($token, Config::get('app.TOKEN_SECRET'));
             $payload = json_decode(json_encode($payloadObject), true);
 
             $user = User::find($payload['sub']);
@@ -280,9 +303,9 @@ class AuthController extends Controller {
         if (!Request::get('oauth_token') || !Request::get('oauth_verifier'))
         {
             $oauth = new Oauth1([
-              'consumer_key' => Config::get('secrets.TWITTER_KEY'),
-              'consumer_secret' => Config::get('secrets.TWITTER_SECRET'),
-              'callback' => Config::get('secrets.TWITTER_CALLBACK')
+              'consumer_key' => Config::get('app.TWITTER_KEY'),
+              'consumer_secret' => Config::get('app.TWITTER_SECRET'),
+              'callback' => Config::get('app.TWITTER_CALLBACK')
             ]);
 
             $client->getEmitter()->attach($oauth);
@@ -303,8 +326,8 @@ class AuthController extends Controller {
         else
         {
             $oauth = new Oauth1([
-                'consumer_key' => Config::get('secrets.TWITTER_KEY'),
-                'consumer_secret' => Config::get('secrets.TWITTER_SECRET'),
+                'consumer_key' => Config::get('app.TWITTER_KEY'),
+                'consumer_secret' => Config::get('app.TWITTER_SECRET'),
                 'token' => Request::get('oauth_token'),
                 'verifier' => Request::get('oauth_verifier')
             ]);
@@ -327,7 +350,7 @@ class AuthController extends Controller {
                 }
 
                 $token = explode(' ', Request::header('Authorization'))[1];
-                $payloadObject = JWT::decode($token, Config::get('secrets.TOKEN_SECRET'));
+                $payloadObject = JWT::decode($token, Config::get('app.TOKEN_SECRET'));
                 $payload = json_decode(json_encode($payloadObject), true);
 
                 $user = User::find($payload['sub']);
@@ -364,11 +387,11 @@ class AuthController extends Controller {
         $userProfileUrl = 'https://api.foursquare.com/v2/users/self';
 
         $params = array(
-            'code' => Input::get('code'),
-            'client_id' => Input::get('clientId'),
-            'redirect_uri' => Input::get('redirectUri'),
+            'code' => $request->input('code'),
+            'client_id' => $request->input('clientId'),
+            'redirect_uri' => $request->input('redirectUri'),
             'grant_type' => 'authorization_code',
-            'client_secret' => Config::get('secrets.FOURSQUARE_SECRET')
+            'client_secret' => Config::get('app.FOURSQUARE_SECRET')
         );
 
         $client = new GuzzleHttp\Client();
@@ -397,7 +420,7 @@ class AuthController extends Controller {
             }
 
             $token = explode(' ', Request::header('Authorization'))[1];
-            $payloadObject = JWT::decode($token, Config::get('secrets.TOKEN_SECRET'));
+            $payloadObject = JWT::decode($token, Config::get('app.TOKEN_SECRET'));
             $payload = json_decode(json_encode($payloadObject), true);
 
             $user = User::find($payload['sub']);
@@ -432,10 +455,10 @@ class AuthController extends Controller {
         $userApiUrl = 'https://api.github.com/user';
 
         $params = array(
-            'code' => Input::get('code'),
-            'client_id' => Input::get('clientId'),
-            'redirect_uri' => Input::get('redirectUri'),
-            'client_secret' => Config::get('secrets.GITHUB_SECRET')
+            'code' => $request->input('code'),
+            'client_id' => $request->input('clientId'),
+            'redirect_uri' => $request->input('redirectUri'),
+            'client_secret' => Config::get('app.GITHUB_SECRET')
         );
 
         $client = new GuzzleHttp\Client();
@@ -466,7 +489,7 @@ class AuthController extends Controller {
             }
 
             $token = explode(' ', Request::header('Authorization'))[1];
-            $payloadObject = JWT::decode($token, Config::get('secrets.TOKEN_SECRET'));
+            $payloadObject = JWT::decode($token, Config::get('app.TOKEN_SECRET'));
             $payload = json_decode(json_encode($payloadObject), true);
 
             $user = User::find($payload['sub']);
