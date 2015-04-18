@@ -1,9 +1,14 @@
-<?php
+<?php namespace App\Http\Controllers;
 
-class UserController extends \BaseController {
+class UserController extends Controller {
 
-	public function getUser()
-	{
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    public function getUser()
+    {
         $token = explode(' ', Request::header('Authorization'))[1];
         $payloadObject = JWT::decode($token, Config::get('secrets.TOKEN_SECRET'));
         $payload = json_decode(json_encode($payloadObject), true);
@@ -11,10 +16,10 @@ class UserController extends \BaseController {
         $user = User::find($payload['sub']);
 
         return $user;
-	}
+    }
 
-	public function updateUser()
-	{
+    public function updateUser()
+    {
         $token = explode(' ', Request::header('Authorization'))[1];
         $payloadObject = JWT::decode($token, Config::get('secrets.TOKEN_SECRET'));
         $payload = json_decode(json_encode($payloadObject), true);
@@ -27,5 +32,5 @@ class UserController extends \BaseController {
         $token = $this->createToken($user);
 
         return Response::json(array('token' => $token));
-	}
+    }
 }

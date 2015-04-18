@@ -1,8 +1,8 @@
-<?php
+<?php namespace App\Http\Controllers;
 
 use GuzzleHttp\Subscriber\Oauth\Oauth1;
 
-class AuthController extends \BaseController {
+class AuthController extends Controller {
 
     public function unlink($provider)
     {
@@ -494,6 +494,4 @@ class AuthController extends \BaseController {
             return Response::json(array('token' => $this->createToken($user)));
         }
     }
-
-
 }

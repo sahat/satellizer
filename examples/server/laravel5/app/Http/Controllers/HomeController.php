@@ -1,6 +1,8 @@
-<?php
+<?php namespace App\Http\Controllers;
 
-class HomeController extends BaseController {
+use File;
+
+class HomeController extends Controller {
 
     public function index()
     {
