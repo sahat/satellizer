@@ -1,12 +1,11 @@
 <?php namespace App\Http\Controllers;
 
+use JWT;
 use Hash;
 use Config;
 use Validator;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Routing\Controller;
-use JWT;
 use GuzzleHttp;
 use GuzzleHttp\Subscriber\Oauth\Oauth1;
 use App\User;
@@ -69,18 +68,11 @@ class AuthController extends Controller {
      */
     public function signup(Request $request)
     {
-        $validator = Validator::make(
-            [
-                'displayName' => $request->input('displayName'),
-                'email' => $request->input('email'),
-                'password' => $request->input('password')
-            ],
-            [
-                'displayName' => 'required',
-                'email' => 'required|email|unique:users,email',
-                'password' => 'required'
-            ]
-        );
+        $validator = Validator::make($request->all(), [
+            'displayName' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required'
+        ]);
 
         if ($validator->fails()) {
             return response()->json(['message' => $validator->messages()], 400);
