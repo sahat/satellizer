@@ -87,41 +87,42 @@ class AuthController extends Controller {
         return response()->json(['token' => $this->createToken($user)]);
     }
 
+    /**
+     * Login with Facebook.
+     */
     public function facebook(Request $request)
     {
         $accessTokenUrl = 'https://graph.facebook.com/v2.3/oauth/access_token';
         $graphApiUrl = 'https://graph.facebook.com/v2.3/me';
 
-        $params = array(
+        $params = [
             'code' => $request->input('code'),
             'client_id' => $request->input('clientId'),
             'redirect_uri' => $request->input('redirectUri'),
             'client_secret' => Config::get('app.facebook_secret')
-        );
+        ];
 
         $client = new GuzzleHttp\Client();
 
         // Step 1. Exchange authorization code for access token.
-        $accessTokenResponse = $client->get($accessTokenUrl, ['query' => $params]);
-
-        $accessToken = array();
-        parse_str($accessTokenResponse->getBody(), $accessToken);
+        $accessToken = $client->get($accessTokenUrl, ['query' => $params])->json();
 
         // Step 2. Retrieve profile information about the current user.
-        $graphiApiResponse = $client->get($graphApiUrl, ['query' => $accessToken]);
-        $profile = $graphiApiResponse->json();
+        $profile = $client->get($graphApiUrl, ['query' => $accessToken])->json();
+
 
         // Step 3a. If user is already signed in then link accounts.
-        if (Request::header('Authorization'))
+        if ($request->header('Authorization'))
         {
+            error_log($request->header('Authorization'));
             $user = User::where('facebook', '=', $profile['id']);
 
             if ($user->first())
             {
-                return Response::json(array('message' => 'There is already a Facebook account that belongs to you'), 409);
+                return response()->json(['message' => 'There is already a Facebook account that belongs to you'], 409);
             }
 
-            $token = explode(' ', Request::header('Authorization'))[1];
+            $token = explode(' ', $request->header('Authorization'))[1];
             $payloadObject = JWT::decode($token, Config::get('app.token_secret'));
             $payload = json_decode(json_encode($payloadObject), true);
 
@@ -130,7 +131,7 @@ class AuthController extends Controller {
             $user->displayName = $user->displayName || $profile['name'];
             $user->save();
 
-            return Response::json(array('token' => $this->createToken($user)));
+            return response()->json(['token' => $this->createToken($user)]);
         }
         // Step 3b. Create a new user account or return an existing one.
         else
@@ -139,7 +140,7 @@ class AuthController extends Controller {
 
             if ($user->first())
             {
-                return Response::json(array('token' => $this->createToken($user->first())));
+                return response()->json(['token' => $this->createToken($user->first())]);
             }
 
             $user = new User;
@@ -147,11 +148,14 @@ class AuthController extends Controller {
             $user->displayName = $profile['name'];
             $user->save();
 
-            return Response::json(array('token' => $this->createToken($user)));
+            return response()->json(['token' => $this->createToken($user)]);
         }
     }
 
-    public function google()
+    /**
+     * Login with Google.
+     */
+    public function google(Request $request)
     {
         $accessTokenUrl = 'https://accounts.google.com/o/oauth2/token';
         $peopleApiUrl = 'https://www.googleapis.com/plus/v1/people/me/openIdConnect';
@@ -216,6 +220,9 @@ class AuthController extends Controller {
         }
     }
 
+    /**
+     * Login with LinkedIn.
+     */
     public function linkedin()
     {
         $accessTokenUrl = 'https://www.linkedin.com/uas/oauth2/accessToken';
@@ -283,6 +290,9 @@ class AuthController extends Controller {
         }
     }
 
+    /**
+     * Login with Twitter.
+     */
     public function twitter()
     {
 
@@ -373,6 +383,9 @@ class AuthController extends Controller {
         }
     }
 
+    /**
+     * Login with Foursquare.
+     */
     public function foursquare()
     {
         $accessTokenUrl = 'https://foursquare.com/oauth2/access_token';
@@ -441,6 +454,9 @@ class AuthController extends Controller {
         }
     }
 
+    /**
+     * Login with GitHub.
+     */
     public function github()
     {
         $accessTokenUrl = 'https://github.com/login/oauth/access_token';
