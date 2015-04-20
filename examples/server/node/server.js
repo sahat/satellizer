@@ -466,7 +466,6 @@ app.post('/auth/facebook', function(req, res) {
     if (response.statusCode !== 200) {
       return res.status(500).send({ message: accessToken.error.message });
     }
-    accessToken = qs.parse(accessToken);
 
     // Step 2. Retrieve profile information about the current user.
     request.get({ url: graphApiUrl, qs: accessToken, json: true }, function(err, response, profile) {
