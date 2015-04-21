@@ -7,6 +7,9 @@ use App\User;
 
 class UserController extends Controller {
 
+    /**
+     * Generate JSON Web Token.
+     */
     protected function createToken($user)
     {
         $payload = [
@@ -17,6 +20,9 @@ class UserController extends Controller {
         return JWT::encode($payload, Config::get('app.token_secret'));
     }
 
+    /**
+     * Get signed in user's profile.
+     */
     public function getUser(Request $request)
     {
         $user = User::find($request['user']['sub']);
@@ -24,6 +30,9 @@ class UserController extends Controller {
         return $user;
     }
 
+    /**
+     * Update signed in user's profile.
+     */
     public function updateUser(Request $request)
     {
         $user = User::find($request['user']['sub']);

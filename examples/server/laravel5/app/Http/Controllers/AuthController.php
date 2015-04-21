@@ -11,7 +11,9 @@ use App\User;
 
 class AuthController extends Controller {
 
-
+    /**
+     * Generate JSON Web Token.
+     */
     protected function createToken($user)
     {
         $payload = [
@@ -22,6 +24,10 @@ class AuthController extends Controller {
         return JWT::encode($payload, Config::get('app.token_secret'));
     }
 
+
+    /**
+     * Unlink provider.
+     */
     public function unlink(Request $request, $provider)
     {
         $user = User::find($request['user']['sub']);
@@ -37,6 +43,9 @@ class AuthController extends Controller {
         return response()->json(array('token' => $this->createToken($user)));
     }
 
+    /**
+     * Log in with Email and Password.
+     */
     public function login(Request $request)
     {
         $email = $request->input('email');
@@ -121,8 +130,7 @@ class AuthController extends Controller {
             }
 
             $token = explode(' ', $request->header('Authorization'))[1];
-            $payloadObject = JWT::decode($token, Config::get('app.token_secret'));
-            $payload = json_decode(json_encode($payloadObject), true);
+            $payload = (array) JWT::decode($token, Config::get('app.token_secret'), array('HS256'));
 
             $user = User::find($payload['sub']);
             $user->facebook = $profile['id'];
@@ -158,13 +166,13 @@ class AuthController extends Controller {
         $accessTokenUrl = 'https://accounts.google.com/o/oauth2/token';
         $peopleApiUrl = 'https://www.googleapis.com/plus/v1/people/me/openIdConnect';
 
-        $params = array(
+        $params = [
             'code' => $request->input('code'),
             'client_id' => $request->input('clientId'),
+            'client_secret' => Config::get('app.google_secret'),
             'redirect_uri' => $request->input('redirectUri'),
             'grant_type' => 'authorization_code',
-            'client_secret' => Config::get('app.GOOGLE_SECRET')
-        );
+        ];
 
         $client = new GuzzleHttp\Client();
 
@@ -180,24 +188,24 @@ class AuthController extends Controller {
         $profile = $profileResponse->json();
 
         // Step 3a. If user is already signed in then link accounts.
-        if (Request::header('Authorization'))
+        if ($request->header('Authorization'))
         {
             $user = User::where('google', '=', $profile['sub']);
+
             if ($user->first())
             {
-                return response()->json(array('message' => 'There is already a Google account that belongs to you'), 409);
+                return response()->json(['message' => 'There is already a Google account that belongs to you'], 409);
             }
 
-            $token = explode(' ', Request::header('Authorization'))[1];
-            $payloadObject = JWT::decode($token, Config::get('app.TOKEN_SECRET'));
-            $payload = json_decode(json_encode($payloadObject), true);
+            $token = explode(' ', $request->header('Authorization'))[1];
+            $payload = (array) JWT::decode($token, Config::get('app.token_secret'), array('HS256'));
 
             $user = User::find($payload['sub']);
             $user->google = $profile['sub'];
             $user->displayName = $user->displayName || $profile['name'];
             $user->save();
 
-            return response()->json(array('token' => $this->createToken($user)));
+            return response()->json(['token' => $this->createToken($user)]);
         }
         // Step 3b. Create a new user account or return an existing one.
         else
@@ -206,7 +214,7 @@ class AuthController extends Controller {
 
             if ($user->first())
             {
-                return response()->json(array('token' => $this->createToken($user->first())));
+                return response()->json(['token' => $this->createToken($user->first())]);
             }
 
             $user = new User;
@@ -214,7 +222,7 @@ class AuthController extends Controller {
             $user->displayName = $profile['name'];
             $user->save();
 
-            return response()->json(array('token' => $this->createToken($user)));
+            return response()->json(['token' => $this->createToken($user)]);
         }
     }
 
@@ -249,7 +257,7 @@ class AuthController extends Controller {
         $profile = $peopleApiResponse->json();
 
         // Step 3a. If user is already signed in then link accounts.
-        if (Request::header('Authorization'))
+        if ($request->header('Authorization'))
         {
             $user = User::where('linkedin', '=', $profile['id']);
 
@@ -258,7 +266,7 @@ class AuthController extends Controller {
                 return response()->json(array('message' => 'There is already a LinkedIn account that belongs to you'), 409);
             }
 
-            $token = explode(' ', Request::header('Authorization'))[1];
+            $token = explode(' ', $request->header('Authorization'))[1];
             $payloadObject = JWT::decode($token, Config::get('app.TOKEN_SECRET'));
             $payload = json_decode(json_encode($payloadObject), true);
 
@@ -341,7 +349,7 @@ class AuthController extends Controller {
             parse_str($accessTokenResponse, $profile);
 
             // Step 4a. If user is already signed in then link accounts.
-            if (Request::header('Authorization'))
+            if ($request->header('Authorization'))
             {
                 $user = User::where('twitter', '=', $profile['user_id']);
                 if ($user->first())
@@ -349,7 +357,7 @@ class AuthController extends Controller {
                     return response()->json(array('message' => 'There is already a Twitter account that belongs to you'), 409);
                 }
 
-                $token = explode(' ', Request::header('Authorization'))[1];
+                $token = explode(' ', $request->header('Authorization'))[1];
                 $payloadObject = JWT::decode($token, Config::get('app.TOKEN_SECRET'));
                 $payload = json_decode(json_encode($payloadObject), true);
 
@@ -414,7 +422,7 @@ class AuthController extends Controller {
         $profile = $profileResponse->json()['response']['user'];
 
         // Step 3a. If user is already signed in then link accounts.
-        if (Request::header('Authorization'))
+        if ($request->header('Authorization'))
         {
             $user = User::where('foursquare', '=', $profile['id']);
             if ($user->first())
@@ -422,7 +430,7 @@ class AuthController extends Controller {
                 return response()->json(array('message' => 'There is already a Foursquare account that belongs to you'), 409);
             }
 
-            $token = explode(' ', Request::header('Authorization'))[1];
+            $token = explode(' ', $request->header('Authorization'))[1];
             $payloadObject = JWT::decode($token, Config::get('app.TOKEN_SECRET'));
             $payload = json_decode(json_encode($payloadObject), true);
 
@@ -485,7 +493,7 @@ class AuthController extends Controller {
         $profile = $userApiResponse->json();
 
         // Step 3a. If user is already signed in then link accounts.
-        if (Request::header('Authorization'))
+        if ($request->header('Authorization'))
         {
             $user = User::where('github', '=', $profile['id']);
 
@@ -494,7 +502,7 @@ class AuthController extends Controller {
                 return response()->json(array('message' => 'There is already a GitHub account that belongs to you'), 409);
             }
 
-            $token = explode(' ', Request::header('Authorization'))[1];
+            $token = explode(' ', $request->header('Authorization'))[1];
             $payloadObject = JWT::decode($token, Config::get('app.TOKEN_SECRET'));
             $payload = json_decode(json_encode($payloadObject), true);
 
