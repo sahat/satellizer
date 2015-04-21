@@ -466,12 +466,12 @@ class AuthController extends Controller {
         $accessTokenUrl = 'https://github.com/login/oauth/access_token';
         $userApiUrl = 'https://api.github.com/user';
 
-        $params = array(
+        $params = [
             'code' => $request->input('code'),
             'client_id' => $request->input('clientId'),
-            'redirect_uri' => $request->input('redirectUri'),
-            'client_secret' => Config::get('app.GITHUB_SECRET')
-        );
+            'client_secret' => Config::get('app.github_secret'),
+            'redirect_uri' => $request->input('redirectUri')
+        ];
 
         $client = new GuzzleHttp\Client();
 
@@ -497,19 +497,18 @@ class AuthController extends Controller {
 
             if ($user->first())
             {
-                return response()->json(array('message' => 'There is already a GitHub account that belongs to you'), 409);
+                return response()->json(['message' => 'There is already a GitHub account that belongs to you'], 409);
             }
 
             $token = explode(' ', $request->header('Authorization'))[1];
-            $payloadObject = JWT::decode($token, Config::get('app.TOKEN_SECRET'));
-            $payload = json_decode(json_encode($payloadObject), true);
+            $payload = (array) JWT::decode($token, Config::get('app.token_secret'), array('HS256'));
 
             $user = User::find($payload['sub']);
             $user->github = $profile['id'];
             $user->displayName = $user->displayName || $profile['name'];
             $user->save();
 
-            return response()->json(array('token' => $this->createToken($user)));
+            return response()->json(['token' => $this->createToken($user)]);
         }
         // Step 3b. Create a new user account or return an existing one.
         else
@@ -518,7 +517,7 @@ class AuthController extends Controller {
 
             if ($user->first())
             {
-                return response()->json(array('token' => $this->createToken($user->first())));
+                return response()->json(['token' => $this->createToken($user->first())]);
             }
 
             $user = new User;
@@ -526,7 +525,7 @@ class AuthController extends Controller {
             $user->displayName = $profile['name'];
             $user->save();
 
-            return response()->json(array('token' => $this->createToken($user)));
+            return response()->json(['token' => $this->createToken($user)]);
         }
     }
 }
