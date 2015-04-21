@@ -1,0 +1,62 @@
+<div class="container">
+  <div class="row">
+    <div class="center-form panel">
+      <div class="panel-body">
+        <h2 class="text-center">Log in</h2>
+        <form method="post" ng-submit="login()" name="loginForm">
+          <div class="form-group has-feedback">
+            <input class="form-control input-lg" type="text" name="email" ng-model="email" placeholder="Email" required autofocus>
+            <span class="ion-at form-control-feedback"></span>
+          </div>
+
+          <div class="form-group has-feedback">
+            <input class="form-control input-lg" type="password" name="password" ng-model="password" placeholder="Password" required>
+            <span class="ion-key form-control-feedback"></span>
+          </div>
+
+          <button type="submit" ng-disabled="loginForm.$invalid" class="btn btn-lg  btn-block btn-success">Log in</button>
+
+          <br/>
+
+          <p class="text-center">
+            <a href="#">Forgot your password?</a>
+          </p>
+
+          <p class="text-center text-muted">
+            <small>Don't have an account yet? <a href="/#/signup">Sign up</a></small>
+          </p>
+
+          <div class="signup-or-separator">
+            <h6 class="text">or</h6>
+            <hr>
+          </div>
+        </form>
+
+        <button class="btn btn-block btn-facebook" ng-click="authenticate('facebook')">
+          <i class="ion-social-facebook"></i> Sign in with Facebook
+        </button>
+        <button class="btn btn-block btn-google-plus" ng-click="authenticate('google')">
+          <span class="ion-social-googleplus"></span>Sign in with Google
+        </button>
+        <button class="btn btn-block btn-linkedin" ng-click="authenticate('linkedin')">
+          <i class="ion-social-linkedin"></i> Sign in with LinkedIn
+        </button>
+        <button class="btn btn-block btn-twitter" ng-click="authenticate('twitter')">
+          <i class="ion-social-twitter"></i> Sign in with Twitter
+        </button>
+        <button class="btn btn-block btn-foursquare" ng-click="authenticate('foursquare')">
+          <i class="fa fa-foursquare"></i> Sign in with Foursquare
+        </button>
+        <button class="btn btn-block btn-github" ng-click="authenticate('github')">
+          <i class="ion-social-github"></i> Sign in with GitHub
+        </button>
+        <button class="btn btn-block btn-yahoo" ng-click="authenticate('yahoo')">
+          <i class="ion-social-yahoo"></i> Sign in with Yahoo
+        </button>
+        <button class="btn btn-block btn-live" ng-click="authenticate('live')">
+          <i class="ion-social-windows"></i> Sign in with Windows Live
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
