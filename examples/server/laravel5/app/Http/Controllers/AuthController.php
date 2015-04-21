@@ -396,13 +396,13 @@ class AuthController extends Controller {
         $accessTokenUrl = 'https://foursquare.com/oauth2/access_token';
         $userProfileUrl = 'https://api.foursquare.com/v2/users/self';
 
-        $params = array(
+        $params = [
             'code' => $request->input('code'),
             'client_id' => $request->input('clientId'),
+            'client_secret' => Config::get('app.foursquare_secret'),
             'redirect_uri' => $request->input('redirectUri'),
             'grant_type' => 'authorization_code',
-            'client_secret' => Config::get('app.FOURSQUARE_SECRET')
-        );
+        ];
 
         $client = new GuzzleHttp\Client();
 
@@ -410,10 +410,10 @@ class AuthController extends Controller {
         $accessTokenResponse = $client->post($accessTokenUrl, ['body' => $params]);
         $accessToken = $accessTokenResponse->json()['access_token'];
 
-        $profileParams = array(
+        $profileParams = [
             'v' => '20140806',
             'oauth_token' => $accessToken
-        );
+        ];
 
         // Step 2. Retrieve profile information about the current user.
         $profileResponse = $client->get($userProfileUrl, ['query' => $profileParams]);
@@ -430,15 +430,14 @@ class AuthController extends Controller {
             }
 
             $token = explode(' ', $request->header('Authorization'))[1];
-            $payloadObject = JWT::decode($token, Config::get('app.TOKEN_SECRET'));
-            $payload = json_decode(json_encode($payloadObject), true);
+            $payload = (array) JWT::decode($token, Config::get('app.token_secret'), array('HS256'));
 
             $user = User::find($payload['sub']);
             $user->foursquare = $profile['id'];
             $user->displayName = $user->displayName || $profile['firstName'] . ' ' . $profile['lastName'];
             $user->save();
 
-            return response()->json(array('token' => $this->createToken($user)));
+            return response()->json(['token' => $this->createToken($user)]);
         }
         // Step 3b. Create a new user account or return an existing one.
         else
@@ -447,7 +446,7 @@ class AuthController extends Controller {
 
             if ($user->first())
             {
-                return response()->json(array('token' => $this->createToken($user->first())));
+                return response()->json(['token' => $this->createToken($user->first())]);
             }
 
             $user = new User;
@@ -455,7 +454,7 @@ class AuthController extends Controller {
             $user->displayName =  $profile['firstName'] . ' ' . $profile['lastName'];
             $user->save();
 
-            return response()->json(array('token' => $this->createToken($user)));
+            return response()->json(['token' => $this->createToken($user)]);
         }
     }
 
