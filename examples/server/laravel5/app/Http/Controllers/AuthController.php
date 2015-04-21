@@ -300,19 +300,19 @@ class AuthController extends Controller {
      */
     public function twitter(Request $request)
     {
-
         $requestTokenUrl = 'https://api.twitter.com/oauth/request_token';
         $accessTokenUrl = 'https://api.twitter.com/oauth/access_token';
         $authenticateUrl = 'https://api.twitter.com/oauth/authenticate';
 
         $client = new GuzzleHttp\Client();
 
-        if (!Request::get('oauth_token') || !Request::get('oauth_verifier'))
+        // Step 1. Obtain request token for the authorization popup.
+        if (!$request->input('oauth_token') || !$request->input('oauth_verifier'))
         {
             $oauth = new Oauth1([
-              'consumer_key' => Config::get('app.TWITTER_KEY'),
-              'consumer_secret' => Config::get('app.TWITTER_SECRET'),
-              'callback' => Config::get('app.TWITTER_CALLBACK')
+              'consumer_key' => Config::get('app.twitter_key'),
+              'consumer_secret' => Config::get('app.twitter_secret'),
+              'callback' => Config::get('app.twitter_callback')
             ]);
 
             $client->getEmitter()->attach($oauth);
@@ -323,25 +323,25 @@ class AuthController extends Controller {
             $oauthToken = array();
             parse_str($requestTokenResponse->getBody(), $oauthToken);
 
-            $params = http_build_query(array(
+            $params = http_build_query([
                 'oauth_token' => $oauthToken['oauth_token']
-            ));
+            ]);
 
             // Step 2. Redirect to the authorization screen.
-            return Redirect::to($authenticateUrl . '?' . $params);
+            return redirect($authenticateUrl . '?' . $params);
         }
+        // Step 3. Exchange oauth token and oauth verifier for access token.
         else
         {
             $oauth = new Oauth1([
-                'consumer_key' => Config::get('app.TWITTER_KEY'),
-                'consumer_secret' => Config::get('app.TWITTER_SECRET'),
-                'token' => Request::get('oauth_token'),
-                'verifier' => Request::get('oauth_verifier')
+                'consumer_key' => Config::get('app.twitter_key'),
+                'consumer_secret' => Config::get('app.twitter_secret'),
+                'token' => $request->input('oauth_token'),
+                'verifier' => $request->input('oauth_verifier')
             ]);
 
             $client->getEmitter()->attach($oauth);
 
-            // Step 3. Exchange oauth token and oauth verifier for access token.
             $accessTokenResponse = $client->post($accessTokenUrl, ['auth' => 'oauth']);
 
             $profile = array();
@@ -353,19 +353,18 @@ class AuthController extends Controller {
                 $user = User::where('twitter', '=', $profile['user_id']);
                 if ($user->first())
                 {
-                    return response()->json(array('message' => 'There is already a Twitter account that belongs to you'), 409);
+                    return response()->json(['message' => 'There is already a Twitter account that belongs to you'], 409);
                 }
 
                 $token = explode(' ', $request->header('Authorization'))[1];
-                $payloadObject = JWT::decode($token, Config::get('app.TOKEN_SECRET'));
-                $payload = json_decode(json_encode($payloadObject), true);
+                $payload = (array) JWT::decode($token, Config::get('app.token_secret'), array('HS256'));
 
                 $user = User::find($payload['sub']);
                 $user->twitter = $profile['user_id'];
                 $user->displayName = $user->displayName || $profile['screen_name'];
                 $user->save();
 
-                return response()->json(array('token' => $this->createToken($user)));
+                return response()->json(['token' => $this->createToken($user)]);
             }
             // Step 4b. Create a new user account or return an existing one.
             else
@@ -374,7 +373,7 @@ class AuthController extends Controller {
 
                 if ($user->first())
                 {
-                    return response()->json(array('token' => $this->createToken($user->first())));
+                    return response()->json(['token' => $this->createToken($user->first())]);
                 }
 
                 $user = new User;
@@ -382,7 +381,7 @@ class AuthController extends Controller {
                 $user->displayName = $profile['screen_name'];
                 $user->save();
 
-                return response()->json(array('token' => $this->createToken($user)));
+                return response()->json(['token' => $this->createToken($user)]);
             }
 
         }
