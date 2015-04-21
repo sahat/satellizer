@@ -5,12 +5,12 @@ use Hash;
 use Config;
 use Validator;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use GuzzleHttp;
 use GuzzleHttp\Subscriber\Oauth\Oauth1;
 use App\User;
 
 class AuthController extends Controller {
+
 
     protected function createToken($user)
     {
@@ -22,22 +22,19 @@ class AuthController extends Controller {
         return JWT::encode($payload, Config::get('app.token_secret'));
     }
 
-    public function unlink($provider)
+    public function unlink(Request $request, $provider)
     {
-        $token = explode(' ', Request::header('Authorization'))[1];
-        $payloadObject = JWT::decode($token, Config::get('app.token_secret'));
-        $payload = json_decode(json_encode($payloadObject), true);
-
-        $user = User::find($payload['sub']);
+        $user = User::find($request['user']['sub']);
 
         if (!$user)
         {
-            Response::json(array('message' => 'User not found'));
+            return response()->json(['message' => 'User not found']);
         }
 
         $user->$provider = '';
         $user->save();
-        return Response::json(array('token' => $this->createToken($user)));
+        
+        return response()->json(array('token' => $this->createToken($user)));
     }
 
     public function login(Request $request)
@@ -49,12 +46,13 @@ class AuthController extends Controller {
 
         if (!$user)
         {
-            return Rresponse()->json(['message' => 'Wrong email and/or password'], 401);
+            return response()->json(['message' => 'Wrong email and/or password'], 401);
         }
 
         if (Hash::check($password, $user->password))
         {
             unset($user->password);
+
             return response()->json(['token' => $this->createToken($user)]);
         }
         else
@@ -187,7 +185,7 @@ class AuthController extends Controller {
             $user = User::where('google', '=', $profile['sub']);
             if ($user->first())
             {
-                return Response::json(array('message' => 'There is already a Google account that belongs to you'), 409);
+                return response()->json(array('message' => 'There is already a Google account that belongs to you'), 409);
             }
 
             $token = explode(' ', Request::header('Authorization'))[1];
@@ -199,7 +197,7 @@ class AuthController extends Controller {
             $user->displayName = $user->displayName || $profile['name'];
             $user->save();
 
-            return Response::json(array('token' => $this->createToken($user)));
+            return response()->json(array('token' => $this->createToken($user)));
         }
         // Step 3b. Create a new user account or return an existing one.
         else
@@ -208,7 +206,7 @@ class AuthController extends Controller {
 
             if ($user->first())
             {
-                return Response::json(array('token' => $this->createToken($user->first())));
+                return response()->json(array('token' => $this->createToken($user->first())));
             }
 
             $user = new User;
@@ -216,7 +214,7 @@ class AuthController extends Controller {
             $user->displayName = $profile['name'];
             $user->save();
 
-            return Response::json(array('token' => $this->createToken($user)));
+            return response()->json(array('token' => $this->createToken($user)));
         }
     }
 
@@ -257,7 +255,7 @@ class AuthController extends Controller {
 
             if ($user->first())
             {
-                return Response::json(array('message' => 'There is already a LinkedIn account that belongs to you'), 409);
+                return response()->json(array('message' => 'There is already a LinkedIn account that belongs to you'), 409);
             }
 
             $token = explode(' ', Request::header('Authorization'))[1];
@@ -269,7 +267,7 @@ class AuthController extends Controller {
             $user->displayName = $user->displayName || $profile['firstName'] . ' ' . $profile['lastName'];
             $user->save();
 
-            return Response::json(array('token' => $this->createToken($user)));
+            return response()->json(array('token' => $this->createToken($user)));
         }
         // Step 3b. Create a new user account or return an existing one.
         else
@@ -278,7 +276,7 @@ class AuthController extends Controller {
 
             if ($user->first())
             {
-                return Response::json(array('token' => $this->createToken($user->first())));
+                return response()->json(array('token' => $this->createToken($user->first())));
             }
 
             $user = new User;
@@ -286,7 +284,7 @@ class AuthController extends Controller {
             $user->displayName =  $profile['firstName'] . ' ' . $profile['lastName'];
             $user->save();
 
-            return Response::json(array('token' => $this->createToken($user)));
+            return response()->json(array('token' => $this->createToken($user)));
         }
     }
 
@@ -348,7 +346,7 @@ class AuthController extends Controller {
                 $user = User::where('twitter', '=', $profile['user_id']);
                 if ($user->first())
                 {
-                    return Response::json(array('message' => 'There is already a Twitter account that belongs to you'), 409);
+                    return response()->json(array('message' => 'There is already a Twitter account that belongs to you'), 409);
                 }
 
                 $token = explode(' ', Request::header('Authorization'))[1];
@@ -360,7 +358,7 @@ class AuthController extends Controller {
                 $user->displayName = $user->displayName || $profile['screen_name'];
                 $user->save();
 
-                return Response::json(array('token' => $this->createToken($user)));
+                return response()->json(array('token' => $this->createToken($user)));
             }
             // Step 4b. Create a new user account or return an existing one.
             else
@@ -369,7 +367,7 @@ class AuthController extends Controller {
 
                 if ($user->first())
                 {
-                    return Response::json(array('token' => $this->createToken($user->first())));
+                    return response()->json(array('token' => $this->createToken($user->first())));
                 }
 
                 $user = new User;
@@ -377,7 +375,7 @@ class AuthController extends Controller {
                 $user->displayName = $profile['screen_name'];
                 $user->save();
 
-                return Response::json(array('token' => $this->createToken($user)));
+                return response()->json(array('token' => $this->createToken($user)));
             }
 
         }
@@ -421,7 +419,7 @@ class AuthController extends Controller {
             $user = User::where('foursquare', '=', $profile['id']);
             if ($user->first())
             {
-                return Response::json(array('message' => 'There is already a Foursquare account that belongs to you'), 409);
+                return response()->json(array('message' => 'There is already a Foursquare account that belongs to you'), 409);
             }
 
             $token = explode(' ', Request::header('Authorization'))[1];
@@ -433,7 +431,7 @@ class AuthController extends Controller {
             $user->displayName = $user->displayName || $profile['firstName'] . ' ' . $profile['lastName'];
             $user->save();
 
-            return Response::json(array('token' => $this->createToken($user)));
+            return response()->json(array('token' => $this->createToken($user)));
         }
         // Step 3b. Create a new user account or return an existing one.
         else
@@ -442,7 +440,7 @@ class AuthController extends Controller {
 
             if ($user->first())
             {
-                return Response::json(array('token' => $this->createToken($user->first())));
+                return response()->json(array('token' => $this->createToken($user->first())));
             }
 
             $user = new User;
@@ -450,7 +448,7 @@ class AuthController extends Controller {
             $user->displayName =  $profile['firstName'] . ' ' . $profile['lastName'];
             $user->save();
 
-            return Response::json(array('token' => $this->createToken($user)));
+            return response()->json(array('token' => $this->createToken($user)));
         }
     }
 
@@ -493,7 +491,7 @@ class AuthController extends Controller {
 
             if ($user->first())
             {
-                return Response::json(array('message' => 'There is already a GitHub account that belongs to you'), 409);
+                return response()->json(array('message' => 'There is already a GitHub account that belongs to you'), 409);
             }
 
             $token = explode(' ', Request::header('Authorization'))[1];
@@ -505,7 +503,7 @@ class AuthController extends Controller {
             $user->displayName = $user->displayName || $profile['name'];
             $user->save();
 
-            return Response::json(array('token' => $this->createToken($user)));
+            return response()->json(array('token' => $this->createToken($user)));
         }
         // Step 3b. Create a new user account or return an existing one.
         else
@@ -514,7 +512,7 @@ class AuthController extends Controller {
 
             if ($user->first())
             {
-                return Response::json(array('token' => $this->createToken($user->first())));
+                return response()->json(array('token' => $this->createToken($user->first())));
             }
 
             $user = new User;
@@ -522,7 +520,7 @@ class AuthController extends Controller {
             $user->displayName = $profile['name'];
             $user->save();
 
-            return Response::json(array('token' => $this->createToken($user)));
+            return response()->json(array('token' => $this->createToken($user)));
         }
     }
 }
