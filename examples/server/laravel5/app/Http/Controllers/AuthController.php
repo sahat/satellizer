@@ -229,18 +229,18 @@ class AuthController extends Controller {
     /**
      * Login with LinkedIn.
      */
-    public function linkedin()
+    public function linkedin(Request $request)
     {
         $accessTokenUrl = 'https://www.linkedin.com/uas/oauth2/accessToken';
         $peopleApiUrl = 'https://api.linkedin.com/v1/people/~:(id,first-name,last-name,email-address)';
 
-        $params = array(
+        $params = [
             'code' => $request->input('code'),
             'client_id' => $request->input('clientId'),
+            'client_secret' => Config::get('app.linkedin_secret'),
             'redirect_uri' => $request->input('redirectUri'),
             'grant_type' => 'authorization_code',
-            'client_secret' => Config::get('app.LINKEDIN_SECRET'),
-        );
+        ];
 
         $client = new GuzzleHttp\Client();
 
@@ -263,19 +263,18 @@ class AuthController extends Controller {
 
             if ($user->first())
             {
-                return response()->json(array('message' => 'There is already a LinkedIn account that belongs to you'), 409);
+                return response()->json(['message' => 'There is already a LinkedIn account that belongs to you'], 409);
             }
 
             $token = explode(' ', $request->header('Authorization'))[1];
-            $payloadObject = JWT::decode($token, Config::get('app.TOKEN_SECRET'));
-            $payload = json_decode(json_encode($payloadObject), true);
+            $payload = (array) JWT::decode($token, Config::get('app.token_secret'), array('HS256'));
 
             $user = User::find($payload['sub']);
             $user->linkedin = $profile['id'];
             $user->displayName = $user->displayName || $profile['firstName'] . ' ' . $profile['lastName'];
             $user->save();
 
-            return response()->json(array('token' => $this->createToken($user)));
+            return response()->json(['token' => $this->createToken($user)]);
         }
         // Step 3b. Create a new user account or return an existing one.
         else
@@ -284,7 +283,7 @@ class AuthController extends Controller {
 
             if ($user->first())
             {
-                return response()->json(array('token' => $this->createToken($user->first())));
+                return response()->json(['token' => $this->createToken($user->first())]);
             }
 
             $user = new User;
@@ -292,14 +291,14 @@ class AuthController extends Controller {
             $user->displayName =  $profile['firstName'] . ' ' . $profile['lastName'];
             $user->save();
 
-            return response()->json(array('token' => $this->createToken($user)));
+            return response()->json(['token' => $this->createToken($user)]);
         }
     }
 
     /**
      * Login with Twitter.
      */
-    public function twitter()
+    public function twitter(Request $request)
     {
 
         $requestTokenUrl = 'https://api.twitter.com/oauth/request_token';
@@ -392,7 +391,7 @@ class AuthController extends Controller {
     /**
      * Login with Foursquare.
      */
-    public function foursquare()
+    public function foursquare(Request $request)
     {
         $accessTokenUrl = 'https://foursquare.com/oauth2/access_token';
         $userProfileUrl = 'https://api.foursquare.com/v2/users/self';
@@ -463,7 +462,7 @@ class AuthController extends Controller {
     /**
      * Login with GitHub.
      */
-    public function github()
+    public function github(Request $request)
     {
         $accessTokenUrl = 'https://github.com/login/oauth/access_token';
         $userApiUrl = 'https://api.github.com/user';
