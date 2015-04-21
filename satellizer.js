@@ -785,6 +785,9 @@
         var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
         return {
           request: function(request) {
+            if (request.skipAuthorization) {
+              return request;
+            }
             var token = storage.get(tokenName);
             if (token && config.httpInterceptor) {
               if (config.authHeader && config.authToken) {
