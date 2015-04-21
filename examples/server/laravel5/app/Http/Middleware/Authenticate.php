@@ -1,5 +1,7 @@
 <?php namespace App\Http\Middleware;
 
+use JWT;
+use Config;
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
 
@@ -32,19 +34,24 @@ class Authenticate {
 	 */
 	public function handle($request, Closure $next)
 	{
-		if ($this->auth->guest())
+		if ($request->header('Authorization'))
 		{
-			if ($request->ajax())
-			{
-				return response('Unauthorized.', 401);
-			}
-			else
-			{
-				return redirect()->guest('auth/login');
-			}
-		}
+			$token = explode(' ', $request->header('Authorization'))[1];
+			$payload = (array) JWT::decode($token, Config::get('app.token_secret'), array('HS256'));
 
-		return $next($request);
+			if ($payload['exp'] < time())
+			{
+				return response()->json(['message' => 'Token has expired']);
+			}
+
+			$request['user'] = $payload;
+
+			return $next($request);
+		}
+		else
+		{
+			return response()->json(['message' => 'Please make sure your request has an Authorization header'], 401);
+		}
 	}
 
 }
