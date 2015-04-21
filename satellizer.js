@@ -784,15 +784,15 @@
       function($q, config, storage) {
         var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
         return {
-          request: function(httpConfig) {
+          request: function(request) {
             var token = storage.get(tokenName);
             if (token && config.httpInterceptor) {
               if (config.authHeader && config.authToken) {
                 token = config.authToken + ' ' + token;
               }
-              httpConfig.headers[config.authHeader] = token;
+              request.headers[config.authHeader] = token;
             }
-            return httpConfig;
+            return request;
           },
           responseError: function(response) {
             return $q.reject(response);
