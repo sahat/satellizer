@@ -23,6 +23,7 @@ class CreateUsersTable extends Migration {
 			$table->string('github')->nullable();
 			$table->string('google')->nullable();
 			$table->string('linkedin')->nullable();
+			$table->string('twitter')->nullable();
 			$table->timestamps();
 		});
 	}
