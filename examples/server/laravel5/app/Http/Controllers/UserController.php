@@ -1,36 +1,39 @@
 <?php namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+use Config;
+use JWT;
+use App\User;
+
 class UserController extends Controller {
 
-    public function __construct()
+    protected function createToken($user)
     {
-        $this->middleware('auth');
+        $payload = [
+            'sub' => $user->id,
+            'iat' => time(),
+            'exp' => time() + (2 * 7 * 24 * 60 * 60)
+        ];
+        return JWT::encode($payload, Config::get('app.token_secret'));
     }
 
-    public function getUser()
+    public function getUser(Request $request)
     {
-        $token = explode(' ', Request::header('Authorization'))[1];
-        $payloadObject = JWT::decode($token, Config::get('secrets.TOKEN_SECRET'));
-        $payload = json_decode(json_encode($payloadObject), true);
-
-        $user = User::find($payload['sub']);
+        $user = User::find($request['user']['sub']);
 
         return $user;
     }
 
-    public function updateUser()
+    public function updateUser(Request $request)
     {
-        $token = explode(' ', Request::header('Authorization'))[1];
-        $payloadObject = JWT::decode($token, Config::get('secrets.TOKEN_SECRET'));
-        $payload = json_decode(json_encode($payloadObject), true);
+        $user = User::find($request['user']['sub']);
 
-        $user = User::find($payload['sub']);
-        $user->displayName = Input::get('displayName', $user->displayName);
-        $user->email = Input::get('email', $user->email);
+        $user->displayName = $request->input('displayName');
+        $user->email = $request->input('email');
         $user->save();
 
         $token = $this->createToken($user);
 
-        return Response::json(array('token' => $token));
+        return response()->json(['token' => $token]);
     }
 }
