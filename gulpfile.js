@@ -28,13 +28,18 @@ gulp.task('copy', ['minify'], function() {
     .pipe(gulp.dest('examples/ionic/www/lib/satellizer'));
 });
 
+gulp.task('client', function() {
+  return gulp.src('examples/client/**/*.*')
+    .pipe(gulp.dest('examples/server/php/public'));
+});
+
 gulp.task('complexity', function() {
   return gulp.src('satellizer.js')
     .pipe(complexity());
 });
 
 gulp.task('watch', function() {
-  gulp.watch('satellizer.js', ['copy', 'minify']);
+  gulp.watch('satellizer.js', ['copy', 'client', 'minify']);
 });
 
-gulp.task('default', ['copy', 'watch']);
+gulp.task('default', ['copy', 'client', 'watch']);
