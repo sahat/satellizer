@@ -110,6 +110,10 @@
     })
     .provider('$auth', ['satellizer.config', function(config) {
       Object.defineProperties(this, {
+        baseUrl: {
+          get: function() { return config.baseUrl; },
+          set: function(value) { config.baseUrl = value; }
+        },
         httpInterceptor: {
           get: function() { return config.httpInterceptor; },
           set: function(value) { config.httpInterceptor = value; }
