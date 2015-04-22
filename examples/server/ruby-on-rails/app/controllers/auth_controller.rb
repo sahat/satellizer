@@ -1,5 +1,4 @@
 class AuthController < ApplicationController
-  before_action :set_oauth_user, only: [:facebook, :google] 
 
   def signup
     @user = User.create auth_params
@@ -17,26 +16,24 @@ class AuthController < ApplicationController
   end
 
   def facebook
-    render json: auth_success
+    @oauth = OAuth.const_get(action_name.capitalize).new params
+    
+    @user = User.for_oauth @oauth
+
+    render json: { token: Token.encode(@user.id) }
   end
 
   def google
-    render json: auth_success
+    @oauth = OAuth.const_get(action_name.capitalize).new params
+    
+    @user = User.for_oauth @oauth
+
+    render json: { token: Token.encode(@user.id) }
   end
 
   private
 
-  def set_oauth_user
-    @oauth = OAuth.const_get(action_name.capitalize).new params
-    
-    @user = User.for_oauth @oauth
-  end
-
   def auth_params
     params.require(:auth).permit(:email, :password, :displayName)
-  end
-
-  def auth_success
-    { token: Token.encode(@user.id) }
   end
 end
