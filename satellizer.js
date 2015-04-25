@@ -678,7 +678,7 @@
             if (!popupWindow) {
               $interval.cancel(polling);
               deferred.reject({ data: 'Provider Popup Blocked' });
-            } else if (popupWindow.closed) {
+            } else if (popupWindow.closed || popupWindow.closed === undefined) {
               $interval.cancel(polling);
               deferred.reject({ data: 'Authorization Failed' });
             }
