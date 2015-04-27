@@ -5,7 +5,7 @@
 [![Join the chat at https://gitter.im/sahat/satellizer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/sahat/satellizer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](http://img.shields.io/travis/sahat/satellizer.svg?style=flat)](https://travis-ci.org/sahat/satellizer)
 [![Test Coverage](http://img.shields.io/codeclimate/coverage/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
-[![Version](http://img.shields.io/badge/version-0.9.4-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
+[![Version](http://img.shields.io/badge/version-0.10.0-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
 
 **Live Demo:** [https://satellizer.herokuapp.com](https://satellizer.herokuapp.com)
 
@@ -49,7 +49,7 @@ npm install satellizer
 or use the CDN:
 
 ```html
-<script src="//cdn.jsdelivr.net/satellizer/0.9.4/satellizer.min.js"></script>
+<script src="//cdn.jsdelivr.net/satellizer/0.10.0/satellizer.min.js"></script>
 ```
 
 ## Usage
