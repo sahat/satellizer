@@ -132,6 +132,7 @@ Below is a complete listing of all default configuration options.
 ```js
 $authProvider.httpInterceptor = true; // Add Authorization header to HTTP request
 $authProvider.loginOnSignup = true;
+$authProvider.baseUrl = '/' // API Base URL for the paths below.
 $authProvider.loginRedirect = '/';
 $authProvider.logoutRedirect = '/';
 $authProvider.signupRedirect = '/login';
