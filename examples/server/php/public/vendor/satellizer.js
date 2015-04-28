@@ -1,5 +1,5 @@
 /**
- * Satellizer 0.9.4
+ * Satellizer 0.10.0
  * (c) 2015 Sahat Yalkabov
  * License: MIT
  */
@@ -8,9 +8,9 @@
 
   angular.module('satellizer', [])
     .constant('satellizer.config', {
-      baseUrl: '/',
       httpInterceptor: true,
       loginOnSignup: true,
+      baseUrl: '/',
       loginRedirect: '/',
       logoutRedirect: '/',
       signupRedirect: '/login',
@@ -110,6 +110,10 @@
     })
     .provider('$auth', ['satellizer.config', function(config) {
       Object.defineProperties(this, {
+        baseUrl: {
+          get: function() { return config.baseUrl; },
+          set: function(value) { config.baseUrl = value; }
+        },
         httpInterceptor: {
           get: function() { return config.httpInterceptor; },
           set: function(value) { config.httpInterceptor = value; }
@@ -270,14 +274,13 @@
       'satellizer.storage',
       function($q, $window, $location, config, storage) {
         var shared = {};
+        var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
 
         shared.getToken = function() {
-          var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
           return storage.get(tokenName);
         };
 
         shared.getPayload = function() {
-          var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
           var token = storage.get(tokenName);
 
           if (token && token.split('.').length === 3) {
@@ -304,11 +307,9 @@
               response.data[config.tokenRoot][config.tokenName] : response.data[config.tokenName];
           }
 
-          var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
-
           if (!token) {
-            tokenName = config.tokenRoot ? config.tokenRoot + '.' + config.tokenName : config.tokenName;
-            throw new Error('Expecting a token named "' + tokenName + '" but instead got: ' + JSON.stringify(response.data));
+            var tokenPath = config.tokenRoot ? config.tokenRoot + '.' + config.tokenName : config.tokenName;
+            throw new Error('Expecting a token named "' + tokenPath + '" but instead got: ' + JSON.stringify(response.data));
           }
 
           storage.set(tokenName, token);
@@ -321,12 +322,10 @@
         };
 
         shared.removeToken = function() {
-          var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
           storage.remove(tokenName);
         };
 
         shared.isAuthenticated = function() {
-          var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
           var token = storage.get(tokenName);
 
           if (token) {
@@ -344,7 +343,6 @@
         };
 
         shared.logout = function(redirect) {
-          var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
           storage.remove(tokenName);
 
           if (config.logoutRedirect && !redirect) {
@@ -406,7 +404,8 @@
         var local = {};
 
         local.login = function(user, redirect) {
-          return $http.post(utils.joinUrl(config.baseUrl, config.loginUrl), user)
+          var loginUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, config.loginUrl) : config.loginUrl;
+          return $http.post(loginUrl, user)
             .then(function(response) {
               shared.setToken(response, redirect);
               return response;
@@ -414,7 +413,8 @@
         };
 
         local.signup = function(user) {
-          return $http.post(utils.joinUrl(config.baseUrl, config.signupUrl), user)
+          var signupUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, config.signupUrl) : config.signupUrl;
+          return $http.post(signupUrl, user)
             .then(function(response) {
               if (config.loginOnSignup) {
                 shared.setToken(response);
@@ -498,7 +498,8 @@
               data[param] = oauthData[param];
             });
 
-            return $http.post(utils.joinUrl(config.baseUrl, defaults.url), data, { withCredentials: config.withCredentials });
+            var exchangeForTokenUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, defaults.url) : defaults.url;
+            return $http.post(exchangeForTokenUrl, data, { withCredentials: config.withCredentials });
           };
 
           oauth2.buildQueryString = function() {
@@ -555,8 +556,8 @@
 
           oauth1.open = function(options, userData) {
             angular.extend(defaults, options);
-
-            return popup.open(utils.joinUrl(config.baseUrl, defaults.url), defaults.popupOptions, defaults.redirectUri)
+            var popupUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, defaults.url) : defaults.url;
+            return popup.open(popupUrl, defaults.popupOptions, defaults.redirectUri)
               .then(function(response) {
                 return oauth1.exchangeForToken(response, userData);
               });
@@ -565,8 +566,8 @@
           oauth1.exchangeForToken = function(oauthData, userData) {
             var data = angular.extend({}, userData, oauthData);
             var qs = oauth1.buildQueryString(data);
-
-            return $http.get(utils.joinUrl(config.baseUrl, defaults.url) + '?' + qs);
+            var exchangeForTokenUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, defaults.url) : defaults.url;
+            return $http.get(exchangeForTokenUrl + '?' + qs);
           };
 
           oauth1.buildQueryString = function(obj) {
@@ -657,7 +658,11 @@
           var deferred = $q.defer();
           polling = $interval(function() {
             try {
-              if (popupWindow.document.domain === document.domain && (popupWindow.location.search || popupWindow.location.hash)) {
+              
+              var documentOrigin = document.location.host + ':' + document.location.port,
+                  popupWindowOrigin = popupWindow.location.host + ':' + popupWindow.location.port;
+
+              if (popupWindowOrigin === documentOrigin && (popupWindow.location.search || popupWindow.location.hash)) {
                 var queryParams = popupWindow.location.search.substring(1).replace(/\/$/, '');
                 var hashParams = popupWindow.location.hash.substring(1).replace(/\/$/, '');
                 var hash = utils.parseQueryString(hashParams);
@@ -680,7 +685,7 @@
             if (!popupWindow) {
               $interval.cancel(polling);
               deferred.reject({ data: 'Provider Popup Blocked' });
-            } else if (popupWindow.closed) {
+            } else if (popupWindow.closed || popupWindow.closed === undefined) {
               $interval.cancel(polling);
               deferred.reject({ data: 'Authorization Failed' });
             }
