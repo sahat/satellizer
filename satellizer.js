@@ -186,6 +186,10 @@
         platform: {
           get: function() { return config.platform; },
           set: function(value) { config.platform = value; }
+        },
+        storage: {
+          get: function() { return config.storage; },
+          set: function(value) { config.storage = value; }
         }
       });
 
@@ -658,7 +662,7 @@
           var deferred = $q.defer();
           polling = $interval(function() {
             try {
-              
+
               var documentOrigin = document.location.host + ':' + document.location.port,
                   popupWindowOrigin = popupWindow.location.host + ':' + popupWindow.location.port;
 
