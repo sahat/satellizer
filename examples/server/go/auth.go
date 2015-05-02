@@ -101,8 +101,8 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 func SetToken(w http.ResponseWriter, r *http.Request, user *User) {
 	t := jwt.New(jwt.GetSigningMethod("RS256"))
 	t.Claims["ID"] = user.ID.Hex()
-	t.Claims["name"] = user.DisplayName
-	t.Claims["exp"] = time.Now().Add(time.Minute * 60 * 24 * 30).Unix()
+	t.Claims["iat"] = time.Now().Unix()
+	t.Claims["exp"] = time.Now().Add(time.Minute * 60 * 24 * 14).Unix()
 	tokenString, err := t.SignedString(signKey)
 	if err != nil {
 		ISR(w, r, err)
