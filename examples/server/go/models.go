@@ -59,6 +59,18 @@ type User struct {
 	Twitter     string        `bson:"twitter,omitempty" json:"twitter,omitempty"`
 }
 
+func (u *User) Save(db *mgo.Database) error {
+	uC := db.C("users")
+	_, err := uC.UpsertId(u.ID, bson.M{"$set": u})
+	return err
+}
+
+func NewUser() (u *User) {
+	u = &User{}
+	u.ID = bson.NewObjectId()
+	return
+}
+
 func CreateUser(db *mgo.Database, u *User) *Error {
 	uC := db.C("users")
 	pwHash, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
@@ -93,6 +105,18 @@ func AuthUser(db *mgo.Database, email, password string) (*User, *Error) {
 	}
 	return user, nil
 
+}
+
+func FindUserByQuery(db *mgo.Database, query bson.M) (*User, *Error) {
+	uC := db.C("users")
+	user := &User{}
+	err := uC.Find(query).One(user)
+	if err != nil {
+		return nil, &Error{Reason: err, Internal: true}
+	} else if user.ID == "" {
+		return nil, &Error{Reason: errors.New("No user found"), Internal: false}
+	}
+	return user, nil
 }
 
 func FindUserById(db *mgo.Database, id bson.ObjectId) (*User, *Error) {
