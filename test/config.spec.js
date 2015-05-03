@@ -167,5 +167,29 @@ describe('satellizer.config', function() {
     expect(this.$authProvider.platform).toEqual('mobile');
   });
 
+  it('should set authToken', function() {
+    this.$authProvider.authToken = 'TOKEN';
+    expect(this.config.authToken).toEqual('TOKEN');
+    expect(this.$authProvider.authToken).toEqual('TOKEN');
+
+    this.$authProvider.authToken = 'Bearer';
+  });
+
+  it('should set baseUrl', function() {
+    this.$authProvider.baseUrl = '/api/v2/';
+    expect(this.config.baseUrl).toEqual('/api/v2/');
+    expect(this.$authProvider.baseUrl).toEqual('/api/v2/');
+
+    this.$authProvider.baseUrl = '/';
+  });
+
+  it('should set storage', function() {
+    this.$authProvider.storage = 'sessionStorage';
+    expect(this.config.storage).toEqual('sessionStorage');
+    expect(this.$authProvider.storage).toEqual('sessionStorage');
+
+    this.$authProvider.storage = 'localStorage';
+  });
+
 });
 
