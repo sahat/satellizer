@@ -1,10 +1,11 @@
 ![Project Logo](https://lh6.googleusercontent.com/-YmfKZZLZKL0/U-KVPFSbiOI/AAAAAAAAEZA/maoYT8iJCnA/w1089-h513-no/sshot-1.png)
 
 # [Satellizer](https://github.com/sahat/satellizer/)
+
+[![Join the chat at https://gitter.im/sahat/satellizer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/sahat/satellizer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](http://img.shields.io/travis/sahat/satellizer.svg?style=flat)](https://travis-ci.org/sahat/satellizer)
-[![Code Climate](http://img.shields.io/codeclimate/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
 [![Test Coverage](http://img.shields.io/codeclimate/coverage/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
-[![Version](http://img.shields.io/badge/version-0.9.4-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
+[![Version](http://img.shields.io/badge/version-0.10.1-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
 
 **Live Demo:** [https://satellizer.herokuapp.com](https://satellizer.herokuapp.com)
 
@@ -48,7 +49,7 @@ npm install satellizer
 or use the CDN:
 
 ```html
-<script src="//cdn.jsdelivr.net/satellizer/0.9.4/satellizer.min.js"></script>
+<script src="//cdn.jsdelivr.net/satellizer/0.10.1/satellizer.min.js"></script>
 ```
 
 ## Usage
@@ -131,6 +132,7 @@ Below is a complete listing of all default configuration options.
 ```js
 $authProvider.httpInterceptor = true; // Add Authorization header to HTTP request
 $authProvider.loginOnSignup = true;
+$authProvider.baseUrl = '/' // API Base URL for the paths below.
 $authProvider.loginRedirect = '/';
 $authProvider.logoutRedirect = '/';
 $authProvider.signupRedirect = '/login';

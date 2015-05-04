@@ -1,5 +1,5 @@
 /**
- * Satellizer 0.9.4
+ * Satellizer 0.10.1
  * (c) 2015 Sahat Yalkabov
  * License: MIT
  */
@@ -8,9 +8,9 @@
 
   angular.module('satellizer', [])
     .constant('satellizer.config', {
-      baseUrl: '/',
       httpInterceptor: true,
       loginOnSignup: true,
+      baseUrl: '/',
       loginRedirect: '/',
       logoutRedirect: '/',
       signupRedirect: '/login',
@@ -186,6 +186,10 @@
         platform: {
           get: function() { return config.platform; },
           set: function(value) { config.platform = value; }
+        },
+        storage: {
+          get: function() { return config.storage; },
+          set: function(value) { config.storage = value; }
         }
       });
 
@@ -404,7 +408,8 @@
         var local = {};
 
         local.login = function(user, redirect) {
-          return $http.post(utils.joinUrl(config.baseUrl, config.loginUrl), user)
+          var loginUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, config.loginUrl) : config.loginUrl;
+          return $http.post(loginUrl, user)
             .then(function(response) {
               shared.setToken(response, redirect);
               return response;
@@ -412,7 +417,8 @@
         };
 
         local.signup = function(user) {
-          return $http.post(utils.joinUrl(config.baseUrl, config.signupUrl), user)
+          var signupUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, config.signupUrl) : config.signupUrl;
+          return $http.post(signupUrl, user)
             .then(function(response) {
               if (config.loginOnSignup) {
                 shared.setToken(response);
@@ -496,7 +502,8 @@
               data[param] = oauthData[param];
             });
 
-            return $http.post(utils.joinUrl(config.baseUrl, defaults.url), data, { withCredentials: config.withCredentials });
+            var exchangeForTokenUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, defaults.url) : defaults.url;
+            return $http.post(exchangeForTokenUrl, data, { withCredentials: config.withCredentials });
           };
 
           oauth2.buildQueryString = function() {
@@ -553,8 +560,8 @@
 
           oauth1.open = function(options, userData) {
             angular.extend(defaults, options);
-
-            return popup.open(utils.joinUrl(config.baseUrl, defaults.url), defaults.popupOptions, defaults.redirectUri)
+            var popupUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, defaults.url) : defaults.url;
+            return popup.open(popupUrl, defaults.popupOptions, defaults.redirectUri)
               .then(function(response) {
                 return oauth1.exchangeForToken(response, userData);
               });
@@ -563,8 +570,8 @@
           oauth1.exchangeForToken = function(oauthData, userData) {
             var data = angular.extend({}, userData, oauthData);
             var qs = oauth1.buildQueryString(data);
-
-            return $http.get(utils.joinUrl(config.baseUrl, defaults.url) + '?' + qs);
+            var exchangeForTokenUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, defaults.url) : defaults.url;
+            return $http.get(exchangeForTokenUrl + '?' + qs);
           };
 
           oauth1.buildQueryString = function(obj) {
@@ -655,7 +662,11 @@
           var deferred = $q.defer();
           polling = $interval(function() {
             try {
-              if (popupWindow.document.domain === document.domain && (popupWindow.location.search || popupWindow.location.hash)) {
+
+              var documentOrigin = document.location.host + ':' + document.location.port,
+                  popupWindowOrigin = popupWindow.location.host + ':' + popupWindow.location.port;
+
+              if (popupWindowOrigin === documentOrigin && (popupWindow.location.search || popupWindow.location.hash)) {
                 var queryParams = popupWindow.location.search.substring(1).replace(/\/$/, '');
                 var hashParams = popupWindow.location.hash.substring(1).replace(/\/$/, '');
                 var hash = utils.parseQueryString(hashParams);
@@ -678,7 +689,7 @@
             if (!popupWindow) {
               $interval.cancel(polling);
               deferred.reject({ data: 'Provider Popup Blocked' });
-            } else if (popupWindow.closed) {
+            } else if (popupWindow.closed || popupWindow.closed === undefined) {
               $interval.cancel(polling);
               deferred.reject({ data: 'Authorization Failed' });
             }
