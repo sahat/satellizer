@@ -264,6 +264,16 @@ your server in the following format - `Authorization: Bearer <token>`, then use
 `$authProvider.authHeader` method to override this behavior, e.g. set its value to
 **x-access-token** or another custom header that your backend may require.
 
+## Not sending the JWT for specific requests 
+```
+// This request will NOT send the token as it has skipAuthentication
+$http({
+  url: '/api/endpoint',
+  skipAuthorization: true
+  method: 'GET'
+});
+```
+
 ## Browser Support
 
 <table>
