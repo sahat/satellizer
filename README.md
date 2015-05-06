@@ -264,6 +264,9 @@ your server in the following format - `Authorization: Bearer <token>`, then use
 `$authProvider.authHeader` method to override this behavior, e.g. set its value to
 **x-access-token** or another custom header that your backend may require.
 
+## Updating storage
+To toggle from localStorage and sessionStorage run `$auth.setStorage('sessionStorage');` or `$auth.setStorage('localStorage');`
+
 ## Browser Support
 
 <table>

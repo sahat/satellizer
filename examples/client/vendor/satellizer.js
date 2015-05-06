@@ -266,6 +266,10 @@
             return shared.getPayload();
           };
 
+          $auth.setStorage = function(type) {
+            return shared.setStorage(type);
+          };
+
           return $auth;
         }];
 
@@ -357,6 +361,10 @@
           }
 
           return $q.when();
+        };
+
+        shared.setStorage = function(type){
+          config.storage = type;
         };
 
         return shared;
