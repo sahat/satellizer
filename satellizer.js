@@ -675,8 +675,8 @@
                   popupWindowOrigin = popupWindow.location.host + ':' + popupWindow.location.port;
 
               if (popupWindowOrigin === documentOrigin && (popupWindow.location.search || popupWindow.location.hash)) {
-                var queryParams = popupWindow.location.search.substring(1).replace(/\/$/, '');
-                var hashParams = popupWindow.location.hash.substring(1).replace(/\/$/, '');
+                var queryParams = popupWindow.location.search.substring(1).replace(/[\/$]/, '');
+                var hashParams = popupWindow.location.hash.substring(1).replace(/[\/$]/, '');
                 var hash = utils.parseQueryString(hashParams);
                 var qs = utils.parseQueryString(queryParams);
 
