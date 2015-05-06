@@ -274,6 +274,9 @@ $http({
 });
 ```
 
+## Updating storage
+To toggle from localStorage and sessionStorage run `$auth.setStorage('sessionStorage');` or `$auth.setStorage('localStorage');`
+
 ## Browser Support
 
 <table>
