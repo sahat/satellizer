@@ -626,7 +626,7 @@ app.post('/auth/twitter', function(req, res) {
 
         // Step 5a. Link user accounts.
         if (req.headers.authorization) {
-          User.findOne({ twitter: profile.user_id }, function(err, existingUser) {
+          User.findOne({ twitter: profile.id }, function(err, existingUser) {
             if (existingUser) {
               return res.status(409).send({ message: 'There is already a Twitter account that belongs to you' });
             }
@@ -649,7 +649,7 @@ app.post('/auth/twitter', function(req, res) {
           });
         } else {
           // Step 5b. Create a new user account or return an existing one.
-          User.findOne({ twitter: profile.user_id }, function(err, existingUser) {
+          User.findOne({ twitter: profile.id }, function(err, existingUser) {
             if (existingUser) {
               return res.send({ token: createJWT(existingUser) });
             }
