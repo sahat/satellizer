@@ -99,7 +99,7 @@ function ensureAuthenticated(req, res, next) {
  | Generate JSON Web Token
  |--------------------------------------------------------------------------
  */
-function createToken(user) {
+function createJWT(user) {
   var payload = {
     sub: user._id,
     iat: moment().unix(),
@@ -152,7 +152,7 @@ app.post('/auth/login', function(req, res) {
       if (!isMatch) {
         return res.status(401).send({ message: 'Wrong email and/or password' });
       }
-      res.send({ token: createToken(user) });
+      res.send({ token: createJWT(user) });
     });
   });
 });
@@ -173,7 +173,7 @@ app.post('/auth/signup', function(req, res) {
       password: req.body.password
     });
     user.save(function() {
-      res.send({ token: createToken(user) });
+      res.send({ token: createJWT(user) });
     });
   });
 });
@@ -218,7 +218,7 @@ app.post('/auth/google', function(req, res) {
             user.picture = user.picture || profile.picture.replace('sz=50', 'sz=200');
             user.displayName = user.displayName || profile.name;
             user.save(function() {
-              var token = createToken(user);
+              var token = createJWT(user);
               res.send({ token: token });
             });
           });
@@ -227,14 +227,14 @@ app.post('/auth/google', function(req, res) {
         // Step 3b. Create a new user account or return an existing one.
         User.findOne({ google: profile.sub }, function(err, existingUser) {
           if (existingUser) {
-            return res.send({ token: createToken(existingUser) });
+            return res.send({ token: createJWT(existingUser) });
           }
           var user = new User();
           user.google = profile.sub;
           user.picture = profile.picture.replace('sz=50', 'sz=200');
           user.displayName = profile.name;
           user.save(function(err) {
-            var token = createToken(user);
+            var token = createJWT(user);
             res.send({ token: token });
           });
         });
@@ -282,7 +282,7 @@ app.post('/auth/github', function(req, res) {
             user.picture = user.picture || profile.avatar_url;
             user.displayName = user.displayName || profile.name;
             user.save(function() {
-              var token = createToken(user);
+              var token = createJWT(user);
               res.send({ token: token });
             });
           });
@@ -291,7 +291,7 @@ app.post('/auth/github', function(req, res) {
         // Step 3b. Create a new user account or return an existing one.
         User.findOne({ github: profile.id }, function(err, existingUser) {
           if (existingUser) {
-            var token = createToken(existingUser);
+            var token = createJWT(existingUser);
             return res.send({ token: token });
           }
           var user = new User();
@@ -299,7 +299,7 @@ app.post('/auth/github', function(req, res) {
           user.picture = profile.avatar_url;
           user.displayName = profile.name;
           user.save(function() {
-            var token = createToken(user);
+            var token = createJWT(user);
             res.send({ token: token });
           });
         });
@@ -353,7 +353,7 @@ app.post('/auth/linkedin', function(req, res) {
             user.picture = user.picture || profile.pictureUrl;
             user.displayName = user.displayName || profile.firstName + ' ' + profile.lastName;
             user.save(function() {
-              var token = createToken(user);
+              var token = createJWT(user);
               res.send({ token: token });
             });
           });
@@ -362,14 +362,14 @@ app.post('/auth/linkedin', function(req, res) {
         // Step 3b. Create a new user account or return an existing one.
         User.findOne({ linkedin: profile.id }, function(err, existingUser) {
           if (existingUser) {
-            return res.send({ token: createToken(existingUser) });
+            return res.send({ token: createJWT(existingUser) });
           }
           var user = new User();
           user.linkedin = profile.id;
           user.picture = profile.pictureUrl;
           user.displayName = profile.firstName + ' ' + profile.lastName;
           user.save(function() {
-            var token = createToken(user);
+            var token = createJWT(user);
             res.send({ token: token });
           });
         });
@@ -411,13 +411,13 @@ app.post('/auth/live', function(req, res) {
       if (!req.headers.authorization) {
         User.findOne({ live: profile.id }, function(err, user) {
           if (user) {
-            return res.send({ token: createToken(user) });
+            return res.send({ token: createJWT(user) });
           }
           var newUser = new User();
           newUser.live = profile.id;
           newUser.displayName = profile.name;
           newUser.save(function() {
-            var token = createToken(newUser);
+            var token = createJWT(newUser);
             res.send({ token: token });
           });
         });
@@ -436,7 +436,7 @@ app.post('/auth/live', function(req, res) {
             existingUser.live = profile.id;
             existingUser.displayName = existingUser.name;
             existingUser.save(function() {
-              var token = createToken(existingUser);
+              var token = createJWT(existingUser);
               res.send({ token: token });
             });
           });
@@ -487,7 +487,7 @@ app.post('/auth/facebook', function(req, res) {
             user.picture = user.picture || 'https://graph.facebook.com/v2.3/' + profile.id + '/picture?type=large';
             user.displayName = user.displayName || profile.name;
             user.save(function() {
-              var token = createToken(user);
+              var token = createJWT(user);
               res.send({ token: token });
             });
           });
@@ -496,7 +496,7 @@ app.post('/auth/facebook', function(req, res) {
         // Step 3b. Create a new user account or return an existing one.
         User.findOne({ facebook: profile.id }, function(err, existingUser) {
           if (existingUser) {
-            var token = createToken(existingUser);
+            var token = createJWT(existingUser);
             return res.send({ token: token });
           }
           var user = new User();
@@ -504,7 +504,7 @@ app.post('/auth/facebook', function(req, res) {
           user.picture = 'https://graph.facebook.com/' + profile.id + '/picture?type=large';
           user.displayName = profile.name;
           user.save(function() {
-            var token = createToken(user);
+            var token = createJWT(user);
             res.send({ token: token });
           });
         });
@@ -552,7 +552,7 @@ app.post('/auth/yahoo', function(req, res) {
             user.yahoo = body.profile.guid;
             user.displayName = user.displayName || body.profile.nickname;
             user.save(function() {
-              var token = createToken(user);
+              var token = createJWT(user);
               res.send({ token: token });
             });
           });
@@ -561,13 +561,13 @@ app.post('/auth/yahoo', function(req, res) {
         // Step 3b. Create a new user account or return an existing one.
         User.findOne({ yahoo: body.profile.guid }, function(err, existingUser) {
           if (existingUser) {
-            return res.send({ token: createToken(existingUser) });
+            return res.send({ token: createJWT(existingUser) });
           }
           var user = new User();
           user.yahoo = body.profile.guid;
           user.displayName = body.profile.nickname;
           user.save(function() {
-            var token = createToken(user);
+            var token = createJWT(user);
             res.send({ token: token });
           });
         });
@@ -581,12 +581,13 @@ app.post('/auth/yahoo', function(req, res) {
  | Login with Twitter
  |--------------------------------------------------------------------------
  */
-app.get('/auth/twitter', function(req, res) {
+app.post('/auth/twitter', function(req, res) {
   var requestTokenUrl = 'https://api.twitter.com/oauth/request_token';
   var accessTokenUrl = 'https://api.twitter.com/oauth/access_token';
-  var authenticateUrl = 'https://api.twitter.com/oauth/authenticate';
+  var profileUrl = 'https://api.twitter.com/1.1/users/show.json?screen_name=';
 
-  if (!req.query.oauth_token || !req.query.oauth_verifier) {
+  // Part 1/2: Initial request from Satellizer.
+  if (!req.body.oauth_token || !req.body.oauth_verifier) {
     var requestTokenOauth = {
       consumer_key: config.TWITTER_KEY,
       consumer_secret: config.TWITTER_SECRET,
@@ -596,58 +597,73 @@ app.get('/auth/twitter', function(req, res) {
     // Step 1. Obtain request token for the authorization popup.
     request.post({ url: requestTokenUrl, oauth: requestTokenOauth }, function(err, response, body) {
       var oauthToken = qs.parse(body);
-      var params = qs.stringify({ oauth_token: oauthToken.oauth_token });
 
-      // Step 2. Redirect to the authorization screen.
-      res.redirect(authenticateUrl + '?' + params);
+      // Step 2. Send OAuth token back to open the authorization screen.
+      res.send(oauthToken);
     });
   } else {
+      // Part 2/2: Second request after Authorize app is clicked.
     var accessTokenOauth = {
       consumer_key: config.TWITTER_KEY,
       consumer_secret: config.TWITTER_SECRET,
-      token: req.query.oauth_token,
-      verifier: req.query.oauth_verifier
+      token: req.body.oauth_token,
+      verifier: req.body.oauth_verifier
     };
 
     // Step 3. Exchange oauth token and oauth verifier for access token.
-    request.post({ url: accessTokenUrl, oauth: accessTokenOauth }, function(err, response, profile) {
-      profile = qs.parse(profile);
+    request.post({ url: accessTokenUrl, oauth: accessTokenOauth }, function(err, response, accessToken) {
 
-      // Step 4a. Link user accounts.
-      if (req.headers.authorization) {
-        User.findOne({ twitter: profile.user_id }, function(err, existingUser) {
-          if (existingUser) {
-            return res.status(409).send({ message: 'There is already a Twitter account that belongs to you' });
-          }
-          var token = req.headers.authorization.split(' ')[1];
-          var payload = jwt.decode(token, config.TOKEN_SECRET);
-          User.findById(payload.sub, function(err, user) {
-            if (!user) {
-              return res.status(400).send({ message: 'User not found' });
+      accessToken = qs.parse(accessToken);
+
+      var profileOauth = {
+        consumer_key: config.TWITTER_KEY,
+        consumer_secret: config.TWITTER_SECRET,
+        oauth_token: accessToken.oauth_token
+      };
+      
+      // Step 4. Retrieve profile information about the current user.
+      request.get({ url: profileUrl + accessToken.screen_name, oauth: profileOauth, json: true }, function(err, response, profile) {
+
+        // Step 5a. Link user accounts.
+        if (req.headers.authorization) {
+          User.findOne({ twitter: profile.user_id }, function(err, existingUser) {
+            if (existingUser) {
+              return res.status(409).send({ message: 'There is already a Twitter account that belongs to you' });
             }
-            user.twitter = profile.user_id;
-            user.displayName = user.displayName || profile.screen_name;
-            user.save(function(err) {
-              res.send({ token: createToken(user) });
+
+            var token = req.headers.authorization.split(' ')[1];
+            var payload = jwt.decode(token, config.TOKEN_SECRET);
+
+            User.findById(payload.sub, function(err, user) {
+              if (!user) {
+                return res.status(400).send({ message: 'User not found' });
+              }
+
+              user.twitter = profile.id;
+              user.displayName = user.displayName || profile.name;
+              user.picture = user.picture || profile.profile_image_url.replace('_normal', '');
+              user.save(function(err) {
+                res.send({ token: createJWT(user) });
+              });
             });
           });
-        });
-      } else {
-        // Step 4b. Create a new user account or return an existing one.
-        User.findOne({ twitter: profile.user_id }, function(err, existingUser) {
-          if (existingUser) {
-            var token = createToken(existingUser);
-            return res.send({ token: token });
-          }
-          var user = new User();
-          user.twitter = profile.user_id;
-          user.displayName = profile.screen_name;
-          user.save(function() {
-            var token = createToken(user);
-            res.send({ token: token });
+        } else {
+          // Step 5b. Create a new user account or return an existing one.
+          User.findOne({ twitter: profile.user_id }, function(err, existingUser) {
+            if (existingUser) {
+              return res.send({ token: createJWT(existingUser) });
+            }
+
+            var user = new User();
+            user.twitter = profile.id;
+            user.displayName = profile.name;
+            user.picture = profile.profile_image_url.replace('_normal', '');
+            user.save(function() {
+              res.send({ token: createJWT(user) });
+            });
           });
-        });
-      }
+        }
+      });
     });
   }
 });
@@ -695,7 +711,7 @@ app.post('/auth/foursquare', function(req, res) {
             user.picture = user.picture || profile.photo.prefix + '300x300' + profile.photo.suffix;
             user.displayName = user.displayName || profile.firstName + ' ' + profile.lastName;
             user.save(function() {
-              var token = createToken(user);
+              var token = createJWT(user);
               res.send({ token: token });
             });
           });
@@ -704,7 +720,7 @@ app.post('/auth/foursquare', function(req, res) {
         // Step 3b. Create a new user account or return an existing one.
         User.findOne({ foursquare: profile.id }, function(err, existingUser) {
           if (existingUser) {
-            var token = createToken(existingUser);
+            var token = createJWT(existingUser);
             return res.send({ token: token });
           }
           var user = new User();
@@ -712,7 +728,7 @@ app.post('/auth/foursquare', function(req, res) {
           user.picture = profile.photo.prefix + '300x300' + profile.photo.suffix;
           user.displayName = profile.firstName + ' ' + profile.lastName;
           user.save(function() {
-            var token = createToken(user);
+            var token = createJWT(user);
             res.send({ token: token });
           });
         });
