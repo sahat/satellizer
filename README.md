@@ -344,10 +344,9 @@ authentication process works.
 <hr>
 
 <img src="http://indonesia-royal.com/wp-content/uploads/2014/06/twitter-bird-square-logo.jpg" height="70">
-- Sign in at [https://dev.twitter.com](https://dev.twitter.com/)
-- From the profile picture dropdown menu select **My Applications**
-- Click **Create a new application**
-- Enter your application name, website and description
+- Sign in at [https://apps.twitter.com](https://apps.twitter.com/)
+- Click on **Create New App**
+- Enter your *Application Name*, *Description* and *Website*
 - For **Callback URL**: *http://127.0.0.1:3000*
 - Go to **Settings** tab
 - Under *Application Type* select **Read and Write** access
