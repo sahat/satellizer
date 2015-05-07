@@ -91,6 +91,7 @@
         twitter: {
           name: 'twitter',
           url: '/auth/twitter',
+          authorizationEndpoint: 'https://api.twitter.com/oauth/authenticate',
           type: '1.0',
           popupOptions: { width: 495, height: 645 }
         },
@@ -324,7 +325,7 @@
 
           if (config.loginRedirect && !redirect) {
             $location.path(config.loginRedirect);
-          }  else if (redirect && angular.isString(redirect)) {
+          } else if (redirect && angular.isString(redirect)) {
             $location.path(encodeURI(redirect));
           }
         };
@@ -363,7 +364,7 @@
           return $q.when();
         };
 
-        shared.setStorage = function(type){
+        shared.setStorage = function(type) {
           config.storage = type;
         };
 
@@ -482,7 +483,8 @@
 
             var url = defaults.authorizationEndpoint + '?' + oauth2.buildQueryString();
 
-            return popup.open(url, defaults.popupOptions, defaults.redirectUri)
+            return popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri)
+              .pollPopup()
               .then(function(oauthData) {
                 if (defaults.responseType === 'token') {
                   return oauthData;
@@ -561,25 +563,35 @@
             url: null,
             name: null,
             popupOptions: null,
-            redirectUri: null
+            redirectUri: null,
+            authorizationEndpoint: null
           };
 
           var oauth1 = {};
 
           oauth1.open = function(options, userData) {
             angular.extend(defaults, options);
-            var popupUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, defaults.url) : defaults.url;
-            return popup.open(popupUrl, defaults.popupOptions, defaults.redirectUri)
+            var serverUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, defaults.url) : defaults.url;
+
+            var popupWindow = popup.open('', defaults.name, defaults.popupOptions, defaults.redirectUri);
+            var deferred = $q.defer();
+            return $http.post(serverUrl)
               .then(function(response) {
-                return oauth1.exchangeForToken(response, userData);
+                // Update URL
+                popupWindow.popupWindow.location.href = [defaults.authorizationEndpoint, oauth1.buildQueryString(response.data)].join('?');
+
+                return popupWindow.pollPopup()
+                  .then(function(response) {
+                    return oauth1.exchangeForToken(response, userData);
+                  });
               });
+
           };
 
           oauth1.exchangeForToken = function(oauthData, userData) {
             var data = angular.extend({}, userData, oauthData);
-            var qs = oauth1.buildQueryString(data);
             var exchangeForTokenUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, defaults.url) : defaults.url;
-            return $http.get(exchangeForTokenUrl + '?' + qs);
+            return $http.post(exchangeForTokenUrl, data, { withCredentials: config.withCredentials });
           };
 
           oauth1.buildQueryString = function(obj) {
@@ -608,12 +620,17 @@
 
         var popup = {};
 
+        popup.url = '';
         popup.popupWindow = popupWindow;
 
-        popup.open = function(url, options, redirectUri) {
+        popup.open = function(url, windowName, options, redirectUri) {
+          popup.url = url;
+
           var optionsString = popup.stringifyOptions(popup.prepareOptions(options || {}));
 
-          popupWindow = window.open(url, '_blank', optionsString);
+          // TODO: fix twitter url when null
+          popupWindow = window.open(url, windowName, optionsString);
+          popup.popupWindow = popupWindow;
 
           if (popupWindow && popupWindow.focus) {
             popupWindow.focus();
@@ -623,7 +640,8 @@
             return popup.eventListener(redirectUri);
           }
 
-          return popup.pollPopup();
+          //return popup.pollPopup();
+          return popup;
         };
 
         popup.eventListener = function(redirectUri) {
@@ -670,9 +688,8 @@
           var deferred = $q.defer();
           polling = $interval(function() {
             try {
-
               var documentOrigin = document.location.host + ':' + document.location.port,
-                  popupWindowOrigin = popupWindow.location.host + ':' + popupWindow.location.port;
+                popupWindowOrigin = popupWindow.location.host + ':' + popupWindow.location.port;
 
               if (popupWindowOrigin === documentOrigin && (popupWindow.location.search || popupWindow.location.hash)) {
                 var queryParams = popupWindow.location.search.substring(1).replace(/\/$/, '');
