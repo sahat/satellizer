@@ -628,6 +628,7 @@
 
           var optionsString = popup.stringifyOptions(popup.prepareOptions(options || {}));
 
+          // TODO: fix twitter url when null
           popupWindow = window.open(url, windowName, optionsString);
           popup.popupWindow = popupWindow;
 
@@ -639,6 +640,7 @@
             return popup.eventListener(redirectUri);
           }
 
+          //return popup.pollPopup();
           return popup;
         };
 
@@ -690,8 +692,8 @@
                 popupWindowOrigin = popupWindow.location.host + ':' + popupWindow.location.port;
 
               if (popupWindowOrigin === documentOrigin && (popupWindow.location.search || popupWindow.location.hash)) {
-                var queryParams = popupWindow.location.search.substring(1).replace(/\/$/, '');
-                var hashParams = popupWindow.location.hash.substring(1).replace(/\/$/, '');
+                var queryParams = popupWindow.location.search.substring(1).replace(/[\/$]/, '');
+                var hashParams = popupWindow.location.hash.substring(1).replace(/[\/$]/, '');
                 var hash = utils.parseQueryString(hashParams);
                 var qs = utils.parseQueryString(queryParams);
 
