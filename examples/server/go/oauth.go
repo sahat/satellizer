@@ -29,18 +29,24 @@ func LoginWithTwitter(w http.ResponseWriter, r *http.Request) {
 
 	profileUrl := "https://api.twitter.com/1.1/users/show.json"
 
+	// Part 1/2: Initial request from Satellizer.
 	if query.Get("oauth_token") == "" || query.Get("oauth_verifier") == "" {
 
 		// Step 1. Obtain request token for the authorization popup.
-		_, url, err := c.GetRequestTokenAndUrl(config.TWITTER_CALLBACK)
+		requestToken, _, err := c.GetRequestTokenAndUrl(config.TWITTER_CALLBACK)
 		if err != nil {
 			log.Println(err)
 			return
 		}
 
 		// Step 2. Redirect to the authorization screen.
-		http.Redirect(w, r, url, 302)
+		ServeJSON(w, r, &Response{
+			"oauth_token":              requestToken.Token,
+			"oauth_token_secret":       requestToken.Secret,
+			"oauth_callback_confirmed": "true",
+		}, 200)
 	} else {
+		// Part 2/2: Second request after Authorize app is clicked.
 		requestToken := &oauth.RequestToken{query.Get("oauth_token"), config.TWITTER_SECRET}
 
 		// Step 3. Exchange oauth token and oauth verifier for access token.
