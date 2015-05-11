@@ -41,6 +41,7 @@ func main() {
 	authApi.HandleFunc("/login", Login).Methods("POST")
 	authApi.HandleFunc("/signup", SignUp).Methods("POST")
 	authApi.HandleFunc("/facebook", LoginWithFacebook).Methods("POST")
+	authApi.HandleFunc("/twitter", LoginWithTwitter).Methods("GET")
 
 	n := negroni.Classic()
 	n.Use(JWTMiddleware())
