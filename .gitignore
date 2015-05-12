@@ -2,9 +2,6 @@
 ### Node.js
 ########################
 
-# Logs
-logs
-*.log
 
 # Runtime data
 pids
@@ -280,76 +277,6 @@ docs/_build/
 # PyBuilder
 target/
 
-
-########################
-### Ruby on Rails
-########################
-
-*.rbc
-capybara-*.html
-.rspec
-/log
-/tmp
-/db/*.sqlite3
-/public/system
-/coverage/
-/spec/tmp
-**.orig
-rerun.txt
-pickle-email-*.html
-
-# TODO Comment out these rules if you are OK with secrets being uploaded to the repo
-config/initializers/secret_token.rb
-config/secrets.yml
-
-## Environment normalisation:
-/.bundle
-/vendor/bundle
-
-# these should all be checked in to normalise the environment:
-# Gemfile.lock, .ruby-version, .ruby-gemset
-
-# unless supporting rvm < 1.11.0 or doing something fancy, ignore this:
-.rvmrc
-
-########################
-### Go-lang
-########################
-
-# Compiled Object files, Static and Dynamic libs (Shared Objects)
-*.o
-*.a
-*.so
-
-# Folders
-_obj
-_test
-
-# Architecture specific extensions/prefixes
-*.[568vq]
-[568vq].out
-
-*.cgo1.go
-*.cgo2.c
-_cgo_defun.c
-_cgo_gotypes.go
-_cgo_export.*
-
-_testmain.go
-
-*.exe
-*.test
-*.prof
-
-########################
-### Elixir
-########################
-
-/_build
-/deps
-erl_crash.dump
-*.ez
-
 ########################
 ### Java
 ########################
@@ -371,53 +298,3 @@ target
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
-
-########################
-### PHP
-########################
-
-/bootstrap/compiled.php
-/vendor
-composer.phar
-composer.lock
-.env.*.php
-.env.php
-.DS_Store
-Thumbs.db
-
-########################
-### Scala
-########################
-
-*.class
-*.log
-
-# sbt specific
-.cache/
-.history/
-.lib/
-target/
-lib_managed/
-src_managed/
-project/boot/
-project/plugins/project/
-
-# Scala-IDE specific
-.scala_dependencies
-.worksheet
-
-# Ignore Play! working directory #
-bin/
-/db
-.eclipse
-/lib/
-/modules
-/project/project
-/project/target
-/target
-tmp/
-test-result
-server.pid
-*.iml
-*.eml
-.cache
