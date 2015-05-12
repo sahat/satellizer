@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -17,7 +18,6 @@ import (
 
 func LoginWithTwitter(w http.ResponseWriter, r *http.Request) {
 
-	query := r.URL.Query()
 	c := oauth.NewConsumer(
 		config.TWITTER_KEY,
 		config.TWITTER_SECRET,
@@ -29,8 +29,19 @@ func LoginWithTwitter(w http.ResponseWriter, r *http.Request) {
 
 	profileUrl := "https://api.twitter.com/1.1/users/show.json"
 
+	decoder := json.NewDecoder(r.Body)
+	var requestPayload struct {
+		OAuthToken    string `json:"oauth_token"`
+		OAuthVerifier string `json:"oauth_verifier"`
+	}
+	err := decoder.Decode(&requestPayload)
+	if err != nil && err != io.EOF {
+		log.Println(err)
+		return
+	}
+
 	// Part 1/2: Initial request from Satellizer.
-	if query.Get("oauth_token") == "" || query.Get("oauth_verifier") == "" {
+	if requestPayload.OAuthToken == "" || requestPayload.OAuthVerifier == "" {
 
 		// Step 1. Obtain request token for the authorization popup.
 		requestToken, _, err := c.GetRequestTokenAndUrl(config.TWITTER_CALLBACK)
@@ -47,10 +58,10 @@ func LoginWithTwitter(w http.ResponseWriter, r *http.Request) {
 		}, 200)
 	} else {
 		// Part 2/2: Second request after Authorize app is clicked.
-		requestToken := &oauth.RequestToken{query.Get("oauth_token"), config.TWITTER_SECRET}
+		requestToken := &oauth.RequestToken{requestPayload.OAuthToken, config.TWITTER_SECRET}
 
 		// Step 3. Exchange oauth token and oauth verifier for access token.
-		accessToken, err := c.AuthorizeToken(requestToken, query.Get("oauth_verifier"))
+		accessToken, err := c.AuthorizeToken(requestToken, requestPayload.OAuthVerifier)
 		if err != nil {
 			log.Println(err)
 			return
