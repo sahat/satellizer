@@ -12,7 +12,7 @@
 */
 
 // OAuth, Login and Signup Routes.
-Route::get('auth/twitter', 'AuthController@twitter');
+Route::post('auth/twitter', 'AuthController@twitter');
 Route::post('auth/facebook', 'AuthController@facebook');
 Route::post('auth/foursquare', 'AuthController@foursquare');
 Route::post('auth/github', 'AuthController@github');
