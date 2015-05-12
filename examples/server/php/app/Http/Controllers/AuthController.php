@@ -121,7 +121,6 @@ class AuthController extends Controller {
         // Step 3a. If user is already signed in then link accounts.
         if ($request->header('Authorization'))
         {
-            error_log($request->header('Authorization'));
             $user = User::where('facebook', '=', $profile['id']);
 
             if ($user->first())
@@ -302,20 +301,20 @@ class AuthController extends Controller {
     {
         $requestTokenUrl = 'https://api.twitter.com/oauth/request_token';
         $accessTokenUrl = 'https://api.twitter.com/oauth/access_token';
-        $authenticateUrl = 'https://api.twitter.com/oauth/authenticate';
+        $profileUrl = 'https://api.twitter.com/1.1/users/show.json?screen_name=';
 
         $client = new GuzzleHttp\Client();
 
-        // Step 1. Obtain request token for the authorization popup.
+        // Part 1 of 2: Initial request from Satellizer.
         if (!$request->input('oauth_token') || !$request->input('oauth_verifier'))
         {
-            $oauth = new Oauth1([
+            $requestTokenOauth = new Oauth1([
               'consumer_key' => Config::get('app.twitter_key'),
               'consumer_secret' => Config::get('app.twitter_secret'),
               'callback' => Config::get('app.twitter_callback')
             ]);
 
-            $client->getEmitter()->attach($oauth);
+            $client->getEmitter()->attach($requestTokenOauth);
 
             // Step 1. Obtain request token for the authorization popup.
             $requestTokenResponse = $client->post($requestTokenUrl, ['auth' => 'oauth']);
@@ -323,34 +322,44 @@ class AuthController extends Controller {
             $oauthToken = array();
             parse_str($requestTokenResponse->getBody(), $oauthToken);
 
-            $params = http_build_query([
-                'oauth_token' => $oauthToken['oauth_token']
-            ]);
+            // Step 2. Send OAuth token back to open the authorization screen.
+            return response()->json($oauthToken);
 
-            // Step 2. Redirect to the authorization screen.
-            return redirect($authenticateUrl . '?' . $params);
         }
-        // Step 3. Exchange oauth token and oauth verifier for access token.
+        // Part 2 of 2: Second request after Authorize app is clicked.
         else
         {
-            $oauth = new Oauth1([
+            $accessTokenOauth = new Oauth1([
                 'consumer_key' => Config::get('app.twitter_key'),
                 'consumer_secret' => Config::get('app.twitter_secret'),
                 'token' => $request->input('oauth_token'),
                 'verifier' => $request->input('oauth_verifier')
             ]);
 
-            $client->getEmitter()->attach($oauth);
+            $client->getEmitter()->attach($accessTokenOauth);
 
-            $accessTokenResponse = $client->post($accessTokenUrl, ['auth' => 'oauth']);
+            // Step 3. Exchange oauth token and oauth verifier for access token.
+            $accessTokenResponse = $client->post($accessTokenUrl, ['auth' => 'oauth'])->getBody();
 
-            $profile = array();
-            parse_str($accessTokenResponse, $profile);
+            $accessToken = array();
+            parse_str($accessTokenResponse, $accessToken);
 
-            // Step 4a. If user is already signed in then link accounts.
+            $profileOauth = new Oauth1([
+                'consumer_key' => Config::get('app.twitter_key'),
+                'consumer_secret' => Config::get('app.twitter_secret'),
+                'oauth_token' => $accessToken['oauth_token']
+            ]);
+
+            $client->getEmitter()->attach($profileOauth);
+
+            // Step 4. Retrieve profile information about the current user.
+            $profile = $client->get($profileUrl . $accessToken['screen_name'], ['auth' => 'oauth'])->json();
+
+
+            // Step 5a. Link user accounts.
             if ($request->header('Authorization'))
             {
-                $user = User::where('twitter', '=', $profile['user_id']);
+                $user = User::where('twitter', '=', $profile['id']);
                 if ($user->first())
                 {
                     return response()->json(['message' => 'There is already a Twitter account that belongs to you'], 409);
@@ -360,16 +369,16 @@ class AuthController extends Controller {
                 $payload = (array) JWT::decode($token, Config::get('app.token_secret'), array('HS256'));
 
                 $user = User::find($payload['sub']);
-                $user->twitter = $profile['user_id'];
+                $user->twitter = $profile['id'];
                 $user->displayName = $user->displayName || $profile['screen_name'];
                 $user->save();
 
                 return response()->json(['token' => $this->createToken($user)]);
             }
-            // Step 4b. Create a new user account or return an existing one.
+            // Step 5b. Create a new user account or return an existing one.
             else
             {
-                $user = User::where('twitter', '=', $profile['user_id']);
+                $user = User::where('twitter', '=', $profile['id']);
 
                 if ($user->first())
                 {
@@ -377,13 +386,12 @@ class AuthController extends Controller {
                 }
 
                 $user = new User;
-                $user->twitter = $profile['user_id'];
+                $user->twitter = $profile['id'];
                 $user->displayName = $profile['screen_name'];
                 $user->save();
 
                 return response()->json(['token' => $this->createToken($user)]);
             }
-
         }
     }
 

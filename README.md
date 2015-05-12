@@ -587,13 +587,12 @@ Removes a JWT from Local Storage.
 ## TODO
 
 - [ ] C# (ASP.NET vNext) implementation
-- [ ] Go (Goji) implementation
+- [-] Go implementation
 - [x] Java (Dropwizard) implementation
 - [x] Node.js (Express) implementation
 - [x] PHP (Laravel) implementation
 - [x] Python (Flask) implementation
 - [x] Ruby (Ruby on Rails) implementation
-- [ ] Scala (Play!) implementation
 
 ## Contributing
 

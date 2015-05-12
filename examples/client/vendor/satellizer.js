@@ -572,14 +572,10 @@
           oauth1.open = function(options, userData) {
             angular.extend(defaults, options);
             var serverUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, defaults.url) : defaults.url;
-
             var popupWindow = popup.open('', defaults.name, defaults.popupOptions, defaults.redirectUri);
-            var deferred = $q.defer();
             return $http.post(serverUrl)
               .then(function(response) {
-                // Update URL
                 popupWindow.popupWindow.location.href = [defaults.authorizationEndpoint, oauth1.buildQueryString(response.data)].join('?');
-
                 return popupWindow.pollPopup()
                   .then(function(response) {
                     return oauth1.exchangeForToken(response, userData);
@@ -615,42 +611,33 @@
       'satellizer.config',
       'satellizer.utils',
       function($q, $interval, $window, $location, config, utils) {
-        var popupWindow = null;
-        var polling = null;
-
         var popup = {};
-
         popup.url = '';
-        popup.popupWindow = popupWindow;
+        popup.popupWindow = null;
 
         popup.open = function(url, windowName, options, redirectUri) {
           popup.url = url;
 
-          var optionsString = popup.stringifyOptions(popup.prepareOptions(options || {}));
+          var stringifiedOptions = popup.stringifyOptions(popup.prepareOptions(options || {}));
 
-          // TODO: fix twitter url when null
-          popupWindow = window.open(url, windowName, optionsString);
-          popup.popupWindow = popupWindow;
+          popup.popupWindow = window.open(url, windowName, stringifiedOptions);
 
-          if (popupWindow && popupWindow.focus) {
-            popupWindow.focus();
+          if (popup.popupWindow && popup.popupWindow.focus) {
+            popup.popupWindow.focus();
           }
 
           if (config.platform === 'mobile') {
             return popup.eventListener(redirectUri);
           }
 
-          //return popup.pollPopup();
           return popup;
         };
 
         popup.eventListener = function(redirectUri) {
           var deferred = $q.defer();
 
-          popupWindow.addEventListener('loadstart', function(event) {
-            if (event.url.indexOf(redirectUri) !== 0) {
-              return;
-            }
+          popup.popupWindow.addEventListener('loadstart', function(event) {
+            if (event.url.indexOf(redirectUri) !== 0) { return; }
 
             var parser = document.createElement('a');
             parser.href = event.url;
@@ -669,15 +656,15 @@
                 deferred.resolve(qs);
               }
 
-              popupWindow.close();
+              popup.popupWindow.close();
             }
           });
 
-          popupWindow.addEventListener('exit', function() {
+          popup.popupWindow.addEventListener('exit', function() {
             deferred.reject({ data: 'Provider Popup was closed' });
           });
 
-          popupWindow.addEventListener('loaderror', function() {
+          popup.popupWindow.addEventListener('loaderror', function() {
             deferred.reject({ data: 'Authorization Failed' });
           });
 
@@ -685,15 +672,17 @@
         };
 
         popup.pollPopup = function() {
+          var polling;
           var deferred = $q.defer();
+
           polling = $interval(function() {
             try {
               var documentOrigin = document.location.host + ':' + document.location.port,
-                popupWindowOrigin = popupWindow.location.host + ':' + popupWindow.location.port;
+                popupWindowOrigin = popup.popupWindow.location.host + ':' + popup.popupWindow.location.port;
 
-              if (popupWindowOrigin === documentOrigin && (popupWindow.location.search || popupWindow.location.hash)) {
-                var queryParams = popupWindow.location.search.substring(1).replace(/[\/$]/, '');
-                var hashParams = popupWindow.location.hash.substring(1).replace(/[\/$]/, '');
+              if (popupWindowOrigin === documentOrigin && (popup.popupWindow.location.search || popup.popupWindow.location.hash)) {
+                var queryParams = popup.popupWindow.location.search.substring(1).replace(/[\/$]/, '');
+                var hashParams = popup.popupWindow.location.hash.substring(1).replace(/[\/$]/, '');
                 var hash = utils.parseQueryString(hashParams);
                 var qs = utils.parseQueryString(queryParams);
 
@@ -705,16 +694,16 @@
                   deferred.resolve(qs);
                 }
 
-                popupWindow.close();
+                popup.popupWindow.close();
                 $interval.cancel(polling);
               }
             } catch (error) {
             }
 
-            if (!popupWindow) {
+            if (!popup.popupWindow) {
               $interval.cancel(polling);
               deferred.reject({ data: 'Provider Popup Blocked' });
-            } else if (popupWindow.closed || popupWindow.closed === undefined) {
+            } else if (popup.popupWindow.closed || popup.popupWindow.closed === undefined) {
               $interval.cancel(polling);
               deferred.reject({ data: 'Authorization Failed' });
             }

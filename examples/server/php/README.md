@@ -9,4 +9,5 @@ Laravel is a web application framework with expressive, elegant syntax. We belie
 3. Install Mcrypt PHP Extension:
  - <img src="http://deluge-torrent.org/images/apple-logo.gif" height="17"> **Mac OS X**: `brew install php55-mcrypt`.
  - <img src="https://lh5.googleusercontent.com/-2YS1ceHWyys/AAAAAAAAAAI/AAAAAAAAAAc/0LCb_tsTvmU/s46-c-k/photo.jpg" height="17"> **Ubuntu**: `sudo apt-get install php5-mcrypt`.
-4. Run `php artisan serve --port 3000`, then go to `http://localhost:3000`.
+4. Install dependencies via `composer install`.
+5. Run `php artisan serve --port 3000`, then go to `http://localhost:3000`.
