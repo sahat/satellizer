@@ -344,8 +344,6 @@ class AuthController extends Controller {
             $accessToken = array();
             parse_str($accessTokenResponse, $accessToken);
 
-            error_log($accessToken['oauth_token']);
-
             $profileOauth = new Oauth1([
                 'consumer_key' => Config::get('app.twitter_key'),
                 'consumer_secret' => Config::get('app.twitter_secret'),
