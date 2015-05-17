@@ -55,7 +55,7 @@ or use the CDN:
 <script src="//cdn.jsdelivr.net/satellizer/0.10.1/satellizer.min.js"></script>
 ```
 
-**Note:** Sattelizer uses [window.btoa()](https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/btoa) and [window.atob()](https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/atob) that are not available in *IE9 and below*. Please use the [Base64.js](https://github.com/davidchambers/Base64.js) polyfill above.
+**Note:** Sattelizer uses [window.btoa()](https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/btoa) and [window.atob()](https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/atob) which are not available in *IE9 and below*, so you will need to use the Base64 polyfill above if you still need to support *IE9*.
 
 ## Usage
 
