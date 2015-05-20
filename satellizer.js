@@ -295,7 +295,7 @@
           if (token && token.split('.').length === 3) {
             var base64Url = token.split('.')[1];
             var base64 = base64Url.replace('-', '+').replace('_', '/');
-            return JSON.parse($window.atob(base64));
+            return JSON.parse(decodeURIComponent(escape(window.atob(base64))));
           }
         };
 
@@ -681,7 +681,7 @@
                 popupWindowOrigin = popup.popupWindow.location.host + ':' + popup.popupWindow.location.port;
 
               if (popupWindowOrigin === documentOrigin && (popup.popupWindow.location.search || popup.popupWindow.location.hash)) {
-                var queryParams = popup.popupWindow.location.search.substring(1).replace(/[\/$]/, '');
+                var queryParams = popup.popupWindow.location.search.substring(1).replace(/\/$/, '');
                 var hashParams = popup.popupWindow.location.hash.substring(1).replace(/[\/$]/, '');
                 var hash = utils.parseQueryString(hashParams);
                 var qs = utils.parseQueryString(queryParams);
@@ -832,41 +832,3 @@
     }]);
 
 })(window, window.angular);
-
-// Base64.js Polyfill (@davidchambers)
-(function() {
-  var object = typeof exports != 'undefined' ? exports : this;
-  var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-
-  function InvalidCharacterError(message) {
-    this.message = message;
-  }
-
-  InvalidCharacterError.prototype = new Error;
-  InvalidCharacterError.prototype.name = 'InvalidCharacterError';
-
-  object.btoa || (
-    object.btoa = function(input) {
-      var str = String(input);
-      for (var block, charCode, idx = 0, map = chars, output = ''; str.charAt(idx | 0) || (map = '=', idx % 1); output += map.charAt(63 & block >> 8 - idx % 1 * 8)) {
-        charCode = str.charCodeAt(idx += 3 / 4);
-        if (charCode > 0xFF) {
-          throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
-        }
-        block = block << 8 | charCode;
-      }
-      return output;
-    });
-
-  object.atob || (
-    object.atob = function(input) {
-      var str = String(input).replace(/=+$/, '');
-      if (str.length % 4 == 1) {
-        throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.");
-      }
-      for (var bc = 0, bs, buffer, idx = 0, output = ''; buffer = str.charAt(idx++); ~buffer && (bs = bc % 4 ? bs * 64 + buffer : buffer, bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0) {
-        buffer = chars.indexOf(buffer);
-      }
-      return output;
-    });
-}());

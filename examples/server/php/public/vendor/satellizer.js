@@ -295,7 +295,7 @@
           if (token && token.split('.').length === 3) {
             var base64Url = token.split('.')[1];
             var base64 = base64Url.replace('-', '+').replace('_', '/');
-            return JSON.parse($window.atob(base64));
+            return JSON.parse(decodeURIComponent(escape(window.atob(base64))));
           }
         };
 
@@ -681,7 +681,7 @@
                 popupWindowOrigin = popup.popupWindow.location.host + ':' + popup.popupWindow.location.port;
 
               if (popupWindowOrigin === documentOrigin && (popup.popupWindow.location.search || popup.popupWindow.location.hash)) {
-                var queryParams = popup.popupWindow.location.search.substring(1).replace(/[\/$]/, '');
+                var queryParams = popup.popupWindow.location.search.substring(1).replace(/\/$/, '');
                 var hashParams = popup.popupWindow.location.hash.substring(1).replace(/[\/$]/, '');
                 var hash = utils.parseQueryString(hashParams);
                 var qs = utils.parseQueryString(queryParams);

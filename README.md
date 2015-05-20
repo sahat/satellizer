@@ -49,8 +49,13 @@ npm install satellizer
 or use the CDN:
 
 ```html
+<!--[if lte IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/Base64/0.3.0/base64.min.js"></script>
+<![endif]-->
 <script src="//cdn.jsdelivr.net/satellizer/0.10.1/satellizer.min.js"></script>
 ```
+
+**Note:** Sattelizer uses [window.btoa](https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/btoa) and [window.atob](https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/atob), so you still need to support **IE9** use the Base64 polyfill above.
 
 ## Usage
 
@@ -587,7 +592,7 @@ Removes a JWT from Local Storage.
 ## TODO
 
 - [ ] C# (ASP.NET vNext) implementation
-- [-] Go implementation
+- [ ] Go implementation
 - [x] Java (Dropwizard) implementation
 - [x] Node.js (Express) implementation
 - [x] PHP (Laravel) implementation

@@ -10,6 +10,7 @@ var qs = require('querystring');
 var async = require('async');
 var bcrypt = require('bcryptjs');
 var bodyParser = require('body-parser');
+var colors = require('colors');
 var express = require('express');
 var logger = require('morgan');
 var jwt = require('jwt-simple');
@@ -56,8 +57,8 @@ userSchema.methods.comparePassword = function(password, done) {
 var User = mongoose.model('User', userSchema);
 
 mongoose.connect(config.MONGO_URI);
-mongoose.connection.on('error', function() {
-  console.error('MongoDB Connection Error. Please make sure that MongoDB is running.');
+mongoose.connection.on('error', function(err) {
+  console.log('Error: Could not connect to MongoDB. Did you forget to run `mongod`?'.red);
 });
 
 var app = express();
@@ -86,7 +87,15 @@ function ensureAuthenticated(req, res, next) {
     return res.status(401).send({ message: 'Please make sure your request has an Authorization header' });
   }
   var token = req.headers.authorization.split(' ')[1];
-  var payload = jwt.decode(token, config.TOKEN_SECRET);
+  
+  var payload = null;
+  try {
+    payload = jwt.decode(token, config.TOKEN_SECRET);
+  }
+  catch (err){
+    return res.status(401).send({message: err.message});
+  }
+  
   if (payload.exp <= moment().unix()) {
     return res.status(401).send({ message: 'Token has expired' });
   }
@@ -586,7 +595,7 @@ app.post('/auth/twitter', function(req, res) {
   var accessTokenUrl = 'https://api.twitter.com/oauth/access_token';
   var profileUrl = 'https://api.twitter.com/1.1/users/show.json?screen_name=';
 
-  // Part 1/2: Initial request from Satellizer.
+  // Part 1 of 2: Initial request from Satellizer.
   if (!req.body.oauth_token || !req.body.oauth_verifier) {
     var requestTokenOauth = {
       consumer_key: config.TWITTER_KEY,
@@ -602,7 +611,7 @@ app.post('/auth/twitter', function(req, res) {
       res.send(oauthToken);
     });
   } else {
-      // Part 2/2: Second request after Authorize app is clicked.
+      // Part 2 of 2: Second request after Authorize app is clicked.
     var accessTokenOauth = {
       consumer_key: config.TWITTER_KEY,
       consumer_secret: config.TWITTER_SECRET,

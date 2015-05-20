@@ -62,6 +62,14 @@ describe('satellizer.shared', function() {
       expect(payload.name).toEqual('John Doe');
     });
 
+    it('should get a JWT payload with non-english characters', function() {
+      var tokenName = [this.config.tokenPrefix, this.config.tokenName].join('_');
+      localStorage.setItem(tokenName, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEyMzQ1Njc4OTAsIm5hbWUiOiJSb2LDqXJ0w6AgVGjDqcO0In0.sgREDWs78UYxIMDfa9cwYqvDgco3i_Ap4MUwmprZWN0');
+      var payload = this.shared.getPayload();
+      expect(angular.isObject(payload)).toBe(true);
+      expect(payload.name).toEqual('Robértà Théô');
+    });
+
     it('should return undefined if not a valid JWT', function() {
       var tokenName = [this.config.tokenPrefix, this.config.tokenName].join('_');
       localStorage.setItem(tokenName, 'f0af717251950dbd4d73154fdf0a474a5c5119adad999683f5b450c460726aa');
