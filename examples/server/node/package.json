@@ -11,6 +11,7 @@
     "moment": "^2.10.3",
     "mongoose": "^4.0.3",
     "morgan": "^1.5.3",
-    "request": "^2.55.0"
+    "request": "^2.55.0",
+    "colors": "^1.1.0"
   }
 }
