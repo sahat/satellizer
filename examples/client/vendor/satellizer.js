@@ -111,10 +111,6 @@
     })
     .provider('$auth', ['satellizer.config', function(config) {
       Object.defineProperties(this, {
-        baseUrl: {
-          get: function() { return config.baseUrl; },
-          set: function(value) { config.baseUrl = value; }
-        },
         httpInterceptor: {
           get: function() { return config.httpInterceptor; },
           set: function(value) { config.httpInterceptor = value; }
@@ -123,7 +119,10 @@
           get: function() { return config.loginOnSignup; },
           set: function(value) { config.loginOnSignup = value; }
         },
-
+        baseUrl: {
+          get: function() { return config.baseUrl; },
+          set: function(value) { config.baseUrl = value; }
+        },
         logoutRedirect: {
           get: function() { return config.logoutRedirect; },
           set: function(value) { config.logoutRedirect = value; }
@@ -677,8 +676,8 @@
 
           polling = $interval(function() {
             try {
-              var documentOrigin = document.location.host + ':' + document.location.port,
-                popupWindowOrigin = popup.popupWindow.location.host + ':' + popup.popupWindow.location.port;
+              var documentOrigin = document.location.host;
+              var popupWindowOrigin = popup.popupWindow.location.host;
 
               if (popupWindowOrigin === documentOrigin && (popup.popupWindow.location.search || popup.popupWindow.location.hash)) {
                 var queryParams = popup.popupWindow.location.search.substring(1).replace(/\/$/, '');
@@ -694,7 +693,7 @@
                   deferred.resolve(qs);
                 }
 
-                popup.popupWindow.close();
+                //popup.popupWindow.close();
                 $interval.cancel(polling);
               }
             } catch (error) {
@@ -832,41 +831,3 @@
     }]);
 
 })(window, window.angular);
-
-// Base64.js Polyfill (@davidchambers)
-(function() {
-  var object = typeof exports != 'undefined' ? exports : this;
-  var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-
-  function InvalidCharacterError(message) {
-    this.message = message;
-  }
-
-  InvalidCharacterError.prototype = new Error;
-  InvalidCharacterError.prototype.name = 'InvalidCharacterError';
-
-  object.btoa || (
-    object.btoa = function(input) {
-      var str = String(input);
-      for (var block, charCode, idx = 0, map = chars, output = ''; str.charAt(idx | 0) || (map = '=', idx % 1); output += map.charAt(63 & block >> 8 - idx % 1 * 8)) {
-        charCode = str.charCodeAt(idx += 3 / 4);
-        if (charCode > 0xFF) {
-          throw new InvalidCharacterError("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
-        }
-        block = block << 8 | charCode;
-      }
-      return output;
-    });
-
-  object.atob || (
-    object.atob = function(input) {
-      var str = String(input).replace(/=+$/, '');
-      if (str.length % 4 == 1) {
-        throw new InvalidCharacterError("'atob' failed: The string to be decoded is not correctly encoded.");
-      }
-      for (var bc = 0, bs, buffer, idx = 0, output = ''; buffer = str.charAt(idx++); ~buffer && (bs = bc % 4 ? bs * 64 + buffer : buffer, bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0) {
-        buffer = chars.indexOf(buffer);
-      }
-      return output;
-    });
-}());
