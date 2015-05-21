@@ -679,9 +679,6 @@
               var documentOrigin = document.location.host;
               var popupWindowOrigin = popup.popupWindow.location.host;
 
-              console.log(documentOrigin);
-              console.log(popupWindowOrigin);
-
               if (popupWindowOrigin === documentOrigin && (popup.popupWindow.location.search || popup.popupWindow.location.hash)) {
                 var queryParams = popup.popupWindow.location.search.substring(1).replace(/\/$/, '');
                 var hashParams = popup.popupWindow.location.hash.substring(1).replace(/[\/$]/, '');
@@ -696,7 +693,7 @@
                   deferred.resolve(qs);
                 }
 
-                //popup.popupWindow.close();
+                popup.popupWindow.close();
                 $interval.cancel(polling);
               }
             } catch (error) {

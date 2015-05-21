@@ -693,7 +693,7 @@
                   deferred.resolve(qs);
                 }
 
-                //popup.popupWindow.close();
+                popup.popupWindow.close();
                 $interval.cancel(polling);
               }
             } catch (error) {
