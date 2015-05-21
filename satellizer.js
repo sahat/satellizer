@@ -41,7 +41,8 @@
           optionalUrlParams: ['display'],
           display: 'popup',
           type: '2.0',
-          popupOptions: { width: 452, height: 633 }
+          popupOptions: { width: 452, height: 633 },
+          postmessageRelay: 'https://accounts.google.com/o/oauth2/postmessageRelay?forcesecure=1&parent={0}'
         },
         facebook: {
           name: 'facebook',
@@ -53,7 +54,8 @@
           requiredUrlParams: ['display', 'scope'],
           display: 'popup',
           type: '2.0',
-          popupOptions: { width: 580, height: 400 }
+          popupOptions: { width: 580, height: 400 },
+          postmessageRelay: ""
         },
         linkedin: {
           name: 'linkedin',
@@ -65,7 +67,8 @@
           scopeDelimiter: ' ',
           state: 'STATE',
           type: '2.0',
-          popupOptions: { width: 527, height: 582 }
+          popupOptions: { width: 527, height: 582 },
+          postmessageRelay: ""
         },
         github: {
           name: 'github',
@@ -76,7 +79,8 @@
           scope: ['user:email'],
           scopeDelimiter: ' ',
           type: '2.0',
-          popupOptions: { width: 1020, height: 618 }
+          popupOptions: { width: 1020, height: 618 },
+          postmessageRelay: ""
         },
         yahoo: {
           name: 'yahoo',
@@ -86,14 +90,16 @@
           scope: [],
           scopeDelimiter: ',',
           type: '2.0',
-          popupOptions: { width: 559, height: 519 }
+          popupOptions: { width: 559, height: 519 },
+          postmessageRelay: ""
         },
         twitter: {
           name: 'twitter',
           url: '/auth/twitter',
           authorizationEndpoint: 'https://api.twitter.com/oauth/authenticate',
           type: '1.0',
-          popupOptions: { width: 495, height: 645 }
+          popupOptions: { width: 495, height: 645 },
+          postmessageRelay: ""
         },
         live: {
           name: 'live',
@@ -105,7 +111,8 @@
           requiredUrlParams: ['display', 'scope'],
           display: 'popup',
           type: '2.0',
-          popupOptions: { width: 500, height: 560 }
+          popupOptions: { width: 500, height: 560 },
+          postmessageRelay: ""
         }
       }
     })
@@ -123,7 +130,6 @@
           get: function() { return config.loginOnSignup; },
           set: function(value) { config.loginOnSignup = value; }
         },
-
         logoutRedirect: {
           get: function() { return config.logoutRedirect; },
           set: function(value) { config.logoutRedirect = value; }
@@ -481,20 +487,36 @@
               storage.set(stateName, defaults.state);
             }
 
+            if(defaults.redirectUri == 'postmessage'){
+              // Register the relevant post message options
+              defaults.proxy = 'oauth2relay' + Math.floor(Math.random() * 100000);
+              defaults.origin = (window.location.origin || 
+                                    window.location.protocol + '//' + window.location.host);
+              angular.extend(defaults.optionalUrlParams, ['proxy', 'origin']);  
+            }
+
             var url = defaults.authorizationEndpoint + '?' + oauth2.buildQueryString();
 
-            return popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri)
-              .pollPopup()
-              .then(function(oauthData) {
-                if (defaults.responseType === 'token') {
-                  return oauthData;
-                }
-                if (oauthData.state && oauthData.state !== storage.get(stateName)) {
-                  return $q.reject('OAuth 2.0 state parameter mismatch.');
-                }
-                return oauth2.exchangeForToken(oauthData, userData);
-              });
+            var validateAndExchange = function(oauthData){
+              if (defaults.responseType === 'token') {
+                return oauthData;
+              }
+              if (oauthData.state && oauthData.state !== storage.get(stateName)) {
+                return $q.reject('OAuth 2.0 state parameter mismatch.');
+              }
+              return oauth2.exchangeForToken(oauthData, userData);
+            };
 
+            if(defaults.redirectUri == 'postmessage'){
+              return popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri)
+                .handlePostMessage(defaults.origin, defaults.proxy, options)
+                .then(validateAndExchange);
+            }
+            else {
+              return popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri)
+                .pollPopup()
+                .then(validateAndExchange);
+            }
           };
 
           oauth2.exchangeForToken = function(oauthData, userData) {
@@ -610,7 +632,8 @@
       '$location',
       'satellizer.config',
       'satellizer.utils',
-      function($q, $interval, $window, $location, config, utils) {
+      'satellizer.postmessage',
+      function($q, $interval, $window, $location, config, utils, postmessage) {
         var popup = {};
         popup.url = '';
         popup.popupWindow = null;
@@ -639,23 +662,13 @@
           popup.popupWindow.addEventListener('loadstart', function(event) {
             if (event.url.indexOf(redirectUri) !== 0) { return; }
 
-            var parser = document.createElement('a');
-            parser.href = event.url;
-
-            if (parser.search || parser.hash) {
-              var queryParams = parser.search.substring(1).replace(/\/$/, '');
-              var hashParams = parser.hash.substring(1).replace(/\/$/, '');
-              var hash = utils.parseQueryString(hashParams);
-              var qs = utils.parseQueryString(queryParams);
-
-              angular.extend(qs, hash);
-
-              if (qs.error) {
-                deferred.reject({ error: qs.error });
+            var parts = utils.parseUrl(event.url);
+            if(parts.params){
+              if (parts.params.error) {
+                deferred.reject({ error: parts.params.error });
               } else {
-                deferred.resolve(qs);
+                deferred.resolve(parts.params);
               }
-
               popup.popupWindow.close();
             }
           });
@@ -711,6 +724,70 @@
           return deferred.promise;
         };
 
+        popup.handlePostMessage = function(origin, proxy_id, options){
+          var polling;
+          var deferred = $q.defer();
+
+          // Create the proxy iframe
+          var proxy_frame = document.createElement('iframe');
+          var src = options.postmessageRelay.replace('{0}', encodeURIComponent(origin));
+          proxy_frame.setAttribute("src", src);
+          proxy_frame.setAttribute("id", proxy_id);
+          proxy_frame.setAttribute("name", proxy_id);
+          proxy_frame.setAttribute("tabindex", "-1");
+          proxy_frame.style.width = "1px"; 
+          proxy_frame.style.height = "1px"; 
+          proxy_frame.style.position = "absolute"; 
+          proxy_frame.style.top = "-100px;"
+          document.body.appendChild(proxy_frame);
+
+          var destroyProxyFrame = function(proxy_id){
+            var e = document.getElementById(proxy_id);
+            if(e){ document.body.removeChild(e); }
+          };
+
+          // postmessage event handling function on the
+          // main window
+          var eventHandler = function(ev){
+            try{ 
+              var parser = postmessage.parser(options.name);
+              var oauthData = parser.parse(ev);
+              if(oauthData !== undefined){
+                _main.off('message', eventHandler);
+                destroyProxyFrame(proxy_id);
+                deferred.resolve(oauthData); 
+              }
+              // we do not detach the event handler here as
+              // an initial emtpy message is posted  (check the initial post)
+              return;
+            } 
+            catch(err){
+              _main.off('message', eventHandler);
+              destroyProxyFrame(proxy_id);
+              deferred.reject({ data: 'Postmessage error: ' + err }); 
+            } 
+          };
+
+          var _main = angular.element($window);
+          _main.on('message', eventHandler);
+
+          polling = $interval(function(){
+            if (!popup.popupWindow) {
+              $interval.cancel(polling);
+              _main.off('message', eventHandler);
+              destroyProxyFrame(proxy_id);
+              deferred.reject({ data: 'Provider Popup Blocked' });
+            } else if (popup.popupWindow.closed || popup.popupWindow.closed === undefined) {
+              $interval.cancel(polling);
+              _main.off('message', eventHandler);
+              destroyProxyFrame(proxy_id);
+              deferred.reject({ data: 'Authorization Failed' });
+            }
+          }, 1000);
+
+          return deferred.promise;
+        };
+
         popup.prepareOptions = function(options) {
           var width = options.width || 500;
           var height = options.height || 500;
@@ -751,6 +828,25 @@
         return obj;
       };
 
+      this.parseUrl = function(url){
+        var parser = document.createElement('a');
+        parser.href = url;
+
+        var parts = {};
+        angular.forEach(parser, function(key, val){
+          this[key] = val;
+        }, parts);
+
+        if (parser.search || parser.hash) {
+          var queryParams = parser.search.substring(1).replace(/\/$/, '');
+          var hashParams = parser.hash.substring(1).replace(/\/$/, '');
+          parts.hash = this.parseQueryString(hashParams);
+          parts.qs = this.parseQueryString(queryParams);
+          parts.params = angular.extend({}, parts.hash, parts.qs);
+        }
+        return parts;
+      };
+
       this.joinUrl = function() {
         var joined = Array.prototype.slice.call(arguments, 0).join('/');
 
@@ -765,6 +861,41 @@
         return normalize(joined);
       };
     })
+    .factory('satellizer.postmessage', [
+      'satellizer.config', 
+      'satellizer.utils',
+      function(config, utils) {
+
+        var parsers = {};
+
+        parsers.google = function(ev) {
+          var oauthev = ev.originalEvent;
+          var data = JSON.parse(oauthev.data);
+
+          if(data.a && data.a[0] !== undefined){
+            if(data.a[0] === null){ return; } // frame init do nothing 
+            var parts = utils.parseUrl(data.a[0]);
+            if(parts.params === undefined || parts.params.error){
+              throw parts.params.error;
+            } else {
+              return {
+                code: parts.params.code,
+                //state: parts.params.session_state, postmessage state
+                hd: parts.params.hd,
+                authuser: parts.params.authuser
+              }
+            }
+          }
+        };
+
+        var postmessage = {};
+        postmessage.parser = function(name){
+          return {
+            parse: parsers[name]
+          };
+        };
+        return postmessage;
+    }])
     .factory('satellizer.storage', ['satellizer.config', function(config) {
       switch (config.storage) {
         case 'localStorage':

@@ -130,6 +130,9 @@ angular.module('MyApp')
 **Note:** For server-side usage please refer to the [examples](https://github.com/sahat/satellizer/tree/master/examples/server)
 directory.
 
+**Google one-time authorization code flow:**
+Google offers a [one-time authorization code mechanism](https://developers.google.com/+/web/signin/server-side-flow) which uses `postmessage`. To implement this flow you should set `redirectUri=postmessage`.
+
 ## Configuration
 
 Below is a complete listing of all default configuration options.
@@ -166,7 +169,8 @@ $authProvider.facebook({
   requiredUrlParams: ['display', 'scope'],
   display: 'popup',
   type: '2.0',
-  popupOptions: { width: 481, height: 269 }
+  popupOptions: { width: 481, height: 269 },
+  postmessageRelay: ""
 });
 
 // Google
@@ -181,7 +185,8 @@ $authProvider.google({
   optionalUrlParams: ['display'],
   display: 'popup',
   type: '2.0',
-  popupOptions: { width: 580, height: 400 }
+  popupOptions: { width: 580, height: 400 },
+  postmessageRelay: 'https://accounts.google.com/o/oauth2/postmessageRelay?forcesecure=1&parent={0}'
 });
 
 // LinkedIn
@@ -194,14 +199,16 @@ $authProvider.linkedin({
   scopeDelimiter: ' ',
   state: 'STATE',
   type: '2.0',
-  popupOptions: { width: 527, height: 582 }
+  popupOptions: { width: 527, height: 582 },
+  postmessageRelay: ""
 });
 
 // Twitter
 $authProvider.twitter({
   url: '/auth/twitter',
   type: '1.0',
-  popupOptions: { width: 495, height: 645 }
+  popupOptions: { width: 495, height: 645 },
+  postmessageRelay: ""
 });
 
 // GitHub
@@ -212,7 +219,8 @@ $authProvider.github({
   scope: [],
   scopeDelimiter: ' ',
   type: '2.0',
-  popupOptions: { width: 1020, height: 618 }
+  popupOptions: { width: 1020, height: 618 },
+  postmessageRelay: ""
 });
 
 // Windows Live
@@ -225,7 +233,8 @@ $authProvider.live({
   requiredUrlParams: ['display', 'scope'],
   display: 'popup',
   type: '2.0',
-  popupOptions: { width: 500, height: 560 }
+  popupOptions: { width: 500, height: 560 },
+  postmessageRelay: ""
 });
 
 // Yahoo
@@ -236,7 +245,8 @@ $authProvider.yahoo({
   scope: [],
   scopeDelimiter: ',',
   type: '2.0',
-  popupOptions: { width: 559, height: 519 }
+  popupOptions: { width: 559, height: 519 },
+  postmessageRelay: ""
 });
 
 // OAuth 2.0
