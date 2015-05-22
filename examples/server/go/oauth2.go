@@ -4,16 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
-	"strconv"
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/go-querystring/query"
 	"github.com/gorilla/context"
+	"github.com/parnurzeal/gorequest"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -24,6 +22,12 @@ type OAuth2Params struct {
 	ClientSecret string `json:"client_secret" url:"client_secret"`
 	RedirectUri  string `json:"redirect_uri" url:"redirect_uri"`
 	GrantType    string `json:"grant_type,omitempty" url:"grant_type,omitempty"`
+}
+
+type accessTokenData struct {
+	AccessToken string `json:"access_token" url:"access_token"`
+	TokenType   string `json:"token_type" url:"token_type"`
+	ExpiresIn   int    `json:"expires_in" url:"expires_in"`
 }
 
 func (f *OAuth2Params) LoadFromHTTPRequest(r *http.Request) {
@@ -64,8 +68,6 @@ func LoginWithFacebook(w http.ResponseWriter, r *http.Request) {
 	graphApiPath := "/v2.3/me"
 
 	// Step 1. Exchange authorization code for access token.
-	client := NewClient()
-
 	fbparams := newFBParams()
 	fbparams.LoadFromHTTPRequest(r)
 
@@ -75,27 +77,11 @@ func LoginWithFacebook(w http.ResponseWriter, r *http.Request) {
 	u.RawQuery = v.Encode()
 	urlStr := fmt.Sprintf("%v", u)
 
-	req, err := http.NewRequest("GET", urlStr, nil)
-	req.Close = true
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Accept", "application/json")
-
-	res, err := client.Do(req)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	defer res.Body.Close()
-	contents, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		log.Println(err)
-		return
-	}
+	res, body, _ := gorequest.New().Get(urlStr).End()
 
 	if res.StatusCode != 200 {
 		var errorData map[string]interface{}
-		err = json.Unmarshal(contents, &errorData)
+		json.Unmarshal([]byte(body), &errorData)
 
 		ServeJSON(w, r, &Response{
 			"message": errorData["error"].(map[string]interface{})["message"],
@@ -104,45 +90,20 @@ func LoginWithFacebook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Step 2. Retrieve profile information about the current user.
-	type accessTokenData struct {
-		AccessToken string `json:"access_token"`
-		TokenType   string `json:"token_type"`
-		ExpiresIn   int    `json:"expires_in"`
-	}
-
 	var atData accessTokenData
-	err = json.Unmarshal(contents, &atData)
+	err := json.Unmarshal([]byte(body), &atData)
 
-	qs := url.Values{}
-	qs.Set("access_token", atData.AccessToken)
-	qs.Set("token_type", atData.TokenType)
-	qs.Set("expires_in", strconv.Itoa(atData.ExpiresIn))
+	v, _ = query.Values(atData)
 
 	u, _ = url.ParseRequestURI(apiUrl)
 	u.Path = graphApiPath
-	u.RawQuery = qs.Encode()
+	u.RawQuery = v.Encode()
 	urlStr = fmt.Sprintf("%v", u)
 
-	reqProfile, err := http.NewRequest("GET", urlStr, nil)
-	reqProfile.Close = true
-	reqProfile.Header.Set("Content-Type", "application/json")
-	reqProfile.Header.Set("Accept", "application/json")
-
-	resProfile, err := client.Do(reqProfile)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	defer resProfile.Body.Close()
-	contents, err = ioutil.ReadAll(resProfile.Body)
-	if err != nil {
-		log.Println(err)
-		return
-	}
+	resProfile, body, _ := gorequest.New().Get(urlStr).End()
 
 	var profileData map[string]interface{}
-	err = json.Unmarshal(contents, &profileData)
+	err = json.Unmarshal([]byte(body), &profileData)
 
 	if resProfile.StatusCode != 200 {
 		ServeJSON(w, r, &Response{
@@ -232,46 +193,24 @@ func LoginWithFacebook(w http.ResponseWriter, r *http.Request) {
 
 func LoginWithGoogle(w http.ResponseWriter, r *http.Request) {
 
-	accessTokenUrl := "https://accounts.google.com"
-	accessTokenPath := "/o/oauth2/token"
+	accessTokenUrl := "https://accounts.google.com/o/oauth2/token"
 	peopleApiUrl := "https://www.googleapis.com"
 	peopleApiPath := "/plus/v1/people/me/openIdConnect"
 
 	// Step 1. Exchange authorization code for access token.
-	client := NewClient()
-
 	googleParams := newGoogleParams()
 	googleParams.LoadFromHTTPRequest(r)
 
 	v, _ := query.Values(googleParams)
 
-	u, _ := url.ParseRequestURI(accessTokenUrl)
-	u.Path = accessTokenPath
-	urlStr := fmt.Sprintf("%v", u)
-
-	req, err := http.NewRequest("POST", urlStr, nil)
-	req.Body = ioutil.NopCloser(strings.NewReader(v.Encode()))
-	req.Close = true
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Content-length", strconv.Itoa(len(v.Encode())))
-
-	res, err := client.Do(req)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	defer res.Body.Close()
-	contents, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		log.Println(err)
-		return
-	}
+	res, body, _ := gorequest.New().Post(accessTokenUrl).
+		Send(v.Encode()).
+		Type("form").
+		End()
 
 	if res.StatusCode != 200 {
 		var errorData map[string]interface{}
-		err = json.Unmarshal(contents, &errorData)
+		json.Unmarshal([]byte(body), &errorData)
 
 		ServeJSON(w, r, &Response{
 			"message": errorData["error"].(string),
@@ -280,45 +219,20 @@ func LoginWithGoogle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Step 2. Retrieve profile information about the current user.
-	type accessTokenData struct {
-		AccessToken string `json:"access_token"`
-		TokenType   string `json:"token_type"`
-		ExpiresIn   int    `json:"expires_in"`
-	}
-
 	var atData accessTokenData
-	err = json.Unmarshal(contents, &atData)
+	err := json.Unmarshal([]byte(body), &atData)
 
-	qs := url.Values{}
-	qs.Set("access_token", atData.AccessToken)
-	qs.Set("token_type", atData.TokenType)
-	qs.Set("expires_in", strconv.Itoa(atData.ExpiresIn))
+	qs, _ := query.Values(atData)
 
-	u, _ = url.ParseRequestURI(peopleApiUrl)
+	u, _ := url.ParseRequestURI(peopleApiUrl)
 	u.Path = peopleApiPath
 	u.RawQuery = qs.Encode()
-	urlStr = fmt.Sprintf("%v", u)
+	urlStr := fmt.Sprintf("%v", u)
 
-	reqProfile, err := http.NewRequest("GET", urlStr, nil)
-	reqProfile.Close = true
-	reqProfile.Header.Set("Content-Type", "application/json")
-	reqProfile.Header.Set("Accept", "application/json")
-
-	resProfile, err := client.Do(reqProfile)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	defer resProfile.Body.Close()
-	contents, err = ioutil.ReadAll(resProfile.Body)
-	if err != nil {
-		log.Println(err)
-		return
-	}
+	resProfile, body, _ := gorequest.New().Get(urlStr).End()
 
 	var profileData map[string]interface{}
-	err = json.Unmarshal(contents, &profileData)
+	err = json.Unmarshal([]byte(body), &profileData)
 
 	if resProfile.StatusCode != 200 {
 		ServeJSON(w, r, &Response{
@@ -380,7 +294,7 @@ func LoginWithGoogle(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 		// Step 3b. Create a new user account or return an existing one.
-		existingUser, errM := FindUserByQuery(db.(*mgo.Database), bson.M{"facebook": profileData["sub"].(string)})
+		existingUser, errM := FindUserByQuery(db.(*mgo.Database), bson.M{"google": profileData["sub"].(string)})
 		if existingUser != nil {
 			SetToken(w, r, existingUser)
 			return
