@@ -26,7 +26,7 @@ describe('$http', function() {
 
       $window.localStorage.clear();
 
-      mockResponse[this.config.tokenName] = 'ABCDEFG123456';
+      mockResponse[this.config.tokenName] = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7Il9pZCI6IjUzZTU3ZDZiY2MzNmMxNTgwNzU4NDJkZCIsImVtYWlsIjoiZm9vQGJhci5jb20iLCJfX3YiOjB9LCJpYXQiOjE0MDc1NDg3ODI5NzMsImV4cCI6MTQwODE1MzU4Mjk3M30.1Ak6mij5kfkSi6d_wtPOx4yK7pS7ZFSiwbkL7AJbnYs';
       $httpBackend.expectPOST(this.config.loginUrl).respond(mockResponse);
     }]));
 
