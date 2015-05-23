@@ -344,8 +344,9 @@
               if (exp) {
                 return Math.round(new Date().getTime() / 1000) <= exp;
               }
+              return true;
             }
-            return true;
+            return false;
           }
           return false;
         };
