@@ -53,8 +53,5 @@
     "oauth1",
     "sign-in",
     "social"
-  ],
-  "dependencies": {
-    "colors": "^1.1.0"
-  }
+  ]
 }
