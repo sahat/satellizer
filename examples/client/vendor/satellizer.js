@@ -806,20 +806,25 @@
       '$q',
       'satellizer.config',
       'satellizer.storage',
-      function($q, config, storage) {
-        var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
+      'satellizer.shared',
+      function($q, config, storage, shared) {
         return {
           request: function(request) {
             if (request.skipAuthorization) {
               return request;
             }
-            var token = storage.get(tokenName);
-            if (token && config.httpInterceptor) {
+
+            if (shared.isAuthenticated() && config.httpInterceptor) {
+              var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
+              var token = storage.get(tokenName);
+
               if (config.authHeader && config.authToken) {
                 token = config.authToken + ' ' + token;
               }
+
               request.headers[config.authHeader] = token;
             }
+
             return request;
           },
           responseError: function(response) {
