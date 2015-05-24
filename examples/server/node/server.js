@@ -87,7 +87,7 @@ function ensureAuthenticated(req, res, next) {
     return res.status(401).send({ message: 'Please make sure your request has an Authorization header' });
   }
   var token = req.headers.authorization.split(' ')[1];
-  
+
   var payload = null;
   try {
     payload = jwt.decode(token, config.TOKEN_SECRET);
@@ -95,7 +95,7 @@ function ensureAuthenticated(req, res, next) {
   catch (err){
     return res.status(401).send({message: err.message});
   }
-  
+
   if (payload.exp <= moment().unix()) {
     return res.status(401).send({ message: 'Token has expired' });
   }
@@ -417,21 +417,7 @@ app.post('/auth/live', function(req, res) {
     },
     function(profile) {
       // Step 3a. Link user accounts.
-      if (!req.headers.authorization) {
-        User.findOne({ live: profile.id }, function(err, user) {
-          if (user) {
-            return res.send({ token: createJWT(user) });
-          }
-          var newUser = new User();
-          newUser.live = profile.id;
-          newUser.displayName = profile.name;
-          newUser.save(function() {
-            var token = createJWT(newUser);
-            res.send({ token: token });
-          });
-        });
-      } else {
-        // Step 3b. Create a new user or return an existing account.
+      if (req.headers.authorization) {
         User.findOne({ live: profile.id }, function(err, user) {
           if (user) {
             return res.status(409).send({ message: 'There is already a Windows Live account that belongs to you' });
@@ -443,11 +429,25 @@ app.post('/auth/live', function(req, res) {
               return res.status(400).send({ message: 'User not found' });
             }
             existingUser.live = profile.id;
-            existingUser.displayName = existingUser.name;
+            existingUser.displayName = existingUser.displayName || profile.name;
             existingUser.save(function() {
               var token = createJWT(existingUser);
               res.send({ token: token });
             });
+          });
+        });
+      } else {
+        // Step 3b. Create a new user or return an existing account.
+        User.findOne({ live: profile.id }, function(err, user) {
+          if (user) {
+            return res.send({ token: createJWT(user) });
+          }
+          var newUser = new User();
+          newUser.live = profile.id;
+          newUser.displayName = profile.name;
+          newUser.save(function() {
+            var token = createJWT(newUser);
+            res.send({ token: token });
           });
         });
       }
@@ -629,7 +629,7 @@ app.post('/auth/twitter', function(req, res) {
         consumer_secret: config.TWITTER_SECRET,
         oauth_token: accessToken.oauth_token
       };
-      
+
       // Step 4. Retrieve profile information about the current user.
       request.get({ url: profileUrl + accessToken.screen_name, oauth: profileOauth, json: true }, function(err, response, profile) {
 
