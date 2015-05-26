@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -25,15 +24,14 @@ func Me(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateAccount(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
 
-	contents, err := ioutil.ReadAll(r.Body)
+	decoder := json.NewDecoder(r.Body)
+	var userData User
+	err := decoder.Decode(&userData)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	var userData User
-	json.Unmarshal(contents, &userData)
 
 	tokenData := GetToken(w, r)
 	db := GetDB(w, r)

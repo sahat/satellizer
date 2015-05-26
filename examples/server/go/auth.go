@@ -28,20 +28,18 @@ func init() {
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
-
-	defer r.Body.Close()
-
-	contents, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Println(err)
-		return
-	}
 	type UserData struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
+
+	decoder := json.NewDecoder(r.Body)
 	var userData UserData
-	json.Unmarshal(contents, &userData)
+	err := decoder.Decode(&userData)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
 	if userData.Email == "" || userData.Password == "" {
 		BR(w, r, errors.New("Missing credentials"), http.StatusBadRequest)
@@ -60,19 +58,18 @@ func Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func SignUp(w http.ResponseWriter, r *http.Request) {
-	defer r.Body.Close()
-
-	contents, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Println(err)
-		return
-	}
 	type UserData struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
+
+	decoder := json.NewDecoder(r.Body)
 	var userData UserData
-	json.Unmarshal(contents, &userData)
+	err := decoder.Decode(&userData)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
 	if userData.Email == "" || userData.Password == "" {
 		BR(w, r, errors.New("Missing information"), http.StatusBadRequest)
