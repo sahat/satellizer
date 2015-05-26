@@ -3,9 +3,14 @@ package main
 import (
 	"crypto/rand"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/gorilla/context"
+	"gopkg.in/mgo.v2"
 )
 
 type Error struct {
@@ -15,6 +20,12 @@ type Error struct {
 }
 
 type Response map[string]interface{}
+
+type TokenData struct {
+	ID  string
+	Iat float64
+	Exp float64
+}
 
 func RandToken() string {
 	b := make([]byte, 16)
@@ -63,4 +74,29 @@ func ServeJSON(w http.ResponseWriter, r *http.Request, json *Response, code int)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	fmt.Fprint(w, json)
+}
+
+func GetDB(w http.ResponseWriter, r *http.Request) *mgo.Database {
+	db, ok := context.GetOk(r, "DB")
+	if !ok {
+		ISR(w, r, errors.New("Couldn't obtain DB"))
+		return nil
+	}
+	return db.(*mgo.Database)
+}
+
+func GetToken(w http.ResponseWriter, r *http.Request) *TokenData {
+	token, ok := context.GetOk(r, "token")
+	if !ok {
+		BR(w, r, errors.New("Missing Token"), http.StatusUnauthorized)
+		return nil
+	}
+
+	tokenData := token.(*jwt.Token).Claims
+	return &TokenData{tokenData["ID"].(string), tokenData["iat"].(float64), tokenData["exp"].(float64)}
+}
+
+func IsTokenSet(r *http.Request) bool {
+	_, ok := context.GetOk(r, "token")
+	return ok
 }
