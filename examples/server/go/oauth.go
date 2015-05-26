@@ -85,7 +85,7 @@ func LoginWithTwitter(w http.ResponseWriter, r *http.Request) {
 
 		if IsTokenSet(r) {
 			// Step 5a. Link user accounts.
-			existingUser, errM := FindUserByQuery(db, bson.M{"twitter": accessToken.AdditionalData["user_id"]})
+			existingUser, errM := FindUserByProvider(db, "twitter", accessToken.AdditionalData["user_id"])
 			if existingUser != nil {
 				ServeJSON(w, r, &Response{
 					"message": "There is already a Twitter account that belongs to you",
@@ -129,7 +129,7 @@ func LoginWithTwitter(w http.ResponseWriter, r *http.Request) {
 
 		} else {
 			// Step 5b. Create a new user account or return an existing one.
-			existingUser, errM := FindUserByQuery(db, bson.M{"twitter": accessToken.AdditionalData["user_id"]})
+			existingUser, errM := FindUserByProvider(db, "twitter", accessToken.AdditionalData["user_id"])
 			if existingUser != nil {
 				SetToken(w, r, existingUser)
 				return
