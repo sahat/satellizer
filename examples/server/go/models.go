@@ -131,6 +131,10 @@ func FindUserById(db *mgo.Database, id bson.ObjectId) (*User, *Error) {
 	return user, nil
 }
 
+func FindUserByProvider(db *mgo.Database, provider, sub string) (*User, *Error) {
+	return FindUserByQuery(db, bson.M{provider: sub})
+}
+
 func UpdateUserById(db *mgo.Database, id bson.ObjectId, email, displayName string) *Error {
 	uC := db.C("users")
 	user, errM := FindUserById(db, id)
