@@ -9,8 +9,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/dgrijalva/jwt-go"
-	"github.com/gorilla/context"
 	"github.com/mrjones/oauth"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -83,16 +81,11 @@ func LoginWithTwitter(w http.ResponseWriter, r *http.Request) {
 		var profileData map[string]interface{}
 		err = json.Unmarshal(bits, &profileData)
 
-		db, ok := context.GetOk(r, "DB")
-		if !ok {
-			ISR(w, r, errors.New("Couldn't obtain DB"))
-			return
-		}
+		db := GetDB(w, r)
 
-		jwtToken, ok := context.GetOk(r, "token")
-		if ok {
+		if IsTokenSet(r) {
 			// Step 5a. Link user accounts.
-			existingUser, errM := FindUserByQuery(db.(*mgo.Database), bson.M{"twitter": accessToken.AdditionalData["user_id"]})
+			existingUser, errM := FindUserByQuery(db, bson.M{"twitter": accessToken.AdditionalData["user_id"]})
 			if existingUser != nil {
 				ServeJSON(w, r, &Response{
 					"message": "There is already a Twitter account that belongs to you",
@@ -105,8 +98,8 @@ func LoginWithTwitter(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			tokenData := jwtToken.(*jwt.Token).Claims
-			user, errM := FindUserById(db.(*mgo.Database), bson.ObjectIdHex(tokenData["ID"].(string)))
+			tokenData := GetToken(w, r)
+			user, errM := FindUserById(db, bson.ObjectIdHex(tokenData.ID))
 			if user == nil {
 				ServeJSON(w, r, &Response{
 					"message": "User not found",
@@ -127,7 +120,7 @@ func LoginWithTwitter(w http.ResponseWriter, r *http.Request) {
 				user.Picture = strings.Replace(profileData["profile_image_url"].(string), "_normal", "", 1)
 			}
 
-			err = user.Save(db.(*mgo.Database))
+			err = user.Save(db)
 			if err != nil {
 				ISR(w, r, errors.New("Couldn't save user profile informations"))
 			}
@@ -136,7 +129,7 @@ func LoginWithTwitter(w http.ResponseWriter, r *http.Request) {
 
 		} else {
 			// Step 5b. Create a new user account or return an existing one.
-			existingUser, errM := FindUserByQuery(db.(*mgo.Database), bson.M{"twitter": accessToken.AdditionalData["user_id"]})
+			existingUser, errM := FindUserByQuery(db, bson.M{"twitter": accessToken.AdditionalData["user_id"]})
 			if existingUser != nil {
 				SetToken(w, r, existingUser)
 				return
@@ -151,7 +144,7 @@ func LoginWithTwitter(w http.ResponseWriter, r *http.Request) {
 			user.Twitter = accessToken.AdditionalData["user_id"]
 			user.DisplayName = accessToken.AdditionalData["screen_name"]
 			user.Picture = strings.Replace(profileData["profile_image_url"].(string), "_normal", "", 1)
-			err = user.Save(db.(*mgo.Database))
+			err = user.Save(db)
 			if err != nil {
 				ISR(w, r, err)
 				return

@@ -9,8 +9,6 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/gorilla/context"
-	"gopkg.in/mgo.v2"
 )
 
 const (
@@ -50,13 +48,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db, ok := context.GetOk(r, "DB")
-	if !ok {
-		ISR(w, r, errors.New("Couldn't obtain DB"))
-		return
-	}
+	db := GetDB(w, r)
 
-	user, errM := AuthUser(db.(*mgo.Database), userData.Email, userData.Password)
+	user, errM := AuthUser(db, userData.Email, userData.Password)
 	if errM != nil {
 		HandleModelError(w, r, errM)
 		return
@@ -85,12 +79,9 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db, ok := context.GetOk(r, "DB")
-	if !ok {
-		ISR(w, r, errors.New("Couldn't obtain DB Session"))
-	}
+	db := GetDB(w, r)
 	user := &User{Email: userData.Email, Password: userData.Password}
-	errM := CreateUser(db.(*mgo.Database), user)
+	errM := CreateUser(db, user)
 	if errM != nil {
 		HandleModelError(w, r, errM)
 		return

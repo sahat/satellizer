@@ -8,9 +8,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/google/go-querystring/query"
-	"github.com/gorilla/context"
 	"github.com/parnurzeal/gorequest"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -112,16 +110,11 @@ func LoginWithFacebook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db, ok := context.GetOk(r, "DB")
-	if !ok {
-		ISR(w, r, errors.New("Couldn't obtain DB"))
-		return
-	}
+	db := GetDB(w, r)
 
-	jwtToken, ok := context.GetOk(r, "token")
-	if ok {
+	if IsTokenSet(r) {
 		// Step 3a. Link user accounts.
-		existingUser, errM := FindUserByQuery(db.(*mgo.Database), bson.M{"facebook": profileData["id"].(string)})
+		existingUser, errM := FindUserByProvider(db, "facebook", profileData["id"].(string))
 		if existingUser != nil {
 			ServeJSON(w, r, &Response{
 				"message": "There is already a Facebook account that belongs to you",
@@ -134,8 +127,8 @@ func LoginWithFacebook(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		tokenData := jwtToken.(*jwt.Token).Claims
-		user, errM := FindUserById(db.(*mgo.Database), bson.ObjectIdHex(tokenData["ID"].(string)))
+		tokenData := GetToken(w, r)
+		user, errM := FindUserById(db, bson.ObjectIdHex(tokenData.ID))
 		if user == nil {
 			ServeJSON(w, r, &Response{
 				"message": "User not found",
@@ -156,7 +149,7 @@ func LoginWithFacebook(w http.ResponseWriter, r *http.Request) {
 			user.DisplayName = profileData["name"].(string)
 		}
 
-		err = user.Save(db.(*mgo.Database))
+		err = user.Save(db)
 		if err != nil {
 			ISR(w, r, errors.New("Couldn't save user profile informations"))
 		}
@@ -165,7 +158,7 @@ func LoginWithFacebook(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 		// Step 3b. Create a new user account or return an existing one.
-		existingUser, errM := FindUserByQuery(db.(*mgo.Database), bson.M{"facebook": profileData["id"].(string)})
+		existingUser, errM := FindUserByProvider(db, "facebook", profileData["id"].(string))
 		if existingUser != nil {
 			SetToken(w, r, existingUser)
 			return
@@ -181,7 +174,7 @@ func LoginWithFacebook(w http.ResponseWriter, r *http.Request) {
 		user.Email = profileData["email"].(string)
 		user.Picture = "https://graph.facebook.com/v2.3/" + profileData["id"].(string) + "/picture?type=large"
 		user.DisplayName = profileData["name"].(string)
-		err = user.Save(db.(*mgo.Database))
+		err = user.Save(db)
 		if err != nil {
 			ISR(w, r, err)
 			return
@@ -241,16 +234,11 @@ func LoginWithGoogle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db, ok := context.GetOk(r, "DB")
-	if !ok {
-		ISR(w, r, errors.New("Couldn't obtain DB"))
-		return
-	}
+	db := GetDB(w, r)
 
-	jwtToken, ok := context.GetOk(r, "token")
-	if ok {
+	if IsTokenSet(r) {
 		// Step 3a. Link user accounts.
-		existingUser, errM := FindUserByQuery(db.(*mgo.Database), bson.M{"google": profileData["sub"].(string)})
+		existingUser, errM := FindUserByProvider(db, "google", profileData["sub"].(string))
 		if existingUser != nil {
 			ServeJSON(w, r, &Response{
 				"message": "There is already a Facebook account that belongs to you",
@@ -263,8 +251,8 @@ func LoginWithGoogle(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		tokenData := jwtToken.(*jwt.Token).Claims
-		user, errM := FindUserById(db.(*mgo.Database), bson.ObjectIdHex(tokenData["ID"].(string)))
+		tokenData := GetToken(w, r)
+		user, errM := FindUserById(db, bson.ObjectIdHex(tokenData.ID))
 		if user == nil {
 			ServeJSON(w, r, &Response{
 				"message": "User not found",
@@ -285,7 +273,7 @@ func LoginWithGoogle(w http.ResponseWriter, r *http.Request) {
 			user.DisplayName = profileData["name"].(string)
 		}
 
-		err = user.Save(db.(*mgo.Database))
+		err = user.Save(db)
 		if err != nil {
 			ISR(w, r, errors.New("Couldn't save user profile informations"))
 		}
@@ -294,7 +282,7 @@ func LoginWithGoogle(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 		// Step 3b. Create a new user account or return an existing one.
-		existingUser, errM := FindUserByQuery(db.(*mgo.Database), bson.M{"google": profileData["sub"].(string)})
+		existingUser, errM := FindUserByProvider(db, "google", profileData["sub"].(string))
 		if existingUser != nil {
 			SetToken(w, r, existingUser)
 			return
@@ -310,7 +298,7 @@ func LoginWithGoogle(w http.ResponseWriter, r *http.Request) {
 		user.Email = profileData["email"].(string)
 		user.Picture = strings.Replace(profileData["picture"].(string), "sz=50", "sz=200", -1)
 		user.DisplayName = profileData["name"].(string)
-		err = user.Save(db.(*mgo.Database))
+		err = user.Save(db)
 		if err != nil {
 			ISR(w, r, err)
 			return

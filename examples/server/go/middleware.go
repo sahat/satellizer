@@ -65,6 +65,7 @@ func JWTMiddleware() negroni.Handler {
 func DBMiddleware(session *mgo.Session) negroni.Handler {
 	return negroni.HandlerFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 		s := session.Clone()
+		defer s.Close()
 		context.Set(r, "dbSession", s)
 		context.Set(r, "DB", s.DB(DBNAME))
 		next(w, r)
