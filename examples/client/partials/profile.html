@@ -74,6 +74,13 @@
         <button class="btn btn-sm btn-primary" ng-if="!user.yahoo" ng-click="link('yahoo')">
           <i class="ion-social-yahoo"></i> Link Yahoo Account
         </button>
+
+        <button class="btn btn-sm btn-danger" ng-if="user.live" ng-click="unlink('live')">
+          <i class="ion-social-windows"></i> Unlink Windows Live Account
+        </button>
+        <button class="btn btn-sm btn-primary" ng-if="!user.live" ng-click="link('live')">
+          <i class="ion-social-windows"></i> Link Windows Live Account
+        </button>
       </div>
     </div>
   </div>

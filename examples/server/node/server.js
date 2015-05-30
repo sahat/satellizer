@@ -417,21 +417,7 @@ app.post('/auth/live', function(req, res) {
     },
     function(profile) {
       // Step 3a. Link user accounts.
-      if (!req.headers.authorization) {
-        User.findOne({ live: profile.id }, function(err, user) {
-          if (user) {
-            return res.send({ token: createJWT(user) });
-          }
-          var newUser = new User();
-          newUser.live = profile.id;
-          newUser.displayName = profile.name;
-          newUser.save(function() {
-            var token = createJWT(newUser);
-            res.send({ token: token });
-          });
-        });
-      } else {
-        // Step 3b. Create a new user or return an existing account.
+      if (req.headers.authorization) {
         User.findOne({ live: profile.id }, function(err, user) {
           if (user) {
             return res.status(409).send({ message: 'There is already a Windows Live account that belongs to you' });
@@ -443,11 +429,25 @@ app.post('/auth/live', function(req, res) {
               return res.status(400).send({ message: 'User not found' });
             }
             existingUser.live = profile.id;
-            existingUser.displayName = existingUser.name;
+            existingUser.displayName = existingUser.displayName || profile.name;
             existingUser.save(function() {
               var token = createJWT(existingUser);
               res.send({ token: token });
             });
+          });
+        });
+      } else {
+        // Step 3b. Create a new user or return an existing account.
+        User.findOne({ live: profile.id }, function(err, user) {
+          if (user) {
+            return res.send({ token: createJWT(user) });
+          }
+          var newUser = new User();
+          newUser.live = profile.id;
+          newUser.displayName = profile.name;
+          newUser.save(function() {
+            var token = createJWT(newUser);
+            res.send({ token: token });
           });
         });
       }
