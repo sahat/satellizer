@@ -143,6 +143,14 @@
           get: function() { return config.signupUrl; },
           set: function(value) { config.signupUrl = value; }
         },
+        deleteUrl: {
+          get: function () {
+            return config.deleteUrl;
+          },
+          set: function (value) {
+            config.deleteUrl = value;
+          }
+        },
         loginRoute: {
           get: function() { return config.loginRoute; },
           set: function(value) { config.loginRoute = value; }
@@ -232,6 +240,10 @@
 
           $auth.signup = function(user) {
             return local.signup(user);
+          };
+          
+          $auth.delete = function (user) {
+            return local.delete(user);
           };
 
           $auth.logout = function(redirect) {
@@ -435,6 +447,15 @@
                 $location.path(config.signupRedirect);
               }
               return response;
+            });
+        };
+        
+        local.delete = function (user) {
+          var deleteUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, config.deleteUrl) : config.deleteUrl;
+          return $http.post(deleteUrl, user)
+            .then(function (response) {
+              shared.removeToken();
+                return response;
             });
         };
 
