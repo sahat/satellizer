@@ -28,7 +28,7 @@ gulp.task('copy', ['minify'], function() {
     .pipe(gulp.dest('examples/ionic/www/lib/satellizer'));
 });
 
-gulp.task('client', function() {
+gulp.task('php', function() {
   return gulp.src('examples/client/**/*.*')
     .pipe(gulp.dest('examples/server/php/public'));
 });
@@ -42,4 +42,4 @@ gulp.task('watch', function() {
   gulp.watch('satellizer.js', ['copy', 'client', 'minify']);
 });
 
-gulp.task('default', ['copy', 'client', 'watch']);
+gulp.task('default', ['copy', 'php', 'watch']);
