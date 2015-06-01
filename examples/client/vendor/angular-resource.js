@@ -1,5 +1,5 @@
 /**
- * @license AngularJS v1.4.0-rc.0
+ * @license AngularJS v1.4.0
  * (c) 2010-2015 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -586,8 +586,8 @@ angular.module('ngResource', ['ng']).
                 if (angular.isArray(data) !== (!!action.isArray)) {
                   throw $resourceMinErr('badcfg',
                       'Error in resource configuration for action `{0}`. Expected response to ' +
-                      'contain an {1} but got an {2}', name, action.isArray ? 'array' : 'object',
-                    angular.isArray(data) ? 'array' : 'object');
+                      'contain an {1} but got an {2} (Request: {3} {4})', name, action.isArray ? 'array' : 'object',
+                    angular.isArray(data) ? 'array' : 'object', httpConfig.method, httpConfig.url);
                 }
                 // jshint +W018
                 if (action.isArray) {
