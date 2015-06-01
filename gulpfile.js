@@ -39,7 +39,7 @@ gulp.task('complexity', function() {
 });
 
 gulp.task('watch', function() {
-  gulp.watch('satellizer.js', ['copy', 'client', 'minify']);
+  gulp.watch('satellizer.js', ['copy', 'php', 'minify']);
 });
 
 gulp.task('default', ['copy', 'php', 'watch']);
