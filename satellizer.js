@@ -751,8 +751,12 @@
         return obj;
       };
 
-      this.joinUrl = function() {
-        var joined = Array.prototype.slice.call(arguments, 0).join('/');
+      this.joinUrl = function(baseUrl, url) {
+        if (/^(?:[a-z]+:)?\/\//i.test(url)) {
+          return url;
+        }
+
+        var joined = [baseUrl, url].join('/');
 
         var normalize = function(str) {
           return str
@@ -813,8 +817,7 @@
             if (request.skipAuthorization) {
               return request;
             }
-
-            if (shared.isAuthenticated() && config.httpInterceptor) {
+             if (shared.isAuthenticated() && config.httpInterceptor) {
               var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
               var token = storage.get(tokenName);
 
