@@ -5,7 +5,7 @@
 [![Join the chat at https://gitter.im/sahat/satellizer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/sahat/satellizer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](http://img.shields.io/travis/sahat/satellizer.svg?style=flat)](https://travis-ci.org/sahat/satellizer)
 [![Test Coverage](http://img.shields.io/codeclimate/coverage/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
-[![Version](http://img.shields.io/badge/version-0.10.1-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
+[![Version](http://img.shields.io/badge/version-0.11.0-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
 
 **Live Demo:** [https://satellizer.herokuapp.com](https://satellizer.herokuapp.com)
 
@@ -52,7 +52,7 @@ or use the CDN:
 <!--[if lte IE 9]>
     <script src="//cdnjs.cloudflare.com/ajax/libs/Base64/0.3.0/base64.min.js"></script>
 <![endif]-->
-<script src="//cdn.jsdelivr.net/satellizer/0.10.1/satellizer.min.js"></script>
+<script src="//cdn.jsdelivr.net/satellizer/0.11.0/satellizer.min.js"></script>
 ```
 
 **Note:** Sattelizer uses [window.btoa](https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/btoa) and [window.atob](https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/atob).  If you still need to support **IE9**, use the Base64 polyfill above.
