@@ -153,6 +153,7 @@ $authProvider.unlinkMethod = 'get';
 $authProvider.authHeader = 'Authorization';
 $authProvider.authToken = 'Bearer';
 $authProvider.withCredentials = true;
+$authProvider.validateExp = true; // checks the token for expiration to verify authentication
 $authProvider.platform = 'browser'; // or 'mobile'
 $authProvider.storage = 'localStorage'; // or 'sessionStorage'
 
