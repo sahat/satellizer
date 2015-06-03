@@ -26,6 +26,7 @@
       authHeader: 'Authorization',
       authToken: 'Bearer',
       withCredentials: true,
+      validateExp: true,
       platform: 'browser',
       storage: 'localStorage',
       providers: {
@@ -178,6 +179,10 @@
         withCredentials: {
           get: function() { return config.withCredentials; },
           set: function(value) { config.withCredentials = value; }
+        },
+        validateExp: {
+          get: function() { return config.validateExp; },
+          set: function(value) { config.validateExp = value; }
         },
         unlinkMethod: {
           get: function() { return config.unlinkMethod; },
@@ -337,6 +342,9 @@
           var token = storage.get(tokenName);
 
           if (token) {
+            if (!config.validateExp) {
+              return true;
+            } else {     
             if (token.split('.').length === 3) {
               var base64Url = token.split('.')[1];
               var base64 = base64Url.replace('-', '+').replace('_', '/');
@@ -347,6 +355,7 @@
               return true;
             }
             return false;
+          }
           }
           return false;
         };
