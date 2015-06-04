@@ -55,7 +55,7 @@ or use the CDN:
 <script src="//cdn.jsdelivr.net/satellizer/0.11.1/satellizer.min.js"></script>
 ```
 
-**Note:** Sattelizer uses [window.btoa](https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/btoa) and [window.atob](https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/atob).  If you still need to support **IE9**, use the Base64 polyfill above.
+**Note:** Sattelizer uses [window.btoa](https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/btoa) and [window.atob](https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/atob) for parsing JWT.  If you still have to support **IE9**, use the Base64 polyfill above.
 
 ## Usage
 
@@ -591,8 +591,8 @@ Removes a JWT from Local Storage.
 
 ## TODO
 
-- [ ] C# (ASP.NET vNext) implementation
-- [ ] Go implementation
+- [ ] C# (ASP.NET 5) implementation
+- [x] Go implementation
 - [x] Java (Dropwizard) implementation
 - [x] Node.js (Express) implementation
 - [x] PHP (Laravel) implementation
