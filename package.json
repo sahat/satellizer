@@ -4,7 +4,6 @@
   "version": "0.11.1",
   "scripts": {
     "start": "node ./examples/server/node/server.js",
-    "postinstall": "gulp copy && gulp php",
     "test": "karma start"
   },
   "main": "satellizer.min.js",
