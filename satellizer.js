@@ -50,7 +50,10 @@
           redirectUri: window.location.origin + '/' || window.location.protocol + '//' + window.location.host + '/',
           scope: ['email'],
           scopeDelimiter: ',',
-          requiredUrlParams: ['display', 'scope'],
+          nonce: function() {
+            return Math.random();
+          },
+          requiredUrlParams: ['nonce','display', 'scope'],
           display: 'popup',
           type: '2.0',
           popupOptions: { width: 580, height: 400 }
@@ -524,9 +527,10 @@
             var urlParams = ['defaultUrlParams', 'requiredUrlParams', 'optionalUrlParams'];
 
             angular.forEach(urlParams, function(params) {
+
               angular.forEach(defaults[params], function(paramName) {
                 var camelizedName = utils.camelCase(paramName);
-                var paramValue = defaults[camelizedName];
+                var paramValue = angular.isFunction(defaults[paramName]) ? defaults[paramName]() : defaults[camelizedName];
 
                 if (paramName === 'state') {
                   var stateName = defaults.name + '_state';
@@ -697,7 +701,7 @@
                   deferred.resolve(qs);
                 }
 
-                popup.popupWindow.close();
+                //popup.popupWindow.close();
                 $interval.cancel(polling);
               }
             } catch (error) {
