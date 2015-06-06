@@ -758,6 +758,12 @@ app.post('/auth/foursquare', function(req, res) {
  */
 app.get('/auth/unlink/:provider', ensureAuthenticated, function(req, res) {
   var provider = req.params.provider;
+  var providers = ['facebook', 'foursquare', 'google', 'github', 'linkedin', 'live', 'twitter', 'yahoo'];
+
+  if (provider.indexOf(providers) === -1) {
+    return res.status(400).send('Unknown provider');
+  }
+
   User.findById(req.user, function(err, user) {
     if (!user) {
       return res.status(400).send({ message: 'User not found' });
