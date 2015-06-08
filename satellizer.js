@@ -486,17 +486,22 @@
 
             var url = defaults.authorizationEndpoint + '?' + oauth2.buildQueryString();
 
-            return popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri)
-              .pollPopup()
-              .then(function(oauthData) {
-                if (defaults.responseType === 'token') {
-                  return oauthData;
-                }
-                if (oauthData.state && oauthData.state !== storage.get(stateName)) {
-                  return $q.reject('OAuth 2.0 state parameter mismatch.');
-                }
-                return oauth2.exchangeForToken(oauthData, userData);
-              });
+            var openPopup;
+            if (config.platform === 'mobile') {
+              openPopup = popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri)
+            } else {
+              openPopup = popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri).pollPopup();
+            }
+
+            return openPopup.then(function(oauthData) {
+              if (defaults.responseType === 'token') {
+                return oauthData;
+              }
+              if (oauthData.state && oauthData.state !== storage.get(stateName)) {
+                return $q.reject('OAuth 2.0 state parameter mismatch.');
+              }
+              return oauth2.exchangeForToken(oauthData, userData);
+            });
 
           };
 
@@ -629,6 +634,7 @@
           if (popup.popupWindow && popup.popupWindow.focus) {
             popup.popupWindow.focus();
           }
+
 
           if (config.platform === 'mobile') {
             return popup.eventListener(redirectUri);
