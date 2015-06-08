@@ -295,7 +295,7 @@ To toggle from localStorage and sessionStorage run `$auth.setStorage('sessionSto
 
     </tr>
     <tr>
-      <td align="center">9+</td>
+      <td align="center">9*</td>
       <td align="center">✓</td>
       <td align="center">✓</td>
       <td align="center">✓</td>
@@ -304,8 +304,7 @@ To toggle from localStorage and sessionStorage run `$auth.setStorage('sessionSto
   </tbody>
 </table>
 
-**Note:** If you stumble upon a browser version that does not work with *Satellizer* please [open an issue](https://github.com/sahat/satellizer/issues) so I could update the checkmark with the lowest supported version.
-
+***** Requires [Base64.js](https://github.com/davidchambers/Base64.js/) polyfill.
 
 ## How It Works
 
