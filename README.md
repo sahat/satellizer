@@ -304,7 +304,7 @@ To toggle from localStorage and sessionStorage run `$auth.setStorage('sessionSto
   </tbody>
 </table>
 
-***** Requires [Base64.js](https://github.com/davidchambers/Base64.js/) polyfill.
+__*__ Requires [Base64.js](https://github.com/davidchambers/Base64.js/) polyfill.
 
 ## How It Works
 
