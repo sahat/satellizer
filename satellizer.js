@@ -50,9 +50,6 @@
           redirectUri: (window.location.origin || window.location.protocol + '//' + window.location.host) + '/',
           scope: ['email'],
           scopeDelimiter: ',',
-          nonce: function() {
-            return Math.random();
-          },
           requiredUrlParams: ['nonce','display', 'scope'],
           display: 'popup',
           type: '2.0',
@@ -704,8 +701,7 @@
                 popup.popupWindow.close();
                 $interval.cancel(polling);
               }
-            } catch (error) {
-            }
+            } catch (error) {}
 
             if (!popup.popupWindow) {
               $interval.cancel(polling);
@@ -715,6 +711,7 @@
               deferred.reject({ data: 'Authorization Failed' });
             }
           }, 35);
+
           return deferred.promise;
         };
 
