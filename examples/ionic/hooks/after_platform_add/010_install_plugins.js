@@ -6,7 +6,7 @@
 var pluginlist = [
   'org.apache.cordova.device@0.2.12',
   'org.apache.cordova.console@0.2.11',
-  'org.apache.cordova.inappbrowser@0.5.2',
+  'cordova-plugin-inappbrowser@1.0.0',
   'com.ionic.keyboard@1.0.3',
   'com.pushwoosh.plugins.pushwoosh@3.3.0',
   'https://bitbucket.org/180vita/cordova-adjust-sdk/',
