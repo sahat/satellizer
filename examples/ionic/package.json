@@ -12,5 +12,9 @@
     "bower": "^1.4.1",
     "gulp-util": "^3.0.5",
     "shelljs": "^0.5.1"
-  }
+  },
+  "cordovaPlugins": [],
+  "cordovaPlatforms": [
+    "ios"
+  ]
 }
