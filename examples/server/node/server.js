@@ -11,6 +11,7 @@ var async = require('async');
 var bcrypt = require('bcryptjs');
 var bodyParser = require('body-parser');
 var colors = require('colors');
+var cors = require('cors');
 var express = require('express');
 var logger = require('morgan');
 var jwt = require('jwt-simple');
@@ -64,6 +65,7 @@ mongoose.connection.on('error', function(err) {
 var app = express();
 
 app.set('port', process.env.PORT || 3000);
+app.use(cors());
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
