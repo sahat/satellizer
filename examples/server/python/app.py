@@ -70,8 +70,8 @@ db.create_all()
 def create_token(user):
     payload = {
         'sub': user.id,
-        'iat': datetime.now(),
-        'exp': datetime.now() + timedelta(days=14)
+        'iat': datetime.utcnow(),
+        'exp': datetime.utcnow() + timedelta(days=14)
     }
     token = jwt.encode(payload, app.config['TOKEN_SECRET'])
     return token.decode('unicode_escape')
