@@ -22,7 +22,7 @@ describe('satellizer.shared', function() {
     it('should log out a user', function() {
       var tokenName = [this.config.tokenPrefix, this.config.tokenName].join('_');
       this.shared.logout();
-      expect(this.$window.localStorage[tokenName]).toBeUndefined();
+      expect(this.$window.localStorage[tokenName]).toBeFalsy();
       expect(this.$location.path()).toEqual(this.config.logoutRedirect);
     });
 
