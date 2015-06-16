@@ -762,7 +762,7 @@ app.get('/auth/unlink/:provider', ensureAuthenticated, function(req, res) {
   var provider = req.params.provider;
   var providers = ['facebook', 'foursquare', 'google', 'github', 'linkedin', 'live', 'twitter', 'yahoo'];
 
-  if (provider.indexOf(providers) === -1) {
+  if (providers.indexOf(provider) === -1) {
     return res.status(400).send('Unknown provider');
   }
 
