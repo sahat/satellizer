@@ -10,6 +10,9 @@
       <button ng-if="!authenticated" ng-click="authenticate('google')" class="button button-block">
         Connect with Google
       </button>
+      <button ng-click="authenticate('twitter')" class="button button-block">
+        Connect with Twitter
+      </button>
     </div>
     <div ng-if="authenticated">
       <div class="card">
