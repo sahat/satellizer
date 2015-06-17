@@ -42,6 +42,7 @@ describe('satellizer.shared', function() {
 
     it('should get a token from Local Storage', function() {
       var tokenName = [this.config.tokenPrefix, this.config.tokenName].join('_');
+      this.$window.localStorage[tokenName] = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEyMzQ1Njc4OTAsIm5hbWUiOiJKb2huIERvZSJ9.kRkUHzvZMWXjgB4zkO3d6P1imkdp0ogebLuxnTCiYUU';
       var token = this.shared.getToken();
       expect(token).toEqual(this.$window.localStorage[tokenName]);
     });
