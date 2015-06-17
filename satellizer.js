@@ -488,7 +488,7 @@
 
             var openPopup;
             if (config.platform === 'mobile') {
-              openPopup = popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri)
+              openPopup = popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri).eventListener(defaults.redirectUri);
             } else {
               openPopup = popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri).pollPopup();
             }
@@ -580,15 +580,26 @@
 
           oauth1.open = function(options, userData) {
             angular.extend(defaults, options);
+            var popupWindow;
             var serverUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, defaults.url) : defaults.url;
-            var popupWindow = popup.open('', defaults.name, defaults.popupOptions, defaults.redirectUri);
+
+            if (config.platform !== 'mobile') {
+              popupWindow = popup.open('', defaults.name, defaults.popupOptions, defaults.redirectUri);
+            }
+
             return $http.post(serverUrl)
               .then(function(response) {
-                popupWindow.popupWindow.location.href = [defaults.authorizationEndpoint, oauth1.buildQueryString(response.data)].join('?');
-                return popupWindow.pollPopup()
-                  .then(function(response) {
-                    return oauth1.exchangeForToken(response, userData);
-                  });
+                if (config.platform === 'mobile') {
+                  popupWindow = popup.open([defaults.authorizationEndpoint, oauth1.buildQueryString(response.data)].join('?'), defaults.name, defaults.popupOptions, defaults.redirectUri);
+                } else {
+                  popupWindow.popupWindow.location = [defaults.authorizationEndpoint, oauth1.buildQueryString(response.data)].join('?');
+                }
+
+                var popupListener = config.platform === 'mobile' ? popupWindow.eventListener(defaults.redirectUri) : popupWindow.pollPopup();
+
+                return popupListener.then(function(response) {
+                  return oauth1.exchangeForToken(response, userData);
+                });
               });
 
           };
@@ -633,11 +644,6 @@
 
           if (popup.popupWindow && popup.popupWindow.focus) {
             popup.popupWindow.focus();
-          }
-
-
-          if (config.platform === 'mobile') {
-            return popup.eventListener(redirectUri);
           }
 
           return popup;
