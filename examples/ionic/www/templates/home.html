@@ -1,0 +1,40 @@
+<ion-view title="Satellizer Ionic">
+  <ion-content class="padding">
+    <div ng-if="!authenticated">
+      <button ng-click="authenticate('facebook')" class="button button-block icon-left ion-social-facebook">
+        Sign in with Facebook
+      </button>
+      <button ng-click="authenticate('google')" class="button button-block icon-left ion-social-googleplus">
+        Sign in with Google
+      </button>
+      <button ng-click="authenticate('linkedin')" class="button button-block icon-left ion-social-linkedin">
+        Sign in with LinkedIn
+      </button>
+      <button ng-click="authenticate('twitter')" class="button button-block icon-left ion-social-twitter">
+        Sign in with Twitter
+      </button>
+      <button ng-click="authenticate('foursquare')" class="button button-block icon-left ion-social-foursquare-outline">
+        Sign in with Foursquare
+      </button>
+      <button ng-click="authenticate('github')" class="button button-block icon-left ion-social-github">
+        Sign in with GitHub
+      </button>
+      <button ng-click="authenticate('yahoo')" class="button button-block icon-left ion-social-yahoo">
+        Sign in with Yahoo
+      </button>
+      <button ng-click="authenticate('live')" class="button button-block icon-left ion-social-windows">
+        Sign in with Windows Live
+      </button>
+    </div>
+    <div ng-if="authenticated">
+      <div class="card">
+        <div class="item item-text-wrap">
+          You are currently logged in.
+        </div>
+      </div>
+      <button ng-click="logout()" class="button button-block">
+        Log Out
+      </button>
+    </div>
+  </ion-content>
+</ion-view>
