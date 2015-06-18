@@ -1,6 +1,6 @@
 <ion-view title="Satellizer Ionic">
   <ion-content class="padding">
-    <div ng-if="!authenticated">
+    <div ng-if="!isAuthenticated()">
       <button ng-click="authenticate('facebook')" class="button button-block icon-left ion-social-facebook">
         Sign in with Facebook
       </button>
@@ -26,7 +26,7 @@
         Sign in with Windows Live
       </button>
     </div>
-    <div ng-if="authenticated">
+    <div ng-if="isAuthenticated()">
       <div class="card">
         <div class="item item-text-wrap">
           You are currently logged in.
