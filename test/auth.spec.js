@@ -91,7 +91,7 @@ describe('$auth', function() {
 
     it('should log out a user', function() {
       this.$auth.logout();
-      expect(this.$window.localStorage['satellizer_token']).toBeUndefined();
+      expect(this.$window.localStorage['satellizer.token']).toBeUndefined();
       expect(this.$location.path()).toEqual('/');
     });
 

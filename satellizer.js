@@ -5,8 +5,8 @@
  */
 (function(window, angular, undefined) {
   'use strict';
-
-  angular.module('satellizer', [])
+  var angularLocalStorage;
+  angular.module('satellizer', ['LocalStorageModule'])
     .constant('satellizer.config', {
       httpInterceptor: true,
       loginOnSignup: true,
@@ -283,10 +283,9 @@
       'satellizer.storage',
       function($q, $window, $location, config, storage) {
         var shared = {};
-        var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
-
+        var tokenName = config.tokenName;
         shared.getToken = function() {
-          return storage.get(tokenName);
+          return storage.get(config.tokenName);
         };
 
         shared.getPayload = function() {
@@ -786,42 +785,10 @@
         return normalize(joined);
       };
     })
-    .factory('satellizer.storage', ['satellizer.config', function(config) {
-      switch (config.storage) {
-        case 'localStorage':
-          if ('localStorage' in window && window['localStorage'] !== null) {
-            return {
-              get: function(key) { return localStorage.getItem(key); },
-              set: function(key, value) { return localStorage.setItem(key, value); },
-              remove: function(key) { return localStorage.removeItem(key); }
-            };
-          } else {
-            console.warn('Warning: Local Storage is disabled or unavailable. Satellizer will not work correctly.');
-            return {
-              get: function(key) { return undefined; },
-              set: function(key, value) { return undefined; },
-              remove: function(key) { return undefined; }
-            };
-          }
-          break;
-
-        case 'sessionStorage':
-          if ('sessionStorage' in window && window['sessionStorage'] !== null) {
-            return {
-              get: function(key) { return sessionStorage.getItem(key); },
-              set: function(key, value) { return sessionStorage.setItem(key, value); },
-              remove: function(key) { return sessionStorage.removeItem(key); }
-            };
-          } else {
-            console.warn('Warning: Session Storage is disabled or unavailable. Satellizer will not work correctly.');
-            return {
-              get: function(key) { return undefined; },
-              set: function(key, value) { return undefined; },
-              remove: function(key) { return undefined; }
-            };
-          }
-          break;
-      }
+    .factory('satellizer.storage', ['satellizer.config', 'localStorageService', function(config, localStorageService) {
+      angularLocalStorage.setStorageType(config.storage);
+      angularLocalStorage.setPrefix(config.tokenPrefix);
+      return localStorageService;
     }])
     .factory('satellizer.interceptor', [
       '$q',
@@ -852,8 +819,11 @@
           }
         };
       }])
-    .config(['$httpProvider', function($httpProvider) {
-      $httpProvider.interceptors.push('satellizer.interceptor');
+      .config(['$httpProvider', 'satellizer.config', 'localStorageServiceProvider', function($httpProvider, config, localStorageServiceProvider) {
+        $httpProvider.interceptors.push('satellizer.interceptor');
+        localStorageServiceProvider.prefix = config.tokenPrefix;
+        localStorageServiceProvider.storageType = config.storage;
+        angularLocalStorage = localStorageServiceProvider;
     }]);
 
 })(window, window.angular);

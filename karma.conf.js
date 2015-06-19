@@ -3,6 +3,7 @@ module.exports = function(config) {
     files: [
       'examples/client/vendor/angular.js',
       'examples/client/vendor/angular-mocks.js',
+      'examples/client/vendor/angular-local-storage.js',
       'satellizer.js',
       'test/*.spec.js'
     ],
