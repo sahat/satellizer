@@ -227,8 +227,8 @@
             return oauth.authenticate(name, false, userData);
           };
 
-          $auth.login = function(user, redirect) {
-            return local.login(user, redirect);
+          $auth.login = function(user, redirect, customLoginUrl) {
+            return local.login(user, redirect, customLoginUrl);
           };
 
           $auth.signup = function(user) {
@@ -420,9 +420,16 @@
       function($q, $http, $location, utils, shared, config) {
         var local = {};
 
-        local.login = function(user, redirect) {
+	/**
+         *
+         * @param user
+         * @param redirect
+         * @param customLoginUrl change the loginUrl for specific points
+         * @returns {HttpPromise}
+         */
+        local.login = function(user, redirect, customLoginUrl) {
           var loginUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, config.loginUrl) : config.loginUrl;
-          return $http.post(loginUrl, user)
+          return $http.post(customLoginUrl ? customLoginUrl : loginUrl, user)
             .then(function(response) {
               shared.setToken(response, redirect);
               return response;
