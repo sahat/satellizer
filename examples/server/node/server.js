@@ -602,7 +602,7 @@ app.post('/auth/twitter', function(req, res) {
     var requestTokenOauth = {
       consumer_key: config.TWITTER_KEY,
       consumer_secret: config.TWITTER_SECRET,
-      callback: config.TWITTER_CALLBACK
+      callback: req.body.redirectUri
     };
 
     // Step 1. Obtain request token for the authorization popup.

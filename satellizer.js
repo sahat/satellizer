@@ -92,6 +92,7 @@
           name: 'twitter',
           url: '/auth/twitter',
           authorizationEndpoint: 'https://api.twitter.com/oauth/authenticate',
+          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
           type: '1.0',
           popupOptions: { width: 495, height: 645 }
         },
@@ -587,7 +588,7 @@
               popupWindow = popup.open('', defaults.name, defaults.popupOptions, defaults.redirectUri);
             }
 
-            return $http.post(serverUrl)
+            return $http.post(serverUrl, defaults)
               .then(function(response) {
                 if (config.platform === 'mobile') {
                   popupWindow = popup.open([defaults.authorizationEndpoint, oauth1.buildQueryString(response.data)].join('?'), defaults.name, defaults.popupOptions, defaults.redirectUri);
