@@ -5,7 +5,6 @@
  */
 (function(window, angular, undefined) {
   'use strict';
-  var angularLocalStorage;
   angular.module('satellizer', ['LocalStorageModule'])
     .constant('satellizer.config', {
       httpInterceptor: true,
@@ -785,10 +784,12 @@
         return normalize(joined);
       };
     })
-    .factory('satellizer.storage', ['satellizer.config', 'localStorageService', function(config, localStorageService) {
-      angularLocalStorage.setStorageType(config.storage);
-      angularLocalStorage.setPrefix(config.tokenPrefix);
-      return localStorageService;
+    .factory('satellizer.storage', ['localStorageService', function(localStorageService) {
+      return {
+        get: localStorageService.get,
+        set: localStorageService.set,
+        remove: localStorageService.remove,
+      };
     }])
     .factory('satellizer.interceptor', [
       '$q',
@@ -802,8 +803,7 @@
               return request;
             }
              if (shared.isAuthenticated() && config.httpInterceptor) {
-              var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
-              var token = storage.get(tokenName);
+              var token = storage.get(config.tokenName);
 
               if (config.authHeader && config.authToken) {
                 token = config.authToken + ' ' + token;
@@ -819,11 +819,14 @@
           }
         };
       }])
-      .config(['$httpProvider', 'satellizer.config', 'localStorageServiceProvider', function($httpProvider, config, localStorageServiceProvider) {
-        $httpProvider.interceptors.push('satellizer.interceptor');
-        localStorageServiceProvider.prefix = config.tokenPrefix;
-        localStorageServiceProvider.storageType = config.storage;
-        angularLocalStorage = localStorageServiceProvider;
-    }]);
+    .config(satellizerConfig);
+
+  satellizerConfig.$inject = ['$httpProvider', 'satellizer.config', 'localStorageServiceProvider'];
+
+  function satellizerConfig ($httpProvider, config, localStorageServiceProvider) {
+    $httpProvider.interceptors.push('satellizer.interceptor');
+    localStorageServiceProvider.setPrefix(config.tokenPrefix);
+    localStorageServiceProvider.setStorageType(config.storage);
+  }
 
 })(window, window.angular);
