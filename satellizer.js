@@ -282,13 +282,12 @@
       'satellizer.storage',
       function($q, $window, $location, config, storage) {
         var shared = {};
-        var tokenName = config.tokenName;
         shared.getToken = function() {
           return storage.get(config.tokenName);
         };
 
         shared.getPayload = function() {
-          var token = storage.get(tokenName);
+          var token = storage.get(config.tokenName);
 
           if (token && token.split('.').length === 3) {
             var base64Url = token.split('.')[1];
@@ -319,7 +318,7 @@
             throw new Error('Expecting a token named "' + tokenPath + '" but instead got: ' + JSON.stringify(response.data));
           }
 
-          storage.set(tokenName, token);
+          storage.set(config.tokenName, token);
 
           if (config.loginRedirect && !redirect) {
             $location.path(config.loginRedirect);
@@ -329,11 +328,11 @@
         };
 
         shared.removeToken = function() {
-          storage.remove(tokenName);
+          storage.remove(config.tokenName);
         };
 
         shared.isAuthenticated = function() {
-          var token = storage.get(tokenName);
+          var token = storage.get(config.tokenName);
 
           if (token) {
             if (token.split('.').length === 3) {
@@ -351,7 +350,7 @@
         };
 
         shared.logout = function(redirect) {
-          storage.remove(tokenName);
+          storage.remove(config.tokenName);
 
           if (config.logoutRedirect && !redirect) {
             $location.url(config.logoutRedirect);
@@ -788,7 +787,7 @@
       return {
         get: localStorageService.get,
         set: localStorageService.set,
-        remove: localStorageService.remove,
+        remove: localStorageService.remove
       };
     }])
     .factory('satellizer.interceptor', [
