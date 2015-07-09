@@ -27,7 +27,7 @@
       unlinkMethod: 'get',
       authHeader: 'Authorization',
       authToken: 'Bearer',
-      storage: 'localStorage',
+      storageType: 'localStorage',
       providers: {
         google: {
           name: 'google',
@@ -195,9 +195,9 @@
           get: function() { return config.cordova; },
           set: function(value) { config.cordova = value; }
         },
-        storage: {
-          get: function() { return config.storage; },
-          set: function(value) { config.storage = value; }
+        storageType: {
+          get: function() { return config.storageType; },
+          set: function(value) { config.storageType = value; }
         }
       });
 
@@ -274,8 +274,8 @@
             return shared.getPayload();
           };
 
-          $auth.setStorage = function(type) {
-            return shared.setStorage(type);
+          $auth.setStorageType = function(type) {
+            return shared.setStorageType(type);
           };
 
           return $auth;
@@ -372,8 +372,8 @@
           return $q.when();
         };
 
-        shared.setStorage = function(type) {
-          config.storage = type;
+        shared.setStorageType = function(type) {
+          config.storageType = type;
         };
 
         return shared;
@@ -794,7 +794,7 @@
       };
     })
     .factory('satellizer.storage', ['satellizer.config', function(config) {
-      switch (config.storage) {
+      switch (config.storageType) {
         case 'localStorage':
           if ('localStorage' in window && window['localStorage'] !== null) {
             return {
