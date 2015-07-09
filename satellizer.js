@@ -793,42 +793,38 @@
         return normalize(joined);
       };
     })
-    .factory('satellizer.storage', ['satellizer.config', function(config) {
-      switch (config.storageType) {
-        case 'localStorage':
-          if ('localStorage' in window && window['localStorage'] !== null) {
-            return {
-              get: function(key) { return localStorage.getItem(key); },
-              set: function(key, value) { return localStorage.setItem(key, value); },
-              remove: function(key) { return localStorage.removeItem(key); }
-            };
-          } else {
-            console.warn('Warning: Local Storage is disabled or unavailable. Satellizer will not work correctly.');
-            return {
-              get: function(key) { return undefined; },
-              set: function(key, value) { return undefined; },
-              remove: function(key) { return undefined; }
-            };
-          }
-          break;
+    .factory('satellizer.storage', ['$window', 'satellizer.config', function($window, config) {
+      var browserSupportsLocalStorage = (function() {
+        try {
+          var supported = config.storageType in $window && $window[config.storageType] !== null;
 
-        case 'sessionStorage':
-          if ('sessionStorage' in window && window['sessionStorage'] !== null) {
-            return {
-              get: function(key) { return sessionStorage.getItem(key); },
-              set: function(key, value) { return sessionStorage.setItem(key, value); },
-              remove: function(key) { return sessionStorage.removeItem(key); }
-            };
-          } else {
-            console.warn('Warning: Session Storage is disabled or unavailable. Satellizer will not work correctly.');
-            return {
-              get: function(key) { return undefined; },
-              set: function(key, value) { return undefined; },
-              remove: function(key) { return undefined; }
-            };
+          if (supported) {
+            var key = Math.random().toString(36).substring(7);
+            $window[config.storageType].setItem(key, '');
+            $window[config.storageType].removeItem(key);
           }
-          break;
+
+          return supported;
+        } catch (e) {
+          return false;
+        }
+      })();
+
+      if (!browserSupportsLocalStorage) {
+        console.warn('Satellizer Warning: ' + config.storageType + ' is not available.');
       }
+
+      return {
+        get: function(key) {
+          return browserSupportsLocalStorage ? $window[config.storageType].getItem(key) : undefined;
+        },
+        set: function(key, value) {
+          return browserSupportsLocalStorage ? $window[config.storageType].setItem(key, value) : undefined;
+        },
+        remove: function(key) {
+          return browserSupportsLocalStorage ? $window[config.storageType].removeItem(key): undefined;
+        }
+      };
     }])
     .factory('satellizer.interceptor', [
       '$q',
