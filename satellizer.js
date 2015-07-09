@@ -10,6 +10,9 @@
     .constant('satellizer.config', {
       httpInterceptor: true,
       loginOnSignup: true,
+      withCredentials: true,
+      tokenRoot: false,
+      cordova: false,
       baseUrl: '/',
       loginRedirect: '/',
       logoutRedirect: '/',
@@ -18,15 +21,12 @@
       signupUrl: '/auth/signup',
       loginRoute: '/login',
       signupRoute: '/signup',
-      tokenRoot: false,
       tokenName: 'token',
       tokenPrefix: 'satellizer',
       unlinkUrl: '/auth/unlink/',
       unlinkMethod: 'get',
       authHeader: 'Authorization',
       authToken: 'Bearer',
-      withCredentials: true,
-      platform: 'browser',
       storage: 'localStorage',
       providers: {
         google: {
@@ -191,9 +191,9 @@
           get: function() { return config.unlinkMethod; },
           set: function(value) { config.unlinkMethod = value; }
         },
-        platform: {
-          get: function() { return config.platform; },
-          set: function(value) { config.platform = value; }
+        cordova: {
+          get: function() { return config.cordova; },
+          set: function(value) { config.cordova = value; }
         },
         storage: {
           get: function() { return config.storage; },
@@ -495,7 +495,7 @@
             var url = defaults.authorizationEndpoint + '?' + oauth2.buildQueryString();
 
             var openPopup;
-            if (config.platform === 'mobile') {
+            if (config.cordova) {
               openPopup = popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri).eventListener(defaults.redirectUri);
             } else {
               openPopup = popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri).pollPopup();
@@ -591,19 +591,19 @@
             var popupWindow;
             var serverUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, defaults.url) : defaults.url;
 
-            if (config.platform !== 'mobile') {
+            if (!config.cordova) {
               popupWindow = popup.open('', defaults.name, defaults.popupOptions, defaults.redirectUri);
             }
 
             return $http.post(serverUrl, defaults)
               .then(function(response) {
-                if (config.platform === 'mobile') {
+                if (config.cordova) {
                   popupWindow = popup.open([defaults.authorizationEndpoint, oauth1.buildQueryString(response.data)].join('?'), defaults.name, defaults.popupOptions, defaults.redirectUri);
                 } else {
                   popupWindow.popupWindow.location = [defaults.authorizationEndpoint, oauth1.buildQueryString(response.data)].join('?');
                 }
 
-                var popupListener = config.platform === 'mobile' ? popupWindow.eventListener(defaults.redirectUri) : popupWindow.pollPopup();
+                var popupListener = config.cordova ? popupWindow.eventListener(defaults.redirectUri) : popupWindow.pollPopup();
 
                 return popupListener.then(function(response) {
                   return oauth1.exchangeForToken(response, userData);
