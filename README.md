@@ -375,7 +375,7 @@ and specify `mylocalwebsite.net` as your *Redirect URL* on **API Settings** tab.
 
 ## API Reference
 
-- [`$auth.login(user)`](#authloginuser)
+- [`$auth.login(user, [redirect])`](#authloginuser)
 - [`$auth.signup(user)`](#authsignupuser)
 - [`$auth.authenticate(name, [userData])`](#authauthenticatename-userdata)
 - [`$auth.logout([redirect])`](#authlogout-redirect)
@@ -387,10 +387,12 @@ and specify `mylocalwebsite.net` as your *Redirect URL* on **API Settings** tab.
 - [`$auth.setToken(token, [redirect])`](#authsettokentoken-redirect)
 - [`$auth.removeToken()`](#authremovetoken)
 
-#### `$auth.login(user)`
+#### `$auth.login(user, [redirect])`
 
 Sign in via email and password where:
 - **user** - Plain JavaScript object.
+- **redirect** - Optional URL string for redirecting after successful login.
+
 
 ##### Returns
 
