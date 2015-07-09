@@ -290,7 +290,7 @@
       'satellizer.storage',
       function($q, $window, $location, config, storage) {
         var shared = {};
-        var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
+        var tokenName = config.tokenPrefix ? [config.tokenPrefix, config.tokenName].join('_') : config.tokenName;
 
         shared.getToken = function() {
           return storage.get(tokenName);
