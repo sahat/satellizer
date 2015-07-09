@@ -107,6 +107,13 @@
           display: 'popup',
           type: '2.0',
           popupOptions: { width: 500, height: 560 }
+        },
+        azure: {
+          name: 'azure',
+          url: '/auth/azure',
+          authorizationEndpoint: 'https://login.microsoftonline.com/common/oauth2/authorize',
+          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
+          type: '2.0'
         }
       }
     })
