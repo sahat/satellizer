@@ -643,10 +643,11 @@
         popup.url = '';
         popup.popupWindow = null;
 
-        popup.open = function(url, windowName, options, redirectUri) {
+        popup.open = function(url, name, options, redirectUri) {
           popup.url = url;
 
           var stringifiedOptions = popup.stringifyOptions(popup.prepareOptions(options || {}));
+          var windowName = config.cordova ? '_blank' : name;
 
           popup.popupWindow = window.open(url, windowName, stringifiedOptions);
 
