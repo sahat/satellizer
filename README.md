@@ -174,8 +174,8 @@ $authProvider.google({
   url: '/auth/google',
   authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
   redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
-  scope: ['profile', 'email'];
-  scopePrefix: 'openid';
+  scope: ['profile', 'email'],
+  scopePrefix: 'openid',
   scopeDelimiter: ' ',
   requiredUrlParams: ['scope'],
   optionalUrlParams: ['display'],
