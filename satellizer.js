@@ -10,6 +10,9 @@
     .constant('satellizer.config', {
       httpInterceptor: true,
       loginOnSignup: true,
+      withCredentials: true,
+      tokenRoot: false,
+      cordova: false,
       baseUrl: '/',
       loginRedirect: '/',
       logoutRedirect: '/',
@@ -18,16 +21,13 @@
       signupUrl: '/auth/signup',
       loginRoute: '/login',
       signupRoute: '/signup',
-      tokenRoot: false,
       tokenName: 'token',
       tokenPrefix: 'satellizer',
       unlinkUrl: '/auth/unlink/',
       unlinkMethod: 'get',
       authHeader: 'Authorization',
       authToken: 'Bearer',
-      withCredentials: true,
-      platform: 'browser',
-      storage: 'localStorage',
+      storageType: 'localStorage',
       providers: {
         google: {
           name: 'google',
@@ -107,6 +107,13 @@
           display: 'popup',
           type: '2.0',
           popupOptions: { width: 500, height: 560 }
+        },
+        azure: {
+          name: 'azure',
+          url: '/auth/azure',
+          authorizationEndpoint: 'https://login.microsoftonline.com/common/oauth2/authorize',
+          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
+          type: '2.0'
         }
       }
     })
@@ -184,13 +191,13 @@
           get: function() { return config.unlinkMethod; },
           set: function(value) { config.unlinkMethod = value; }
         },
-        platform: {
-          get: function() { return config.platform; },
-          set: function(value) { config.platform = value; }
+        cordova: {
+          get: function() { return config.cordova; },
+          set: function(value) { config.cordova = value; }
         },
-        storage: {
-          get: function() { return config.storage; },
-          set: function(value) { config.storage = value; }
+        storageType: {
+          get: function() { return config.storageType; },
+          set: function(value) { config.storageType = value; }
         }
       });
 
@@ -267,8 +274,8 @@
             return shared.getPayload();
           };
 
-          $auth.setStorage = function(type) {
-            return shared.setStorage(type);
+          $auth.setStorageType = function(type) {
+            return shared.setStorageType(type);
           };
 
           return $auth;
@@ -283,7 +290,7 @@
       'satellizer.storage',
       function($q, $window, $location, config, storage) {
         var shared = {};
-        var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
+        var tokenName = config.tokenPrefix ? [config.tokenPrefix, config.tokenName].join('_') : config.tokenName;
 
         shared.getToken = function() {
           return storage.get(tokenName);
@@ -365,8 +372,8 @@
           return $q.when();
         };
 
-        shared.setStorage = function(type) {
-          config.storage = type;
+        shared.setStorageType = function(type) {
+          config.storageType = type;
         };
 
         return shared;
@@ -488,7 +495,7 @@
             var url = defaults.authorizationEndpoint + '?' + oauth2.buildQueryString();
 
             var openPopup;
-            if (config.platform === 'mobile') {
+            if (config.cordova) {
               openPopup = popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri).eventListener(defaults.redirectUri);
             } else {
               openPopup = popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri).pollPopup();
@@ -584,19 +591,19 @@
             var popupWindow;
             var serverUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, defaults.url) : defaults.url;
 
-            if (config.platform !== 'mobile') {
+            if (!config.cordova) {
               popupWindow = popup.open('', defaults.name, defaults.popupOptions, defaults.redirectUri);
             }
 
             return $http.post(serverUrl, defaults)
               .then(function(response) {
-                if (config.platform === 'mobile') {
+                if (config.cordova) {
                   popupWindow = popup.open([defaults.authorizationEndpoint, oauth1.buildQueryString(response.data)].join('?'), defaults.name, defaults.popupOptions, defaults.redirectUri);
                 } else {
                   popupWindow.popupWindow.location = [defaults.authorizationEndpoint, oauth1.buildQueryString(response.data)].join('?');
                 }
 
-                var popupListener = config.platform === 'mobile' ? popupWindow.eventListener(defaults.redirectUri) : popupWindow.pollPopup();
+                var popupListener = config.cordova ? popupWindow.eventListener(defaults.redirectUri) : popupWindow.pollPopup();
 
                 return popupListener.then(function(response) {
                   return oauth1.exchangeForToken(response, userData);
@@ -786,42 +793,38 @@
         return normalize(joined);
       };
     })
-    .factory('satellizer.storage', ['satellizer.config', function(config) {
-      switch (config.storage) {
-        case 'localStorage':
-          if ('localStorage' in window && window['localStorage'] !== null) {
-            return {
-              get: function(key) { return localStorage.getItem(key); },
-              set: function(key, value) { return localStorage.setItem(key, value); },
-              remove: function(key) { return localStorage.removeItem(key); }
-            };
-          } else {
-            console.warn('Warning: Local Storage is disabled or unavailable. Satellizer will not work correctly.');
-            return {
-              get: function(key) { return undefined; },
-              set: function(key, value) { return undefined; },
-              remove: function(key) { return undefined; }
-            };
-          }
-          break;
+    .factory('satellizer.storage', ['$window', 'satellizer.config', function($window, config) {
+      var browserSupportsLocalStorage = (function() {
+        try {
+          var supported = config.storageType in $window && $window[config.storageType] !== null;
 
-        case 'sessionStorage':
-          if ('sessionStorage' in window && window['sessionStorage'] !== null) {
-            return {
-              get: function(key) { return sessionStorage.getItem(key); },
-              set: function(key, value) { return sessionStorage.setItem(key, value); },
-              remove: function(key) { return sessionStorage.removeItem(key); }
-            };
-          } else {
-            console.warn('Warning: Session Storage is disabled or unavailable. Satellizer will not work correctly.');
-            return {
-              get: function(key) { return undefined; },
-              set: function(key, value) { return undefined; },
-              remove: function(key) { return undefined; }
-            };
+          if (supported) {
+            var key = Math.random().toString(36).substring(7);
+            $window[config.storageType].setItem(key, '');
+            $window[config.storageType].removeItem(key);
           }
-          break;
+
+          return supported;
+        } catch (e) {
+          return false;
+        }
+      })();
+
+      if (!browserSupportsLocalStorage) {
+        console.warn('Satellizer Warning: ' + config.storageType + ' is not available.');
       }
+
+      return {
+        get: function(key) {
+          return browserSupportsLocalStorage ? $window[config.storageType].getItem(key) : undefined;
+        },
+        set: function(key, value) {
+          return browserSupportsLocalStorage ? $window[config.storageType].setItem(key, value) : undefined;
+        },
+        remove: function(key) {
+          return browserSupportsLocalStorage ? $window[config.storageType].removeItem(key): undefined;
+        }
+      };
     }])
     .factory('satellizer.interceptor', [
       '$q',
