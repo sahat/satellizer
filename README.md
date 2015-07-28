@@ -5,7 +5,7 @@
 [![Join the chat at https://gitter.im/sahat/satellizer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/sahat/satellizer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](http://img.shields.io/travis/sahat/satellizer.svg?style=flat)](https://travis-ci.org/sahat/satellizer)
 [![Test Coverage](http://img.shields.io/codeclimate/coverage/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
-[![Version](http://img.shields.io/badge/version-0.11.2-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
+[![Version](http://img.shields.io/badge/version-0.11.3-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
 
 **Live Demo:** [https://satellizer.herokuapp.com](https://satellizer.herokuapp.com)
 
@@ -45,17 +45,17 @@ bower install satellizer
 npm install satellizer
 ```
 
-**Note:** Alternatively, you may download the [latest release](https://github.com/sahat/satellizer/releases)
-or use the CDN:
+Alternatively, you may [download](https://github.com/sahat/satellizer/releases) the latest release or use the CDN:
 
 ```html
 <!--[if lte IE 9]>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/Base64/0.3.0/base64.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/Base64/0.3.0/base64.min.js"></script>
 <![endif]-->
-<script src="//cdn.jsdelivr.net/satellizer/0.11.2/satellizer.min.js"></script>
+<script src="//cdn.jsdelivr.net/satellizer/0.11.3/satellizer.min.js"></script>
 ```
 
-**Note:** Sattelizer uses [window.btoa](https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/btoa) and [window.atob](https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/atob) for parsing JWT.  If you still have to support **IE9**, use the Base64 polyfill above.
+**Note:** Sattelizer uses [`window.atob()`](https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/atob) for decoding JSON Web Tokens. If you need to support *Internet Explorer 9*, then use Base64 polyfill above.
+
 
 ## Usage
 
@@ -174,8 +174,8 @@ $authProvider.google({
   url: '/auth/google',
   authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
   redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
-  scope: ['profile', 'email'];
-  scopePrefix: 'openid';
+  scope: ['profile', 'email'],
+  scopePrefix: 'openid',
   scopeDelimiter: ' ',
   requiredUrlParams: ['scope'],
   optionalUrlParams: ['display'],
@@ -375,7 +375,7 @@ and specify `mylocalwebsite.net` as your *Redirect URL* on **API Settings** tab.
 
 ## API Reference
 
-- [`$auth.login(user)`](#authloginuser)
+- [`$auth.login(user, [redirect])`](#authloginuser)
 - [`$auth.signup(user)`](#authsignupuser)
 - [`$auth.authenticate(name, [userData])`](#authauthenticatename-userdata)
 - [`$auth.logout([redirect])`](#authlogout-redirect)
@@ -387,10 +387,12 @@ and specify `mylocalwebsite.net` as your *Redirect URL* on **API Settings** tab.
 - [`$auth.setToken(token, [redirect])`](#authsettokentoken-redirect)
 - [`$auth.removeToken()`](#authremovetoken)
 
-#### `$auth.login(user)`
+#### `$auth.login(user, [redirect])`
 
 Sign in via email and password where:
 - **user** - Plain JavaScript object.
+- **redirect** - Optional URL string for redirecting after successful login.
+
 
 ##### Returns
 
