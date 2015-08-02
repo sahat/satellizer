@@ -212,9 +212,8 @@ app.post('/auth/google', function(req, res) {
 
     // Step 2. Retrieve profile information about the current user.
     request.get({ url: peopleApiUrl, headers: headers, json: true }, function(err, response, profile) {
-
-      if(profile.error) {
-        return res.status(500).send(profile.error);
+      if (profile.error) {
+        return res.status(500).send({message: profile.error.message});
       }
       // Step 3a. Link user accounts.
       if (req.headers.authorization) {
