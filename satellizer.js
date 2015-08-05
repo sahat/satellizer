@@ -5,8 +5,7 @@
  */
 (function(window, angular, undefined) {
   'use strict';
-
-  angular.module('satellizer', [])
+  angular.module('satellizer', ['LocalStorageModule'])
     .constant('satellizer.config', {
       httpInterceptor: true,
       loginOnSignup: true,
@@ -283,14 +282,12 @@
       'satellizer.storage',
       function($q, $window, $location, config, storage) {
         var shared = {};
-        var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
-
         shared.getToken = function() {
-          return storage.get(tokenName);
+          return storage.get(config.tokenName);
         };
 
         shared.getPayload = function() {
-          var token = storage.get(tokenName);
+          var token = storage.get(config.tokenName);
 
           if (token && token.split('.').length === 3) {
             var base64Url = token.split('.')[1];
@@ -321,7 +318,7 @@
             throw new Error('Expecting a token named "' + tokenPath + '" but instead got: ' + JSON.stringify(response.data));
           }
 
-          storage.set(tokenName, token);
+          storage.set(config.tokenName, token);
 
           if (config.loginRedirect && !redirect) {
             $location.path(config.loginRedirect);
@@ -331,11 +328,11 @@
         };
 
         shared.removeToken = function() {
-          storage.remove(tokenName);
+          storage.remove(config.tokenName);
         };
 
         shared.isAuthenticated = function() {
-          var token = storage.get(tokenName);
+          var token = storage.get(config.tokenName);
 
           if (token) {
             if (token.split('.').length === 3) {
@@ -353,7 +350,7 @@
         };
 
         shared.logout = function(redirect) {
-          storage.remove(tokenName);
+          storage.remove(config.tokenName);
 
           if (config.logoutRedirect && !redirect) {
             $location.url(config.logoutRedirect);
@@ -786,42 +783,12 @@
         return normalize(joined);
       };
     })
-    .factory('satellizer.storage', ['satellizer.config', function(config) {
-      switch (config.storage) {
-        case 'localStorage':
-          if ('localStorage' in window && window['localStorage'] !== null) {
-            return {
-              get: function(key) { return localStorage.getItem(key); },
-              set: function(key, value) { return localStorage.setItem(key, value); },
-              remove: function(key) { return localStorage.removeItem(key); }
-            };
-          } else {
-            console.warn('Warning: Local Storage is disabled or unavailable. Satellizer will not work correctly.');
-            return {
-              get: function(key) { return undefined; },
-              set: function(key, value) { return undefined; },
-              remove: function(key) { return undefined; }
-            };
-          }
-          break;
-
-        case 'sessionStorage':
-          if ('sessionStorage' in window && window['sessionStorage'] !== null) {
-            return {
-              get: function(key) { return sessionStorage.getItem(key); },
-              set: function(key, value) { return sessionStorage.setItem(key, value); },
-              remove: function(key) { return sessionStorage.removeItem(key); }
-            };
-          } else {
-            console.warn('Warning: Session Storage is disabled or unavailable. Satellizer will not work correctly.');
-            return {
-              get: function(key) { return undefined; },
-              set: function(key, value) { return undefined; },
-              remove: function(key) { return undefined; }
-            };
-          }
-          break;
-      }
+    .factory('satellizer.storage', ['localStorageService', function(localStorageService) {
+      return {
+        get: localStorageService.get,
+        set: localStorageService.set,
+        remove: localStorageService.remove
+      };
     }])
     .factory('satellizer.interceptor', [
       '$q',
@@ -835,8 +802,7 @@
               return request;
             }
              if (shared.isAuthenticated() && config.httpInterceptor) {
-              var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
-              var token = storage.get(tokenName);
+              var token = storage.get(config.tokenName);
 
               if (config.authHeader && config.authToken) {
                 token = config.authToken + ' ' + token;
@@ -852,8 +818,14 @@
           }
         };
       }])
-    .config(['$httpProvider', function($httpProvider) {
-      $httpProvider.interceptors.push('satellizer.interceptor');
-    }]);
+    .config(satellizerConfig);
+
+  satellizerConfig.$inject = ['$httpProvider', 'satellizer.config', 'localStorageServiceProvider'];
+
+  function satellizerConfig ($httpProvider, config, localStorageServiceProvider) {
+    $httpProvider.interceptors.push('satellizer.interceptor');
+    localStorageServiceProvider.setPrefix(config.tokenPrefix);
+    localStorageServiceProvider.setStorageType(config.storage);
+  }
 
 })(window, window.angular);
