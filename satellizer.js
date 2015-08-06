@@ -312,8 +312,9 @@
           }
 
           if (!token && response) {
-            token = config.tokenRoot && response.data[config.tokenRoot] ?
-              response.data[config.tokenRoot][config.tokenName] : response.data[config.tokenName];
+            var tokenData = config.tokenRoot.split(".").reduce(function(o, x) { return o[x] }, response.data);
+            token = config.tokenRoot && tokenData ?
+              tokenData[config.tokenName] : response.data[config.tokenName];
           }
 
           if (!token) {
