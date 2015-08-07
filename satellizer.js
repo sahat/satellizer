@@ -312,9 +312,8 @@
           }
 
           if (!token && response) {
-            var tokenData = config.tokenRoot.split(".").reduce(function(o, x) { return o[x] }, response.data);
-            token = config.tokenRoot && tokenData ?
-              tokenData[config.tokenName] : response.data[config.tokenName];
+            var tokenRootData = config.tokenRoot && config.tokenRoot.split('.').reduce(function(o, x) { return o[x]; }, response.data);
+            token = tokenRootData ? tokenRootData[config.tokenName] : response.data[config.tokenName];
           }
 
           if (!token) {
