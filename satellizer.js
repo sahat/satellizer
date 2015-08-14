@@ -227,12 +227,12 @@
             return oauth.authenticate(name, false, userData);
           };
 
-          $auth.login = function(user, redirect) {
-            return local.login(user, redirect);
+          $auth.login = function(user, redirect, reqConfig) {
+            return local.login(user, redirect, reqConfig);
           };
 
-          $auth.signup = function(user) {
-            return local.signup(user);
+          $auth.signup = function(user, reqConfig) {
+            return local.signup(user, reqConfig);
           };
 
           $auth.logout = function(redirect) {
@@ -420,18 +420,18 @@
       function($q, $http, $location, utils, shared, config) {
         var local = {};
 
-        local.login = function(user, redirect) {
+        local.login = function(user, redirect, reqConfig) {
           var loginUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, config.loginUrl) : config.loginUrl;
-          return $http.post(loginUrl, user)
+          return $http.post(loginUrl, user, reqConfig)
             .then(function(response) {
               shared.setToken(response, redirect);
               return response;
             });
         };
 
-        local.signup = function(user) {
+        local.signup = function(user, reqConfig) {
           var signupUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, config.signupUrl) : config.signupUrl;
-          return $http.post(signupUrl, user)
+          return $http.post(signupUrl, user, reqConfig)
             .then(function(response) {
               if (config.loginOnSignup) {
                 shared.setToken(response);
