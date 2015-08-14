@@ -234,8 +234,8 @@
             return oauth.authenticate(name, false, userData);
           };
 
-          $auth.login = function(user, redirect) {
-            return local.login(user, redirect);
+          $auth.login = function(user, opts) {
+            return local.login(user, opts);
           };
 
           $auth.signup = function(user) {
@@ -427,16 +427,67 @@
       function($q, $http, $location, utils, shared, config) {
         var local = {};
 
-        local.login = function(user, redirect) {
-          var loginUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, config.loginUrl) : config.loginUrl;
-          return $http.post(loginUrl, user)
+        /**
+         * @param {Object} user - User information. (e.g. email and password)
+         * @param {Object} opts - HTTP config object.
+         *    - method – {String} – HTTP method. (e.g. 'GET', 'POST', etc)
+         *    - url – {String} – Absolute or relative URL of the resource that is being requested.
+         *    - params – {Object.<String|Object>} – Map of strings or objects which will be serialized with the paramSerializer and appended as GET parameters.
+         *    - data – {String|Object} – Data to be sent as the request message data.
+         *    - headers – {Object} – Map of strings or functions which return strings representing HTTP headers to send to the server. If the return value of a function is null, the header will not be sent. Functions accept a config object as an argument.
+         *    - xsrfHeaderName – {String} – Name of HTTP header to populate with the XSRF token.
+         *    - xsrfCookieName – {String} – Name of cookie containing the XSRF token.
+         *    - transformRequest – {function(data, headersGetter)|Array.<function(data, headersGetter)>} – transform function or an array of such functions. The transform function takes the http request body and headers and returns its transformed (typically serialized) version. See Overriding the Default Transformations
+         *    - transformResponse – {function(data, headersGetter, status)|Array.<function(data, headersGetter, status)>} – transform function or an array of such functions. The transform function takes the http response body, headers and status and returns its transformed (typically deserialized) version. See Overriding the Default TransformationjqLiks
+         *    - paramSerializer - {String|function(Object<String,String>):String} - A function used to prepare the string representation of request parameters (specified as an object). If specified as string, it is interpreted as function registered with the $injector, which means you can create your own serializer by registering it as a service. The default serializer is the $httpParamSerializer; alternatively, you can use the $httpParamSerializerJQLike
+         *    - cache – {Boolean|Cache} – If true, a default $http cache will be used to cache the GET request, otherwise if a cache instance built with $cacheFactory, this cache will be used for caching.
+         *    - timeout – {Number|Promise} – timeout in milliseconds, or promise that should abort the request when resolved.
+         *    - withCredentials - {Boolean} - whether to set the withCredentials flag on the XHR object. See requests with credentials for more information.
+         *    - responseType - {String} - see XMLHttpRequest.responseType.
+         * @returns {Promise} - Returns a Promise that will be resolved when the request succeeds or fails.
+         *    - data – {String|Object} – The response body transformed with the transform functions.
+         *    - status – {Number} – HTTP status code of the response.
+         *    - headers – {function([headerName])} – Header getter function.
+         *    - config – {Object} – The configuration object that was used to generate the request.
+         *    - statusText – {String} – HTTP status text of the response.
+         */
+        local.login = function(user, opts) {
+          opts = opts || {};
+          opts.url = config.baseUrl ? utils.joinUrl(config.baseUrl, config.loginUrl) : config.loginUrl;
+          opts.data = user || opts.data;
+
+          $http(opts)
             .then(function(response) {
-              shared.setToken(response, redirect);
+              shared.setToken(response);
               return response;
             });
         };
 
-        local.signup = function(user) {
+        /**
+         * @param {Object} user - User information. (e.g. email and password)
+         * @param {Object} opts - HTTP config object.
+         *    - method – {String} – HTTP method. (e.g. 'GET', 'POST', etc)
+         *    - url – {String} – Absolute or relative URL of the resource that is being requested.
+         *    - params – {Object.<String|Object>} – Map of strings or objects which will be serialized with the paramSerializer and appended as GET parameters.
+         *    - data – {String|Object} – Data to be sent as the request message data.
+         *    - headers – {Object} – Map of strings or functions which return strings representing HTTP headers to send to the server. If the return value of a function is null, the header will not be sent. Functions accept a config object as an argument.
+         *    - xsrfHeaderName – {String} – Name of HTTP header to populate with the XSRF token.
+         *    - xsrfCookieName – {String} – Name of cookie containing the XSRF token.
+         *    - transformRequest – {function(data, headersGetter)|Array.<function(data, headersGetter)>} – transform function or an array of such functions. The transform function takes the http request body and headers and returns its transformed (typically serialized) version. See Overriding the Default Transformations
+         *    - transformResponse – {function(data, headersGetter, status)|Array.<function(data, headersGetter, status)>} – transform function or an array of such functions. The transform function takes the http response body, headers and status and returns its transformed (typically deserialized) version. See Overriding the Default TransformationjqLiks
+         *    - paramSerializer - {String|function(Object<String,String>):String} - A function used to prepare the string representation of request parameters (specified as an object). If specified as string, it is interpreted as function registered with the $injector, which means you can create your own serializer by registering it as a service. The default serializer is the $httpParamSerializer; alternatively, you can use the $httpParamSerializerJQLike
+         *    - cache – {Boolean|Cache} – If true, a default $http cache will be used to cache the GET request, otherwise if a cache instance built with $cacheFactory, this cache will be used for caching.
+         *    - timeout – {Number|Promise} – timeout in milliseconds, or promise that should abort the request when resolved.
+         *    - withCredentials - {Boolean} - whether to set the withCredentials flag on the XHR object. See requests with credentials for more information.
+         *    - responseType - {String} - see XMLHttpRequest.responseType.
+         * @returns {Promise} - Returns a Promise that will be resolved when the request succeeds or fails.
+         *    - data – {String|Object} – The response body transformed with the transform functions.
+         *    - status – {Number} – HTTP status code of the response.
+         *    - headers – {function([headerName])} – Header getter function.
+         *    - config – {Object} – The configuration object that was used to generate the request.
+         *    - statusText – {String} – HTTP status text of the response.
+         */
+        local.signup = function(user, opts) {
           var signupUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, config.signupUrl) : config.signupUrl;
           return $http.post(signupUrl, user)
             .then(function(response) {
@@ -650,6 +701,8 @@
           var windowName = config.cordova ? '_blank' : name;
 
           popup.popupWindow = window.open(url, windowName, stringifiedOptions);
+
+          window.popup =  popup.popupWindow;
 
           if (popup.popupWindow && popup.popupWindow.focus) {
             popup.popupWindow.focus();
