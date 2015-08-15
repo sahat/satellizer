@@ -758,17 +758,17 @@ app.post('/auth/foursquare', function(req, res) {
  | Unlink Provider
  |--------------------------------------------------------------------------
  */
-app.get('/auth/unlink/:provider', ensureAuthenticated, function(req, res) {
-  var provider = req.params.provider;
+app.post('/auth/unlink', ensureAuthenticated, function(req, res) {
+  var provider = req.body.provider;
   var providers = ['facebook', 'foursquare', 'google', 'github', 'linkedin', 'live', 'twitter', 'yahoo'];
 
-  if (provider.indexOf(providers) === -1) {
-    return res.status(400).send('Unknown provider');
+  if (providers.indexOf(provider) === -1) {
+    return res.status(400).send({ message: 'Unknown OAuth Provider' });
   }
 
   User.findById(req.user, function(err, user) {
     if (!user) {
-      return res.status(400).send({ message: 'User not found' });
+      return res.status(400).send({ message: 'User Not Found' });
     }
     user[provider] = undefined;
     user.save(function() {
