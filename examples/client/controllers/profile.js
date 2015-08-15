@@ -31,7 +31,7 @@ angular.module('MyApp')
     $scope.unlink = function(provider) {
       $auth.unlink(provider)
         .then(function() {
-          toastr.success('You have successfully unlinked a ' + provider + ' account');
+          toastr.info('You have unlinked a ' + provider + ' account');
           $scope.getProfile();
         })
         .catch(function(response) {
