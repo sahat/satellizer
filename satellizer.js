@@ -227,8 +227,8 @@
             return local.signup(user);
           };
 
-          $auth.logout = function(redirect) {
-            return shared.logout(redirect);
+          $auth.logout = function() {
+            return shared.logout();
           };
 
           $auth.isAuthenticated = function() {
@@ -342,15 +342,8 @@
           return false;
         };
 
-        shared.logout = function(redirect) {
+        shared.logout = function() {
           storage.remove(tokenName);
-
-          if (config.logoutRedirect && !redirect) {
-            $location.url(config.logoutRedirect);
-          }
-          else if (angular.isString(redirect)) {
-            $location.url(redirect);
-          }
 
           return $q.when();
         };
