@@ -701,7 +701,7 @@
             } else if (popup.popupWindow.closed || popup.popupWindow.closed === undefined) {
               $interval.cancel(polling);
             }
-          }, 35);
+          }, 50);
 
           return deferred.promise;
         };
