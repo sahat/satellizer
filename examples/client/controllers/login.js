@@ -1,9 +1,10 @@
 angular.module('MyApp')
-  .controller('LoginCtrl', function($scope, toastr, $auth) {
+  .controller('LoginCtrl', function($scope, $location, $auth, toastr) {
     $scope.login = function() {
       $auth.login($scope.user)
         .then(function() {
           toastr.success('You have successfully signed in');
+          $location.path('/');
         })
         .catch(function(response) {
           toastr.error(response.data.message, response.status);
@@ -13,6 +14,7 @@ angular.module('MyApp')
       $auth.authenticate(provider)
         .then(function() {
           toastr.success('You have successfully signed in with ' + provider);
+          $location.path('/');
         })
         .catch(function(response) {
           toastr.error(response.data.message);
