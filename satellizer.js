@@ -44,7 +44,7 @@
           redirectUri: (window.location.origin || window.location.protocol + '//' + window.location.host) + '/',
           scope: ['email'],
           scopeDelimiter: ',',
-          requiredUrlParams: ['nonce','display', 'scope'],
+          requiredUrlParams: ['display', 'scope'],
           display: 'popup',
           type: '2.0',
           popupOptions: { width: 580, height: 400 }
@@ -101,13 +101,6 @@
           display: 'popup',
           type: '2.0',
           popupOptions: { width: 500, height: 560 }
-        },
-        azure: {
-          name: 'azure',
-          url: '/auth/azure',
-          authorizationEndpoint: 'https://login.microsoftonline.com/common/oauth2/authorize',
-          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
-          type: '2.0'
         }
       }
     })
@@ -259,14 +252,15 @@
       'SatellizerConfig',
       'SatellizerStorage',
       function($q, $window, $location, config, storage) {
-        var shared = {};
+        var Shared = {};
+
         var tokenName = config.tokenPrefix ? [config.tokenPrefix, config.tokenName].join('_') : config.tokenName;
 
-        shared.getToken = function() {
+        Shared.getToken = function() {
           return storage.get(tokenName);
         };
 
-        shared.getPayload = function() {
+        Shared.getPayload = function() {
           var token = storage.get(tokenName);
 
           if (token && token.split('.').length === 3) {
@@ -276,7 +270,7 @@
           }
         };
 
-        shared.setToken = function(response) {
+        Shared.setToken = function(response) {
           var accessToken = response && response.access_token;
           var token;
 
@@ -301,14 +295,14 @@
           storage.set(tokenName, token);
         };
 
-        shared.removeToken = function() {
+        Shared.removeToken = function() {
           storage.remove(tokenName);
         };
 
         /**
          * @returns {boolean}
          */
-        shared.isAuthenticated = function() {
+        Shared.isAuthenticated = function() {
           var token = storage.get(tokenName);
 
           if (token) {
@@ -326,16 +320,16 @@
           return false;
         };
 
-        shared.logout = function() {
+        Shared.logout = function() {
           storage.remove(tokenName);
           return $q.when();
         };
 
-        shared.setStorageType = function(type) {
+        Shared.setStorageType = function(type) {
           config.storageType = type;
         };
 
-        return shared;
+        return Shared;
       }])
     .factory('SatellizerOauth', [
       '$q',
@@ -476,6 +470,8 @@
           };
 
           Oauth2.exchangeForToken = function(oauthData, userData) {
+            userData = { foo: { bar: { baz : 1 }}};
+
             var data = angular.extend({}, userData);
 
             angular.forEach(defaults.responseParams, function(value, key) {
@@ -498,7 +494,6 @@
               data.state = oauthData.state;
             }
 
-            // todo; format url function
             var exchangeForTokenUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, defaults.url) : defaults.url;
 
             return $http.post(exchangeForTokenUrl, data, { withCredentials: config.withCredentials });
@@ -547,6 +542,7 @@
       'SatellizerUtils',
       function($q, $http, popup, config, utils) {
         return function() {
+          var Oauth1 = {};
 
           var defaults = {
             url: null,
@@ -556,9 +552,7 @@
             authorizationEndpoint: null
           };
 
-          var oauth1 = {};
-
-          oauth1.open = function(options, userData) {
+          Oauth1.open = function(options, userData) {
             angular.extend(defaults, options);
             var popupWindow;
             var serverUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, defaults.url) : defaults.url;
@@ -570,27 +564,28 @@
             return $http.post(serverUrl, defaults)
               .then(function(response) {
                 if (config.cordova) {
-                  popupWindow = popup.open([defaults.authorizationEndpoint, oauth1.buildQueryString(response.data)].join('?'), defaults.name, defaults.popupOptions, defaults.redirectUri);
+                  popupWindow = popup.open([defaults.authorizationEndpoint, Oauth1.buildQueryString(response.data)].join('?'), defaults.name, defaults.popupOptions, defaults.redirectUri);
                 } else {
-                  popupWindow.popupWindow.location = [defaults.authorizationEndpoint, oauth1.buildQueryString(response.data)].join('?');
+                  popupWindow.popupWindow.location = [defaults.authorizationEndpoint, Oauth1.buildQueryString(response.data)].join('?');
                 }
 
                 var popupListener = config.cordova ? popupWindow.eventListener(defaults.redirectUri) : popupWindow.pollPopup();
 
-                return popupListener.then(function(response) {
-                  return oauth1.exchangeForToken(response, userData);
-                });
+                return popupListener
+                  .then(function(response) {
+                    return Oauth1.exchangeForToken(response, userData);
+                  });
               });
 
           };
 
-          oauth1.exchangeForToken = function(oauthData, userData) {
+          Oauth1.exchangeForToken = function(oauthData, userData) {
             var data = angular.extend({}, userData, oauthData);
             var exchangeForTokenUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, defaults.url) : defaults.url;
             return $http.post(exchangeForTokenUrl, data, { withCredentials: config.withCredentials });
           };
 
-          oauth1.buildQueryString = function(obj) {
+          Oauth1.buildQueryString = function(obj) {
             var str = [];
 
             angular.forEach(obj, function(value, key) {
@@ -600,7 +595,7 @@
             return str.join('&');
           };
 
-          return oauth1;
+          return Oauth1;
         };
       }])
     .factory('SatellizerPopup', [
@@ -611,31 +606,32 @@
       'SatellizerConfig',
       'SatellizerUtils',
       function($q, $interval, $window, $location, config, utils) {
-        var popup = {};
-        popup.url = '';
-        popup.popupWindow = null;
+        var Popup = {};
 
-        popup.open = function(url, name, options, redirectUri) {
-          popup.url = url;
+        Popup.url = '';
+        Popup.popupWindow = null;
 
-          var stringifiedOptions = popup.stringifyOptions(popup.prepareOptions(options || {}));
+        Popup.open = function(url, name, options, redirectUri) {
+          Popup.url = url;
+
+          var stringifiedOptions = Popup.stringifyOptions(Popup.prepareOptions(options || {}));
           var windowName = config.cordova ? '_blank' : name;
 
-          popup.popupWindow = window.open(url, windowName, stringifiedOptions);
+          Popup.popupWindow = window.open(url, windowName, stringifiedOptions);
 
-          window.popup =  popup.popupWindow;
+          window.popup =  Popup.popupWindow;
 
-          if (popup.popupWindow && popup.popupWindow.focus) {
-            popup.popupWindow.focus();
+          if (Popup.popupWindow && Popup.popupWindow.focus) {
+            Popup.popupWindow.focus();
           }
 
-          return popup;
+          return Popup;
         };
 
-        popup.eventListener = function(redirectUri) {
+        Popup.eventListener = function(redirectUri) {
           var deferred = $q.defer();
 
-          popup.popupWindow.addEventListener('loadstart', function(event) {
+          Popup.popupWindow.addEventListener('loadstart', function(event) {
             if (event.url.indexOf(redirectUri) !== 0) { return; }
 
             var parser = document.createElement('a');
@@ -655,33 +651,33 @@
                 deferred.resolve(qs);
               }
 
-              popup.popupWindow.close();
+              Popup.popupWindow.close();
             }
           });
 
-          popup.popupWindow.addEventListener('exit', function() {
+          Popup.popupWindow.addEventListener('exit', function() {
             deferred.reject({ data: 'Provider Popup was closed' });
           });
 
-          popup.popupWindow.addEventListener('loaderror', function() {
+          Popup.popupWindow.addEventListener('loaderror', function() {
             deferred.reject({ data: 'Authorization Failed' });
           });
 
           return deferred.promise;
         };
 
-        popup.pollPopup = function() {
+        Popup.pollPopup = function() {
           var polling;
           var deferred = $q.defer();
 
           polling = $interval(function() {
             try {
               var documentOrigin = document.location.host;
-              var popupWindowOrigin = popup.popupWindow.location.host;
+              var popupWindowOrigin = Popup.popupWindow.location.host;
 
-              if (popupWindowOrigin === documentOrigin && (popup.popupWindow.location.search || popup.popupWindow.location.hash)) {
-                var queryParams = popup.popupWindow.location.search.substring(1).replace(/\/$/, '');
-                var hashParams = popup.popupWindow.location.hash.substring(1).replace(/[\/$]/, '');
+              if (popupWindowOrigin === documentOrigin && (Popup.popupWindow.location.search || Popup.popupWindow.location.hash)) {
+                var queryParams = Popup.popupWindow.location.search.substring(1).replace(/\/$/, '');
+                var hashParams = Popup.popupWindow.location.hash.substring(1).replace(/[\/$]/, '');
                 var hash = utils.parseQueryString(hashParams);
                 var qs = utils.parseQueryString(queryParams);
 
@@ -691,7 +687,7 @@
                   deferred.resolve(qs);
                 }
 
-                popup.popupWindow.close();
+                Popup.popupWindow.close();
 
                 $interval.cancel(polling);
               }
@@ -699,9 +695,9 @@
               // Ignore DOMException: Blocked a frame with origin from accessing a cross-origin frame.
             }
 
-            if (!popup.popupWindow) {
+            if (!Popup.popupWindow) {
               $interval.cancel(polling);
-            } else if (popup.popupWindow.closed || popup.popupWindow.closed === undefined) {
+            } else if (Popup.popupWindow.closed || Popup.popupWindow.closed === undefined) {
               $interval.cancel(polling);
             }
           }, 50);
@@ -709,7 +705,7 @@
           return deferred.promise;
         };
 
-        popup.prepareOptions = function(options) {
+        Popup.prepareOptions = function(options) {
           var width = options.width || 500;
           var height = options.height || 500;
 
@@ -721,7 +717,7 @@
           }, options);
         };
 
-        popup.stringifyOptions = function(options) {
+        Popup.stringifyOptions = function(options) {
           var parts = [];
           angular.forEach(options, function(value, key) {
             parts.push(key + '=' + value);
@@ -729,7 +725,7 @@
           return parts.join(',');
         };
 
-        return popup;
+        return Popup;
       }])
     .service('SatellizerUtils', function() {
       this.camelCase = function(name) {
