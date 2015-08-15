@@ -14,9 +14,6 @@
       tokenRoot: false,
       cordova: false,
       baseUrl: '/',
-      loginRedirect: '/',
-      logoutRedirect: '/',
-      signupRedirect: '/login',
       loginUrl: '/auth/login',
       signupUrl: '/auth/signup',
       loginRoute: '/login',
@@ -130,18 +127,6 @@
         baseUrl: {
           get: function() { return config.baseUrl; },
           set: function(value) { config.baseUrl = value; }
-        },
-        logoutRedirect: {
-          get: function() { return config.logoutRedirect; },
-          set: function(value) { config.logoutRedirect = value; }
-        },
-        loginRedirect: {
-          set: function(value) { config.loginRedirect = value; },
-          get: function() { return config.loginRedirect; }
-        },
-        signupRedirect: {
-          get: function() { return config.signupRedirect; },
-          set: function(value) { config.signupRedirect = value; }
         },
         loginUrl: {
           get: function() { return config.loginUrl; },
@@ -330,9 +315,7 @@
 
           storage.set(tokenName, token);
 
-          if (config.loginRedirect && !redirect) {
-            $location.path(config.loginRedirect);
-          } else if (redirect && angular.isString(redirect)) {
+          if (redirect && angular.isString(redirect)) {
             $location.path(encodeURI(redirect));
           }
         };
