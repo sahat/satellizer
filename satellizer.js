@@ -423,7 +423,7 @@
       'SatellizerShared',
       'SatellizerConfig',
       function($http, utils, shared, config) {
-        var local = {};
+        var Local = {};
 
         /**
          * @param {Object} user - User information. (e.g. email and password)
@@ -443,16 +443,12 @@
          *    - withCredentials - {Boolean} - whether to set the withCredentials flag on the XHR object. See requests with credentials for more information.
          *    - responseType - {String} - see XMLHttpRequest.responseType.
          * @returns {Promise} - Returns a Promise that will be resolved when the request succeeds or fails.
-         *    - data – {String|Object} – The response body transformed with the transform functions.
-         *    - status – {Number} – HTTP status code of the response.
-         *    - headers – {function([headerName])} – Header getter function.
-         *    - config – {Object} – The configuration object that was used to generate the request.
-         *    - statusText – {String} – HTTP status text of the response.
          */
-        local.login = function(user, opts) {
+        Local.login = function(user, opts) {
           opts = opts || {};
           opts.url = config.baseUrl ? utils.joinUrl(config.baseUrl, config.loginUrl) : config.loginUrl;
           opts.data = user || opts.data;
+          opts.method = opts.method || 'POST';
 
           return $http(opts).then(function(response) {
             shared.setToken(response);
@@ -478,21 +474,17 @@
          *    - withCredentials - {Boolean} - whether to set the withCredentials flag on the XHR object. See requests with credentials for more information.
          *    - responseType - {String} - see XMLHttpRequest.responseType.
          * @returns {Promise} - Returns a Promise that will be resolved when the request succeeds or fails.
-         *    - data – {String|Object} – The response body transformed with the transform functions.
-         *    - status – {Number} – HTTP status code of the response.
-         *    - headers – {function([headerName])} – Header getter function.
-         *    - config – {Object} – The configuration object that was used to generate the request.
-         *    - statusText – {String} – HTTP status text of the response.
          */
-        local.signup = function(user, opts) {
+        Local.signup = function(user, opts) {
           opts = opts || {};
           opts.url = config.baseUrl ? utils.joinUrl(config.baseUrl, config.signupUrl) : config.signupUrl;
           opts.data = user || opts.data;
+          opts.method = opts.method || 'POST';
 
           return $http(opts);
         };
 
-        return local;
+        return Local;
       }])
     .factory('SatellizerOauth2', [
       '$q',
