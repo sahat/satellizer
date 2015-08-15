@@ -243,15 +243,13 @@
 
           return $auth;
         }];
-
     }])
     .factory('SatellizerShared', [
       '$q',
       '$window',
-      '$location',
       'SatellizerConfig',
       'SatellizerStorage',
-      function($q, $window, $location, config, storage) {
+      function($q, $window, config, storage) {
         var Shared = {};
 
         var tokenName = config.tokenPrefix ? [config.tokenPrefix, config.tokenName].join('_') : config.tokenName;
@@ -428,18 +426,20 @@
           var Oauth2 = {};
 
           var defaults = {
+            defaultUrlParams: ['response_type', 'client_id', 'redirect_uri'],
+            responseType: 'code',
             responseParams: {
               code: 'code',
               clientId: 'clientId',
               redirectUri: 'redirectUri'
-            },
-            defaultUrlParams: ['response_type', 'client_id', 'redirect_uri'],
-            responseType: 'code'
+            }
           };
 
           Oauth2.open = function(options, userData) {
             angular.merge(defaults, options);
 
+            var openPopup;
+            var url = [defaults.authorizationEndpoint, Oauth2.buildQueryString()].join('?');
             var stateName = defaults.name + '_state';
 
             if (angular.isFunction(defaults.state)) {
@@ -448,25 +448,24 @@
               storage.set(stateName, defaults.state);
             }
 
-            var url = defaults.authorizationEndpoint + '?' + Oauth2.buildQueryString();
-
-            var openPopup;
             if (config.cordova) {
               openPopup = popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri).eventListener(defaults.redirectUri);
             } else {
               openPopup = popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri).pollPopup();
             }
 
-            return openPopup.then(function(oauthData) {
-              if (defaults.responseType === 'token') {
-                return oauthData;
-              }
-              if (oauthData.state && oauthData.state !== storage.get(stateName)) {
-                return $q.reject('OAuth 2.0 state parameter mismatch.');
-              }
-              return Oauth2.exchangeForToken(oauthData, userData);
-            });
+            return openPopup
+              .then(function(oauthData) {
+                if (defaults.responseType === 'token') {
+                  return oauthData;
+                }
 
+                if (oauthData.state && oauthData.state !== storage.get(stateName)) {
+                  return $q.reject('OAuth "state" mismatch');
+                }
+
+                return Oauth2.exchangeForToken(oauthData, userData);
+              });
           };
 
           Oauth2.exchangeForToken = function(oauthData, userData) {
@@ -602,24 +601,23 @@
       '$q',
       '$interval',
       '$window',
-      '$location',
       'SatellizerConfig',
       'SatellizerUtils',
-      function($q, $interval, $window, $location, config, utils) {
+      function($q, $interval, $window, config, utils) {
         var Popup = {};
 
         Popup.url = '';
         Popup.popupWindow = null;
 
-        Popup.open = function(url, name, options, redirectUri) {
+        Popup.open = function(url, name, options) {
           Popup.url = url;
 
-          var stringifiedOptions = Popup.stringifyOptions(Popup.prepareOptions(options || {}));
+          var stringifiedOptions = Popup.stringifyOptions(Popup.prepareOptions(options));
           var windowName = config.cordova ? '_blank' : name;
 
           Popup.popupWindow = window.open(url, windowName, stringifiedOptions);
 
-          window.popup =  Popup.popupWindow;
+          window.popup = Popup.popupWindow;
 
           if (Popup.popupWindow && Popup.popupWindow.focus) {
             Popup.popupWindow.focus();
@@ -632,7 +630,9 @@
           var deferred = $q.defer();
 
           Popup.popupWindow.addEventListener('loadstart', function(event) {
-            if (event.url.indexOf(redirectUri) !== 0) { return; }
+            if (event.url.indexOf(redirectUri) !== 0) {
+              return;
+            }
 
             var parser = document.createElement('a');
             parser.href = event.url;
@@ -645,9 +645,7 @@
 
               angular.extend(qs, hash);
 
-              if (qs.error) {
-                deferred.reject({ error: qs.error });
-              } else {
+              if (!qs.error) {
                 deferred.resolve(qs);
               }
 
@@ -655,22 +653,17 @@
             }
           });
 
-          Popup.popupWindow.addEventListener('exit', function() {
-            deferred.reject({ data: 'Provider Popup was closed' });
-          });
-
           Popup.popupWindow.addEventListener('loaderror', function() {
-            deferred.reject({ data: 'Authorization Failed' });
+            deferred.reject('Authorization Failed');
           });
 
           return deferred.promise;
         };
 
         Popup.pollPopup = function() {
-          var polling;
           var deferred = $q.defer();
 
-          polling = $interval(function() {
+          var polling = $interval(function() {
             try {
               var documentOrigin = document.location.host;
               var popupWindowOrigin = Popup.popupWindow.location.host;
@@ -695,9 +688,7 @@
               // Ignore DOMException: Blocked a frame with origin from accessing a cross-origin frame.
             }
 
-            if (!Popup.popupWindow) {
-              $interval.cancel(polling);
-            } else if (Popup.popupWindow.closed || Popup.popupWindow.closed === undefined) {
+            if (!Popup.popupWindow || Popup.popupWindow.closed || Popup.popupWindow.closed === undefined) {
               $interval.cancel(polling);
             }
           }, 50);
@@ -706,6 +697,7 @@
         };
 
         Popup.prepareOptions = function(options) {
+          options = options || {};
           var width = options.width || 500;
           var height = options.height || 500;
 
@@ -765,7 +757,7 @@
       };
     })
     .factory('SatellizerStorage', ['$window', 'SatellizerConfig', function($window, config) {
-      var isLocalOrSessionStorageAvailable = (function() {
+      var isStorageAvailable = (function() {
         try {
           var supported = config.storageType in $window && $window[config.storageType] !== null;
 
@@ -781,19 +773,19 @@
         }
       })();
 
-      if (!isLocalOrSessionStorageAvailable) {
+      if (!isStorageAvailable) {
         console.warn('Satellizer Warning: ' + config.storageType + ' is not available.');
       }
 
       return {
         get: function(key) {
-          return isLocalOrSessionStorageAvailable ? $window[config.storageType].getItem(key) : undefined;
+          return isStorageAvailable ? $window[config.storageType].getItem(key) : undefined;
         },
         set: function(key, value) {
-          return isLocalOrSessionStorageAvailable ? $window[config.storageType].setItem(key, value) : undefined;
+          return isStorageAvailable ? $window[config.storageType].setItem(key, value) : undefined;
         },
         remove: function(key) {
-          return isLocalOrSessionStorageAvailable ? $window[config.storageType].removeItem(key): undefined;
+          return isStorageAvailable ? $window[config.storageType].removeItem(key): undefined;
         }
       };
     }])
@@ -808,7 +800,8 @@
             if (request.skipAuthorization) {
               return request;
             }
-             if (shared.isAuthenticated() && config.httpInterceptor) {
+
+            if (shared.isAuthenticated() && config.httpInterceptor) {
               var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
               var token = storage.get(tokenName);
 
