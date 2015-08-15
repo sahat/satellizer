@@ -724,7 +724,6 @@
 
             if (!popup.popupWindow) {
               $interval.cancel(polling);
-              deferred.reject({ data: 'Provider Popup Blocked' });
             } else if (popup.popupWindow.closed || popup.popupWindow.closed === undefined) {
               $interval.cancel(polling);
             }
