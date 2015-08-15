@@ -7,7 +7,7 @@
   'use strict';
 
   angular.module('satellizer', [])
-    .constant('satellizer.config', {
+    .constant('SatellizerConfig', {
       httpInterceptor: true,
       loginOnSignup: true,
       withCredentials: true,
@@ -117,7 +117,7 @@
         }
       }
     })
-    .provider('$auth', ['satellizer.config', function(config) {
+    .provider('$auth', ['SatellizerConfig', function(config) {
       Object.defineProperties(this, {
         httpInterceptor: {
           get: function() { return config.httpInterceptor; },
@@ -224,9 +224,9 @@
 
       this.$get = [
         '$q',
-        'satellizer.shared',
-        'satellizer.local',
-        'satellizer.oauth',
+        'SatellizerShared',
+        'SatellizerLocal',
+        'SatellizerOauth',
         function($q, shared, local, oauth) {
           var $auth = {};
 
@@ -282,12 +282,12 @@
         }];
 
     }])
-    .factory('satellizer.shared', [
+    .factory('SatellizerShared', [
       '$q',
       '$window',
       '$location',
-      'satellizer.config',
-      'satellizer.storage',
+      'SatellizerConfig',
+      'SatellizerStorage',
       function($q, $window, $location, config, storage) {
         var shared = {};
         var tokenName = config.tokenPrefix ? [config.tokenPrefix, config.tokenName].join('_') : config.tokenName;
@@ -378,14 +378,14 @@
 
         return shared;
       }])
-    .factory('satellizer.oauth', [
+    .factory('SatellizerOauth', [
       '$q',
       '$http',
-      'satellizer.config',
-      'satellizer.utils',
-      'satellizer.shared',
-      'satellizer.Oauth1',
-      'satellizer.Oauth2',
+      'SatellizerConfig',
+      'SatellizerUtils',
+      'SatellizerShared',
+      'SatellizerOauth1',
+      'SatellizerOauth2',
       function($q, $http, config, utils, shared, Oauth1, Oauth2) {
         var oauth = {};
 
@@ -417,15 +417,13 @@
 
         return oauth;
       }])
-    .factory('satellizer.local', [
-      '$q',
+    .factory('SatellizerLocal', [
       '$http',
-      '$location',
-      'satellizer.utils',
-      'satellizer.shared',
-      'satellizer.config',
-      function($q, $http, $location, utils, shared, config) {
-        var Local = {};
+      'SatellizerUtils',
+      'SatellizerShared',
+      'SatellizerConfig',
+      function($http, utils, shared, config) {
+        var local = {};
 
         /**
          * @param {Object} user - User information. (e.g. email and password)
@@ -451,7 +449,7 @@
          *    - config – {Object} – The configuration object that was used to generate the request.
          *    - statusText – {String} – HTTP status text of the response.
          */
-        Local.login = function(user, opts) {
+        local.login = function(user, opts) {
           opts = opts || {};
           opts.url = config.baseUrl ? utils.joinUrl(config.baseUrl, config.loginUrl) : config.loginUrl;
           opts.data = user || opts.data;
@@ -486,7 +484,7 @@
          *    - config – {Object} – The configuration object that was used to generate the request.
          *    - statusText – {String} – HTTP status text of the response.
          */
-        Local.signup = function(user, opts) {
+        local.signup = function(user, opts) {
           opts = opts || {};
           opts.url = config.baseUrl ? utils.joinUrl(config.baseUrl, config.signupUrl) : config.signupUrl;
           opts.data = user || opts.data;
@@ -494,16 +492,16 @@
           return $http(opts);
         };
 
-        return Local;
+        return local;
       }])
-    .factory('satellizer.Oauth2', [
+    .factory('SatellizerOauth2', [
       '$q',
       '$http',
       '$window',
-      'satellizer.popup',
-      'satellizer.utils',
-      'satellizer.config',
-      'satellizer.storage',
+      'SatellizerPopup',
+      'SatellizerUtils',
+      'SatellizerConfig',
+      'SatellizerStorage',
       function($q, $http, $window, popup, utils, config, storage) {
         return function() {
 
@@ -612,12 +610,12 @@
           return oauth2;
         };
       }])
-    .factory('satellizer.Oauth1', [
+    .factory('SatellizerOauth1', [
       '$q',
       '$http',
-      'satellizer.popup',
-      'satellizer.config',
-      'satellizer.utils',
+      'SatellizerPopup',
+      'SatellizerConfig',
+      'SatellizerUtils',
       function($q, $http, popup, config, utils) {
         return function() {
 
@@ -676,13 +674,13 @@
           return oauth1;
         };
       }])
-    .factory('satellizer.popup', [
+    .factory('SatellizerPopup', [
       '$q',
       '$interval',
       '$window',
       '$location',
-      'satellizer.config',
-      'satellizer.utils',
+      'SatellizerConfig',
+      'SatellizerUtils',
       function($q, $interval, $window, $location, config, utils) {
         var popup = {};
         popup.url = '';
@@ -804,7 +802,7 @@
 
         return popup;
       }])
-    .service('satellizer.utils', function() {
+    .service('SatellizerUtils', function() {
       this.camelCase = function(name) {
         return name.replace(/([\:\-\_]+(.))/g, function(_, separator, letter, offset) {
           return offset ? letter.toUpperCase() : letter;
@@ -841,7 +839,7 @@
         return normalize(joined);
       };
     })
-    .factory('satellizer.storage', ['$window', 'satellizer.config', function($window, config) {
+    .factory('SatellizerStorage', ['$window', 'SatellizerConfig', function($window, config) {
       var browserSupportsLocalStorage = (function() {
         try {
           var supported = config.storageType in $window && $window[config.storageType] !== null;
@@ -874,11 +872,11 @@
         }
       };
     }])
-    .factory('satellizer.interceptor', [
+    .factory('SatellizerInterceptor', [
       '$q',
-      'satellizer.config',
-      'satellizer.storage',
-      'satellizer.shared',
+      'SatellizerConfig',
+      'SatellizerStorage',
+      'SatellizerShared',
       function($q, config, storage, shared) {
         return {
           request: function(request) {
@@ -904,7 +902,7 @@
         };
       }])
     .config(['$httpProvider', function($httpProvider) {
-      $httpProvider.interceptors.push('satellizer.interceptor');
+      $httpProvider.interceptors.push('SatellizerInterceptor');
     }]);
 
 })(window, window.angular);
