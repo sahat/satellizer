@@ -276,7 +276,7 @@
           }
         };
 
-        shared.setToken = function(response, redirect) {
+        shared.setToken = function(response) {
           var accessToken = response && response.access_token;
           var token;
 
@@ -299,10 +299,6 @@
           }
 
           storage.set(tokenName, token);
-
-          if (redirect && angular.isString(redirect)) {
-            $location.path(encodeURI(redirect));
-          }
         };
 
         shared.removeToken = function() {
