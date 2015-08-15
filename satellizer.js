@@ -685,9 +685,7 @@
 
                 angular.extend(qs, hash);
 
-                if (qs.error) {
-                  deferred.reject({ error: qs.error });
-                } else {
+                if (!qs.error) {
                   deferred.resolve(qs);
                 }
 
