@@ -3,6 +3,7 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ui.router', 'mgcrea.ngStra
     $stateProvider
       .state('home', {
         url: '/',
+        controller: 'HomeCtrl',
         templateUrl: 'partials/home.html'
       })
       .state('login', {
