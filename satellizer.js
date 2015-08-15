@@ -161,10 +161,6 @@
           get: function() { return config.withCredentials; },
           set: function(value) { config.withCredentials = value; }
         },
-        unlinkMethod: {
-          get: function() { return config.unlinkMethod; },
-          set: function(value) { config.unlinkMethod = value; }
-        },
         cordova: {
           get: function() { return config.cordova; },
           set: function(value) { config.cordova = value; }
@@ -228,8 +224,8 @@
             return oauth.authenticate(name, true, userData);
           };
 
-          $auth.unlink = function(provider) {
-            return oauth.unlink(provider);
+          $auth.unlink = function(provider, opts) {
+            return oauth.unlink(provider, opts);
           };
 
           $auth.getToken = function() {
@@ -352,9 +348,9 @@
       'SatellizerOauth1',
       'SatellizerOauth2',
       function($q, $http, config, utils, shared, Oauth1, Oauth2) {
-        var oauth = {};
+        var Oauth = {};
 
-        oauth.authenticate = function(name, redirect, userData) {
+        Oauth.authenticate = function(name, redirect, userData) {
           var provider = config.providers[name].type === '1.0' ? new Oauth1() : new Oauth2();
           var deferred = $q.defer();
 
@@ -370,17 +366,21 @@
           return deferred.promise;
         };
 
-        oauth.unlink = function(provider) {
-          var unlinkUrl =  config.baseUrl ? utils.joinUrl(config.baseUrl, config.unlinkUrl) : config.unlinkUrl;
+        /**
+         * @param {String} provider - OAuth provider name.
+         * @param {Object} opts - HTTP config object.
+         * @returns {Promise} - Returns a Promise that will be resolved when the request succeeds or fails.
+         */
+        Oauth.unlink = function(provider, opts) {
+            opts = opts || {};
+            opts.url = config.baseUrl ? utils.joinUrl(config.baseUrl, config.unlinkUrl) : config.unlinkUrl;
+            opts.data = { provider: provider } || opts.data;
+            opts.method = opts.method || 'POST';
 
-          if (config.unlinkMethod === 'get') {
-            return $http.get(unlinkUrl + provider);
-          } else if (config.unlinkMethod === 'post') {
-            return $http.post(unlinkUrl, provider);
-          }
+            return $http(opts);
         };
 
-        return oauth;
+        return Oauth;
       }])
     .factory('SatellizerLocal', [
       '$http',
