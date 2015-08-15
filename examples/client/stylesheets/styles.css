@@ -12,6 +12,15 @@ a {
   color: #000;
 }
 
+ul {
+  margin-bottom: 0;
+}
+
+.list-inline > li {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
 .text-muted {
   color: #90939a;
 }

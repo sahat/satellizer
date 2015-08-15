@@ -1,19 +1,26 @@
-angular.module('MyApp', ['ngResource', 'ngMessages', 'ui.router', 'mgcrea.ngStrap', 'satellizer'])
+angular.module('MyApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', 'ui.router', 'satellizer'])
   .config(function($stateProvider, $urlRouterProvider, $authProvider) {
     $stateProvider
       .state('home', {
         url: '/',
+        controller: 'HomeCtrl',
         templateUrl: 'partials/home.html'
       })
       .state('login', {
         url: '/login',
         templateUrl: 'partials/login.html',
-        controller: 'LoginCtrl'
+        controller: 'LoginCtrl',
+        resolve: {
+          skipIfLoggedIn: skipIfLoggedIn
+        }
       })
       .state('signup', {
         url: '/signup',
         templateUrl: 'partials/signup.html',
-        controller: 'SignupCtrl'
+        controller: 'SignupCtrl',
+        resolve: {
+          skipIfLoggedIn: skipIfLoggedIn
+        }
       })
       .state('logout', {
         url: '/logout',
@@ -25,17 +32,7 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ui.router', 'mgcrea.ngStra
         templateUrl: 'partials/profile.html',
         controller: 'ProfileCtrl',
         resolve: {
-          authenticated: function($q, $location, $auth) {
-            var deferred = $q.defer();
-
-            if (!$auth.isAuthenticated()) {
-              $location.path('/login');
-            } else {
-              deferred.resolve();
-            }
-
-            return deferred.promise;
-          }
+          loginRequired: loginRequired
         }
       });
 
@@ -76,4 +73,24 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ui.router', 'mgcrea.ngStra
       redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
       authorizationEndpoint: 'https://foursquare.com/oauth2/authenticate'
     });
+
+    function skipIfLoggedIn($q, $auth) {
+      var deferred = $q.defer();
+      if ($auth.isAuthenticated()) {
+        deferred.reject();
+      } else {
+        deferred.resolve();
+      }
+      return deferred.promise;
+    }
+
+    function loginRequired($q, $location, $auth) {
+      var deferred = $q.defer();
+      if ($auth.isAuthenticated()) {
+        deferred.resolve();
+      } else {
+        $location.path('/login');
+      }
+      return deferred.promise;
+    }
   });
