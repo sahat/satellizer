@@ -690,6 +690,7 @@
                 }
 
                 popup.popupWindow.close();
+
                 $interval.cancel(polling);
               }
             } catch (error) {
@@ -709,6 +710,7 @@
         popup.prepareOptions = function(options) {
           var width = options.width || 500;
           var height = options.height || 500;
+
           return angular.extend({
             width: width,
             height: height,
@@ -765,7 +767,7 @@
       };
     })
     .factory('SatellizerStorage', ['$window', 'SatellizerConfig', function($window, config) {
-      var browserSupportsLocalStorage = (function() {
+      var isLocalOrSessionStorageAvailable = (function() {
         try {
           var supported = config.storageType in $window && $window[config.storageType] !== null;
 
@@ -781,19 +783,19 @@
         }
       })();
 
-      if (!browserSupportsLocalStorage) {
+      if (!isLocalOrSessionStorageAvailable) {
         console.warn('Satellizer Warning: ' + config.storageType + ' is not available.');
       }
 
       return {
         get: function(key) {
-          return browserSupportsLocalStorage ? $window[config.storageType].getItem(key) : undefined;
+          return isLocalOrSessionStorageAvailable ? $window[config.storageType].getItem(key) : undefined;
         },
         set: function(key, value) {
-          return browserSupportsLocalStorage ? $window[config.storageType].setItem(key, value) : undefined;
+          return isLocalOrSessionStorageAvailable ? $window[config.storageType].setItem(key, value) : undefined;
         },
         remove: function(key) {
-          return browserSupportsLocalStorage ? $window[config.storageType].removeItem(key): undefined;
+          return isLocalOrSessionStorageAvailable ? $window[config.storageType].removeItem(key): undefined;
         }
       };
     }])
