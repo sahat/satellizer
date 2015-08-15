@@ -431,28 +431,20 @@
       'SatellizerStorage',
       function($q, $http, $window, popup, utils, config, storage) {
         return function() {
+          var Oauth2 = {};
 
           var defaults = {
-            url: null,
-            name: null,
-            state: null,
-            scope: null,
-            scopeDelimiter: null,
-            clientId: null,
-            redirectUri: null,
-            popupOptions: null,
-            authorizationEndpoint: null,
-            responseParams: null,
-            requiredUrlParams: null,
-            optionalUrlParams: null,
+            responseParams: {
+              code: 'code',
+              clientId: 'clientId',
+              redirectUri: 'redirectUri'
+            },
             defaultUrlParams: ['response_type', 'client_id', 'redirect_uri'],
             responseType: 'code'
           };
 
-          var oauth2 = {};
-
-          oauth2.open = function(options, userData) {
-            angular.extend(defaults, options);
+          Oauth2.open = function(options, userData) {
+            angular.merge(defaults, options);
 
             var stateName = defaults.name + '_state';
 
@@ -462,7 +454,7 @@
               storage.set(stateName, defaults.state);
             }
 
-            var url = defaults.authorizationEndpoint + '?' + oauth2.buildQueryString();
+            var url = defaults.authorizationEndpoint + '?' + Oauth2.buildQueryString();
 
             var openPopup;
             if (config.cordova) {
@@ -478,31 +470,41 @@
               if (oauthData.state && oauthData.state !== storage.get(stateName)) {
                 return $q.reject('OAuth 2.0 state parameter mismatch.');
               }
-              return oauth2.exchangeForToken(oauthData, userData);
+              return Oauth2.exchangeForToken(oauthData, userData);
             });
 
           };
 
-          oauth2.exchangeForToken = function(oauthData, userData) {
-            var data = angular.extend({}, userData, {
-              code: oauthData.code,
-              clientId: defaults.clientId,
-              redirectUri: defaults.redirectUri
+          Oauth2.exchangeForToken = function(oauthData, userData) {
+            var data = angular.extend({}, userData);
+
+            angular.forEach(defaults.responseParams, function(value, key) {
+              switch (key) {
+                case 'code':
+                  data[value] = oauthData.code;
+                  break;
+                case 'clientId':
+                  data[value] = defaults.clientId;
+                  break;
+                case 'redirectUri':
+                  data[value] = defaults.redirectUri;
+                  break;
+                default:
+                  data[value] = oauthData[key]
+              }
             });
 
             if (oauthData.state) {
               data.state = oauthData.state;
             }
 
-            angular.forEach(defaults.responseParams, function(param) {
-              data[param] = oauthData[param];
-            });
-
+            // todo; format url function
             var exchangeForTokenUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, defaults.url) : defaults.url;
+
             return $http.post(exchangeForTokenUrl, data, { withCredentials: config.withCredentials });
           };
 
-          oauth2.buildQueryString = function() {
+          Oauth2.buildQueryString = function() {
             var keyValuePairs = [];
             var urlParams = ['defaultUrlParams', 'requiredUrlParams', 'optionalUrlParams'];
 
@@ -534,7 +536,7 @@
             }).join('&');
           };
 
-          return oauth2;
+          return Oauth2;
         };
       }])
     .factory('SatellizerOauth1', [
