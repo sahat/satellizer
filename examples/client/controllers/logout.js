@@ -1,15 +1,8 @@
 angular.module('MyApp')
-  .controller('LogoutCtrl', function($auth, $alert) {
-    if (!$auth.isAuthenticated()) {
-        return;
-    }
+  .controller('LogoutCtrl', function($auth, toastr) {
+    if (!$auth.isAuthenticated()) { return; }
     $auth.logout()
       .then(function() {
-        $alert({
-          content: 'You have been logged out',
-          animation: 'fadeZoomFadeDown',
-          type: 'material',
-          duration: 3
-        });
+        toastr.info('You have been logged out');
       });
   });
