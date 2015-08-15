@@ -425,7 +425,7 @@
       'satellizer.shared',
       'satellizer.config',
       function($q, $http, $location, utils, shared, config) {
-        var local = {};
+        var Local = {};
 
         /**
          * @param {Object} user - User information. (e.g. email and password)
@@ -451,16 +451,15 @@
          *    - config – {Object} – The configuration object that was used to generate the request.
          *    - statusText – {String} – HTTP status text of the response.
          */
-        local.login = function(user, opts) {
+        Local.login = function(user, opts) {
           opts = opts || {};
           opts.url = config.baseUrl ? utils.joinUrl(config.baseUrl, config.loginUrl) : config.loginUrl;
           opts.data = user || opts.data;
 
-          $http(opts)
-            .then(function(response) {
-              shared.setToken(response);
-              return response;
-            });
+          return $http(opts).then(function(response) {
+            shared.setToken(response);
+            return response;
+          });
         };
 
         /**
@@ -487,20 +486,15 @@
          *    - config – {Object} – The configuration object that was used to generate the request.
          *    - statusText – {String} – HTTP status text of the response.
          */
-        local.signup = function(user, opts) {
-          var signupUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, config.signupUrl) : config.signupUrl;
-          return $http.post(signupUrl, user)
-            .then(function(response) {
-              if (config.loginOnSignup) {
-                shared.setToken(response);
-              } else if (config.signupRedirect) {
-                $location.path(config.signupRedirect);
-              }
-              return response;
-            });
+        Local.signup = function(user, opts) {
+          opts = opts || {};
+          opts.url = config.baseUrl ? utils.joinUrl(config.baseUrl, config.signupUrl) : config.signupUrl;
+          opts.data = user || opts.data;
+
+          return $http(opts);
         };
 
-        return local;
+        return Local;
       }])
     .factory('satellizer.Oauth2', [
       '$q',
