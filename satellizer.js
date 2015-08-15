@@ -694,7 +694,9 @@
                 popup.popupWindow.close();
                 $interval.cancel(polling);
               }
-            } catch (error) {}
+            } catch (error) {
+              // Ignore DOMException: Blocked a frame with origin from accessing a cross-origin frame.
+            }
 
             if (!popup.popupWindow) {
               $interval.cancel(polling);
