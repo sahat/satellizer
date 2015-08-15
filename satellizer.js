@@ -217,7 +217,7 @@
           };
 
           $auth.link = function(name, userData) {
-            return oauth.link(name, userData);
+            return oauth.authenticate(name, userData);
           };
 
           $auth.unlink = function(provider, opts) {
@@ -232,8 +232,8 @@
             return shared.getToken();
           };
 
-          $auth.setToken = function(token, redirect) {
-            shared.setToken({ access_token: token }, redirect);
+          $auth.setToken = function(token) {
+            shared.setToken({ access_token: token });
           };
 
           $auth.removeToken = function() {
@@ -358,28 +358,6 @@
               deferred.resolve(response);
             })
             .catch(function(error) {
-              deferred.reject(error);
-            });
-
-          return deferred.promise;
-        };
-
-        /**
-         * @param {String} name - OAuth provider name.
-         * @param {Object} userData - HTTP config object.
-         * @returns {Promise} - Returns a Promise that will be resolved when the request succeeds or fails.
-         */
-        Oauth.link = function(name, userData) {
-          var provider = config.providers[name].type === '1.0' ? new Oauth1() : new Oauth2();
-          var deferred = $q.defer();
-
-          provider.open(config.providers[name], userData || {})
-            .then(function(response) {
-              shared.setToken(response, true);
-              deferred.resolve(response);
-            })
-            .catch(function(error) {
-              console.log('Error',error);
               deferred.reject(error);
             });
 
