@@ -10,7 +10,7 @@
     .constant('SatellizerConfig', {
       httpInterceptor: true,
       withCredentials: true,
-      tokenRoot: false,
+      tokenRoot: null,
       cordova: false,
       baseUrl: '/',
       loginUrl: '/auth/login',
