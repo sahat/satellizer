@@ -9,7 +9,6 @@
   angular.module('satellizer', [])
     .constant('SatellizerConfig', {
       httpInterceptor: true,
-      loginOnSignup: true,
       withCredentials: true,
       tokenRoot: false,
       cordova: false,
@@ -109,10 +108,6 @@
         httpInterceptor: {
           get: function() { return config.httpInterceptor; },
           set: function(value) { config.httpInterceptor = value; }
-        },
-        loginOnSignup: {
-          get: function() { return config.loginOnSignup; },
-          set: function(value) { config.loginOnSignup = value; }
         },
         baseUrl: {
           get: function() { return config.baseUrl; },
