@@ -11,9 +11,9 @@ describe('$http', function() {
     '$http',
     '$httpBackend',
     '$window',
-    'satellizer.config',
-    'satellizer.local',
-    'satellizer.shared',
+    'SatellizerConfig',
+    'SatellizerLocal',
+    'SatellizerShared',
     function($http, $httpBackend, $window, config, local, shared) {
       var mockResponse = {};
 

@@ -1,8 +1,8 @@
-describe('satellizer.popup', function() {
+describe('SatellizerPopup', function() {
 
   beforeEach(module('satellizer'));
 
-  beforeEach(inject(['$q', '$window', '$interval', 'satellizer.popup', function($q, $window, $interval, popup) {
+  beforeEach(inject(['$q', '$window', '$interval', 'SatellizerPopup', function($q, $window, $interval, popup) {
     this.$q = $q;
     this.$window = $window;
     this.$interval = $interval;

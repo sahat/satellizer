@@ -1,8 +1,8 @@
-describe('satellizer.oauth1', function() {
+describe('SatellizerOauth1', function() {
 
   beforeEach(module('satellizer'));
 
-  beforeEach(inject(['$httpBackend', '$interval', 'satellizer.Oauth1', function($httpBackend, $interval, Oauth1) {
+  beforeEach(inject(['$httpBackend', '$interval', 'SatellizerOauth1', function($httpBackend, $interval, Oauth1) {
     this.$httpBackend = $httpBackend;
     this.$interval = $interval;
     this.oauth1 = new Oauth1();

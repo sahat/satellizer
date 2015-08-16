@@ -1,8 +1,8 @@
-describe('satellizer.shared', function() {
+describe('SatellizerShared', function() {
 
   beforeEach(module('satellizer'));
 
-  beforeEach(inject(['$q', '$httpBackend', '$location', '$window', 'satellizer.shared', 'satellizer.config',
+  beforeEach(inject(['$q', '$httpBackend', '$location', '$window', 'SatellizerShared', 'SatellizerConfig',
     function($q, $httpBackend, $location, $window, shared, config) {
 
       this.$q = $q;
@@ -23,13 +23,6 @@ describe('satellizer.shared', function() {
       var tokenName = [this.config.tokenPrefix, this.config.tokenName].join('_');
       this.shared.logout();
       expect(this.$window.localStorage[tokenName]).toBeFalsy();
-      expect(this.$location.path()).toEqual(this.config.logoutRedirect);
-    });
-
-    it('should redirect to the given URL', function() {
-      var redirect = '/new/path';
-      this.shared.logout(redirect);
-      expect(this.$location.path()).toEqual(redirect);
     });
 
   });
@@ -106,79 +99,21 @@ describe('satellizer.shared', function() {
     });
 
     it('should set the token when tokenRoot is provided', function() {
-      this.config.tokenRoot = 'tokenRoot'
+      this.config.tokenRoot = 'foo.bar';
       var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsb…YzMn0.YATZN37JENCQWeNAoN4M7KxJl7OAIJL4ka_fSM_gYkE'
 
       var response = {
         data: {
-          tokenRoot: {
-            access_token: token
+          foo: {
+            bar: {
+              token: token
+            }
           }
         }
       };
       this.shared.setToken(response);
 
       expect(token).toEqual(this.shared.getToken());
-    });
-
-    it('should redirect when the redirect parameter is set', function() {
-      this.config.tokenRoot = 'tokenRoot'
-      var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsb…YzMn0.YATZN37JENCQWeNAoN4M7KxJl7OAIJL4ka_fSM_gYkE'
-
-      var response = {
-        data: {
-          tokenRoot: {
-            access_token: token
-          }
-        }
-      };
-
-      var redirect = "/new/path";
-
-      this.shared.setToken(response, redirect);
-
-      expect(this.$location.path()).toEqual(redirect);
-    });
-
-    it('should redirect when the loginRedirect config property is set', function() {
-      var configRedirect = "/my-login-url";
-      this.config.loginRedirect = configRedirect;
-      this.config.tokenRoot = 'tokenRoot';
-      var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsb…YzMn0.YATZN37JENCQWeNAoN4M7KxJl7OAIJL4ka_fSM_gYkE'
-
-      var response = {
-        data: {
-          tokenRoot: {
-            access_token: token
-          }
-        }
-      };
-
-      this.shared.setToken(response);
-
-      expect(this.$location.path()).toEqual(configRedirect);
-    });
-
-
-    it('should redirect to the redirect parameter even if the loginRedirect config property is set', function() {
-      var configRedirect = "/my-login-url";
-      this.config.loginRedirect = configRedirect;
-      this.config.tokenRoot = 'tokenRoot';
-      var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsb…YzMn0.YATZN37JENCQWeNAoN4M7KxJl7OAIJL4ka_fSM_gYkE'
-
-      var response = {
-        data: {
-          tokenRoot: {
-            access_token: token
-          }
-        }
-      };
-
-      var redirect = "/new/path";
-
-      this.shared.setToken(response, redirect);
-
-      expect(this.$location.path()).toEqual(redirect);
     });
 
   });
@@ -192,24 +127,6 @@ describe('satellizer.shared', function() {
 
       this.shared.removeToken();
       expect(this.$window.localStorage[tokenName]).toBeUndefined();
-    });
-
-  });
-
-  describe('parseUser()', function() {
-
-    it('should not redirect if loginRedirect is null', function() {
-      var response = {
-        data: {
-          token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsb…YzMn0.YATZN37JENCQWeNAoN4M7KxJl7OAIJL4ka_fSM_gYkE'
-        }
-      };
-      this.config.tokenName = 'token';
-      this.config.loginRedirect = null;
-
-      this.shared.setToken(response);
-
-      expect(this.$location.path()).toBe('');
     });
 
   });

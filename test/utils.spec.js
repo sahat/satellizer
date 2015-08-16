@@ -1,8 +1,8 @@
-describe('satellizer.utils', function() {
+describe('SatellizerUtils', function() {
 
   beforeEach(module('satellizer'));
 
-  beforeEach(inject(['satellizer.utils', function(utils) {
+  beforeEach(inject(['SatellizerUtils', function(utils) {
     this.utils = utils;
   }]));
 

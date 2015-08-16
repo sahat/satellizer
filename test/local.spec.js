@@ -1,15 +1,16 @@
-describe('satellizer.local', function() {
+describe('SatellizerLocal', function() {
 
   beforeEach(module('satellizer'));
 
-  beforeEach(inject(['$httpBackend', '$location', '$window', 'satellizer.config', 'satellizer.local',
-    function($httpBackend, $location, $window, config, local) {
-      this.$httpBackend = $httpBackend;
-      this.$location = $location;
-      this.$window = $window;
-      this.config = config;
-      this.local = local;
-    }]));
+  beforeEach(inject(function($httpBackend, $location, $window, SatellizerConfig, SatellizerLocal, SatellizerShared) {
+    this.$httpBackend = $httpBackend;
+    this.$location = $location;
+    this.$window = $window;
+    this.config = SatellizerConfig;
+    this.local = SatellizerLocal;
+    this.shared = SatellizerShared;
+    this.token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7Il9pZCI6IjUzZjYxZTEwNmZjNjFhNmMxM2I1Mjc4ZCIsImVtYWlsIjoic2FoYXQ_QG1lLmNvbSIsIl9fdiI6MH0sImlhdCI6MTQwODgyMTA5MTY3NiwiZXhwIjoxNDA5NDI1ODkxNjc2fQ.0l-ql-ZVjHiILMcMegNb3bNqapt3TZwjHy_ieduioiQ';
+  }));
 
   describe('login()', function() {
 
@@ -17,56 +18,27 @@ describe('satellizer.local', function() {
       expect(this.local.login).toBeDefined();
     });
 
-//    it('should return a user object on successful login', function() {
-//      var result = null;
-//      var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7Il9pZCI6IjUzZjYxZTEwNmZjNjFhNmMxM2I1Mjc4ZCIsImVtYWlsIjoic2FoYXQ_QG1lLmNvbSIsIl9fdiI6MH0sImlhdCI6MTQwODgyMTA5MTY3NiwiZXhwIjoxNDA5NDI1ODkxNjc2fQ.0l-ql-ZVjHiILMcMegNb3bNqapt3TZwjHy_ieduioiQ';
-//      var user = {
-//        email: 'sahat?@me.com',
-//        password: '1234'
-//      };
-//
-//      this.$httpBackend.expectPOST('/auth/login').respond({ token: token });
-//
-//      this.local.login(user).then(function(response) {
-//        result = response;
-//      });
-//
-//      this.$httpBackend.flush();
-//
-//      expect(this.local.isAuthenticated()).toBe(true);
-//      expect(result).toEqual({
-//        __v: 0,
-//        _id: '53f61e106fc61a6c13b5278d',
-//        email: user.email
-//      });
-//    });
-
-    it('should redirect to the redirect parameter on successful login', function() {
-      var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7Il9pZCI6IjUzZjYxZTEwNmZjNjFhNmMxM2I1Mjc4ZCIsImVtYWlsIjoic2FoYXQ_QG1lLmNvbSIsIl9fdiI6MH0sImlhdCI6MTQwODgyMTA5MTY3NiwiZXhwIjoxNDA5NDI1ODkxNjc2fQ.0l-ql-ZVjHiILMcMegNb3bNqapt3TZwjHy_ieduioiQ';
+    it('should return a user object on successful login', function() {
+      var result = null;
       var user = {
-        email: 'sahat?@me.com',
-        password: '1234'
-      };
-      var redirect = '/new/path';
-      this.config.tokenRoot = 'tokenRoot';
-      this.config.loginUrl = '/auth/login';
-      var response = {
-        tokenRoot: {
-          access_token: token
-        }
+        email: 'foo@gmail.com',
+        password: 'bar'
       };
 
-      this.$httpBackend.expectPOST('/auth/login').respond(response);
+      this.$httpBackend.expectPOST('/auth/login').respond({ token: this.token });
 
-      this.local.login(user, redirect);
+      this.local.login(user).then(function(response) {
+        result = response.data.token;
+      });
 
       this.$httpBackend.flush();
 
-      expect(this.$location.path()).toBe(redirect);
+      expect(this.shared.isAuthenticated()).toBe(true);
+      expect(result).toEqual(this.token);
     });
 
     it('should fail login with incorrect credentials', function() {
-      var result = null;
+      var result;
       var user = {
         email: 'foo@bar.com',
         password: 'invalid'
@@ -86,28 +58,30 @@ describe('satellizer.local', function() {
   });
 
 
-
   describe('signup()', function() {
 
     it('should have a signup function', function() {
       expect(this.local.signup).toBeDefined();
       expect(angular.isFunction(this.local.signup)).toBe(true);
     });
-    //
-    //it('should create a new user', function() {
-    //  var user = {
-    //    email: 'john@email.com',
-    //    password: '1234'
-    //  };
-    //
-    //  this.$httpBackend.expectPOST(this.config.signupUrl).respond(200);
-    //
-    //  this.local.signup(user);
-    //
-    //  this.$httpBackend.flush();
-    //
-    //  expect(this.$location.path()).toEqual(this.config.signupRedirect);
-    //});
+
+    it('should create a new user', function() {
+      var result;
+      var user = {
+        email: 'john@email.com',
+        password: '1234'
+      };
+
+      this.$httpBackend.expectPOST('/auth/signup').respond({ token: this.token });
+
+      this.local.signup(user).then(function(response) {
+        result = response.data.token;
+      });
+
+      this.$httpBackend.flush();
+
+      expect(result).toEqual(this.token);
+    });
 
     it('should be able to handle signup errors', function() {
       var user = {
@@ -127,29 +101,7 @@ describe('satellizer.local', function() {
       expect(rejected).toBe(true);
     });
 
-    it('should not redirect after signup if signupRedirect is false', function() {
-      this.config.loginOnSignup = false
-      this.config.signupRedirect = false
-      var user = {
-        email: 'foo@bar.com',
-        password: '1234'
-      };
-      spyOn(this.$location, 'path');
-
-      this.$httpBackend.expectPOST(this.config.signupUrl).respond(200);
-
-      this.local.signup(user);
-
-      this.$httpBackend.flush();
-
-      expect(this.$location.path).not.toHaveBeenCalled();
-    });
-
   });
-
-
-
-
 
 });
 
