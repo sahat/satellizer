@@ -1,5 +1,5 @@
 /**
- * Satellizer 0.12.0
+ * Satellizer 0.12.1
  * (c) 2015 Sahat Yalkabov
  * License: MIT
  */
