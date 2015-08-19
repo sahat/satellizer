@@ -431,7 +431,7 @@
           };
 
           Oauth2.open = function(options, userData) {
-            angular.merge(defaults, options);
+            defaults = utils.merge(options, defaults);
 
             var openPopup;
             var url = [defaults.authorizationEndpoint, Oauth2.buildQueryString()].join('?');
@@ -748,6 +748,29 @@
 
         return normalize(joined);
       };
+
+      this.merge = function(obj1, obj2) {
+        var result = {};
+        for (var i in obj1) {
+          if (obj1.hasOwnProperty(i)) {
+            if ((i in obj2) && (typeof obj1[i] === 'object') && (i !== null)) {
+              result[i] = this.merge(obj1[i], obj2[i]);
+            } else {
+              result[i] = obj1[i];
+            }
+          }
+        }
+        for (i in obj2) {
+          if (obj2.hasOwnProperty(i)) {
+            if (i in result) {
+              continue;
+            }
+            result[i] = obj2[i];
+          }
+
+        }
+        return result;
+      }
     })
     .factory('SatellizerStorage', ['$window', 'SatellizerConfig', function($window, config) {
       var isStorageAvailable = (function() {
