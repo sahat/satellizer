@@ -433,8 +433,8 @@
           Oauth2.open = function(options, userData) {
             defaults = utils.merge(options, defaults);
 
+            var url;
             var openPopup;
-            var url = [defaults.authorizationEndpoint, Oauth2.buildQueryString()].join('?');
             var stateName = defaults.name + '_state';
 
             if (angular.isFunction(defaults.state)) {
@@ -442,6 +442,8 @@
             } else if (angular.isString(defaults.state)) {
               storage.set(stateName, defaults.state);
             }
+
+            url = [defaults.authorizationEndpoint, Oauth2.buildQueryString()].join('?');
 
             if (config.cordova) {
               openPopup = popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri).eventListener(defaults.redirectUri);
