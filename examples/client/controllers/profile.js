@@ -14,7 +14,7 @@ angular.module('MyApp')
         .then(function() {
           toastr.success('Profile has been updated');
         })
-        .then(function() {
+        .catch(function() {
           toastr.error(response.data.message, response.status);
         });
     };
