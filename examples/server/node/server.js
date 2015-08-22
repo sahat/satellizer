@@ -33,7 +33,8 @@ var userSchema = new mongoose.Schema({
   linkedin: String,
   live: String,
   yahoo: String,
-  twitter: String
+  twitter: String,
+  twitch: String
 });
 
 userSchema.pre('save', function(next) {
@@ -744,6 +745,74 @@ app.post('/auth/foursquare', function(req, res) {
           user.foursquare = profile.id;
           user.picture = profile.photo.prefix + '300x300' + profile.photo.suffix;
           user.displayName = profile.firstName + ' ' + profile.lastName;
+          user.save(function() {
+            var token = createJWT(user);
+            res.send({ token: token });
+          });
+        });
+      }
+    });
+  });
+});
+
+/*
+ |--------------------------------------------------------------------------
+ | Login with Twitch
+ |--------------------------------------------------------------------------
+ */
+app.post('/auth/twitch', function(req, res) {
+  var accessTokenUrl = 'https://api.twitch.tv/kraken/oauth2/token';
+  var profileUrl = 'https://api.twitch.tv/kraken/user';
+  var formData = {
+    code: req.body.code,
+    client_id: req.body.clientId,
+    client_secret: config.TWITCH_SECRET,
+    redirect_uri: req.body.redirectUri,
+    grant_type: 'authorization_code'
+  };
+
+  // Step 1. Exchange authorization code for access token.
+  request.post({ url: accessTokenUrl, form: formData, json: true }, function(err, response, accessToken) {
+   var params = {
+     oauth_token: accessToken.access_token
+   };
+
+    // Step 2. Retrieve information about the current user.
+    request.get({ url: profileUrl, qs: params, json: true }, function(err, response, profile) {
+      // Step 3a. Link user accounts.
+      if (req.headers.authorization) {
+        User.findOne({ twitch: profile._id }, function(err, existingUser) {
+          if (existingUser) {
+            return res.status(409).send({ message: 'There is already a Twitch account that belongs to you' });
+          }
+          var token = req.headers.authorization.split(' ')[1];
+          var payload = jwt.decode(token, config.TOKEN_SECRET);
+          User.findById(payload.sub, function(err, user) {
+            if (!user) {
+              return res.status(400).send({ message: 'User not found' });
+            }
+            user.twitch = profile._id;
+            user.picture = user.picture || profile.logo;
+            user.displayName = user.name || profile.name;
+            user.email = user.email || profile.email;
+            user.save(function() {
+              var token = createJWT(user);
+              res.send({ token: token });
+            });
+          });
+        });
+      } else {
+        // Step 3b. Create a new user account or return an existing one.
+        User.findOne({ twitch: profile._id }, function(err, existingUser) {
+          if (existingUser) {
+            var token = createJWT(existingUser);
+            return res.send({ token: token });
+          }
+          var user = new User();
+          user.twitch = profile._id;
+          user.picture = profile.logo;
+          user.displayName = profile.name;
+          user.email = profile.email;
           user.save(function() {
             var token = createJWT(user);
             res.send({ token: token });
