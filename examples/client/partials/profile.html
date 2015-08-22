@@ -81,6 +81,13 @@
         <button class="btn btn-sm btn-primary" ng-if="!user.live" ng-click="link('live')">
           <i class="ion-social-windows"></i> Link Windows Live Account
         </button>
+
+        <button class="btn btn-sm btn-danger" ng-if="user.twitch" ng-click="link('twitch')">
+          <i class="ion-social-twitch"></i> Unlink Twitch Account
+        </button>
+        <button class="btn btn-sm btn-primary" ng-if="!user.twitch" ng-click="link('twitch')">
+          <i class="ion-social-twitch"></i> Link Twitch Account
+        </button>
       </div>
     </div>
   </div>
