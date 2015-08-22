@@ -66,6 +66,10 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', 'ui.
       clientId: '000000004C12E68D'
     });
 
+    $authProvider.twitch({
+      clientId: 'qhc3lft06xipnmndydcr3wau939a20z'
+    });
+
     $authProvider.oauth2({
       name: 'foursquare',
       url: '/auth/foursquare',

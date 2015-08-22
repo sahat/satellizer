@@ -8,6 +8,7 @@ module.exports = {
   GOOGLE_SECRET: process.env.GOOGLE_SECRET || '',
   GITHUB_SECRET: process.env.GITHUB_SECRET || '',
   LINKEDIN_SECRET: process.env.LINKEDIN_SECRET || '',
+  TWITCH_SECRET: process.env.TWITCH_SECRET || '',
   WINDOWS_LIVE_SECRET: process.env.WINDOWS_LIVE_SECRET || '',
   YAHOO_SECRET: process.env.YAHOO_SECRET || '',
 
