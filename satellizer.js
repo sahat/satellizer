@@ -100,6 +100,18 @@
           display: 'popup',
           type: '2.0',
           popupOptions: { width: 500, height: 560 }
+        },
+        twitch: {
+          name: 'twitch',
+          url: '/auth/twitch',
+          authorizationEndpoint: 'https://api.twitch.tv/kraken/oauth2/authorize',
+          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
+          scope: ['user_read'],
+          scopeDelimiter: ' ',
+          requiredUrlParams: ['scope'],
+          display: 'popup',
+          type: '2.0',
+          popupOptions: { width: 500, height: 560 }
         }
       }
     })
