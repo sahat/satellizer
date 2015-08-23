@@ -315,8 +315,16 @@
               var base64Url = token.split('.')[1];
               var base64 = base64Url.replace('-', '+').replace('_', '/');
               var exp = JSON.parse($window.atob(base64)).exp;
+
               if (exp) {
-                return Math.round(new Date().getTime() / 1000) <= exp;
+                var isExpired = Math.round(new Date().getTime() / 1000) >= exp;
+
+                if (isExpired) {
+                  storage.remove(tokenName);
+                  return false;
+                } else {
+                  return true;
+                }
               }
               return true;
             }
