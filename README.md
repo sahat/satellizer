@@ -605,24 +605,17 @@ Removes a JWT from Local Storage.
 - [x] Python (Flask) implementation
 - [x] Ruby (Ruby on Rails) implementation
 
-## Contributing
-
-Found a typo or a bug? Send a pull request. I would especially appreciate pull
-requests for server-side examples since I do not have much experience with any
-of the languages on the *TODO* list.
-
 ## Credits
 
-A big thanks goes to [Alice Chen](https://github.com/chena) for all your hard work
-on the [Dropwizard](https://dropwizard.github.io) implementation and
-[Jesús Rodríguez](https://github.com/Foxandxss) for being so proactive and actively
-reporting bugs.
+| Contribution       | User
+| ------------------ | --------------------------------------
+| Dropwizard (Java)  | [Alice Chen](https://github.com/chena)
+| Go                 | Salim Alami
+| Ruby on Rails      | simonasdev
+| Ionic Framework    | Dimitris Bozelos
 
-Additionally, I would like to thank all other contributors who have submitted
-issues and/or pull requests!
-
-Satellizer was inspired by [ng-token-auth](https://github.com/lynndylanhurley/ng-token-auth)
-and [torii](https://github.com/Vestorly/torii) and [angular-oauth](https://github.com/enginous/angular-oauth).
+Additionally, I would like to thank all other contributors who have reported
+bugs, submitted pull requests and suggested new features.
 
 ## License
 
