@@ -138,35 +138,28 @@ directory.
 Below is a complete listing of all default configuration options.
 
 ```js
-$authProvider.httpInterceptor = true; // Add Authorization header to HTTP request
-$authProvider.loginOnSignup = true;
-$authProvider.baseUrl = '/' // API Base URL for the paths below.
-$authProvider.loginRedirect = '/';
-$authProvider.logoutRedirect = '/';
-$authProvider.signupRedirect = '/login';
+$authProvider.httpInterceptor = true;
+$authProvider.withCredentials = true;
+$authProvider.tokenRoot = null;
+$authProvider.cordova = false;
+$authProvider.baseUrl = '/';
 $authProvider.loginUrl = '/auth/login';
 $authProvider.signupUrl = '/auth/signup';
-$authProvider.loginRoute = '/login';
-$authProvider.signupRoute = '/signup';
-$authProvider.tokenRoot = false; // set the token parent element if the token is not the JSON root
-$authProvider.tokenName = 'token';
-$authProvider.tokenPrefix = 'satellizer'; // Local Storage name prefix
 $authProvider.unlinkUrl = '/auth/unlink/';
-$authProvider.unlinkMethod = 'get';
+$authProvider.tokenName = 'token';
+$authProvider.tokenPrefix = 'satellizer';
 $authProvider.authHeader = 'Authorization';
 $authProvider.authToken = 'Bearer';
-$authProvider.withCredentials = true;
-$authProvider.platform = 'browser'; // or 'mobile'
-$authProvider.storage = 'localStorage'; // or 'sessionStorage'
+$authProvider.storageType = 'localStorage';
 
 // Facebook
 $authProvider.facebook({
   url: '/auth/facebook',
   authorizationEndpoint: 'https://www.facebook.com/v2.3/dialog/oauth',
   redirectUri: (window.location.origin || window.location.protocol + '//' + window.location.host) + '/',
-  scope: 'email',
-  scopeDelimiter: ',',
   requiredUrlParams: ['display', 'scope'],
+  scope: ['email'],
+  scopeDelimiter: ',',
   display: 'popup',
   type: '2.0',
   popupOptions: { width: 580, height: 400 }
@@ -177,14 +170,26 @@ $authProvider.google({
   url: '/auth/google',
   authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
   redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
+  requiredUrlParams: ['scope'],
+  optionalUrlParams: ['display'],
   scope: ['profile', 'email'],
   scopePrefix: 'openid',
   scopeDelimiter: ' ',
-  requiredUrlParams: ['scope'],
-  optionalUrlParams: ['display'],
   display: 'popup',
   type: '2.0',
-  popupOptions: { width: 580, height: 400 }
+  popupOptions: { width: 452, height: 633 }
+});
+
+// GitHub
+$authProvider.github({
+  url: '/auth/github',
+  authorizationEndpoint: 'https://github.com/login/oauth/authorize',
+  redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
+  optionalUrlParams: ['scope'],
+  scope: ['user:email'],
+  scopeDelimiter: ' ',
+  type: '2.0',
+  popupOptions: { width: 1020, height: 618 }
 });
 
 // LinkedIn
@@ -202,7 +207,6 @@ $authProvider.linkedin({
 
 // Twitter
 $authProvider.twitter({
-  name: 'twitter',
   url: '/auth/twitter',
   authorizationEndpoint: 'https://api.twitter.com/oauth/authenticate',
   redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
@@ -210,15 +214,17 @@ $authProvider.twitter({
   popupOptions: { width: 495, height: 645 }
 });
 
-// GitHub
-$authProvider.github({
-  url: '/auth/github',
-  authorizationEndpoint: 'https://github.com/login/oauth/authorize',
+// Twitch
+$authProvider.twitch({
+  url: '/auth/twitch',
+  authorizationEndpoint: 'https://api.twitch.tv/kraken/oauth2/authorize',
   redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
-  scope: ['user:email'],
+  requiredUrlParams: ['scope'],
+  scope: ['user_read'],
   scopeDelimiter: ' ',
+  display: 'popup',
   type: '2.0',
-  popupOptions: { width: 1020, height: 618 }
+  popupOptions: { width: 500, height: 560 }
 });
 
 // Windows Live
@@ -226,9 +232,9 @@ $authProvider.live({
   url: '/auth/live',
   authorizationEndpoint: 'https://login.live.com/oauth20_authorize.srf',
   redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
+  requiredUrlParams: ['display', 'scope'],
   scope: ['wl.emails'],
   scopeDelimiter: ' ',
-  requiredUrlParams: ['display', 'scope'],
   display: 'popup',
   type: '2.0',
   popupOptions: { width: 500, height: 560 }
@@ -245,48 +251,40 @@ $authProvider.yahoo({
   popupOptions: { width: 559, height: 519 }
 });
 
-// OAuth 2.0
+// Generic OAuth 2.0
 $authProvider.oauth2({
-  url: null,
   name: null,
-  scope: null,
-  scopeDelimiter: null,
+  url: null,
   clientId: null,
   redirectUri: null,
-  popupOptions: null,
   authorizationEndpoint: null,
-  responseParams: null,
+  defaultUrlParams: ['response_type', 'client_id', 'redirect_uri'],
   requiredUrlParams: null,
   optionalUrlParams: null,
-  defaultUrlParams: ['response_type', 'client_id', 'redirect_uri'],
-  responseType: 'code'
+  scope: null,
+  scopePrefix: null,
+  scopeDelimiter: null,
+  state: null,
+  type: null,
+  popupOptions: null,
+  responseType: 'code',
+  responseParams: {
+    code: 'code',
+    clientId: 'clientId',
+    redirectUri: 'redirectUri'
+  }
 });
 
-// OAuth 1.0
+// Generic OAuth 1.0
 $authProvider.oauth1({
-  url: null,
   name: null,
+  url: null,
+  authorizationEndpoint: null
+  redirectUri: null,
+  type: null,
   popupOptions: null
 });
 ```
-
-**Note:** If for some reason you are unable to send a token to
-your server in the following format - `Authorization: Bearer <token>`, then use
-`$authProvider.authHeader` method to override this behavior, e.g. set its value to
-**x-access-token** or another custom header that your backend may require.
-
-## Not sending the JWT for specific requests 
-```
-// This request will NOT send the token as it has skipAuthentication
-$http({
-  url: '/api/endpoint',
-  skipAuthorization: true
-  method: 'GET'
-});
-```
-
-## Updating storage
-To toggle from localStorage and sessionStorage run `$auth.setStorage('sessionStorage');` or `$auth.setStorage('localStorage');`
 
 ## Browser Support
 
@@ -298,7 +296,6 @@ To toggle from localStorage and sessionStorage run `$auth.setStorage('sessionSto
       <td><img src="http://media.idownloadblog.com/wp-content/uploads/2014/06/Safari-logo-OS-X-Yosemite.png" height="40"></td>
       <td><img src="http://th09.deviantart.net/fs71/200H/f/2013/185/e/b/firefox_2013_vector_icon_by_thegoldenbox-d6bxsye.png" height="40"></td>
       <td><img src="http://upload.wikimedia.org/wikipedia/commons/d/d4/Opera_browser_logo_2013.png" height="40"></td>
-
     </tr>
     <tr>
       <td align="center">9*</td>
@@ -310,7 +307,7 @@ To toggle from localStorage and sessionStorage run `$auth.setStorage('sessionSto
   </tbody>
 </table>
 
-__*__ Requires [Base64.js](https://github.com/davidchambers/Base64.js/) polyfill.
+__*__ Requires [Base64](https://github.com/davidchambers/Base64.js/) polyfill.
 
 ## How It Works
 
