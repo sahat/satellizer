@@ -127,9 +127,10 @@ angular.module('MyApp')
 <button ng-click="authenticate('foursquare')">Sign in with Foursquare</button>
 <button ng-click="authenticate('yahoo')">Sign in with Yahoo</button>
 <button ng-click="authenticate('live')">Sign in with Windows Live</button>
+<button ng-click="authenticate('twitch')">Sign in with Twitch</button>
 ```
 
-**Note:** For server-side usage please refer to the [examples](https://github.com/sahat/satellizer/tree/master/examples/server)
+**Note:** For server-side usage please refer to the [**examples**](https://github.com/sahat/satellizer/tree/master/examples/server)
 directory.
 
 ## Configuration
