@@ -326,6 +326,8 @@ authentication process works.
 
 ## Obtaining OAuth Keys
 
+- [ ] TODO: Replace with screencasts.
+
 <img src="http://images.google.com/intl/en_ALL/images/srpr/logo6w.png" width="150">
 - Visit [Google Cloud Console](https://cloud.google.com/console/project)
 - Click **CREATE PROJECT** button
@@ -626,7 +628,7 @@ and [torii](https://github.com/Vestorly/torii) and [angular-oauth](https://githu
 
 The MIT License (MIT)
 
-Copyright (c) 2015 Sahat Yalkabov
+Copyright (c) 2014-2015 Sahat Yalkabov
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
