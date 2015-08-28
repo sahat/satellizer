@@ -2,8 +2,6 @@
 
 # [Satellizer](https://github.com/sahat/satellizer/) 
 
-![](http://jwt.io/assets/badge-compatible.svg)
-
 [![Join the chat at https://gitter.im/sahat/satellizer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/sahat/satellizer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](http://img.shields.io/travis/sahat/satellizer.svg?style=flat)](https://travis-ci.org/sahat/satellizer)
 [![Test Coverage](http://img.shields.io/codeclimate/coverage/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
@@ -15,10 +13,10 @@
 
 **Satellizer** is a simple to use, end-to-end, token-based authentication module
 for [AngularJS](http://angularjs.org) with built-in support for Google, Facebook,
-LinkedIn, Twitter, Yahoo, Windows Live authentication providers, as well as Email and Password
-sign-in. You are not limited to the sign-in options above, in fact you can add
-any *OAuth 1.0* or *OAuth 2.0* provider by passing provider-specific information
-during the configuration step.
+LinkedIn, Twitter, GitHub, Yahoo, Twitch, Microsoft OAuth providers, as well as Email
+and Password sign-in. However, you are not limited to the sign-in options above, in fact
+you can add any *OAuth 1.0* or *OAuth 2.0* provider by passing provider-specific information
+in the app *config* block.
 
 ![Screenshot](https://lh4.googleusercontent.com/-0UUIecT-3N4/U-LQJkd75iI/AAAAAAAAEZY/YN3Oe-eUPGc/w1676-h1158-no/satellizer.png)
 
