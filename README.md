@@ -45,7 +45,7 @@ bower install satellizer
 npm install satellizer
 ```
 
-Alternatively, you may [download](https://github.com/sahat/satellizer/releases) the latest release or use the CDN:
+Alternatively, you may [**download**](https://github.com/sahat/satellizer/releases) the latest release or use the CDN:
 
 ```html
 <!--[if lte IE 9]>
@@ -54,7 +54,7 @@ Alternatively, you may [download](https://github.com/sahat/satellizer/releases) 
 <script src="//cdn.jsdelivr.net/satellizer/0.12.3/satellizer.min.js"></script>
 ```
 
-**Note:** Sattelizer uses [`window.atob()`](https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/atob) for decoding JSON Web Tokens. If you need to support *Internet Explorer 9*, then use Base64 polyfill above.
+**Note:** Sattelizer depends on [`window.atob()`](https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/atob) for decoding JSON Web Tokens. If you need to support *IE9* then use Base64 polyfill above.
 
 
 ## Usage
