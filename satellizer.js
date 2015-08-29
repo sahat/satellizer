@@ -22,31 +22,42 @@
       authToken: 'Bearer',
       storageType: 'localStorage',
       providers: {
-        google: {
-          name: 'google',
-          url: '/auth/google',
-          authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
-          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
-          scope: ['profile', 'email'],
-          scopePrefix: 'openid',
-          scopeDelimiter: ' ',
-          requiredUrlParams: ['scope'],
-          optionalUrlParams: ['display'],
-          display: 'popup',
-          type: '2.0',
-          popupOptions: { width: 452, height: 633 }
-        },
         facebook: {
           name: 'facebook',
           url: '/auth/facebook',
           authorizationEndpoint: 'https://www.facebook.com/v2.3/dialog/oauth',
           redirectUri: (window.location.origin || window.location.protocol + '//' + window.location.host) + '/',
+          requiredUrlParams: ['display', 'scope'],
           scope: ['email'],
           scopeDelimiter: ',',
-          requiredUrlParams: ['display', 'scope'],
           display: 'popup',
           type: '2.0',
           popupOptions: { width: 580, height: 400 }
+        },
+        google: {
+          name: 'google',
+          url: '/auth/google',
+          authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
+          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
+          requiredUrlParams: ['scope'],
+          optionalUrlParams: ['display'],
+          scope: ['profile', 'email'],
+          scopePrefix: 'openid',
+          scopeDelimiter: ' ',
+          display: 'popup',
+          type: '2.0',
+          popupOptions: { width: 452, height: 633 }
+        },
+        github: {
+          name: 'github',
+          url: '/auth/github',
+          authorizationEndpoint: 'https://github.com/login/oauth/authorize',
+          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
+          optionalUrlParams: ['scope'],
+          scope: ['user:email'],
+          scopeDelimiter: ' ',
+          type: '2.0',
+          popupOptions: { width: 1020, height: 618 }
         },
         linkedin: {
           name: 'linkedin',
@@ -60,16 +71,37 @@
           type: '2.0',
           popupOptions: { width: 527, height: 582 }
         },
-        github: {
-          name: 'github',
-          url: '/auth/github',
-          authorizationEndpoint: 'https://github.com/login/oauth/authorize',
+        twitter: {
+          name: 'twitter',
+          url: '/auth/twitter',
+          authorizationEndpoint: 'https://api.twitter.com/oauth/authenticate',
           redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
-          optionalUrlParams: ['scope'],
-          scope: ['user:email'],
+          type: '1.0',
+          popupOptions: { width: 495, height: 645 }
+        },
+        twitch: {
+          name: 'twitch',
+          url: '/auth/twitch',
+          authorizationEndpoint: 'https://api.twitch.tv/kraken/oauth2/authorize',
+          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
+          requiredUrlParams: ['scope'],
+          scope: ['user_read'],
           scopeDelimiter: ' ',
+          display: 'popup',
           type: '2.0',
-          popupOptions: { width: 1020, height: 618 }
+          popupOptions: { width: 500, height: 560 }
+        },
+        live: {
+          name: 'live',
+          url: '/auth/live',
+          authorizationEndpoint: 'https://login.live.com/oauth20_authorize.srf',
+          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
+          requiredUrlParams: ['display', 'scope'],
+          scope: ['wl.emails'],
+          scopeDelimiter: ' ',
+          display: 'popup',
+          type: '2.0',
+          popupOptions: { width: 500, height: 560 }
         },
         yahoo: {
           name: 'yahoo',
@@ -80,38 +112,6 @@
           scopeDelimiter: ',',
           type: '2.0',
           popupOptions: { width: 559, height: 519 }
-        },
-        twitter: {
-          name: 'twitter',
-          url: '/auth/twitter',
-          authorizationEndpoint: 'https://api.twitter.com/oauth/authenticate',
-          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
-          type: '1.0',
-          popupOptions: { width: 495, height: 645 }
-        },
-        live: {
-          name: 'live',
-          url: '/auth/live',
-          authorizationEndpoint: 'https://login.live.com/oauth20_authorize.srf',
-          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
-          scope: ['wl.emails'],
-          scopeDelimiter: ' ',
-          requiredUrlParams: ['display', 'scope'],
-          display: 'popup',
-          type: '2.0',
-          popupOptions: { width: 500, height: 560 }
-        },
-        twitch: {
-          name: 'twitch',
-          url: '/auth/twitch',
-          authorizationEndpoint: 'https://api.twitch.tv/kraken/oauth2/authorize',
-          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
-          scope: ['user_read'],
-          scopeDelimiter: ' ',
-          requiredUrlParams: ['scope'],
-          display: 'popup',
-          type: '2.0',
-          popupOptions: { width: 500, height: 560 }
         }
       }
     })
