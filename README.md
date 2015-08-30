@@ -375,42 +375,54 @@ authentication process works.
 
 > **Note:** Microsoft does not consider `localhost` or `127.0.0.1` to be a valid URL.
 As a workaround for local development add `127.0.0.1 mylocalwebsite.net` to **/etc/hosts** file
-and specify `mylocalwebsite.net` as your *Redirect URL* on **API Settings** tab.
+and specify `mylocalwebsite.net` as your *Redirect URL* in the **API Settings** tab.
 
 
 ## API Reference
 
-- [`$auth.login(user, [redirect])`](#authloginuser)
+- [`$auth.login(user, [options])`](#authloginuser-options)
 - [`$auth.signup(user)`](#authsignupuser)
 - [`$auth.authenticate(name, [userData])`](#authauthenticatename-userdata)
-- [`$auth.logout([redirect])`](#authlogout-redirect)
+- [`$auth.logout()`](#authlogout)
 - [`$auth.isAuthenticated()`](#authisauthenticated)
-- [`$auth.link(provider, [userData])`](#authlinkprovider-userdata)
-- [`$auth.unlink(provider)`](#authunlinkprovider)
+- [`$auth.link(name, [userData])`](#authlinkname-userdata)
+- [`$auth.unlink(name, [options])`](#authunlinkname-options)
 - [`$auth.getToken()`](#authgettoken)
 - [`$auth.getPayload()`](#authgetpayload)
-- [`$auth.setToken(token, [redirect])`](#authsettokentoken-redirect)
+- [`$auth.setToken(token)`](#authsettokentoken)
 - [`$auth.removeToken()`](#authremovetoken)
+- [`$auth.setStorageType(type)`](#authsetstoragetypetype)
 
-#### `$auth.login(user, [redirect])`
+#### `$auth.login(user, [options])`
 
-Sign in via email and password where:
-- **user** - Plain JavaScript object.
-- **redirect** - Optional URL string for redirecting after successful login.
+Sign in using Email and Password.
 
+##### Parameters
+
+| Param                    | Type     | Details
+| ------------------------ | -------- | ---------------------------------------------------------------------------------------
+| **user**                 | `Object` | JavaScript object containing user information.
+| **options** *(optional)* | `Object` | HTTP config object. See [`$http`](https://docs.angularjs.org/api/ng/service/$http) docs.
 
 ##### Returns
 
-- **response** - The `$http` response object from the server.
+- **response** - The HTTP response object from the server.
 
 ```js
-$auth.login({
+var user = {
   email: $scope.email,
   password: $scope.password
-});
-```
+};
 
-**Note:** This method returns a promise.
+$auth.login(user)
+  .then(function(response) {
+    // Redirect user here after a successful log in.
+  })
+  .catch(function(response) {
+    // Handle errors here, such as displaying a notification
+    // for invalid email and/or password.
+  });
+```
 
 <hr>
 
