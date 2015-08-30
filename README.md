@@ -402,7 +402,7 @@ Sign in using Email and Password.
 | Param                    | Type     | Details
 | ------------------------ | -------- | ---------------------------------------------------------------------------------------
 | **user**                 | `Object` | JavaScript object containing user information.
-| **options** *(optional)* | `Object` | HTTP config object. See [`$http`](https://docs.angularjs.org/api/ng/service/$http) docs.
+| **options** *(optional)* | `Object` | HTTP config object. See [`$http(config)`](https://docs.angularjs.org/api/ng/service/$http) docs.
 
 ##### Returns
 
@@ -428,27 +428,39 @@ $auth.login(user)
 
 #### `$auth.signup(user)`
 
-Creates a local account with email and password. You can use whatever fields you want as long as
-you implement them on the server.
+Create a new account with Email and Password.
 
-- **user** - Plain JavaScript object.
+##### Parameters
 
-#### Returns
+| Param                    | Type     | Details
+| ------------------------ | -------- | ---------------------------------------------------------------------------------------
+| **user**                 | `Object` | JavaScript object containing user information.
+| **options** *(optional)* | `Object` | HTTP config object. See [`$http(config)`](https://docs.angularjs.org/api/ng/service/$http) docs.
 
-- **response** - The `$http` response object from the server.
+##### Returns
+
+- **response** - The HTTP response object from the server.
 
 #### Usage
 
 ```js
-$auth.signup({
+var user = {
+  firstName: $scope.firstName,
+  lastName: $scope.lastName,
   email: $scope.email,
   password: $scope.password
-}).then(function(response) {
-  console.log(response.data);
-});
-```
+};
 
-**Note:** This method returns a promise.
+$auth.signup(user)
+  .then(function(response) {
+    // Redirect user here to login page or perhaps some other intermediate page
+    // that requires email address verification before any other part of the site
+    // can be accessed.
+  })
+  .catch(function(response) {
+    // Handle errors here.
+  });
+```
 
 <hr>
 
