@@ -536,7 +536,7 @@ $scope.isAuthenticated = function() {
 
 Alias for [`$auth.authenticate(name, [userData])`](#authauthenticatename-userdata).
 
-**Note:** Account linking (and merging) business logic is handled entirely on the server.
+:bulb: **Note:** Account linking (and merging) business logic is handled entirely on the server.
 
 ```js
 // Controller
@@ -546,7 +546,7 @@ $scope.link = function(provider) {
       // You have successfully linked an account.
     })
     .catch(function(response) {
-      // Handle error here.
+      // Handle errors here.
     });
 };
 ```
@@ -554,30 +554,36 @@ $scope.link = function(provider) {
 ```html
 <!-- Template -->
 <button ng-click="link('facebook')">
-  <i class="ion-social-windows"></i> Connect Facebook Account
+  Connect Facebook Account
 </button>
 ```
 <hr>
 
-#### `$auth.unlink(provider)`
+#### `$auth.unlink(name, [options])`
 
-Unlinks an OAuth provider from the signed-in account. It sends a GET request to `/auth/unlink/:provider`.
+Unlinks an OAuth provider. By default, sends a POST request to `/auth/unlink` with the `{ provider: name }` data object.
 
-- **provider** - One of the built-in provider names or a custom provider name created
-via `$authProvider.oauth1()` or `$authProvider.oauth2()` methods.
+##### Parameters
 
-**Note:** You can override the default *unlink path* above via `$authProvider.unlinkUrl` configuration property.
+| Param                     | Type     | Details
+| ------------------------- | -------- | --------------------------------------------------------------------------------
+| **name**                  | `String` | One of the built-in or custom OAuth provider names created via `$authProvider.oauth1()` or `$authProvider.oauth2()`.
+| **options** *(optional)*  | `Object` | HTTP config object. See [`$http(config)`](https://docs.angularjs.org/api/ng/service/$http) docs.
 
-**Note:** It uses `GET` method by default, but can be changed via `$authProvider.unlinkMethod = 'post'`. If you are going
-to use `POST`, **provider** obviously should be an object, not a string.
 
-#### Usage
+##### Returns
+
+- **response** - The HTTP response object from the server.
 
 ```js
-$auth.unlink('github');
+$auth.unlink('github')
+  .then(function() {
+    // You have unlinked a GitHub account.
+  })
+  .catch(function(response) {
+    // Handle errors here.
+  });
 ```
-
-**Note:** This method returns a promise.
 
 <hr>
 
