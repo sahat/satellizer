@@ -408,6 +408,8 @@ Sign in using Email and Password.
 
 - **response** - The HTTP response object from the server.
 
+##### Usage
+
 ```js
 var user = {
   email: $scope.email,
@@ -441,6 +443,8 @@ Create a new account with Email and Password.
 
 - **response** - The HTTP response object from the server.
 
+##### Usage
+
 ```js
 var user = {
   firstName: $scope.firstName,
@@ -466,7 +470,6 @@ $auth.signup(user)
 
 Starts the OAuth 1.0 or the OAuth 2.0 authorization flow by opening a popup window.
 
-
 ##### Parameters
 
 | Param                     | Type     | Details
@@ -477,6 +480,8 @@ Starts the OAuth 1.0 or the OAuth 2.0 authorization flow by opening a popup wind
 ##### Returns
 
 - **response** - The HTTP response object from the server.
+
+##### Usage
 
 ```js
 $auth.authenticate('google')
@@ -493,6 +498,8 @@ $auth.authenticate('google')
 #### `$auth.logout()`
 
 Deletes a token from Local Storage (or Session Storage).
+
+##### Usage
 
 ```js
 $auth.logout();
@@ -511,6 +518,8 @@ Checks authentication status of a user.
 | JWT present without [`exp`]((http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html#expDef))              | ✓        |
 | JWT present with [`exp`]((http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html#expDef)) and not expired | ✓        |
 | JWT present with [`exp`]((http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html#expDef)) and expired     |          | ✓
+
+##### Usage
 
 ```js
 // Controller
@@ -538,6 +547,8 @@ Alias for [`$auth.authenticate(name, [userData])`](#authauthenticatename-userdat
 
 :bulb: **Note:** Account linking (and merging) business logic is handled entirely on the server.
 
+##### Usage
+
 ```js
 // Controller
 $scope.link = function(provider) {
@@ -561,7 +572,9 @@ $scope.link = function(provider) {
 
 #### `$auth.unlink(name, [options])`
 
-Unlinks an OAuth provider. By default, sends a POST request to `/auth/unlink` with the `{ provider: name }` data object.
+Unlinks an OAuth provider.
+
+By default, sends a POST request to `/auth/unlink` with the `{ provider: name }` data object.
 
 ##### Parameters
 
@@ -575,9 +588,11 @@ Unlinks an OAuth provider. By default, sends a POST request to `/auth/unlink` wi
 
 - **response** - The HTTP response object from the server.
 
+##### Usage
+
 ```js
 $auth.unlink('github')
-  .then(function() {
+  .then(function(response) {
     // You have unlinked a GitHub account.
   })
   .catch(function(response) {
@@ -602,6 +617,8 @@ $auth.getToken();
 
 Returns a JWT Claims Set, i.e. the middle part of a JSON Web Token.
 
+##### Usage
+
 ```js
 $auth.getPayload();
 // { exp: 1414978281, iat: 1413765081, userId: "544457a3eb129ee822a38fdd" }
@@ -625,6 +642,12 @@ Saves a JWT or an access token to Local Storage / Session Storage.
 
 Removes a token from Local Storage / Session Storage. Used internally by [`$auth.logout()`](#authlogout).
 
+##### Usage
+
+```js
+$auth.removeToken();
+```
+
 <hr>
 
 #### `$auth.setStorageType(type)`
@@ -637,19 +660,11 @@ Sets storage type to Local Storage or Session Storage.
 | ------------------------ | -------- | -------------------------------------------------------
 | **type**                 | `String` | Accepts `'localStorage'` and `'sessionStorage'` values.
 
+##### Usage
+
 ```js
 $auth.setStorageType('sessionStorage');
 ```
-
-## TODO
-
-- [ ] C# (ASP.NET 5) implementation
-- [x] Go implementation
-- [x] Java (Dropwizard) implementation
-- [x] Node.js (Express) implementation
-- [x] PHP (Laravel) implementation
-- [x] Python (Flask) implementation
-- [x] Ruby (Ruby on Rails) implementation
 
 ## Credits
 
