@@ -464,15 +464,15 @@ $auth.signup(user)
 
 #### `$auth.authenticate(name, [userData])`
 
-Starts the *OAuth 1.0* or the *OAuth 2.0* authentication flow by opening a popup window:
+Starts the OAuth 1.0 or the OAuth 2.0 authorization flow by opening a popup window.
 
 
 ##### Parameters
 
 | Param                     | Type     | Details
 | ------------------------- | -------- | --------------------------------------------------------------------------------
-| **name**                  | `String` | One of the built-in OAuth provider names or a custom OAuth provider name created via `$authProvider.oauth1()` or `$authProvider.oauth2()` methods.
-| **userData** *(optional)* | `Object` | Optional object for when you need to send additional data to the server along with `code`, `clientId`, `redirectUri` (OAuth 2.0) or `oauth_token`, `oauth_verifier` (OAuth 1.0).
+| **name**                  | `String` | One of the built-in or custom OAuth provider names created via `$authProvider.oauth1()` or `$authProvider.oauth2()`.
+| **userData** *(optional)* | `Object` | If you need to send additional data to the server along with `code`, `clientId` and `redirectUri` (OAuth 2.0) or `oauth_token` and `oauth_verifier` (OAuth 1.0).
 
 ##### Returns
 
@@ -490,30 +490,27 @@ $auth.authenticate('google')
 
 <hr>
 
-#### `$auth.logout([redirect])`
+#### `$auth.logout()`
 
-Deletes a JWT from Local Storage.
-
-- **redirect** - Optional URL string for redirecting after successful logout.
-
-#### Usage
+Deletes a token from Local Storage (or Session Storage).
 
 ```js
 $auth.logout();
 ```
 
-**Note:** This method returns a promise.
-
 <hr>
 
 #### `$auth.isAuthenticated()`
 
-Returns `true` if a JWT is present in Local Storage and it is not expired, otherwise returns `false`.
+Checks authentication status of a user.
 
-**Note:** This method expects the [exp](http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html#expDef)
-claim to check for the expiration time.
-
-#### Usage
+| State                                  | True     | False
+| -------------------------------------- | -------- | -------
+| No token in Local Storage              |          | ✓
+| Token present, but not a valid JWT     | ✓        |
+| JWT present without `exp`              | ✓        |
+| JWT present with `exp` and not expired | ✓        |
+| JWT present with `exp` and expired     |          | ✓
 
 ```js
 // Controller
@@ -524,12 +521,12 @@ $scope.isAuthenticated = function() {
 
 ```html
 <!-- Template -->
-<ul class="nav navbar-nav pull-right" ng-if="!isAuthenticated()">
-  <li><a href="/#/login">Login</a></li>
-  <li><a href="/#/signup">Sign up</a></li>
+<ul ng-if="!isAuthenticated()">
+  <li><a href="/login">Login</a></li>
+  <li><a href="/signup">Sign up</a></li>
 </ul>
-<ul class="nav navbar-nav pull-right" ng-if="isAuthenticated()">
-  <li><a href="/#/logout">Logout</a></li>
+<ul ng-if="isAuthenticated()">
+  <li><a href="/logout">Logout</a></li>
 </ul>
 ```
 
