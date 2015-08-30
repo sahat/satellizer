@@ -381,7 +381,7 @@ and specify `mylocalwebsite.net` as your *Redirect URL* in the **API Settings** 
 ## API Reference
 
 - [`$auth.login(user, [options])`](#authloginuser-options)
-- [`$auth.signup(user)`](#authsignupuser)
+- [`$auth.signup(user, [options])`](#authsignupuser-options)
 - [`$auth.authenticate(name, [userData])`](#authauthenticatename-userdata)
 - [`$auth.logout()`](#authlogout)
 - [`$auth.isAuthenticated()`](#authisauthenticated)
@@ -426,7 +426,7 @@ $auth.login(user)
 
 <hr>
 
-#### `$auth.signup(user)`
+#### `$auth.signup(user, [options])`
 
 Create a new account with Email and Password.
 
@@ -440,8 +440,6 @@ Create a new account with Email and Password.
 ##### Returns
 
 - **response** - The HTTP response object from the server.
-
-#### Usage
 
 ```js
 var user = {
@@ -468,24 +466,27 @@ $auth.signup(user)
 
 Starts the *OAuth 1.0* or the *OAuth 2.0* authentication flow by opening a popup window:
 
-- **provider** - One of the built-in provider names or a custom provider name created
-via `$authProvider.oauth1()` or `$authProvider.oauth2()` methods.
-- **userData** - Optional object for sending additional data to the server along with
-`code`, `clientId`, `redirectUri` (OAuth 2.0) or `oauth_token`, `oauth_verifier` (OAuth 1.0).
 
-#### Returns
+##### Parameters
 
-- **response** - The `$http` response object from the server.
+| Param                     | Type     | Details
+| ------------------------- | -------- | --------------------------------------------------------------------------------
+| **name**                  | `String` | One of the built-in OAuth provider names or a custom OAuth provider name created via `$authProvider.oauth1()` or `$authProvider.oauth2()` methods.
+| **userData** *(optional)* | `Object` | Optional object for when you need to send additional data to the server along with `code`, `clientId`, `redirectUri` (OAuth 2.0) or `oauth_token`, `oauth_verifier` (OAuth 1.0).
 
-#### Usage
+##### Returns
+
+- **response** - The HTTP response object from the server.
 
 ```js
-$auth.authenticate('google').then(function(response) {
-  // Signed In.
-});
+$auth.authenticate('google')
+  .then(function(response) {
+    // Signed in with Google.
+  })
+  .catch(function(response) {
+    // Something went wrong.
+  });
 ```
-
-**Note:** This method returns a promise.
 
 <hr>
 
@@ -631,15 +632,15 @@ Removes a JWT from Local Storage.
 
 ## Credits
 
-| Contribution       | User
-| ------------------ | --------------------------------------
-| Dropwizard (Java)  | [Alice Chen](https://github.com/chena)
-| Go                 | Salim Alami
-| Ruby on Rails      | simonasdev
-| Ionic Framework    | Dimitris Bozelos
+| Contribution               | User
+| -------------------------- | --------------------------------------
+| Dropwizard (Java) Example  | [Alice Chen](https://github.com/chena)
+| Go Example                 | [Salim Alami](https://github.com/celrenheit)
+| Ruby on Rails Example      | [Simonas Gildutis](https://github.com/simonasdev)
+| Ionic Framework Example    | [Dimitris Bozelos](https://github.com/krystalcode)
 
 Additionally, I would like to thank all other contributors who have reported
-bugs, submitted pull requests and suggested new features.
+bugs, submitted pull requests and suggested new features!
 
 ## License
 
