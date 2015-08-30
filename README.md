@@ -589,9 +589,7 @@ $auth.unlink('github')
 
 #### `$auth.getToken()`
 
-Returns a JWT from Local Storage.
-
-#### Usage
+Returns a token from Local Storage (or Session Storage).
 
 ```js
 $auth.getToken();
@@ -604,11 +602,9 @@ $auth.getToken();
 
 Returns a JWT Claims Set, i.e. the middle part of a JSON Web Token.
 
-#### Usage
-
 ```js
 $auth.getPayload();
-// { exp: 1414978281, iat: 1413765081, sub: "544457a3eb129ee822a38fdd" }
+// { exp: 1414978281, iat: 1413765081, userId: "544457a3eb129ee822a38fdd" }
 ```
 
 <hr>
