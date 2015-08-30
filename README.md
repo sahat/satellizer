@@ -609,19 +609,37 @@ $auth.getPayload();
 
 <hr>
 
-#### `$auth.setToken(token, [redirect])`
+#### `$auth.setToken(token)`
 
-Saves a JWT or an access token to Local Storage. *It uses `shared.setToken` internally.*
+Saves a JWT or an access token to Local Storage / Session Storage.
 
-- **token** - An object that takes a JWT (`response.data[config.tokenName]`) or an access token (`response.access_token`).
-- **redirect** - An optional boolean value that controls whether or not to redirect to `loginRedirect` route after saving a token. Defaults to `false`.
+##### Parameters
+
+| Param                    | Type     | Details
+| ------------------------ | -------- | ---------------------------------------------------------------------------------------
+| **token**                | `Object` | An object that takes a JWT (`response.data[config.tokenName]`) or an access token (`response.access_token`).
 
 <hr>
 
 #### `$auth.removeToken()`
 
-Removes a JWT from Local Storage.
+Removes a token from Local Storage / Session Storage. Used internally by [`$auth.logout()`](#authlogout).
 
+<hr>
+
+#### `$auth.setStorageType(type)`
+
+Sets storage type to Local Storage or Session Storage.
+
+##### Parameters
+
+| Param                    | Type     | Details
+| ------------------------ | -------- | -------------------------------------------------------
+| **type**                 | `String` | Accepts `'localStorage'` and `'sessionStorage'` values.
+
+```js
+$auth.setStorageType('sessionStorage');
+```
 
 ## TODO
 
