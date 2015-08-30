@@ -508,9 +508,9 @@ Checks authentication status of a user.
 | -------------------------------------- | -------- | -------
 | No token in Local Storage              |          | ✓
 | Token present, but not a valid JWT     | ✓        |
-| JWT present without `exp`              | ✓        |
-| JWT present with `exp` and not expired | ✓        |
-| JWT present with `exp` and expired     |          | ✓
+| JWT present without [`exp`]((http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html#expDef))              | ✓        |
+| JWT present with [`exp`]((http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html#expDef)) and not expired | ✓        |
+| JWT present with [`exp`]((http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html#expDef)) and expired     |          | ✓
 
 ```js
 // Controller
@@ -532,27 +532,31 @@ $scope.isAuthenticated = function() {
 
 <hr>
 
-#### `$auth.link(provider, [userData])`
+#### `$auth.link(name, [userData])`
 
-Links an OAuth provider with the signed-in account. It is practically the same as
-[$auth.authenticate()](#authauthenticatename-userdata) with the exception that it does not
-redirect to `$authProvider.loginRedirect` route path.
+Alias for [`$auth.authenticate(name, [userData])`](#authauthenticatename-userdata).
 
-- **provider** - One of the built-in provider names or a custom provider name created
-via `$authProvider.oauth1()` or `$authProvider.oauth2()` methods.
-- **userData** - Optional object for sending additional data to the server along with
-`code`, `clientId`, `redirectUri` (OAuth 2.0) or `oauth_token`, `oauth_verifier` (OAuth 1.0).
-
-**Note:** Linking accounts business logic is handled entirely on the server.
-
-#### Usage
+**Note:** Account linking (and merging) business logic is handled entirely on the server.
 
 ```js
-$auth.link('github');
+// Controller
+$scope.link = function(provider) {
+  $auth.link(provider)
+    .then(function(response) {
+      // You have successfully linked an account.
+    })
+    .catch(function(response) {
+      // Handle error here.
+    });
+};
 ```
 
-**Note:** This method returns a promise.
-
+```html
+<!-- Template -->
+<button ng-click="link('facebook')">
+  <i class="ion-social-windows"></i> Connect Facebook Account
+</button>
+```
 <hr>
 
 #### `$auth.unlink(provider)`
