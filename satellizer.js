@@ -204,8 +204,8 @@
             return local.login(user, opts);
           };
 
-          $auth.signup = function(user) {
-            return local.signup(user);
+          $auth.signup = function(user, options) {
+            return local.signup(user, options);
           };
 
           $auth.logout = function() {
