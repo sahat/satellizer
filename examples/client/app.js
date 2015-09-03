@@ -54,6 +54,10 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', 'ui.
       clientId: '77cw786yignpzj'
     });
 
+    $authProvider.instagram({
+      clientId: '799d1f8ea0e44ac8b70e7f18fcacedd1'
+    });
+
     $authProvider.yahoo({
       clientId: 'dj0yJmk9SDVkM2RhNWJSc2ZBJmQ9WVdrOWIzVlFRMWxzTXpZbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD0yYw--'
     });
