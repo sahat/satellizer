@@ -302,6 +302,17 @@ ul {
   background-color: #303030;
 }
 
+.btn-instagram {
+  color: #fff;
+  background-color: #3f729b;
+}
+
+.btn-instagram:hover,
+.btn-instagram:focus {
+  color: #fff;
+  background-color: #305777;
+}
+
 .btn-yahoo {
   color: #fff;
   background-color: #720e9e;
