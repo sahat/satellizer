@@ -7,6 +7,8 @@ module.exports = {
   FOURSQUARE_SECRET: process.env.FOURSQUARE_SECRET || '',
   GOOGLE_SECRET: process.env.GOOGLE_SECRET || '',
   GITHUB_SECRET: process.env.GITHUB_SECRET || '',
+  INSTAGRAM_SECRET: process.env.INSTAGRAM_SECRET || '46d6cc16b2fa445595e747a3349cb6e4',
+
   LINKEDIN_SECRET: process.env.LINKEDIN_SECRET || '',
   TWITCH_SECRET: process.env.TWITCH_SECRET || '',
   WINDOWS_LIVE_SECRET: process.env.WINDOWS_LIVE_SECRET || '',
