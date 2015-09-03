@@ -59,6 +59,15 @@
           type: '2.0',
           popupOptions: { width: 1020, height: 618 }
         },
+        instagram: {
+          name: 'instagram',
+          url: '/auth/instagram',
+          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
+          requiredUrlParams: ['scope'],
+          scope: ['basic'],
+          scopeDelimiter: '+',
+          authorizationEndpoint: 'https://api.instagram.com/oauth/authorize'
+        },
         linkedin: {
           name: 'linkedin',
           url: '/auth/linkedin',
