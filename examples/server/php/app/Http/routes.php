@@ -15,6 +15,7 @@
 Route::post('auth/twitter', 'AuthController@twitter');
 Route::post('auth/facebook', 'AuthController@facebook');
 Route::post('auth/foursquare', 'AuthController@foursquare');
+Route::post('auth/instagram', 'AuthController@instagram');
 Route::post('auth/github', 'AuthController@github');
 Route::post('auth/google', 'AuthController@google');
 Route::post('auth/linkedin', 'AuthController@linkedin');

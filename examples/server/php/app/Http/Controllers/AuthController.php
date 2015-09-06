@@ -466,6 +466,67 @@ class AuthController extends Controller {
     }
 
     /**
+     * Login with Instagram.
+     */
+    public function instagram(Request $request)
+    {
+        $accessTokenUrl = 'https://api.instagram.com/oauth/access_token';
+
+        $params = [
+            'code' => $request->input('code'),
+            'client_id' => $request->input('clientId'),
+            'client_secret' => Config::get('app.instagram_secret'),
+            'redirect_uri' => $request->input('redirectUri'),
+            'grant_type' => 'authorization_code',
+        ];
+
+        $client = new GuzzleHttp\Client();
+
+        // Step 1. Exchange authorization code for access token.
+        $accessTokenResponse = $client->post($accessTokenUrl, ['body' => $params]);
+        $accessToken = $accessTokenResponse->json();
+
+
+
+        // Step 2a. If user is already signed in then link accounts.
+        if ($request->header('Authorization'))
+        {
+            $user = User::where('instagram', '=', $accessToken['user']['id']);
+            if ($user->first())
+            {
+                return response()->json(array('message' => 'There is already an Instagram account that belongs to you'), 409);
+            }
+
+            $token = explode(' ', $request->header('Authorization'))[1];
+            $payload = (array) JWT::decode($token, Config::get('app.token_secret'), array('HS256'));
+
+            $user = User::find($payload['sub']);
+            $user->instagram = $accessToken['user']['id'];
+            $user->displayName = $user->displayName || $accessToken['user']['username'];
+            $user->save();
+
+            return response()->json(['token' => $this->createToken($user)]);
+        }
+        // Step 2b. Create a new user account or return an existing one.
+        else
+        {
+            $user = User::where('instagram', '=', $accessToken['user']['id']);
+
+            if ($user->first())
+            {
+                return response()->json(['token' => $this->createToken($user->first())]);
+            }
+
+            $user = new User;
+            $user->instagram = $accessToken['user']['id'];
+            $user->displayName =  $accessToken['user']['username'];
+            $user->save();
+
+            return response()->json(['token' => $this->createToken($user)]);
+        }
+    }
+
+    /**
      * Login with GitHub.
      */
     public function github(Request $request)
