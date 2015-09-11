@@ -7,12 +7,12 @@ return [
 	'foursquare_secret' => '',
 	'google_secret' => '',
 	'github_secret' => '',
+	'instagram_secret' => '',
 	'linkedin_secret' => '',
 	'live_secret' => '',
+	'yahoo_secret' => '',
 	'twitter_key' => '',
 	'twitter_secret' => '',
-	'twitter_callback' => '',
-	'yahoo_secret' => '',
 
 	/*
 	|--------------------------------------------------------------------------
