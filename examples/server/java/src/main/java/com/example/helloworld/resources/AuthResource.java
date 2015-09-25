@@ -36,6 +36,8 @@ import com.example.helloworld.core.Token;
 import com.example.helloworld.core.User;
 import com.example.helloworld.core.User.Provider;
 import com.example.helloworld.db.UserDAO;
+import com.example.helloworld.resources.AuthResource.Payload;
+import com.example.helloworld.resources.AuthResource.UnlinkRequest;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -115,22 +117,19 @@ public class AuthResource {
             .queryParam(CODE_KEY, payload.getCode()).request("text/plain")
             .accept(MediaType.TEXT_PLAIN).get();
 
-    final String paramStr = Preconditions.checkNotNull(response.readEntity(String.class));
-    // first param is token, second is expire
-    final String[] params = paramStr.split("&");
-    final String[] tokenPair = params[0].split("=");
-    final String[] expirePair = params[1].split("=");
-
+    Map<String, Object> responseEntity = getResponseEntity(response);
+        
     response =
-        client.target(graphApiUrl).queryParam(tokenPair[0], tokenPair[1])
-            .queryParam(expirePair[0], expirePair[1]).request("text/plain").get();
-
+            client.target(graphApiUrl).queryParam("access_token", responseEntity.get("access_token"))
+                .queryParam("expires_in", responseEntity.get("expires_in")).request("text/plain").get();
+    
     final Map<String, Object> userInfo = getResponseEntity(response);
 
     // Step 3. Process the authenticated the user.
     return processUser(request, Provider.FACEBOOK, userInfo.get("id").toString(),
         userInfo.get("name").toString());
   }
+
 
   @POST
   @Path("google")
@@ -192,22 +191,25 @@ public class AuthResource {
     return Response.ok().build();
   }
 
-  @GET
-  @Path("unlink/{provider}")
+
+  @POST
+  @Path("unlink/")
   @UnitOfWork
-  public Response unlink(@PathParam("provider") final String provider,
+  public Response unlink(@Valid final UnlinkRequest unlinkRequest,
       @Context final HttpServletRequest request) throws ParseException, IllegalArgumentException,
       IllegalAccessException, NoSuchFieldException, SecurityException, JOSEException {
     final String subject = AuthUtils.getSubject(request.getHeader(AuthUtils.AUTH_HEADER_KEY));
     final Optional<User> foundUser = dao.findById(Long.parseLong(subject));
 
+    String provider = unlinkRequest.provider;
+    
     if (!foundUser.isPresent()) {
       return Response.status(Status.NOT_FOUND).entity(new ErrorMessage(NOT_FOUND_MSG)).build();
     }
 
     final User userToUnlink = foundUser.get();
 
-    // check that the user is not trying to unlink the only sign-in method
+   // check that the user is not trying to unlink the only sign-in method
     if (userToUnlink.getSignInMethodCount() == 1) {
       return Response.status(Status.BAD_REQUEST)
           .entity(new ErrorMessage(String.format(UNLINK_ERROR_MSG, provider))).build();
@@ -222,6 +224,21 @@ public class AuthResource {
     dao.save(userToUnlink);
 
     return Response.ok().build();
+  }
+
+  
+  public static class UnlinkRequest {
+	  @NotBlank
+	  String provider;
+
+	public String getProvider() {
+		return provider;
+	}
+
+	public void setProvider(String provider) {
+		this.provider = provider;
+	}
+	  
   }
 
   /*
