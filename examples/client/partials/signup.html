@@ -27,7 +27,7 @@
             </div>
           </div>
           <div class="form-group has-feedback" ng-class="{ 'has-error' : signupForm.confirmPassword.$invalid && signupForm.confirmPassword.$dirty }">
-            <input password-match="user.password" class="form-control input-lg" type="password" name="confirmPassword" ng-model="user.confirmPassword" placeholder="Confirm Password">
+            <input password-match="user.password" class="form-control input-lg" type="password" name="confirmPassword" ng-model="confirmPassword" placeholder="Confirm Password">
             <span class="ion-key form-control-feedback"></span>
             <div class="help-block text-danger" ng-if="signupForm.confirmPassword.$dirty" ng-messages="signupForm.confirmPassword.$error">
               <div ng-message="compareTo">Password must match.</div>
