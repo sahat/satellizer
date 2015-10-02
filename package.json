@@ -23,10 +23,10 @@
     "gulp-complexity": "~0.3.0",
     "gulp-plumber": "^1.0.1",
     "gulp-rename": "^1.2.2",
-    "gulp-uglify": "~1.4.0",
+    "gulp-uglify": "~1.4.1",
     "gulp-header": "~1.7.1",
-    "karma": "^0.13.9",
-    "karma-coverage": "^0.5.0",
+    "karma": "^0.13.10",
+    "karma-coverage": "^0.5.2",
     "karma-jasmine": "^0.3.6",
     "karma-phantomjs-launcher": "^0.2.1"
   },
