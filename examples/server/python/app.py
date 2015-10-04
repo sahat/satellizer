@@ -112,7 +112,7 @@ def login_required(f):
 
 @app.route('/')
 def index():
-    return send_file('../../client/index.html')
+    return send_file(os.path.join(client_path, 'index.html'))
 
 
 @app.route('/api/me')
