@@ -637,7 +637,7 @@
           Popup.url = url;
 
           var stringifiedOptions = Popup.stringifyOptions(Popup.prepareOptions(options));
-          var windowName = config.cordova ? '_blank' : name;
+          var windowName = '_blank';
 
           Popup.popupWindow = window.open(url, windowName, stringifiedOptions);
 
