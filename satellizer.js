@@ -3,6 +3,11 @@
  * (c) 2015 Sahat Yalkabov
  * License: MIT
  */
+
+if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.exports === exports) {
+  module.exports = 'satellizer';
+}
+
 (function(window, angular, undefined) {
   'use strict';
 
