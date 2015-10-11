@@ -325,23 +325,20 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
         Shared.isAuthenticated = function() {
           var token = storage.get(tokenName);
 
-          if (token) {
-            if (token.split('.').length === 3) {
-              var base64Url = token.split('.')[1];
-              var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-              var exp = JSON.parse($window.atob(base64)).exp;
+          if (token && token.split('.').length === 3) {
+            var base64Url = token.split('.')[1];
+            var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            var exp = JSON.parse($window.atob(base64)).exp;
 
-              if (exp) {
-                var isExpired = Math.round(new Date().getTime() / 1000) >= exp;
+            if (exp) {
+              var isExpired = Math.round(new Date().getTime() / 1000) >= exp;
 
-                if (isExpired) {
-                  storage.remove(tokenName);
-                  return false;
-                } else {
-                  return true;
-                }
+              if (isExpired) {
+                storage.remove(tokenName);
+                return false;
+              } else {
+                return true;
               }
-              return true;
             }
             return true;
           }
