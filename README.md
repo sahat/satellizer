@@ -123,6 +123,7 @@ angular.module('MyApp')
 <button ng-click="authenticate('google')">Sign in with Google</button>
 <button ng-click="authenticate('github')">Sign in with GitHub</button>
 <button ng-click="authenticate('linkedin')">Sign in with LinkedIn</button>
+<button ng-click="authenticate('instagram')">Sign in with Instagram</button>
 <button ng-click="authenticate('twitter')">Sign in with Twitter</button>
 <button ng-click="authenticate('foursquare')">Sign in with Foursquare</button>
 <button ng-click="authenticate('yahoo')">Sign in with Yahoo</button>
