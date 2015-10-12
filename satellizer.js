@@ -325,26 +325,36 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
         Shared.isAuthenticated = function() {
           var token = storage.get(tokenName);
 
+          // A token is present
           if (token) {
+            // Token with a valid JWT format XXX.YYY.ZZZ
             if (token.split('.').length === 3) {
-              var base64Url = token.split('.')[1];
-              var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-              var exp = JSON.parse($window.atob(base64)).exp;
-
-              if (exp) {
-                var isExpired = Math.round(new Date().getTime() / 1000) >= exp;
-
-                if (isExpired) {
-                  storage.remove(tokenName);
-                  return false;
-                } else {
-                  return true;
+              // Could be a valid JWT or an access token with the same format
+              try {
+                var base64Url = token.split('.')[1];
+                var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                var exp = JSON.parse($window.atob(base64)).exp;
+                // JWT with an optonal expiration claims
+                if (exp) {
+                  var isExpired = Math.round(new Date().getTime() / 1000) >= exp;
+                  if (isExpired) {
+                    // FAIL: Expired token
+                    storage.remove(tokenName);
+                    return false;
+                  } else {
+                    // PASS: Non-expired token
+                    return true;
+                  }
                 }
+              } catch(e) {
+                // PASS: Non-JWT token that looks like JWT
+                return true;
               }
-              return true;
             }
+            // PASS: All other tokens
             return true;
           }
+          // FAIL: No token at all
           return false;
         };
 
