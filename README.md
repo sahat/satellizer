@@ -79,6 +79,10 @@ angular.module('MyApp', ['satellizer'])
     $authProvider.linkedin({
       clientId: 'LinkedIn Client ID'
     });
+    
+    $authProvider.linkedin({
+      clientId: 'Instagram Client ID'
+    });
 
     $authProvider.yahoo({
       clientId: 'Yahoo Client ID / Consumer Key'
