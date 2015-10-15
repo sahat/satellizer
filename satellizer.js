@@ -407,7 +407,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
          */
         Oauth.unlink = function(provider, opts) {
             opts = opts || {};
-            opts.url = opts.url ? opts.url : config.baseUrl ? utils.joinUrl(config.baseUrl, config.unlinkUrl) : config.unlinkUrl;
+            opts.url = opts.url ? opts.url : utils.joinUrl(config.baseUrl, config.unlinkUrl);
             opts.data = { provider: provider } || opts.data;
             opts.method = opts.method || 'POST';
 
@@ -431,7 +431,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
          */
         Local.login = function(user, opts) {
           opts = opts || {};
-          opts.url = opts.url ? opts.url : config.baseUrl ? utils.joinUrl(config.baseUrl, config.loginUrl) : config.loginUrl;
+          opts.url = opts.url ? opts.url : utils.joinUrl(config.baseUrl, config.loginUrl);
           opts.data = user || opts.data;
           opts.method = opts.method || 'POST';
 
@@ -448,7 +448,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
          */
         Local.signup = function(user, opts) {
           opts = opts || {};
-          opts.url = opts.url ? opts.url : config.baseUrl ? utils.joinUrl(config.baseUrl, config.signupUrl) : config.signupUrl;
+          opts.url = opts.url ? opts.url : utils.joinUrl(config.baseUrl, config.signupUrl);
           opts.data = user || opts.data;
           opts.method = opts.method || 'POST';
 
