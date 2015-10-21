@@ -2,11 +2,12 @@ describe('SatellizerOauth2', function() {
 
   beforeEach(module('satellizer'));
 
-  beforeEach(inject(['$httpBackend', '$interval', 'SatellizerOauth2', function($httpBackend, $interval, Oauth2) {
+  beforeEach(inject(function($httpBackend, $interval, SatellizerOauth2, SatellizerConfig) {
     this.$httpBackend = $httpBackend;
     this.$interval = $interval;
-    this.oauth2 = new Oauth2();
-  }]));
+    this.oauth2 = new SatellizerOauth2();
+    this.config = SatellizerConfig;
+  }));
 
   describe('open()', function() {
 
@@ -23,12 +24,26 @@ describe('SatellizerOauth2', function() {
   describe('exchangeForToken()', function() {
 
     it('should be defined', function() {
-      //expect(this.oauth2.exchangeForToken).toBeDefined();
+      expect(this.oauth2.exchangeForToken).toBeDefined();
     });
 
     it('should exchange code for token', function() {
-      //this.oauth2.open().pollPopup();
-      //this.oauth2.exchangeForToken('code=foo');
+      this.oauth2.exchangeForToken('code=foo');
+    });
+
+    it('should exchange code for token with custom responseParams', function() {
+      this.config.providers.facebook.responseParams = {
+        code: 'code',
+        client_id: 'clientId',
+        redirect_uri: 'redirectUri',
+        custom: 'custom'
+      };
+      this.oauth2.open(this.config.providers.facebook);
+    });
+
+    it('should handle state param', function() {
+      this.oauth2.open(this.config.providers.facebook);
+      this.oauth2.exchangeForToken({ state: 'STATE' });
     });
 
   });
@@ -36,14 +51,18 @@ describe('SatellizerOauth2', function() {
   describe('buildQueryString()', function() {
 
     it('should be defined', function() {
-      //expect(this.oauth2.buildQueryString).toBeDefined();
+      expect(this.oauth2.buildQueryString).toBeDefined();
     });
 
     it('should URI-encode state value', function() {
-      //this.oauth2.open({defaultUrlParams: ['state'], state: 'foo+bar'}).pollPopup();
-      //expect(this.oauth2.buildQueryString()).toBe('state=foo%2Bbar');
+      this.oauth2.open({defaultUrlParams: ['state'], state: 'foo+bar'});
+      expect(this.oauth2.buildQueryString()).toContain('state=foo%2Bbar');
     });
 
+    it('should use scopePrefix if provided', function() {
+      this.oauth2.open(this.config.providers.google);
+      expect(this.oauth2.buildQueryString()).toContain('scope=openid profile email');
+    });
   });
 
 });
