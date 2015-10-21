@@ -295,6 +295,10 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
         };
 
         Shared.setToken = function(response) {
+          if (!response) {
+            return console.warn('Can\'t set token without passing a value');
+          }
+
           var accessToken = response && response.access_token;
           var token;
 
@@ -313,7 +317,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
           if (!token) {
             var tokenPath = config.tokenRoot ? config.tokenRoot + '.' + config.tokenName : config.tokenName;
-            throw new Error('Expecting a token named "' + tokenPath + '" but instead got: ' + JSON.stringify(response.data));
+            return console.warn('Expecting a token named "' + tokenPath);
           }
 
           storage.set(tokenName, token);
