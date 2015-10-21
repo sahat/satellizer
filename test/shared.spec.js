@@ -4,7 +4,6 @@ describe('SatellizerShared', function() {
 
   beforeEach(inject(['$q', '$httpBackend', '$location', '$window', 'SatellizerShared', 'SatellizerConfig',
     function($q, $httpBackend, $location, $window, shared, config) {
-
       this.$q = $q;
       this.$httpBackend = $httpBackend;
       this.$location = $location;
@@ -71,6 +70,13 @@ describe('SatellizerShared', function() {
       expect(payload).toBeUndefined();
     });
 
+    it('should return undefined if looks like JWT but not a valid JWT', function() {
+      var tokenName = [this.config.tokenPrefix, this.config.tokenName].join('_');
+      localStorage.setItem(tokenName, 'f0af717251950dbd4.d73154fdf0a474a5c5119ada.d999683f5b450c460726aa');
+      var payload = this.shared.getPayload();
+      expect(payload).toBeUndefined();
+    });
+
   });
 
   describe('isAuthenticated()', function() {
@@ -86,22 +92,34 @@ describe('SatellizerShared', function() {
       expect(this.shared.isAuthenticated()).toBe(true);
     });
 
+    it('should handle expired token', function() {
+      var tokenName = [this.config.tokenPrefix, this.config.tokenName].join('_');
+      var expiredToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNDQ1NDEzODU5LCJleHAiOjE0NDU0MTM4NjR9.FWflFgVTYu4riXLDzOAx9xy1x-qYyzwi09oN_pmoLcg';
+      localStorage.setItem(tokenName, expiredToken);
+      expect(this.shared.isAuthenticated()).toBe(false);
+    });
+
+    it('should return for non-JWT token that has format of JWT', function() {
+      var tokenName = [this.config.tokenPrefix, this.config.tokenName].join('_');
+      localStorage.setItem(tokenName, 'foo.bar.baz');
+      expect(this.shared.isAuthenticated()).toBe(true);
+    });
 
   });
 
   describe('setToken()', function() {
 
-    it('should throw error if no token is provided', function() {
-      var response = { data: {} };
-      expect(function() {
-        this.shared.setToken(response);
-      }).toThrow();
+    it('should gracefully return without a response param', function() {
+      var tokenName = [this.config.tokenPrefix, this.config.tokenName].join('_');
+      localStorage.removeItem(tokenName);
+      this.shared.setToken();
+      var token = localStorage.getItem(tokenName);
+      expect(token).toBeNull();
     });
 
     it('should set the token when tokenRoot is provided', function() {
       this.config.tokenRoot = 'foo.bar';
       var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsb…YzMn0.YATZN37JENCQWeNAoN4M7KxJl7OAIJL4ka_fSM_gYkE'
-
       var response = {
         data: {
           foo: {
@@ -114,6 +132,44 @@ describe('SatellizerShared', function() {
       this.shared.setToken(response);
 
       expect(token).toEqual(this.shared.getToken());
+      this.config.tokenRoot = null;
+    });
+
+    it('should set string access_token', function() {
+      var tokenName = [this.config.tokenPrefix, this.config.tokenName].join('_');
+      var response = {
+        access_token: 'test'
+      };
+      this.shared.setToken(response);
+      var token = localStorage.getItem(tokenName);
+      expect(token).toBe('test');
+    });
+
+    it('should set object access_token', function() {
+
+      var tokenName = [this.config.tokenPrefix, this.config.tokenName].join('_');
+      var response = {
+        access_token: {
+          data: {
+            token: 'access_token_object_test'
+          }
+        }
+      };
+      this.shared.setToken(response);
+      var token = localStorage.getItem(tokenName);
+      expect(token).toBe('access_token_object_test');
+    });
+
+    it('should gracefully return if no token is passed in', function() {
+      var tokenName = [this.config.tokenPrefix, this.config.tokenName].join('_');
+      localStorage.removeItem(tokenName);      var response = {
+        access_token: {
+          data: {}
+        }
+      };
+      this.shared.setToken(response);
+      var token = localStorage.getItem(tokenName);
+      expect(token).toBeNull();
     });
 
   });
