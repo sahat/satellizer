@@ -2,11 +2,12 @@ describe('SatellizerOauth1', function() {
 
   beforeEach(module('satellizer'));
 
-  beforeEach(inject(['$httpBackend', '$interval', 'SatellizerOauth1', function($httpBackend, $interval, Oauth1) {
+  beforeEach(inject(function($httpBackend, $interval, SatellizerOauth1, SatellizerConfig) {
     this.$httpBackend = $httpBackend;
     this.$interval = $interval;
-    this.oauth1 = new Oauth1();
-  }]));
+    this.oauth1 = new SatellizerOauth1();
+    this.config = SatellizerConfig;
+  }));
 
   describe('open()', function() {
 
@@ -38,6 +39,51 @@ describe('SatellizerOauth1', function() {
       };
 
       this.oauth1.exchangeForToken(oauthData);
+    });
+
+    it('should work with cordova flag', function() {
+      this.config.cordova = true;
+      var result;
+
+      this.$httpBackend.expectPOST('/auth/twitter').respond(200);
+
+      this.oauth1.open({
+        url: '/auth/twitter',
+        authorizationEndpoint: 'https://api.twitter.com/oauth/authenticate'
+      }).then(function(response) {
+        result = response;
+      });
+
+      this.$httpBackend.flush();
+      this.config.cordova = false;
+    });
+
+    it('should work with a web browser', function() {
+      var result;
+
+      this.$httpBackend.expectPOST('/auth/twitter').respond(200);
+
+      this.oauth1.open({
+        url: '/auth/twitter',
+        authorizationEndpoint: 'https://api.twitter.com/oauth/authenticate'
+      }).then(function(response) {
+        result = response;
+      });
+
+      this.$httpBackend.flush();
+    });
+
+  });
+
+  describe('buildQueryString()', function() {
+
+    it('should be defined', function() {
+      expect(this.oauth1.buildQueryString).toBeDefined();
+    });
+
+    it('should build a query', function() {
+      var qs = this.oauth1.buildQueryString({ code: 'test1', client_id: 'test2', redirect_uri: 'test3' });
+      expect(qs).toBe('code=test1&client_id=test2&redirect_uri=test3');
     });
 
   });

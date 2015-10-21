@@ -114,6 +114,7 @@ describe('SatellizerConfig', function() {
     this.$authProvider.cordova = true;
     expect(this.config.cordova).toBe(true);
     expect(this.$authProvider.cordova).toBe(true);
+    this.$authProvider.cordova = false;
   });
 
   it('should set authToken', function() {
