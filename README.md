@@ -80,7 +80,7 @@ angular.module('MyApp', ['satellizer'])
       clientId: 'LinkedIn Client ID'
     });
     
-    $authProvider.linkedin({
+    $authProvider.instagram({
       clientId: 'Instagram Client ID'
     });
 
