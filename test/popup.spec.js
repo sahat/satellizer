@@ -31,5 +31,26 @@ describe('SatellizerPopup', function() {
     this.$interval.flush(300);
     expect(angular.isObject(open)).toBe(true);
   });
+
+  it('should poll popup', function() {
+    var open = this.popup.pollPopup();
+    this.$interval.flush(300);
+    expect(angular.isObject(open)).toBe(true);
+  });
+
+  it('should handle the case when popup redirect has occured', function() {
+    this.popup.popupWindow = {
+      location: {
+        host: document.location.host,
+        search: '?code=foo_query',
+        hash: '#code=foo_hash'
+      }
+    };
+    var open = this.popup.pollPopup();
+    this.$interval.flush(300);
+    expect(angular.isObject(open)).toBe(true);
+  });
+
+
 });
 
