@@ -22,6 +22,12 @@ describe('$auth', function() {
       expect(this.$auth.authenticate).toBeDefined();
     });
 
+    it('should authenticate', function() {
+      var authenticate = this.$auth.authenticate('facebook');
+      expect(authenticate).toBeDefined();
+    });
+
+
   });
 
   describe('isAuthenticated()', function() {
@@ -30,12 +36,26 @@ describe('$auth', function() {
       expect(this.$auth.isAuthenticated).toBeDefined();
     });
 
+    it('should check if is authenticated', function() {
+      var tokenName = [this.config.tokenPrefix, this.config.tokenName].join('_');
+      localStorage.setItem(tokenName, this.token);
+      expect(this.$auth.isAuthenticated()).toBe(true);
+    });
+
+
   });
 
   describe('getToken()', function() {
 
     it('should be defined', function() {
       expect(this.$auth.getToken).toBeDefined();
+    });
+
+    it('should get token', function() {
+      var tokenName = [this.config.tokenPrefix, this.config.tokenName].join('_');
+      this.$window.localStorage[tokenName] = this.token;
+      var token = this.$auth.getToken();
+      expect(token).toEqual(this.$window.localStorage[tokenName]);
     });
 
   });
@@ -46,6 +66,18 @@ describe('$auth', function() {
       expect(this.$auth.setToken).toBeDefined();
     });
 
+    it('should set token', function() {
+      var token = this.token;
+      var response = {
+        data: {
+          token: token
+        }
+      };
+      this.$auth.setToken(response);
+
+      expect(token).toEqual(this.$auth.getToken());
+    });
+
   });
 
   describe('removeToken()', function() {
@@ -54,12 +86,28 @@ describe('$auth', function() {
       expect(this.$auth.removeToken).toBeDefined();
     });
 
+    it('should remove token', function() {
+      var tokenName = [this.config.tokenPrefix, this.config.tokenName].join('_');
+      localStorage.setItem(tokenName, this.token);
+      expect(this.$window.localStorage[tokenName]).toBeDefined();
+
+      this.$auth.removeToken();
+      expect(this.$window.localStorage[tokenName]).toBeUndefined();
+    });
+
   });
 
   describe('getPayload()', function() {
 
     it('should be defined', function() {
       expect(this.$auth.getPayload).toBeDefined();
+    });
+
+    it('should get a JWT payload', function() {
+      var tokenName = [this.config.tokenPrefix, this.config.tokenName].join('_');
+      localStorage.setItem(tokenName, this.token);
+      var payload = this.$auth.getPayload();
+      expect(angular.isObject(payload)).toBe(true);
     });
 
   });
@@ -150,6 +198,20 @@ describe('$auth', function() {
     });
 
   });
+
+  describe('setStorageType()', function() {
+
+    it('should be defined', function() {
+      expect(this.$auth.setStorageType).toBeDefined();
+    });
+
+    it('should set storage type', function() {
+      this.$auth.setStorageType('sessionStorage');
+      expect(this.config.storageType).toBe('sessionStorage');
+    });
+
+  });
+
 
 });
 

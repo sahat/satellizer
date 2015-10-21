@@ -131,4 +131,17 @@ describe('SatellizerShared', function() {
 
   });
 
+  describe('setStorageType()', function() {
+
+    it('should be defined', function() {
+      expect(this.shared.setStorageType).toBeDefined();
+    });
+
+    it('should set storage type', function() {
+      this.shared.setStorageType('sessionStorage');
+      expect(this.config.storageType).toBe('sessionStorage');
+    });
+
+  });
+
 });

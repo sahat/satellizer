@@ -7,9 +7,9 @@ describe('SatellizerConfig', function() {
     });
   });
 
-  beforeEach(inject(['SatellizerConfig', function(config) {
-    this.config = config;
-  }]));
+  beforeEach(inject(function(SatellizerConfig) {
+    this.config = SatellizerConfig;
+  }));
 
   it('should set httpInterceptor', function() {
     this.$authProvider.httpInterceptor = false;
