@@ -116,10 +116,14 @@ function createJWT(user) {
   var payload = {
     sub: user._id,
     iat: moment().unix(),
-    exp: moment().add(14, 'days').unix()
+    exp: moment().add(5, 'seconds').unix()
   };
+  console.log(jwt.encode(payload, config.TOKEN_SECRET));
   return jwt.encode(payload, config.TOKEN_SECRET);
 }
+
+var user = { _id: '1'};
+createJWT(user)
 
 /*
  |--------------------------------------------------------------------------
@@ -532,7 +536,7 @@ app.post('/auth/live', function(req, res) {
  */
 app.post('/auth/facebook', function(req, res) {
   var accessTokenUrl = 'https://graph.facebook.com/v2.3/oauth/access_token';
-  var graphApiUrl = 'https://graph.facebook.com/v2.3/me';
+  var graphApiUrl = 'https://graph.facebook.com/v2.3/me?fields=id,email,first_name,gender,last_name,link,name';
   var params = {
     code: req.body.code,
     client_id: req.body.clientId,
@@ -551,6 +555,7 @@ app.post('/auth/facebook', function(req, res) {
       if (response.statusCode !== 200) {
         return res.status(500).send({ message: profile.error.message });
       }
+      console.log(profile);
       if (req.headers.authorization) {
         User.findOne({ facebook: profile.id }, function(err, existingUser) {
           if (existingUser) {
