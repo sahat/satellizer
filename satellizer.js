@@ -269,9 +269,10 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
     .factory('SatellizerShared', [
       '$q',
       '$window',
+      '$log',
       'SatellizerConfig',
       'SatellizerStorage',
-      function($q, $window, config, storage) {
+      function($q, $window, $log, config, storage) {
         var Shared = {};
 
         var tokenName = config.tokenPrefix ? [config.tokenPrefix, config.tokenName].join('_') : config.tokenName;
@@ -296,7 +297,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
         Shared.setToken = function(response) {
           if (!response) {
-            return console.warn('Can\'t set token without passing a value');
+            return $log.warn('Satellizer Warning: Can\'t set token without passing a value');
           }
 
           var accessToken = response && response.access_token;
@@ -317,7 +318,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
           if (!token) {
             var tokenPath = config.tokenRoot ? config.tokenRoot + '.' + config.tokenName : config.tokenName;
-            return console.warn('Expecting a token named "' + tokenPath);
+            return $log.warn('Satellizer Warning: Expecting a token named "' + tokenPath);
           }
 
           storage.set(tokenName, token);
@@ -827,7 +828,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
         return result;
       }
     })
-    .factory('SatellizerStorage', ['$window', 'SatellizerConfig', function($window, config) {
+    .factory('SatellizerStorage', ['$window', '$log', 'SatellizerConfig', function($window, $log, config) {
       var isStorageAvailable = (function() {
         try {
           var supported = config.storageType in $window && $window[config.storageType] !== null;
@@ -845,7 +846,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
       })();
 
       if (!isStorageAvailable) {
-        console.warn('Satellizer Warning: ' + config.storageType + ' is not available.');
+        $log.warn('Satellizer Warning: ' + config.storageType + ' is not available.');
       }
 
       return {
