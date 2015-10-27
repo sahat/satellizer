@@ -12,10 +12,6 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 (function(window, angular, undefined) {
   'use strict';
 
-  if (!window.location.origin) {
-    window.location.origin = window.location.protocol + '//' + window.location.host;
-  }
-
   angular.module('satellizer', [])
     .constant('SatellizerConfig', {
       httpInterceptor: true,
@@ -36,7 +32,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           name: 'facebook',
           url: '/auth/facebook',
           authorizationEndpoint: 'https://www.facebook.com/v2.3/dialog/oauth',
-          redirectUri: window.location.origin + '/',
+          redirectUri: (window.location.origin || window.location.protocol + '//' + window.location.host) + '/',
           requiredUrlParams: ['display', 'scope'],
           scope: ['email'],
           scopeDelimiter: ',',
@@ -48,7 +44,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           name: 'google',
           url: '/auth/google',
           authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
-          redirectUri: window.location.origin,
+          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
           requiredUrlParams: ['scope'],
           optionalUrlParams: ['display'],
           scope: ['profile', 'email'],
@@ -62,7 +58,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           name: 'github',
           url: '/auth/github',
           authorizationEndpoint: 'https://github.com/login/oauth/authorize',
-          redirectUri: window.location.origin,
+          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
           optionalUrlParams: ['scope'],
           scope: ['user:email'],
           scopeDelimiter: ' ',
@@ -72,7 +68,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
         instagram: {
           name: 'instagram',
           url: '/auth/instagram',
-          redirectUri: window.location.origin,
+          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
           requiredUrlParams: ['scope'],
           scope: ['basic'],
           scopeDelimiter: '+',
@@ -82,7 +78,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           name: 'linkedin',
           url: '/auth/linkedin',
           authorizationEndpoint: 'https://www.linkedin.com/uas/oauth2/authorization',
-          redirectUri: window.location.origin,
+          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
           requiredUrlParams: ['state'],
           scope: ['r_emailaddress'],
           scopeDelimiter: ' ',
@@ -94,7 +90,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           name: 'twitter',
           url: '/auth/twitter',
           authorizationEndpoint: 'https://api.twitter.com/oauth/authenticate',
-          redirectUri: window.location.origin,
+          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
           type: '1.0',
           popupOptions: { width: 495, height: 645 }
         },
@@ -102,7 +98,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           name: 'twitch',
           url: '/auth/twitch',
           authorizationEndpoint: 'https://api.twitch.tv/kraken/oauth2/authorize',
-          redirectUri: window.location.origin,
+          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
           requiredUrlParams: ['scope'],
           scope: ['user_read'],
           scopeDelimiter: ' ',
@@ -114,7 +110,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           name: 'live',
           url: '/auth/live',
           authorizationEndpoint: 'https://login.live.com/oauth20_authorize.srf',
-          redirectUri: window.location.origin,
+          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
           requiredUrlParams: ['display', 'scope'],
           scope: ['wl.emails'],
           scopeDelimiter: ' ',
@@ -126,7 +122,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           name: 'yahoo',
           url: '/auth/yahoo',
           authorizationEndpoint: 'https://api.login.yahoo.com/oauth2/request_auth',
-          redirectUri: window.location.origin,
+          redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
           scope: [],
           scopeDelimiter: ',',
           type: '2.0',
@@ -273,10 +269,9 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
     .factory('SatellizerShared', [
       '$q',
       '$window',
-      '$log',
       'SatellizerConfig',
       'SatellizerStorage',
-      function($q, $window, $log, config, storage) {
+      function($q, $window, config, storage) {
         var Shared = {};
 
         var tokenName = config.tokenPrefix ? [config.tokenPrefix, config.tokenName].join('_') : config.tokenName;
@@ -301,7 +296,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
         Shared.setToken = function(response) {
           if (!response) {
-            return $log.warn('Satellizer Warning: Can\'t set token without passing a value');
+            return console.warn('Can\'t set token without passing a value');
           }
 
           var accessToken = response && response.access_token;
@@ -322,7 +317,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
           if (!token) {
             var tokenPath = config.tokenRoot ? config.tokenRoot + '.' + config.tokenName : config.tokenName;
-            return $log.warn('Satellizer Warning: Expecting a token named "' + tokenPath);
+            return console.warn('Expecting a token named "' + tokenPath);
           }
 
           storage.set(tokenName, token);
@@ -683,6 +678,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           var deferred = $q.defer();
 
           Popup.popupWindow.addEventListener('loadstart', function(event) {
+
             if (event.url.indexOf(redirectUri) !== 0) {
               return;
             }
@@ -832,7 +828,10 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
         return result;
       }
     })
-    .factory('SatellizerStorage', ['$window', '$log', 'SatellizerConfig', function($window, $log, config) {
+    .factory('SatellizerStorage', ['$window', 'SatellizerConfig', function($window, config) {
+      
+      var store = {};
+
       var isStorageAvailable = (function() {
         try {
           var supported = config.storageType in $window && $window[config.storageType] !== null;
@@ -850,20 +849,21 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
       })();
 
       if (!isStorageAvailable) {
-        $log.warn('Satellizer Warning: ' + config.storageType + ' is not available.');
+        console.warn('Satellizer Warning: ' + config.storageType + ' is not available.');
       }
 
       return {
         get: function(key) {
-          return isStorageAvailable ? $window[config.storageType].getItem(key) : undefined;
+          return isStorageAvailable ? $window[config.storageType].getItem(key) : store[key];
         },
         set: function(key, value) {
-          return isStorageAvailable ? $window[config.storageType].setItem(key, value) : undefined;
+          return isStorageAvailable ? $window[config.storageType].setItem(key, value) : store[key] = value;
         },
         remove: function(key) {
-          return isStorageAvailable ? $window[config.storageType].removeItem(key): undefined;
+          return isStorageAvailable ? $window[config.storageType].removeItem(key): delete store[key];
         }
       };
+
     }])
     .factory('SatellizerInterceptor', [
       '$q',
