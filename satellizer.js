@@ -833,6 +833,9 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
       }
     })
     .factory('SatellizerStorage', ['$window', '$log', 'SatellizerConfig', function($window, $log, config) {
+      
+      var store = {};
+
       var isStorageAvailable = (function() {
         try {
           var supported = config.storageType in $window && $window[config.storageType] !== null;
@@ -850,20 +853,21 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
       })();
 
       if (!isStorageAvailable) {
-        $log.warn('Satellizer Warning: ' + config.storageType + ' is not available.');
+        console.warn('Satellizer Warning: ' + config.storageType + ' is not available.');
       }
 
       return {
         get: function(key) {
-          return isStorageAvailable ? $window[config.storageType].getItem(key) : undefined;
+          return isStorageAvailable ? $window[config.storageType].getItem(key) : store[key];
         },
         set: function(key, value) {
-          return isStorageAvailable ? $window[config.storageType].setItem(key, value) : undefined;
+          return isStorageAvailable ? $window[config.storageType].setItem(key, value) : store[key] = value;
         },
         remove: function(key) {
-          return isStorageAvailable ? $window[config.storageType].removeItem(key): undefined;
+          return isStorageAvailable ? $window[config.storageType].removeItem(key): delete store[key];
         }
       };
+      
     }])
     .factory('SatellizerInterceptor', [
       '$q',
