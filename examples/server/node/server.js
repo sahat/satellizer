@@ -531,8 +531,9 @@ app.post('/auth/live', function(req, res) {
  |--------------------------------------------------------------------------
  */
 app.post('/auth/facebook', function(req, res) {
-  var accessTokenUrl = 'https://graph.facebook.com/v2.3/oauth/access_token';
-  var graphApiUrl = 'https://graph.facebook.com/v2.3/me?fields=id,email,first_name,gender,last_name,link,name';
+  var fields = ['id', 'email', 'first_name', 'last_name', 'link', 'name'];
+  var accessTokenUrl = 'https://graph.facebook.com/v2.5/oauth/access_token';
+  var graphApiUrl = 'https://graph.facebook.com/v2.5/me?fields=' + fields.join(',');
   var params = {
     code: req.body.code,
     client_id: req.body.clientId,
