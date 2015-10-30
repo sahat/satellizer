@@ -1,7 +1,7 @@
 language: node_js
 
 node_js:
-  - "0.12"
+  - "stable"
 
 script:
   - ./node_modules/karma/bin/karma start karma.conf.js --no-auto-watch --single-run --browsers PhantomJS
