@@ -116,14 +116,10 @@ function createJWT(user) {
   var payload = {
     sub: user._id,
     iat: moment().unix(),
-    exp: moment().add(5, 'seconds').unix()
+    exp: moment().add(14, 'days').unix()
   };
-  console.log(jwt.encode(payload, config.TOKEN_SECRET));
   return jwt.encode(payload, config.TOKEN_SECRET);
 }
-
-var user = { _id: '1'};
-createJWT(user)
 
 /*
  |--------------------------------------------------------------------------
