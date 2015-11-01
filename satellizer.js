@@ -666,7 +666,8 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           Popup.url = url;
 
           var stringifiedOptions = Popup.stringifyOptions(Popup.prepareOptions(options));
-          var windowName = config.cordova ? '_blank' : name;
+          var UA = $window.navigator.userAgent;
+          var windowName = (config.cordova || UA.indexOf('CriOS') > -1) ? '_blank' : name;
 
           Popup.popupWindow = window.open(url, windowName, stringifiedOptions);
 
