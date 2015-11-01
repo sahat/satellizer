@@ -314,6 +314,10 @@ $authProvider.oauth1({
 
 __*__ Requires [Base64](https://github.com/davidchambers/Base64.js/) polyfill.
 
+## Wiki
+
+<img src="http://i.imgur.com/UrvFCV5.png" width="143px">
+
 ## How It Works
 
 **Satellizer** relies on *token-based authentication* using
