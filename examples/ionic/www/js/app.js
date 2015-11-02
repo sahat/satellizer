@@ -1,15 +1,5 @@
 angular.module('starter', ['ionic', 'satellizer', 'starter.controllers'])
-  .run(function($ionicPlatform) {
-    $ionicPlatform.ready(function() {
-      if (window.cordova && window.cordova.plugins.Keyboard) {
-        cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-      }
-      if (window.StatusBar) {
-        StatusBar.styleDefault();
-      }
-    });
-  })
-  .config(function($stateProvider, $urlRouterProvider) {
+  .config(function ($stateProvider, $urlRouterProvider, $authProvider) {
     $stateProvider
       .state('app', {
         abstract: true,
@@ -27,34 +17,34 @@ angular.module('starter', ['ionic', 'satellizer', 'starter.controllers'])
       });
 
     $urlRouterProvider.otherwise('/');
-  })
-  .config(function($authProvider) {
-    // OAuth popup should expand to full screen with no location bar/toolbar.
-    var commonConfig = {
-      popupOptions: {
-        location: 'no',
-        toolbar: 'no',
-        width: window.screen.width,
-        height: window.screen.height
-      }
-    };
 
     if (ionic.Platform.isIOS() || ionic.Platform.isAndroid()) {
       $authProvider.cordova = true;
-      commonConfig.redirectUri = 'http://localhost/';
     }
 
-    $authProvider.facebook(angular.extend({}, commonConfig, {
+    $authProvider.facebook({
       clientId: '100703896938969',
-      responseType: 'token'
-    }));
+      redirectUri: 'http://localhost'
+    });
 
-    $authProvider.twitter(angular.extend({}, commonConfig, {
-      url: 'http://localhost:3000/auth/twitter'
-    }));
+    $authProvider.twitter({
+      url: 'http://localhost:3000/auth/twitter',
+      redirectUri: 'http://localhost'
+    });
 
-    $authProvider.google(angular.extend({}, commonConfig, {
+    $authProvider.google({
       clientId: '631036554609-v5hm2amv4pvico3asfi97f54sc51ji4o.apps.googleusercontent.com',
-      url: 'http://localhost:3000/auth/google'
-    }));
+      url: 'http://localhost:3000/auth/google',
+      redirectUri: 'http://localhost'
+    });
+  })
+  .run(function ($ionicPlatform) {
+    $ionicPlatform.ready(function () {
+      if (window.cordova && window.cordova.plugins.Keyboard) {
+        cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
+      }
+      if (window.StatusBar) {
+        StatusBar.styleDefault();
+      }
+    });
   });
