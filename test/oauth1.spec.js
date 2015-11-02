@@ -49,7 +49,8 @@ describe('SatellizerOauth1', function() {
 
       this.oauth1.open({
         url: '/auth/twitter',
-        authorizationEndpoint: 'https://api.twitter.com/oauth/authenticate'
+        authorizationEndpoint: 'https://api.twitter.com/oauth/authenticate',
+        popupOptions: {}
       }).then(function(response) {
         result = response;
       });
