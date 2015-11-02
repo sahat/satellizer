@@ -665,11 +665,18 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
         Popup.open = function(url, name, options) {
           Popup.url = url;
 
+          if (config.cordova) {
+            options.location = options.location || 'no';
+            options.toolbar = options.toolbar || 'yes';
+            options.width = $window.screen.width;
+            options.height = $window.screen.height;
+          }
+
           var stringifiedOptions = Popup.stringifyOptions(Popup.prepareOptions(options));
           var UA = $window.navigator.userAgent;
           var windowName = (config.cordova || UA.indexOf('CriOS') > -1) ? '_blank' : name;
 
-          Popup.popupWindow = window.open(url, windowName, stringifiedOptions);
+          Popup.popupWindow = $window.open(url, windowName, stringifiedOptions);
 
           $window.popup = Popup.popupWindow;
 
