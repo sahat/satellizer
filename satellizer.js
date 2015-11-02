@@ -671,7 +671,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
           Popup.popupWindow = window.open(url, windowName, stringifiedOptions);
 
-          window.popup = Popup.popupWindow;
+          $window.popup = Popup.popupWindow;
 
           if (Popup.popupWindow && Popup.popupWindow.focus) {
             Popup.popupWindow.focus();
