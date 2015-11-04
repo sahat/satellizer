@@ -7,7 +7,7 @@ script:
   - ./node_modules/karma/bin/karma start karma.conf.js --no-auto-watch --single-run --browsers PhantomJS
 
 before_script:
-  - npm install -g bower
+  - npm install -g bower codeclimate-test-reporter
   - npm install
 
 after_script:
