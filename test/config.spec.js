@@ -13,8 +13,17 @@ describe('SatellizerConfig', function() {
 
   it('should set httpInterceptor', function() {
     this.$authProvider.httpInterceptor = false;
-    expect(this.config.httpInterceptor).toEqual(false);
-    expect(this.$authProvider.httpInterceptor).toEqual(false);
+    expect(this.config.httpInterceptor()).toEqual(false);
+    expect(this.$authProvider.httpInterceptor()).toEqual(false);
+    this.$authProvider.httpInterceptor = true;
+  });
+
+  it('should be able to use an httpInterceptor strategy function', function() {
+    this.$authProvider.httpInterceptor = function(request) {
+        return request.uri.indexOf('/api/') === 0;
+    };
+    expect(this.config.httpInterceptor({uri: '/api/endpoint'})).toEqual(true);
+    expect(this.$authProvider.httpInterceptor({uri: '/somewhere/else'})).toEqual(false);
     this.$authProvider.httpInterceptor = true;
   });
 

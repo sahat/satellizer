@@ -18,7 +18,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
   angular.module('satellizer', [])
     .constant('SatellizerConfig', {
-      httpInterceptor: true,
+      httpInterceptor: function() {return true;},
       withCredentials: true,
       tokenRoot: null,
       cordova: false,
@@ -138,7 +138,15 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
       Object.defineProperties(this, {
         httpInterceptor: {
           get: function() { return config.httpInterceptor; },
-          set: function(value) { config.httpInterceptor = value; }
+          set: function(value) {
+            if (typeof value === "function") {
+                config.httpInterceptor = value;
+            } else {
+              config.httpInterceptor = function () {
+                return value;
+              };
+            }
+          }
         },
         baseUrl: {
           get: function() { return config.baseUrl; },
@@ -841,9 +849,9 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
       }
     })
     .factory('SatellizerStorage', ['$window', '$log', 'SatellizerConfig', function($window, $log, config) {
-      
+
       var store = {};
-      
+
       var isStorageAvailable = (function() {
         try {
           var supported = config.storageType in $window && $window[config.storageType] !== null;
@@ -875,7 +883,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           return isStorageAvailable ? $window[config.storageType].removeItem(key): delete store[key];
         }
       };
-      
+
     }])
     .factory('SatellizerInterceptor', [
       '$q',
@@ -889,7 +897,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
               return request;
             }
 
-            if (shared.isAuthenticated() && config.httpInterceptor) {
+            if (shared.isAuthenticated() && config.httpInterceptor(request)) {
               var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
               var token = storage.get(tokenName);
 
