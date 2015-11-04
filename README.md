@@ -5,7 +5,7 @@
 [![Join the chat at https://gitter.im/sahat/satellizer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/sahat/satellizer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](http://img.shields.io/travis/sahat/satellizer.svg?style=flat)](https://travis-ci.org/sahat/satellizer)
 [![Coverage Status](https://coveralls.io/repos/sahat/satellizer/badge.svg?branch=master&service=github)](https://coveralls.io/github/sahat/satellizer?branch=master)
-[![Version](http://img.shields.io/badge/version-0.13.0-orange.svg?style=flat)](https://www.npmjs.org/package/satellizer)
+[![Version](https://img.shields.io/npm/v/satellizer.svg)](https://www.npmjs.org/package/satellizer)
 
 **Live Demo:** [https://satellizer.herokuapp.com](https://satellizer.herokuapp.com)
 
