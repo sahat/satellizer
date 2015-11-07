@@ -27,8 +27,13 @@ in the app *config* block.
 - [Configuration](#configuration)
 - [Browser Support](#browser-support)
 - [Authentication Flow](#authentication-flow)
+ - [Login with Email and Password](#-login-with-email-and-password)
+ - [Login with OAuth 1.0](#-login-with-oauth-10)
+ - [Login with OAuth 2.0](#-login-with-oauth-20)
+ - [Logout](#-logout)
 - [Obtaining OAuth Keys](#obtaining-oauth-keys)
 - [API Reference](#api-reference)
+- [FAQ](#faq)
 - [Credits](#credits)
 - [License](#license)
 
@@ -315,8 +320,6 @@ $authProvider.oauth1({
 </table>
 
 __*__ Requires [Base64](https://github.com/davidchambers/Base64.js/) polyfill.
-
-## Wiki
 
 <img src="http://i.imgur.com/UrvFCV5.png" width="143px">
 
@@ -721,6 +724,10 @@ Sets storage type to Local Storage or Session Storage.
 ```js
 $auth.setStorageType('sessionStorage');
 ```
+
+## FAQ
+
+Coming Soon
 
 ## Credits
 
