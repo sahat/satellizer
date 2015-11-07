@@ -148,7 +148,7 @@ directory.
 Below is a complete listing of all default configuration options.
 
 ```js
-$authProvider.httpInterceptor = true;
+httpInterceptor: function() { return true; },
 $authProvider.withCredentials = true;
 $authProvider.tokenRoot = null;
 $authProvider.cordova = false;
@@ -164,9 +164,10 @@ $authProvider.storageType = 'localStorage';
 
 // Facebook
 $authProvider.facebook({
+  name: 'facebook',
   url: '/auth/facebook',
-  authorizationEndpoint: 'https://www.facebook.com/v2.3/dialog/oauth',
-  redirectUri: (window.location.origin || window.location.protocol + '//' + window.location.host) + '/',
+  authorizationEndpoint: 'https://www.facebook.com/v2.5/dialog/oauth',
+  redirectUri: window.location.origin + '/',
   requiredUrlParams: ['display', 'scope'],
   scope: ['email'],
   scopeDelimiter: ',',
@@ -320,8 +321,6 @@ $authProvider.oauth1({
 </table>
 
 __*__ Requires [Base64](https://github.com/davidchambers/Base64.js/) polyfill.
-
-<img src="http://i.imgur.com/UrvFCV5.png" width="143px">
 
 ## Authentication Flow
 
