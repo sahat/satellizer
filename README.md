@@ -26,7 +26,7 @@ in the app *config* block.
 - [Usage](#usage)
 - [Configuration](#configuration)
 - [Browser Support](#browser-support)
-- [How It Works](#how-it-works)
+- [Authentication Flow](#authentication-flow)
 - [Obtaining OAuth Keys](#obtaining-oauth-keys)
 - [API Reference](#api-reference)
 - [Credits](#credits)
@@ -320,24 +320,69 @@ __*__ Requires [Base64](https://github.com/davidchambers/Base64.js/) polyfill.
 
 <img src="http://i.imgur.com/UrvFCV5.png" width="143px">
 
-## How It Works
+## Authentication Flow
 
-**Satellizer** relies on *token-based authentication* using
+Satellizer relies on *token-based authentication* using
 [JSON Web Tokens](https://auth0.com/blog/2014/01/07/angularjs-authentication-with-cookies-vs-token/)
-instead of cookies. Each **Wiki** link below goes in-depth into how the
-authentication process works.
+instead of cookies.
 
-- [Login with OAuth 2.0](https://github.com/sahat/satellizer/wiki/Login-with-OAuth-2.0)
-- [Login with OAuth 1.0](https://github.com/sahat/satellizer/wiki/Login-with-OAuth-1.0)
-- [Login with Email and Password](https://github.com/sahat/satellizer/wiki/Login-with-Email-and-Password)
-- [Signup](https://github.com/sahat/satellizer/wiki/Signup)
-- [Logout](https://github.com/sahat/satellizer/wiki/Logout)
+### <img height="34" align="top" src="http://tech-lives.com/wp-content/uploads/2012/03/Lock-icon.png"> Login with Email and Password
 
-**Note:** To learn more about JSON Web Token (JWT) visit [JWT.io](http://jwt.io/).
+1. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Enter your email and password into the login form.
+2. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** On form submit call `$auth.login()` with email and password.
+3. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Send a `POST` request to `/auth/login`.
+4. <img height="24" align="top" src="http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/256/Places-network-server-database-icon.png"> **Server:** Check if email exists, if not - return `401`.
+5. <img height="24" align="top" src="http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/256/Places-network-server-database-icon.png"> **Server:** Check if password is correct, if not - return `401`.
+6. <img height="24" align="top" src="http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/256/Places-network-server-database-icon.png"> **Server:** Create a JSON Web Token and send it back to the client.
+7. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Parse the token and save it to *Local Storage* for subsequent
+use after page reload.
+
+
+### <img height="34" align="top" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Oauth_logo.svg/180px-Oauth_logo.svg.png"> Login with OAuth 1.0
+
+1. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Open an **empty** popup window via `$auth.authenticate('provider name')`.
+2. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Unlike OAuth 2.0, with OAuth 1.0 you cannot go directly to the authorization 
+screen without a valid `request_token`.
+3. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** The OAuth 1.0 flow starts with an empty **POST** request to */auth/provider*.
+4. <img height="24" align="top" src="http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/256/Places-network-server-database-icon.png"> **Server:** Obtain and return `request_token`for the authorization popup.
+5. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Set the URL location of a popup to the `authorizationEndpoint` with a valid `request_token` query parameter, as well as popup options for height and width. This will redirect a user to the authorization screen. After this point, the flow is very similar to OAuth 2.0.
+6. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Sign in with your username and password if necessary, then authorize
+the application.
+7. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Send a *POST* request back to the */auth/provider* with 
+`oauth_token` and `oauth_verifier` query parameters.
+8. <img height="24" align="top" src="http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/256/Places-network-server-database-icon.png"> **Server:** Do an OAuth-signed `POST` request to the */access_token* URL since we now have `oauth_token` and 
+`oauth_verifier` parameters.
+10. <img height="24" align="top" src="http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/256/Places-network-server-database-icon.png"> **Server:** Look up the user by their unique *Provider ID*. If user already 
+exists, grab the existing user, otherwise create a new user account.
+11. <img height="24" align="top" src="http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/256/Places-network-server-database-icon.png"> **Server:** Create a JSON Web Token and send it back to the client.
+12. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Parse the token and save it to *Local Storage* for subsequent
+use after page reload.
+
+
+### <img height="34" align="top" src="https://getkong.org/assets/images/icons/plugins/oauth2-authentication.png"> Login with OAuth 2.0
+
+1. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Open a popup window via `$auth.authenticate('provider name')`.
+2. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Sign in with that provider, if necessary, then authorize the application.
+3. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** After successful authorization, the popup is redirected back to 
+your app, e.g. *http://localhost:3000*,  with the `code` (authorization code)
+query string parameter.
+4. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** The `code` parameter is sent back to the  parent window that opened the popup.
+5. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Parent window closes the popup and sends a **POST** 
+request to */auth/provider* with`code` parameter.
+6. <img height="24" align="top" src="http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/256/Places-network-server-database-icon.png"> **Server:** *Authorization code* is exchanged for *access token*.
+7. <img height="24" align="top" src="http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/256/Places-network-server-database-icon.png"> **Server:** User information is retrived using the *access token* from **Step 6**.
+8. <img height="24" align="top" src="http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/256/Places-network-server-database-icon.png"> **Server:** Look up the user by their unique *Provider ID*. If user already 
+exists, grab the existing user, otherwise create a new user account.
+9. <img height="24" align="top" src="http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/256/Places-network-server-database-icon.png"> **Server:** In both cases of Step 8, create a JSON Web Token and send it back to the client.
+10. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Parse the token and save it to *Local Storage* for subsequent
+use after page reload.
+
+### <img height="34" align="top" src="http://uxrepo.com/static/icon-sets/font-awesome/svg/logout.svg"> Logout
+1. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Remove token from Local Storage.
+
+**Note:** To learn more about JSON Web Tokens visit <img src="http://jwt.io/img/pic_logo.svg" height="22" align="top"> [JWT.io](http://jwt.io/).
 
 ## Obtaining OAuth Keys
-
-- [ ] TODO: Replace with screencasts.
 
 <img src="http://images.google.com/intl/en_ALL/images/srpr/logo6w.png" width="150">
 - Visit [Google Cloud Console](https://cloud.google.com/console/project)
