@@ -18,7 +18,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
   angular.module('satellizer', [])
     .constant('SatellizerConfig', {
-      httpInterceptor: function() {return true;},
+      httpInterceptor: function() { return true; },
       withCredentials: true,
       tokenRoot: null,
       cordova: false,
@@ -139,10 +139,10 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
         httpInterceptor: {
           get: function() { return config.httpInterceptor; },
           set: function(value) {
-            if (typeof value === "function") {
-                config.httpInterceptor = value;
+            if (typeof value === 'function') {
+              config.httpInterceptor = value;
             } else {
-              config.httpInterceptor = function () {
+              config.httpInterceptor = function() {
                 return value;
               };
             }
@@ -422,11 +422,6 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           return deferred.promise;
         };
 
-        /**
-         * @param {String} provider - OAuth provider name.
-         * @param {Object} opts - HTTP config object.
-         * @returns {Promise} - Returns a Promise that will be resolved when the request succeeds or fails.
-         */
         Oauth.unlink = function(provider, opts) {
             opts = opts || {};
             opts.url = opts.url ? opts.url : utils.joinUrl(config.baseUrl, config.unlinkUrl);
@@ -446,11 +441,6 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
       function($http, utils, shared, config) {
         var Local = {};
 
-        /**
-         * @param {Object} user - User information. (e.g. email and password)
-         * @param {Object} opts - HTTP config object.
-         * @returns {Promise} - Returns a Promise that will be resolved when the request succeeds or fails.
-         */
         Local.login = function(user, opts) {
           opts = opts || {};
           opts.url = opts.url ? opts.url : utils.joinUrl(config.baseUrl, config.loginUrl);
@@ -463,11 +453,6 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           });
         };
 
-        /**
-         * @param {Object} user - User information. (e.g. email and password)
-         * @param {Object} opts - HTTP config object.
-         * @returns {Promise} - Returns a Promise that will be resolved when the request succeeds or fails.
-         */
         Local.signup = function(user, opts) {
           opts = opts || {};
           opts.url = opts.url ? opts.url : utils.joinUrl(config.baseUrl, config.signupUrl);
