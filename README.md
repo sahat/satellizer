@@ -29,7 +29,7 @@ in the app *config* block.
 - [How It Works](#how-it-works)
 - [Obtaining OAuth Keys](#obtaining-oauth-keys)
 - [API Reference](#api-reference)
-- [Contributing](#contributing)
+- [Credits](#credits)
 - [License](#license)
 
 ## Installation
@@ -296,14 +296,16 @@ $authProvider.oauth1({
 <table>
   <tbody>
     <tr>
-      <td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Internet_Explorer_9_icon.svg/2000px-Internet_Explorer_9_icon.svg.png" height="40"></td>
-      <td><img src="http://img3.wikia.nocookie.net/__cb20120330024137/logopedia/images/d/d7/Google_Chrome_logo_2011.svg" height="40"></td>
-      <td><img src="http://media.idownloadblog.com/wp-content/uploads/2014/06/Safari-logo-OS-X-Yosemite.png" height="40"></td>
-      <td><img src="http://th09.deviantart.net/fs71/200H/f/2013/185/e/b/firefox_2013_vector_icon_by_thegoldenbox-d6bxsye.png" height="40"></td>
-      <td><img src="http://upload.wikimedia.org/wikipedia/commons/d/d4/Opera_browser_logo_2013.png" height="40"></td>
+      <td><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Internet_Explorer_9_icon.svg/2000px-Internet_Explorer_9_icon.svg.png" height="35"></td>
+      <td><img src="http://vignette1.wikia.nocookie.net/unanything/images/f/ff/Microsoft_Edge_logo_svg.png/revision/latest?cb=20150728233335" height="35"></td>
+      <td><img src="http://img4.wikia.nocookie.net/__cb20140907211937/logopedia/images/b/b6/Chrome_new_logo.png" height="35"></td>
+      <td><img src="http://media.idownloadblog.com/wp-content/uploads/2014/06/Safari-logo-OS-X-Yosemite.png" height="35"></td>
+      <td><img src="https://mozorg.cdn.mozilla.net/media/img/styleguide/identity/firefox/guidelines-logo.7ea045a4e288.png" height="35"></td>
+      <td><img src="http://upload.wikimedia.org/wikipedia/commons/d/d4/Opera_browser_logo_2013.png" height="35"></td>
     </tr>
     <tr>
       <td align="center">9*</td>
+      <td align="center">✓</td>
       <td align="center">✓</td>
       <td align="center">✓</td>
       <td align="center">✓</td>
