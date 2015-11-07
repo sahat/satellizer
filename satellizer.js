@@ -407,7 +407,12 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
           provider.open(config.providers[name], userData || {})
             .then(function(response) {
-              shared.setToken(response, false);
+              // This is for a scenario when someone wishes to opt out from
+              // Satellizer's magic by doing authorization code exchange and
+              // saving a token manually.
+              if (config.providers[name].url) {
+                shared.setToken(response, false);
+              }
               deferred.resolve(response);
             })
             .catch(function(error) {
@@ -519,7 +524,11 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
             return openPopup
               .then(function(oauthData) {
-                if (defaults.responseType === 'token') {
+                // When no server URL provided, return popup params as-is.
+                // This is for a scenario when someone wishes to opt out from
+                // Satellizer's magic by doing authorization code exchange and
+                // saving a token manually.
+                if (defaults.responseType === 'token' || !defaults.url) {
                   return oauthData;
                 }
 
