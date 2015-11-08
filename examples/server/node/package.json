@@ -3,16 +3,16 @@
   "version": "0.0.0",
   "main": "server.js",
   "dependencies": {
-    "async": "^1.4.2",
-    "bcryptjs": "^2.2.1",
-    "body-parser": "^1.13.3",
+    "async": "^1.5.0",
+    "bcryptjs": "^2.3.0",
+    "body-parser": "^1.14.1",
     "colors": "^1.1.2",
     "cors": "^2.7.1",
     "express": "^4.13.3",
     "jwt-simple": "^0.3.1",
     "moment": "^2.10.6",
-    "mongoose": "^4.1.5",
+    "mongoose": "^4.2.4",
     "morgan": "^1.6.1",
-    "request": "^2.61.0"
+    "request": "^2.65.0"
   }
 }
