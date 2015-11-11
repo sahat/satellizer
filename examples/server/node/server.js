@@ -185,8 +185,9 @@ app.post('/auth/signup', function(req, res) {
       email: req.body.email,
       password: req.body.password
     });
-    user.save(function() {
-      res.send({ token: createJWT(user) });
+    user.save(function(error,result) {
+      if (error) res.status(500).send({ message: error.message });
+      res.send({ token: createJWT(result) });
     });
   });
 });
