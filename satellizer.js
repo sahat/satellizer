@@ -739,13 +739,15 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
                 angular.extend(qs, hash);
 
-                if (!qs.error) {
+                if (qs.error) {
+                  deferred.reject(qs);
+                } else {
                   deferred.resolve(qs);
                 }
 
-                Popup.popupWindow.close();
-
                 $interval.cancel(polling);
+
+                Popup.popupWindow.close();
               }
             } catch (error) {
               // Ignore DOMException: Blocked a frame with origin from accessing a cross-origin frame.
