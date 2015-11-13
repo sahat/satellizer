@@ -180,7 +180,7 @@ $authProvider.facebook({
 $authProvider.google({
   url: '/auth/google',
   authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
-  redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
+  redirectUri: window.location.origin,
   requiredUrlParams: ['scope'],
   optionalUrlParams: ['display'],
   scope: ['profile', 'email'],
@@ -195,7 +195,7 @@ $authProvider.google({
 $authProvider.github({
   url: '/auth/github',
   authorizationEndpoint: 'https://github.com/login/oauth/authorize',
-  redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
+  redirectUri: window.location.origin,
   optionalUrlParams: ['scope'],
   scope: ['user:email'],
   scopeDelimiter: ' ',
@@ -203,11 +203,23 @@ $authProvider.github({
   popupOptions: { width: 1020, height: 618 }
 });
 
+// Instagram
+$authProvider.instagram({
+  name: 'instagram',
+  url: '/auth/instagram',
+  authorizationEndpoint: 'https://api.instagram.com/oauth/authorize',
+  redirectUri: window.location.origin,
+  requiredUrlParams: ['scope'],
+  scope: ['basic'],
+  scopeDelimiter: '+',
+  type: '2.0'
+});
+
 // LinkedIn
 $authProvider.linkedin({
   url: '/auth/linkedin',
   authorizationEndpoint: 'https://www.linkedin.com/uas/oauth2/authorization',
-  redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
+  redirectUri: window.location.origin,
   requiredUrlParams: ['state'],
   scope: ['r_emailaddress'],
   scopeDelimiter: ' ',
@@ -220,7 +232,7 @@ $authProvider.linkedin({
 $authProvider.twitter({
   url: '/auth/twitter',
   authorizationEndpoint: 'https://api.twitter.com/oauth/authenticate',
-  redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
+  redirectUri: window.location.origin,
   type: '1.0',
   popupOptions: { width: 495, height: 645 }
 });
@@ -229,7 +241,7 @@ $authProvider.twitter({
 $authProvider.twitch({
   url: '/auth/twitch',
   authorizationEndpoint: 'https://api.twitch.tv/kraken/oauth2/authorize',
-  redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
+  redirectUri: window.location.origin,
   requiredUrlParams: ['scope'],
   scope: ['user_read'],
   scopeDelimiter: ' ',
@@ -242,7 +254,7 @@ $authProvider.twitch({
 $authProvider.live({
   url: '/auth/live',
   authorizationEndpoint: 'https://login.live.com/oauth20_authorize.srf',
-  redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
+  redirectUri: window.location.origin,
   requiredUrlParams: ['display', 'scope'],
   scope: ['wl.emails'],
   scopeDelimiter: ' ',
@@ -255,7 +267,7 @@ $authProvider.live({
 $authProvider.yahoo({
   url: '/auth/yahoo',
   authorizationEndpoint: 'https://api.login.yahoo.com/oauth2/request_auth',
-  redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
+  redirectUri: window.location.origin,
   scope: [],
   scopeDelimiter: ',',
   type: '2.0',
