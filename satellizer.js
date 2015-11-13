@@ -72,11 +72,12 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
         instagram: {
           name: 'instagram',
           url: '/auth/instagram',
+          authorizationEndpoint: 'https://api.instagram.com/oauth/authorize',
           redirectUri: window.location.origin,
           requiredUrlParams: ['scope'],
           scope: ['basic'],
           scopeDelimiter: '+',
-          authorizationEndpoint: 'https://api.instagram.com/oauth/authorize'
+          type: '2.0'
         },
         linkedin: {
           name: 'linkedin',
