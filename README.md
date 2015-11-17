@@ -34,6 +34,9 @@ in the app *config* block.
 - [Obtaining OAuth Keys](#obtaining-oauth-keys)
 - [API Reference](#api-reference)
 - [FAQ](#faq)
+ - [How can I send a token in a format other than `Authorization: Bearer <token>?`](#how-can-i-send-a-token-in-a-format-other-than-authorization-bearer-token)
+ - [How can I avoid sending Authorization header on all HTTP requests?](#how-can-i-avoid-sending-authorization-header-on-all-http-requests)
+ - [Is there a way to dynamically change `localStorage` to `sessionStorage`?](#is-there-a-way-to-dynamically-change-localstorage-to-sessionstorage)
 - [Credits](#credits)
 - [License](#license)
 
