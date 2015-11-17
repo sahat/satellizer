@@ -738,7 +738,25 @@ $auth.setStorageType('sessionStorage');
 
 ## FAQ
 
-Coming Soon
+#### How can I send a token in a format other than `Authorization: Bearer <token>`?
+If you are unable to send a token to your server in the following format - `Authorization: Bearer <token>`, then use
+**`$authProvider.authHeader`** and **`$authProvider.authToken`** config options to change the header format. The default values are `Authorization` and `Bearer`, respectively.
+
+#### How can I avoid sending Authorization header on all HTTP requests?
+- By default, once user is authenticated, JWT will be sent on every request. If you would like to prevent that, you could use `skipAuthorization` option in your `$http` request. For example:
+
+```js
+$http({
+  method: 'GET',
+  url: '/api/endpoint',
+  skipAuthorization: true  // `Authorization: Bearer <token>` will not be sent on this request.
+});
+```
+
+#### Is there a way to dynamically change `localStorage` to `sessionStorage`?
+Yes, you can toggle between [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) and [`sessionStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionstorage) via the following Satellizer methods:
+- `$auth.setStorageType('sessionStorage');`
+- `$auth.setStorageType('localStorage');`
 
 ## Credits
 
