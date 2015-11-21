@@ -59,7 +59,7 @@ Alternatively, you may [**download**](https://github.com/sahat/satellizer/releas
 <!--[if lte IE 9]>
 <script src="//cdnjs.cloudflare.com/ajax/libs/Base64/0.3.0/base64.min.js"></script>
 <![endif]-->
-<script src="//cdn.jsdelivr.net/satellizer/0.13.0/satellizer.min.js"></script>
+<script src="//cdn.jsdelivr.net/satellizer/0.13.1/satellizer.min.js"></script>
 ```
 
 **Note:** Sattelizer depends on [`window.atob()`](https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/atob) for decoding JSON Web Tokens. If you need to support *IE9* then use Base64 polyfill above.
