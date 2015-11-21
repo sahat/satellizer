@@ -151,7 +151,7 @@ directory.
 Below is a complete listing of all default configuration options.
 
 ```js
-httpInterceptor: function() { return true; },
+$authProvider.httpInterceptor = function() { return true; },
 $authProvider.withCredentials = true;
 $authProvider.tokenRoot = null;
 $authProvider.cordova = false;
