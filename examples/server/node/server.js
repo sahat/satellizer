@@ -26,6 +26,7 @@ var userSchema = new mongoose.Schema({
   password: { type: String, select: false },
   displayName: String,
   picture: String,
+  bitbucket: String,
   facebook: String,
   foursquare: String,
   google: String,
@@ -893,6 +894,83 @@ app.post('/auth/twitch', function(req, res) {
   });
 });
 
+/*
+ |--------------------------------------------------------------------------
+ | Login with Bitbucket
+ |--------------------------------------------------------------------------
+ */
+app.post('/auth/bitbucket', function(req, res) {
+  var accessTokenUrl = 'https://bitbucket.org/site/oauth2/access_token';
+  var userApiUrl = 'https://bitbucket.org/api/2.0/user';
+  var emailApiUrl = 'https://bitbucket.org/api/2.0/user/emails';
+
+  var headers = {
+    Authorization: 'Basic ' + new Buffer(req.body.clientId + ':' + config.BITBUCKET_SECRET).toString('base64')
+  };
+
+  var formData = {
+    code: req.body.code,
+    redirect_uri: req.body.redirectUri,
+    grant_type: 'authorization_code'
+  };
+
+  // Step 1. Exchange authorization code for access token.
+  request.post({ url: accessTokenUrl, form: formData, headers: headers, json: true }, function(err, response, body) {
+    var params = {
+      access_token: body.access_token
+    };
+
+    // Step 2. Retrieve information about the current user.
+    request.get({ url: userApiUrl, qs: params, json: true }, function(err, response, profile) {
+
+      // Step 2.5. Retrieve current user's email.
+      request.get({ url: emailApiUrl, qs: params, json: true }, function(err, response, emails) {
+        var email = emails.values[0].email;
+
+        // Step 3a. Link user accounts.
+        if (req.headers.authorization) {
+          User.findOne({ bitbucket: profile.uuid }, function(err, existingUser) {
+            if (existingUser) {
+              return res.status(409).send({ message: 'There is already a Bitbucket account that belongs to you' });
+            }
+            var token = req.headers.authorization.split(' ')[1];
+            var payload = jwt.decode(token, config.TOKEN_SECRET);
+            User.findById(payload.sub, function(err, user) {
+              if (!user) {
+                return res.status(400).send({ message: 'User not found' });
+              }
+              user.bitbucket = profile.uuid;
+              user.email = user.email || email;
+              user.picture = user.picture || profile.links.avatar.href;
+              user.displayName = user.displayName || profile.display_name;
+              user.save(function() {
+                var token = createJWT(user);
+                res.send({ token: token });
+              });
+            });
+          });
+        } else {
+          // Step 3b. Create a new user account or return an existing one.
+          User.findOne({ bitbucket: profile.id }, function(err, existingUser) {
+            if (existingUser) {
+              var token = createJWT(existingUser);
+              return res.send({ token: token });
+            }
+            var user = new User();
+            user.bitbucket = profile.uuid;
+            user.email = email;
+            user.picture = profile.links.avatar.href;
+            user.displayName = profile.display_name;
+            user.save(function() {
+              var token = createJWT(user);
+              res.send({ token: token });
+            });
+          });
+        }
+      });
+    });
+  });
+});
 
 /*
  |--------------------------------------------------------------------------
