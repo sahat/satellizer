@@ -346,6 +346,17 @@ ul {
   background-color: #7550ba;
 }
 
+.btn-bitbucket {
+  color: #fff;
+  background-color: #10375e;
+}
+
+.btn-bitbucket:hover,
+.btn-bitbucket:focus {
+  color: #fff;
+  background-color: #a9c0d8;
+}
+
 /*********************
 * Animations
 *********************/

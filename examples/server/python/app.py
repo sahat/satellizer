@@ -3,6 +3,7 @@ import os
 import jwt
 import json
 import requests
+import base64
 from functools import wraps
 from urlparse import parse_qs, parse_qsl
 from urllib import urlencode
@@ -33,10 +34,11 @@ class User(db.Model):
     google = db.Column(db.String(120))
     linkedin = db.Column(db.String(120))
     twitter = db.Column(db.String(120))
+    bitbucket = db.Column(db.String(120))
 
     def __init__(self, email=None, password=None, display_name=None,
                  facebook=None, github=None, google=None, linkedin=None,
-                 twitter=None):
+                 twitter=None, bitbucket=None):
         if email:
             self.email = email.lower()
         if password:
@@ -51,6 +53,8 @@ class User(db.Model):
             self.linkedin = linkedin
         if twitter:
             self.twitter = twitter
+        if bitbucket:
+            self.bitbucket = bitbucket
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -61,7 +65,8 @@ class User(db.Model):
     def to_json(self):
         return dict(id=self.id, email=self.email, displayName=self.display_name,
                     facebook=self.facebook, google=self.google,
-                    linkedin=self.linkedin, twitter=self.twitter)
+                    linkedin=self.linkedin, twitter=self.twitter,
+                    bitbucket=self.bitbucket)
 
 
 db.create_all()
@@ -349,6 +354,62 @@ def twitter():
         oauth_token = dict(parse_qsl(r.text))
         return jsonify(oauth_token)
 
+
+@app.route('/auth/bitbucket', methods=['POST'])
+def bitbucket():
+    access_token_url = 'https://bitbucket.org/site/oauth2/access_token'
+    users_api_url = 'https://api.bitbucket.org/2.0/user'
+    auth_encoded = base64.b64encode(
+        "{0}:{1}".format(request.json['clientId'],
+                         app.config['BITBUCKET_SECRET']))
+
+    headers = {'Authorization': 'Basic {0}'.format(auth_encoded)}
+    payload = dict(redirect_uri=request.json['redirectUri'],
+                   code=request.json['code'],
+                   grant_type='authorization_code')
+
+    # Step 1. Exchange authorization code for access token.
+    r = requests.post(access_token_url, data=payload, headers=headers)
+    token = json.loads(r.text)
+    params = {'access_token': token['access_token']}
+
+    # Step 2. Retrieve information about the current user.
+    r = requests.get(users_api_url, params=params)
+    profile = json.loads(r.text)
+
+    # Step 3. (optional) Link accounts.
+    if request.headers.get('Authorization'):
+        user = User.query.filter_by(bitbucket=profile['uuid']).first()
+        if user:
+            response = jsonify(message='There is already a Bitbucket account that belongs to you')
+            response.status_code = 409
+            return response
+
+        payload = parse_token(request)
+
+        user = User.query.filter_by(id=payload['sub']).first()
+        if not user:
+            response = jsonify(message='User not found')
+            response.status_code = 400
+            return response
+
+        u = User(bitbucket=profile['uuid'], display_name=profile['display_name'])
+        db.session.add(u)
+        db.session.commit()
+        token = create_token(u)
+        return jsonify(token=token)
+
+    # Step 4. Create a new account or return an existing one.
+    user = User.query.filter_by(bitbucket=profile['uuid']).first()
+    if user:
+        token = create_token(user)
+        return jsonify(token=token)
+
+    u = User(bitbucket=profile['uuid'], display_name=profile['display_name'])
+    db.session.add(u)
+    db.session.commit()
+    token = create_token(u)
+    return jsonify(token=token)
 
 
 if __name__ == '__main__':
