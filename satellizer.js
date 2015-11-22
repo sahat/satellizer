@@ -132,6 +132,17 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           scopeDelimiter: ',',
           type: '2.0',
           popupOptions: { width: 559, height: 519 }
+        },
+        bitbucket: {
+          name: 'bitbucket',
+          url: '/auth/bitbucket',
+          authorizationEndpoint: 'https://bitbucket.org/site/oauth2/authorize',
+          redirectUri: window.location.origin + '/',
+          requiredUrlParams: ['scope'],
+          scope: ['email'],
+          scopeDelimiter: ',',
+          type: '2.0',
+          popupOptions: { width: 1020, height: 618 }
         }
       }
     })

@@ -74,6 +74,10 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', 'ui.
       clientId: 'qhc3lft06xipnmndydcr3wau939a20z'
     });
 
+    $authProvider.bitbucket({
+      clientId: '48UepjQDYaZFuMWaDj'
+    });
+
     $authProvider.oauth2({
       name: 'foursquare',
       url: '/auth/foursquare',

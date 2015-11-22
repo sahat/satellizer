@@ -104,6 +104,10 @@ angular.module('MyApp', ['satellizer'])
       clientId: 'Twitch Client ID'
     });
 
+    $authProvider.bitbucket({
+      clientId: 'Bitbucket Client ID'
+    });
+
     // No additional setup required for Twitter
 
     $authProvider.oauth2({
@@ -141,6 +145,7 @@ angular.module('MyApp')
 <button ng-click="authenticate('yahoo')">Sign in with Yahoo</button>
 <button ng-click="authenticate('live')">Sign in with Windows Live</button>
 <button ng-click="authenticate('twitch')">Sign in with Twitch</button>
+<button ng-click="authenticate('bitbucket')">Sign in with Bitbucket</button>
 ```
 
 **Note:** For server-side usage please refer to the [**examples**](https://github.com/sahat/satellizer/tree/master/examples/server)
@@ -275,6 +280,18 @@ $authProvider.yahoo({
   scopeDelimiter: ',',
   type: '2.0',
   popupOptions: { width: 559, height: 519 }
+});
+
+// Bitbucket
+$authProvider.bitbucket({
+  url: '/auth/bitbucket',
+  authorizationEndpoint: 'https://bitbucket.org/site/oauth2/authorize',
+  redirectUri: window.location.origin + '/',
+  optionalUrlParams: ['scope'],
+  scope: ['email'],
+  scopeDelimiter: ' ',
+  type: '2.0',
+  popupOptions: { width: 1020, height: 618 }
 });
 
 // Generic OAuth 2.0
