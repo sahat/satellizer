@@ -133,7 +133,7 @@ class AuthController extends Controller {
 
             $user = User::find($payload['sub']);
             $user->facebook = $profile['id'];
-            $user->displayName = $user->displayName || $profile['name'];
+            $user->displayName = $user->displayName ?: $profile['name'];
             $user->save();
 
             return response()->json(['token' => $this->createToken($user)]);
@@ -201,7 +201,7 @@ class AuthController extends Controller {
 
             $user = User::find($payload['sub']);
             $user->google = $profile['sub'];
-            $user->displayName = $user->displayName || $profile['name'];
+            $user->displayName = $user->displayName ?: $profile['name'];
             $user->save();
 
             return response()->json(['token' => $this->createToken($user)]);
@@ -270,7 +270,7 @@ class AuthController extends Controller {
 
             $user = User::find($payload['sub']);
             $user->linkedin = $profile['id'];
-            $user->displayName = $user->displayName || $profile['firstName'] . ' ' . $profile['lastName'];
+            $user->displayName = $user->displayName ?: $profile['firstName'] . ' ' . $profile['lastName'];
             $user->save();
 
             return response()->json(['token' => $this->createToken($user)]);
@@ -370,7 +370,7 @@ class AuthController extends Controller {
 
                 $user = User::find($payload['sub']);
                 $user->twitter = $profile['id'];
-                $user->displayName = $user->displayName || $profile['screen_name'];
+                $user->displayName = $user->displayName ?: $profile['screen_name'];
                 $user->save();
 
                 return response()->json(['token' => $this->createToken($user)]);
@@ -441,7 +441,7 @@ class AuthController extends Controller {
 
             $user = User::find($payload['sub']);
             $user->foursquare = $profile['id'];
-            $user->displayName = $user->displayName || $profile['firstName'] . ' ' . $profile['lastName'];
+            $user->displayName = $user->displayName ?: $profile['firstName'] . ' ' . $profile['lastName'];
             $user->save();
 
             return response()->json(['token' => $this->createToken($user)]);
@@ -502,7 +502,7 @@ class AuthController extends Controller {
 
             $user = User::find($payload['sub']);
             $user->instagram = $accessToken['user']['id'];
-            $user->displayName = $user->displayName || $accessToken['user']['username'];
+            $user->displayName = $user->displayName ?: $accessToken['user']['username'];
             $user->save();
 
             return response()->json(['token' => $this->createToken($user)]);
@@ -573,7 +573,7 @@ class AuthController extends Controller {
 
             $user = User::find($payload['sub']);
             $user->github = $profile['id'];
-            $user->displayName = $user->displayName || $profile['name'];
+            $user->displayName = $user->displayName ?: $profile['name'];
             $user->save();
 
             return response()->json(['token' => $this->createToken($user)]);
