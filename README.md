@@ -477,6 +477,7 @@ and specify `mylocalwebsite.net` as your *Redirect URL* in the **API Settings** 
 - For local development, enter *http://localhost:5000* (or corresponding port, often 3000)for **Authorized callback URL**
 - Click **Update Register application**
 - Newly registered application will then be available in the **Developer applications** tab
+- Select the newly registered application and obtain the ClientID and Client Secret. You may also edit details here.
 
 <hr>
 
