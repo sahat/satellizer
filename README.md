@@ -418,7 +418,7 @@ use after page reload.
 
 ## Obtaining OAuth Keys
 
-<img src="http://images.google.com/intl/en_ALL/images/srpr/logo6w.png" width="150">
+<img src="https://camo.githubusercontent.com/204e6b07369021b5b9eb7d228d051aca72a457ef/68747470733a2f2f75706c6f61642e77696b696d656469612e6f72672f77696b6970656469612f636f6d6d6f6e732f7468756d622f322f32662f476f6f676c655f323031355f6c6f676f2e7376672f3130303070782d476f6f676c655f323031355f6c6f676f2e7376672e706e67" width="150">
 - Visit [Google Cloud Console](https://cloud.google.com/console/project)
 - Click **CREATE PROJECT** button
 - Enter *Project Name*, then click **CREATE**
@@ -467,17 +467,14 @@ use after page reload.
 As a workaround for local development add `127.0.0.1 mylocalwebsite.net` to **/etc/hosts** file
 and specify `mylocalwebsite.net` as your *Redirect URL* in the **API Settings** tab.
 
-<img src="https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png" height="70">
-- Sign in at [https://github.com/](https://github.com/)
-- On your profile page (https://github.com/YOUR_USER_NAME), click on your avatar image in the top right corner and select **Settings**
-- In **Settings**, select **Applications** in the left panel
-- Go to **Developer applications** tab and click the **Register new application** button in the top right
-- Name your application
-- For local development, enter *http://127.0.0.1:5000* for **Homepage URL** (or corresponding port, often 3000)
-- For local development, enter *http://localhost:5000* (or corresponding port, often 3000) for **Authorized callback URL**
-- Click **Update Register application**
-- Newly registered application will then be available in the **Developer applications** tab
-- Select the newly registered application and obtain the **ClientID** and **Client Secret**. You may also edit details here.
+<img src="https://camo.githubusercontent.com/7318ebef474f99229892e6bf052f0117ca86f0e4/68747470733a2f2f6769746875622e676c6f62616c2e73736c2e666173746c792e6e65742f696d616765732f6d6f64756c65732f6c6f676f735f706167652f4769744875622d4c6f676f2e706e67" width="150">
+- Visit [https://github.com/settings/profile](https://github.com/settings/profile)
+- Select **Applications** in the left panel
+- Go to **Developer applications** tab, then click on the **Register new application** button
+ - **Application name**: Your app name
+ - **Homepage URL**: *http://localhost:3000*
+ - **Authorization callback URL**: *http://localhost:3000*
+- Click on the **Register application** button
 
 <hr>
 
