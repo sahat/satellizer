@@ -321,7 +321,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
         Shared.setToken = function(response) {
           if (!response) {
-            return $log.warn('Satellizer Warning: Can\'t set token without passing a value');
+            return $log.warn('Can\'t set token without passing a value');
           }
 
           var accessToken = response && response.access_token;
@@ -342,7 +342,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
           if (!token) {
             var tokenPath = config.tokenRoot ? config.tokenRoot + '.' + config.tokenName : config.tokenName;
-            return $log.warn('Satellizer Warning: Expecting a token named "' + tokenPath);
+            return $log.warn('Expecting a token named "' + tokenPath);
           }
 
           storage.set(tokenName, token);
@@ -877,7 +877,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
       })();
 
       if (!isStorageAvailable) {
-        $log.warn('Satellizer Warning: ' + config.storageType + ' is not available.');
+        $log.warn(config.storageType + ' is not available.');
       }
 
       return {
