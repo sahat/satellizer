@@ -469,7 +469,7 @@ and specify `mylocalwebsite.net` as your *Redirect URL* in the **API Settings** 
 
 <img src="https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png" height="70">
 - Sign in at [https://github.com/](https://github.com/)
-- On your profile page (https://github.com/[YOUR USER_NAME]), click on your avatar image in the top right corner and select **Settings**
+- On your profile page (https://github.com/YOUR_USER_NAME), click on your avatar image in the top right corner and select **Settings**
 - In **Settings**, select **Applications** in the left panel
 - Go to **Developer applications** tab and click the **Register new application** button in the top right
 - Name your application
