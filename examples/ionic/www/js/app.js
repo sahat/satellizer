@@ -24,6 +24,7 @@ angular.module('starter', ['ionic', 'satellizer', 'starter.controllers'])
 
     $authProvider.facebook({
       clientId: '100703896938969',
+      url: 'http://localhost:3000/auth/facebook',
       redirectUri: 'http://localhost'
     });
 
