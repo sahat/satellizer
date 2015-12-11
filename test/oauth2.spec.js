@@ -63,6 +63,14 @@ describe('SatellizerOauth2', function() {
       this.oauth2.open(this.config.providers.google);
       expect(this.oauth2.buildQueryString()).toContain('scope=openid profile email');
     });
+
+    it('should remove redirect_uri if param redirectUrl is null', function() {
+      var tempProvider = angular.copy(this.config.providers.google);
+      tempProvider.redirectUri = null;
+      this.oauth2.open(tempProvider);
+      expect(this.oauth2.buildQueryString()).not.toContain('redirect_uri=');
+    });
+
   });
 
 });
