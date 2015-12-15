@@ -19,7 +19,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
   angular.module('satellizer', [])
     .constant('SatellizerConfig', {
       httpInterceptor: function() { return true; },
-      withCredentials: true,
+      withCredentials: false,
       tokenRoot: null,
       cordova: false,
       baseUrl: '/',
