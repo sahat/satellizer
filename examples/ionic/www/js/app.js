@@ -1,5 +1,5 @@
 angular.module('starter', ['ionic', 'satellizer', 'starter.controllers'])
-  .config(function ($stateProvider, $urlRouterProvider, $authProvider) {
+  .config(function ($stateProvider, $urlRouterProvider) {
     $stateProvider
       .state('app', {
         abstract: true,
@@ -17,27 +17,35 @@ angular.module('starter', ['ionic', 'satellizer', 'starter.controllers'])
       });
 
     $urlRouterProvider.otherwise('/');
+  })
+  .config(function($authProvider) {
+    var commonConfig = {
+      popupOptions: {
+        location: 'no',
+        toolbar: 'no',
+        width: window.screen.width,
+        height: window.screen.height
+      }
+    };
 
     if (ionic.Platform.isIOS() || ionic.Platform.isAndroid()) {
       $authProvider.cordova = true;
+      commonConfig.redirectUri = 'http://localhost/';
     }
 
-    $authProvider.facebook({
-      clientId: '100703896938969',
-      url: 'http://localhost:3000/auth/facebook',
-      redirectUri: 'http://localhost'
-    });
+    $authProvider.facebook(angular.extend({}, commonConfig, {
+      clientId: '603122136500203',
+      url: 'http://localhost:3000/auth/facebook'
+    }));
 
-    $authProvider.twitter({
-      url: 'http://localhost:3000/auth/twitter',
-      redirectUri: 'http://localhost'
-    });
+    $authProvider.twitter(angular.extend({}, commonConfig, {
+      url: 'http://localhost:3000/auth/twitter'
+    }));
 
-    $authProvider.google({
+    $authProvider.google(angular.extend({}, commonConfig, {
       clientId: '631036554609-v5hm2amv4pvico3asfi97f54sc51ji4o.apps.googleusercontent.com',
-      url: 'http://localhost:3000/auth/google',
-      redirectUri: 'http://localhost'
-    });
+      url: 'http://localhost:3000/auth/google'
+    }));
   })
   .run(function ($ionicPlatform) {
     $ionicPlatform.ready(function () {
