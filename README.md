@@ -37,6 +37,7 @@ in the app *config* block.
  - [How can I send a token in a format other than `Authorization: Bearer <token>?`](#how-can-i-send-a-token-in-a-format-other-than-authorization-bearer-token)
  - [How can I avoid sending Authorization header on all HTTP requests?](#how-can-i-avoid-sending-authorization-header-on-all-http-requests)
  - [Is there a way to dynamically change `localStorage` to `sessionStorage`?](#is-there-a-way-to-dynamically-change-localstorage-to-sessionstorage)
+ - [I am having a problem with Ionic authentication on iOS 9.](#i-am-having-a-problem-with-ionic-authentication-on-ios-9)
 - [Credits](#credits)
 - [License](#license)
 
@@ -773,7 +774,7 @@ If you are unable to send a token to your server in the following format - `Auth
 **`$authProvider.authHeader`** and **`$authProvider.authToken`** config options to change the header format. The default values are `Authorization` and `Bearer`, respectively.
 
 #### How can I avoid sending Authorization header on all HTTP requests?
-- By default, once user is authenticated, JWT will be sent on every request. If you would like to prevent that, you could use `skipAuthorization` option in your `$http` request. For example:
+By default, once user is authenticated, JWT will be sent on every request. If you would like to prevent that, you could use `skipAuthorization` option in your `$http` request. For example:
 
 ```js
 $http({
@@ -787,6 +788,15 @@ $http({
 Yes, you can toggle between [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) and [`sessionStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionstorage) via the following Satellizer methods:
 - `$auth.setStorageType('sessionStorage');`
 - `$auth.setStorageType('localStorage');`
+
+#### I am having a problem with Ionic authentication on iOS 9.
+First, check what kind of error you are getting by opening the Web Inspector from **Develop > Simulator > index.html** menu.
+If you have configured everything correctly, chances are you running into the following error:
+
+> Failed to load resource: The resource could not be loaded because the App Transport Security policy requires the use of a secure connection.
+
+Follow instructions on this [StackOverflow post](http://stackoverflow.com/questions/32631184/the-resource-could-not-be-loaded-because-the-app-transport-security-policy-requi) by adding `NSAppTransportSecurity` to *info.plist*. That should fix the problem.
+
 
 ## Credits
 
