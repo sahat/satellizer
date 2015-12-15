@@ -45,18 +45,8 @@ class User < ActiveRecord::Base
     fallback_name        = params[:name].split(" ") if params[:name]
     fallback_first_name  = fallback_name.try(:first)
     fallback_last_name   = fallback_name.try(:last)
-    user.about         ||= params[:description]
     user.first_name    ||= (params[:first_name] || fallback_first_name)
     user.last_name     ||= (params[:last_name]  || fallback_last_name)
-    user.ip            ||= params[:ip]
-    user.city          ||= params[:city]
-    user.region_code   ||= params[:region_code]
-    user.region_name   ||= params[:region_name]
-    user.metrocode     ||= params[:metrocode]
-    user.zipcode       ||= params[:zipcode]
-    user.country_name  ||= params[:country_name]
-    user.country_code  ||= params[:country_code]
-    user.referrer_id   ||= params[:referrer_id] if user.new_record?
 
     if user.image_url.blank?
       user.image = Image.new(name: user.full_name, remote_file_url: params[:image_url])
