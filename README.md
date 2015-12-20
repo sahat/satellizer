@@ -30,7 +30,7 @@ in the app *config* block.
  - [Login with Email and Password](#-login-with-email-and-password)
  - [Login with OAuth 1.0](#-login-with-oauth-10)
  - [Login with OAuth 2.0](#-login-with-oauth-20)
- - [Logout](#-logout)
+ - [Logout](#-log-out)
 - [Obtaining OAuth Keys](#obtaining-oauth-keys)
 - [API Reference](#api-reference)
 - [FAQ](#faq)
@@ -412,7 +412,7 @@ exists, grab the existing user, otherwise create a new user account.
 10. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Parse the token and save it to *Local Storage* for subsequent
 use after page reload.
 
-### <img height="34" align="top" src="http://uxrepo.com/static/icon-sets/font-awesome/svg/logout.svg"> Logout
+### <img height="34" align="top" src="http://i.imgur.com/S5Ei6Rj.png"> Log out
 1. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Remove token from Local Storage.
 
 **Note:** To learn more about JSON Web Tokens visit <img src="http://jwt.io/img/pic_logo.svg" height="22" align="top"> [JWT.io](http://jwt.io/).
