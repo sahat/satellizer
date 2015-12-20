@@ -435,12 +435,13 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
         };
 
         Oauth.unlink = function(provider, opts) {
-            opts = opts || {};
-            opts.url = opts.url ? opts.url : utils.joinUrl(config.baseUrl, config.unlinkUrl);
-            opts.data = { provider: provider } || opts.data;
-            opts.method = opts.method || 'POST';
+          opts = opts || {};
+          opts.url = opts.url ? opts.url : utils.joinUrl(config.baseUrl, config.unlinkUrl);
+          opts.data = { provider: provider } || opts.data;
+          opts.method = opts.method || 'POST';
+          opts.withCredentials = opts.withCredentials || config.withCredentials;
 
-            return $http(opts);
+          return $http(opts);
         };
 
         return Oauth;
@@ -458,6 +459,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           opts.url = opts.url ? opts.url : utils.joinUrl(config.baseUrl, config.loginUrl);
           opts.data = user || opts.data;
           opts.method = opts.method || 'POST';
+          opts.withCredentials = opts.withCredentials || config.withCredentials;
 
           return $http(opts).then(function(response) {
             shared.setToken(response);
@@ -470,6 +472,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           opts.url = opts.url ? opts.url : utils.joinUrl(config.baseUrl, config.signupUrl);
           opts.data = user || opts.data;
           opts.method = opts.method || 'POST';
+          opts.withCredentials = opts.withCredentials || config.withCredentials;
 
           return $http(opts);
         };
