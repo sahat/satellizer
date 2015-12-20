@@ -575,7 +575,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
                 var camelizedName = utils.camelCase(paramName);
                 var paramValue = angular.isFunction(defaults[paramName]) ? defaults[paramName]() : defaults[camelizedName];
 
-                if (paramName === 'redirect_uri' && paramValue === null) {
+                if (paramName === 'redirect_uri' && !paramValue) {
                     return;
                 }
 
