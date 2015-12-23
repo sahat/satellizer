@@ -488,7 +488,7 @@ class AuthController extends Controller {
      */
     public function instagram(Request $request)
     {
-        $accessTokenUrl = 'https://api.instagram.com/oauth/access_token';
+        $client = new GuzzleHttp\Client();
 
         $params = [
             'code' => $request->input('code'),
@@ -498,13 +498,11 @@ class AuthController extends Controller {
             'grant_type' => 'authorization_code',
         ];
 
-        $client = new GuzzleHttp\Client();
-
         // Step 1. Exchange authorization code for access token.
-        $accessTokenResponse = $client->post($accessTokenUrl, ['body' => $params]);
-        $accessToken = $accessTokenResponse->json();
-
-
+        $accessTokenResponse = $client->request('POST', 'https://api.instagram.com/oauth/access_token', [
+            'body' => $params
+        ]);
+        $accessToken = json_decode($accessTokenResponse->getBody(), true);
 
         // Step 2a. If user is already signed in then link accounts.
         if ($request->header('Authorization'))
@@ -549,8 +547,7 @@ class AuthController extends Controller {
      */
     public function github(Request $request)
     {
-        $accessTokenUrl = 'https://github.com/login/oauth/access_token';
-        $userApiUrl = 'https://api.github.com/user';
+        $client = new GuzzleHttp\Client();
 
         $params = [
             'code' => $request->input('code'),
@@ -559,22 +556,20 @@ class AuthController extends Controller {
             'redirect_uri' => $request->input('redirectUri')
         ];
 
-        $client = new GuzzleHttp\Client();
-
         // Step 1. Exchange authorization code for access token.
-        $accessTokenResponse = $client->get($accessTokenUrl, ['query' => $params]);
+        $accessTokenResponse = $client->request('GET', 'https://github.com/login/oauth/access_token', [
+            'query' => $params
+        ]);
 
         $accessToken = array();
         parse_str($accessTokenResponse->getBody(), $accessToken);
 
-        $headers = array('User-Agent' => 'Satellizer');
-
         // Step 2. Retrieve profile information about the current user.
-        $userApiResponse = $client->get($userApiUrl, [
-            'headers' => $headers,
+        $profileResponse = $client->request('GET', 'https://api.github.com/user', [
+            'headers' => ['User-Agent' => 'Satellizer'],
             'query' => $accessToken
         ]);
-        $profile = $userApiResponse->json();
+        $profile = json_decode($profileResponse->getBody(), true);
 
         // Step 3a. If user is already signed in then link accounts.
         if ($request->header('Authorization'))
