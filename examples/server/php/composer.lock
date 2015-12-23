@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0d03faacb76a4d01a7fab6ee3517e5a1",
-    "content-hash": "07fd9eda81a14d3c5a0a347604069e98",
+    "hash": "955d407b2061b6a2fe0eb38b851f7317",
+    "content-hash": "ede73070f56fb7d54300d7c727234607",
     "packages": [
         {
             "name": "classpreloader/classpreloader",
@@ -268,16 +268,16 @@
         },
         {
             "name": "guzzlehttp/oauth-subscriber",
-            "version": "0.3.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/oauth-subscriber.git",
-                "reference": "04960cdef3cd80ea401d6b0ca8b3e110e9bf12cf"
+                "reference": "6e13e78049b977dde1fbf37b1559e47e4d416e00"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/oauth-subscriber/zipball/04960cdef3cd80ea401d6b0ca8b3e110e9bf12cf",
-                "reference": "04960cdef3cd80ea401d6b0ca8b3e110e9bf12cf",
+                "url": "https://api.github.com/repos/guzzle/oauth-subscriber/zipball/6e13e78049b977dde1fbf37b1559e47e4d416e00",
+                "reference": "6e13e78049b977dde1fbf37b1559e47e4d416e00",
                 "shasum": ""
             },
             "require": {
@@ -315,7 +315,7 @@
                 "Guzzle",
                 "oauth"
             ],
-            "time": "2015-08-15 19:44:28"
+            "time": "2015-08-25 23:02:44"
         },
         {
             "name": "guzzlehttp/promises",
@@ -3265,7 +3265,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "guzzlehttp/oauth-subscriber": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
