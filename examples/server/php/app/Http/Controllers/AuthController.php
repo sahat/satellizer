@@ -1,9 +1,9 @@
 <?php namespace App\Http\Controllers;
 
-use JWT;
 use Hash;
 use Config;
 use Validator;
+use Firebase\JWT\JWT;
 use Illuminate\Http\Request;
 use GuzzleHttp;
 use GuzzleHttp\Subscriber\Oauth\Oauth1;
@@ -99,8 +99,7 @@ class AuthController extends Controller {
      */
     public function facebook(Request $request)
     {
-        $accessTokenUrl = 'https://graph.facebook.com/v2.3/oauth/access_token';
-        $graphApiUrl = 'https://graph.facebook.com/v2.3/me';
+        $client = new GuzzleHttp\Client();
 
         $params = [
             'code' => $request->input('code'),
@@ -109,13 +108,18 @@ class AuthController extends Controller {
             'client_secret' => Config::get('app.facebook_secret')
         ];
 
-        $client = new GuzzleHttp\Client();
-
         // Step 1. Exchange authorization code for access token.
-        $accessToken = $client->get($accessTokenUrl, ['query' => $params])->json();
+        $accessTokenResponse = $client->request('GET', 'https://graph.facebook.com/v2.5/oauth/access_token', [
+            'query' => $params
+        ]);
+        $accessToken = json_decode($accessTokenResponse->getBody(), true);
 
         // Step 2. Retrieve profile information about the current user.
-        $profile = $client->get($graphApiUrl, ['query' => $accessToken])->json();
+        $profileResponse = $client->request('GET', 'https://graph.facebook.com/v2.5/me', [
+            'query' => $accessToken
+        ]);
+        $profile = json_decode($profileResponse->getBody(), true);
+
 
 
         // Step 3a. If user is already signed in then link accounts.
@@ -162,8 +166,7 @@ class AuthController extends Controller {
      */
     public function google(Request $request)
     {
-        $accessTokenUrl = 'https://accounts.google.com/o/oauth2/token';
-        $peopleApiUrl = 'https://www.googleapis.com/plus/v1/people/me/openIdConnect';
+        $client = new GuzzleHttp\Client();
 
         $params = [
             'code' => $request->input('code'),
@@ -173,18 +176,17 @@ class AuthController extends Controller {
             'grant_type' => 'authorization_code',
         ];
 
-        $client = new GuzzleHttp\Client();
-
         // Step 1. Exchange authorization code for access token.
-        $accessTokenResponse = $client->post($accessTokenUrl, ['body' => $params]);
-        $accessToken = $accessTokenResponse->json()['access_token'];
-
-        $headers = array('Authorization' => 'Bearer ' . $accessToken);
+        $accessTokenResponse = $client->request('POST', 'https://accounts.google.com/o/oauth2/token', [
+            'form_params' => $params
+        ]);
+        $accessToken = json_decode($accessTokenResponse->getBody(), true);
 
         // Step 2. Retrieve profile information about the current user.
-        $profileResponse = $client->get($peopleApiUrl, ['headers' => $headers]);
-
-        $profile = $profileResponse->json();
+        $profileResponse = $client->request('GET', 'https://www.googleapis.com/plus/v1/people/me/openIdConnect', [
+            'headers' => array('Authorization' => 'Bearer ' . $accessToken['access_token'])
+        ]);
+        $profile = json_decode($profileResponse->getBody(), true);
 
         // Step 3a. If user is already signed in then link accounts.
         if ($request->header('Authorization'))
@@ -230,8 +232,7 @@ class AuthController extends Controller {
      */
     public function linkedin(Request $request)
     {
-        $accessTokenUrl = 'https://www.linkedin.com/uas/oauth2/accessToken';
-        $peopleApiUrl = 'https://api.linkedin.com/v1/people/~:(id,first-name,last-name,email-address)';
+        $client = new GuzzleHttp\Client();
 
         $params = [
             'code' => $request->input('code'),
@@ -241,19 +242,20 @@ class AuthController extends Controller {
             'grant_type' => 'authorization_code',
         ];
 
-        $client = new GuzzleHttp\Client();
-
         // Step 1. Exchange authorization code for access token.
-        $accessTokenResponse = $client->post($accessTokenUrl, ['body' => $params]);
-
-        $apiParams = array(
-            'oauth2_access_token' => $accessTokenResponse->json()['access_token'],
-            'format' => 'json'
-        );
+        $accessTokenResponse = $client->request('POST', 'https://www.linkedin.com/uas/oauth2/accessToken', [
+            'form_params' => $params
+        ]);
+        $accessToken = json_decode($accessTokenResponse->getBody(), true);
 
         // Step 2. Retrieve profile information about the current user.
-        $peopleApiResponse = $client->get($peopleApiUrl, ['query' => $apiParams]);
-        $profile = $peopleApiResponse->json();
+        $profileResponse = $client->request('GET', 'https://api.linkedin.com/v1/people/~:(id,first-name,last-name,email-address)', [
+            'query' => [
+                'oauth2_access_token' => $accessToken['access_token'],
+                'format' => 'json'
+            ]
+        ]);
+        $profile = json_decode($profileResponse->getBody(), true);
 
         // Step 3a. If user is already signed in then link accounts.
         if ($request->header('Authorization'))
@@ -299,10 +301,7 @@ class AuthController extends Controller {
      */
     public function twitter(Request $request)
     {
-        $requestTokenUrl = 'https://api.twitter.com/oauth/request_token';
-        $accessTokenUrl = 'https://api.twitter.com/oauth/access_token';
-        $profileUrl = 'https://api.twitter.com/1.1/users/show.json?screen_name=';
-
+        $stack = GuzzleHttp\HandlerStack::create();
         $client = new GuzzleHttp\Client();
 
         // Part 1 of 2: Initial request from Satellizer.
@@ -317,7 +316,9 @@ class AuthController extends Controller {
             $client->getEmitter()->attach($requestTokenOauth);
 
             // Step 1. Obtain request token for the authorization popup.
-            $requestTokenResponse = $client->post($requestTokenUrl, ['auth' => 'oauth']);
+            $requestTokenResponse = $client->request('POST', 'https://api.twitter.com/oauth/request_token', [
+                'auth' => 'oauth'
+            ]);
 
             $oauthToken = array();
             parse_str($requestTokenResponse->getBody(), $oauthToken);
@@ -339,7 +340,9 @@ class AuthController extends Controller {
             $client->getEmitter()->attach($accessTokenOauth);
 
             // Step 3. Exchange oauth token and oauth verifier for access token.
-            $accessTokenResponse = $client->post($accessTokenUrl, ['auth' => 'oauth'])->getBody();
+            $accessTokenResponse = $client->request('POST', 'https://api.twitter.com/oauth/access_token', [
+                'auth' => 'oauth'
+            ])->getBody();
 
             $accessToken = array();
             parse_str($accessTokenResponse, $accessToken);
@@ -353,7 +356,9 @@ class AuthController extends Controller {
             $client->getEmitter()->attach($profileOauth);
 
             // Step 4. Retrieve profile information about the current user.
-            $profile = $client->get($profileUrl . $accessToken['screen_name'], ['auth' => 'oauth'])->json();
+            $profile = $client->request('GET', 'https://api.twitter.com/1.1/users/show.json?screen_name=' . $accessToken['screen_name'], [
+                'auth' => 'oauth'
+            ])->json();
 
 
             // Step 5a. Link user accounts.
