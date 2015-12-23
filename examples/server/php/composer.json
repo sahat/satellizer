@@ -5,10 +5,10 @@
 	"license": "MIT",
 	"type": "project",
 	"require": {
-		"laravel/framework": "5.0.*",
-	  	"firebase/php-jwt": "~2.0",
-	  	"guzzlehttp/guzzle": "5.2.0",
-	  	"guzzlehttp/oauth-subscriber": "0.2.0"
+		"laravel/framework": "~5.2.3",
+	  	"firebase/php-jwt": "~3.0.0",
+	  	"guzzlehttp/guzzle": "~6.1.1",
+	  	"guzzlehttp/oauth-subscriber": "~0.3.0"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "~4.0",
