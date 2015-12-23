@@ -419,8 +419,7 @@ class AuthController extends Controller {
      */
     public function foursquare(Request $request)
     {
-        $accessTokenUrl = 'https://foursquare.com/oauth2/access_token';
-        $userProfileUrl = 'https://api.foursquare.com/v2/users/self';
+        $client = new GuzzleHttp\Client();
 
         $params = [
             'code' => $request->input('code'),
@@ -430,21 +429,21 @@ class AuthController extends Controller {
             'grant_type' => 'authorization_code',
         ];
 
-        $client = new GuzzleHttp\Client();
-
         // Step 1. Exchange authorization code for access token.
-        $accessTokenResponse = $client->post($accessTokenUrl, ['body' => $params]);
-        $accessToken = $accessTokenResponse->json()['access_token'];
-
-        $profileParams = [
-            'v' => '20140806',
-            'oauth_token' => $accessToken
-        ];
+        $accessTokenResponse = $client->request('POST', 'https://foursquare.com/oauth2/access_token', [
+            'form_params' => $params
+        ]);
+        $accessToken = json_decode($accessTokenResponse->getBody(), true);
 
         // Step 2. Retrieve profile information about the current user.
-        $profileResponse = $client->get($userProfileUrl, ['query' => $profileParams]);
+        $profileResponse = $client->request('GET', 'https://api.foursquare.com/v2/users/self', [
+            'query' => [
+                'v' => '20140806',
+                'oauth_token' => $accessToken['access_token']
+            ]
+        ]);
 
-        $profile = $profileResponse->json()['response']['user'];
+        $profile = json_decode($profileResponse->getBody(), true)['response']['user'];
 
         // Step 3a. If user is already signed in then link accounts.
         if ($request->header('Authorization'))
