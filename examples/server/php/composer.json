@@ -5,14 +5,16 @@
 	"license": "MIT",
 	"type": "project",
 	"require": {
-		"laravel/framework": "5.0.*",
-	  	"firebase/php-jwt": "~2.0",
-	  	"guzzlehttp/guzzle": "5.2.0",
-	  	"guzzlehttp/oauth-subscriber": "0.2.0"
+		"laravel/framework": "5.2.*",
+	  	"firebase/php-jwt": "~3.0.0",
+	  	"guzzlehttp/guzzle": "~6.1.1",
+	  	"guzzlehttp/oauth-subscriber": "dev-master"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "~4.0",
-		"phpspec/phpspec": "~2.1"
+		"phpspec/phpspec": "~2.1",
+		"symfony/dom-crawler": "~3.0",
+		"symfony/css-selector": "~3.0"
 	},
 	"autoload": {
 		"classmap": [
