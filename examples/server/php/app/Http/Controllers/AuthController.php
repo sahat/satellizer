@@ -302,18 +302,24 @@ class AuthController extends Controller {
     public function twitter(Request $request)
     {
         $stack = GuzzleHttp\HandlerStack::create();
-        $client = new GuzzleHttp\Client();
 
         // Part 1 of 2: Initial request from Satellizer.
         if (!$request->input('oauth_token') || !$request->input('oauth_verifier'))
         {
+            $stack = GuzzleHttp\HandlerStack::create();
+
             $requestTokenOauth = new Oauth1([
               'consumer_key' => Config::get('app.twitter_key'),
               'consumer_secret' => Config::get('app.twitter_secret'),
-              'callback' => Config::get('app.twitter_callback')
+              'callback' => $request->input('redirectUri'),
+              'token' => '',
+              'token_secret' => ''
             ]);
+            $stack->push($requestTokenOauth);
 
-            $client->getEmitter()->attach($requestTokenOauth);
+            $client = new GuzzleHttp\Client([
+                'handler' => $stack
+            ]);
 
             // Step 1. Obtain request token for the authorization popup.
             $requestTokenResponse = $client->request('POST', 'https://api.twitter.com/oauth/request_token', [
@@ -334,32 +340,40 @@ class AuthController extends Controller {
                 'consumer_key' => Config::get('app.twitter_key'),
                 'consumer_secret' => Config::get('app.twitter_secret'),
                 'token' => $request->input('oauth_token'),
-                'verifier' => $request->input('oauth_verifier')
+                'verifier' => $request->input('oauth_verifier'),
+                'token_secret' => ''
             ]);
+            $stack->push($accessTokenOauth);
 
-            $client->getEmitter()->attach($accessTokenOauth);
+            $client = new GuzzleHttp\Client([
+                'handler' => $stack
+            ]);
 
             // Step 3. Exchange oauth token and oauth verifier for access token.
             $accessTokenResponse = $client->request('POST', 'https://api.twitter.com/oauth/access_token', [
                 'auth' => 'oauth'
-            ])->getBody();
+            ]);
 
             $accessToken = array();
-            parse_str($accessTokenResponse, $accessToken);
+            parse_str($accessTokenResponse->getBody(), $accessToken);
 
             $profileOauth = new Oauth1([
                 'consumer_key' => Config::get('app.twitter_key'),
                 'consumer_secret' => Config::get('app.twitter_secret'),
-                'oauth_token' => $accessToken['oauth_token']
+                'oauth_token' => $accessToken['oauth_token'],
+                'token_secret' => ''
+            ]);
+            $stack->push($profileOauth);
+
+            $client = new GuzzleHttp\Client([
+                'handler' => $stack
             ]);
 
-            $client->getEmitter()->attach($profileOauth);
-
             // Step 4. Retrieve profile information about the current user.
-            $profile = $client->request('GET', 'https://api.twitter.com/1.1/users/show.json?screen_name=' . $accessToken['screen_name'], [
+            $profileResponse = $client->request('GET', 'https://api.twitter.com/1.1/users/show.json?screen_name=' . $accessToken['screen_name'], [
                 'auth' => 'oauth'
-            ])->json();
-
+            ]);
+            $profile = json_decode($profileResponse->getBody(), true);
 
             // Step 5a. Link user accounts.
             if ($request->header('Authorization'))
