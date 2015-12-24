@@ -41,7 +41,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           scope: ['email'],
           scopeDelimiter: ',',
           display: 'popup',
-          type: '2.0',
+          oauthType: '2.0',
           popupOptions: { width: 580, height: 400 }
         },
         google: {
@@ -55,7 +55,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           scopePrefix: 'openid',
           scopeDelimiter: ' ',
           display: 'popup',
-          type: '2.0',
+          oauthType: '2.0',
           popupOptions: { width: 452, height: 633 }
         },
         github: {
@@ -66,7 +66,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           optionalUrlParams: ['scope'],
           scope: ['user:email'],
           scopeDelimiter: ' ',
-          type: '2.0',
+          oauthType: '2.0',
           popupOptions: { width: 1020, height: 618 }
         },
         instagram: {
@@ -77,7 +77,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           requiredUrlParams: ['scope'],
           scope: ['basic'],
           scopeDelimiter: '+',
-          type: '2.0'
+          oauthType: '2.0'
         },
         linkedin: {
           name: 'linkedin',
@@ -88,7 +88,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           scope: ['r_emailaddress'],
           scopeDelimiter: ' ',
           state: 'STATE',
-          type: '2.0',
+          oauthType: '2.0',
           popupOptions: { width: 527, height: 582 }
         },
         twitter: {
@@ -96,7 +96,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           url: '/auth/twitter',
           authorizationEndpoint: 'https://api.twitter.com/oauth/authenticate',
           redirectUri: window.location.origin,
-          type: '1.0',
+          oauthType: '1.0',
           popupOptions: { width: 495, height: 645 }
         },
         twitch: {
@@ -108,7 +108,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           scope: ['user_read'],
           scopeDelimiter: ' ',
           display: 'popup',
-          type: '2.0',
+          oauthType: '2.0',
           popupOptions: { width: 500, height: 560 }
         },
         live: {
@@ -120,7 +120,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           scope: ['wl.emails'],
           scopeDelimiter: ' ',
           display: 'popup',
-          type: '2.0',
+          oauthType: '2.0',
           popupOptions: { width: 500, height: 560 }
         },
         yahoo: {
@@ -130,7 +130,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           redirectUri: window.location.origin,
           scope: [],
           scopeDelimiter: ',',
-          type: '2.0',
+          oauthType: '2.0',
           popupOptions: { width: 559, height: 519 }
         },
         bitbucket: {
@@ -141,7 +141,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           requiredUrlParams: ['scope'],
           scope: ['email'],
           scopeDelimiter: ',',
-          type: '2.0',
+          oauthType: '2.0',
           popupOptions: { width: 1028, height: 529 }
         }
       }
@@ -223,12 +223,12 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
       this.oauth1 = function(params) {
         oauth(params);
-        config.providers[params.name].type = '1.0';
+        config.providers[params.name].oauthType = '1.0';
       };
 
       this.oauth2 = function(params) {
         oauth(params);
-        config.providers[params.name].type = '2.0';
+        config.providers[params.name].oauthType = '2.0';
       };
 
       this.$get = [
@@ -414,7 +414,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
         var Oauth = {};
 
         Oauth.authenticate = function(name, userData) {
-          var provider = config.providers[name].type === '1.0' ? new Oauth1() : new Oauth2();
+          var provider = config.providers[name].oauthType === '1.0' ? new Oauth1() : new Oauth2();
           var deferred = $q.defer();
 
           provider.open(config.providers[name], userData || {})
