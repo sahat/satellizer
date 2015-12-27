@@ -323,7 +323,7 @@ $authProvider.oauth2({
 $authProvider.oauth1({
   name: null,
   url: null,
-  authorizationEndpoint: null
+  authorizationEndpoint: null,
   redirectUri: null,
   type: null,
   popupOptions: null
