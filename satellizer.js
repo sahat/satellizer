@@ -140,7 +140,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           redirectUri: window.location.origin + '/',
           requiredUrlParams: ['scope'],
           scope: ['email'],
-          scopeDelimiter: ',',
+          scopeDelimiter: ' ',
           oauthType: '2.0',
           popupOptions: { width: 1028, height: 529 }
         }
