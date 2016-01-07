@@ -361,6 +361,8 @@ Satellizer relies on *token-based authentication* using
 [JSON Web Tokens](https://auth0.com/blog/2014/01/07/angularjs-authentication-with-cookies-vs-token/)
 instead of cookies.
 
+Additionally, **authorization** (obtaining user's information with their permission) and **authentication** (app sign-in) requires sever-side implementation. See provided [examples](https://github.com/sahat/satellizer/tree/master/examples/server) implemented in multiple languages for your convenience. In other words, you cannot just launch your AngularJS application and expect everything to work. The only exception is when you use *OAuth 2.0 Implicit Grant* (client-side) authorization by setting `responseType: 'token'` in provider's [configuration](https://github.com/sahat/satellizer#configuration).
+
 ### <img height="34" align="top" src="http://tech-lives.com/wp-content/uploads/2012/03/Lock-icon.png"> Login with Email and Password
 
 1. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Enter your email and password into the login form.
