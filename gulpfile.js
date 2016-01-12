@@ -8,7 +8,7 @@ var pkg = require('./package.json');
 
 var banner = ['/**',
   ' * Satellizer <%= pkg.version %>',
-  ' * (c) 2015 <%= pkg.author.name %>',
+  ' * (c) 2016 <%= pkg.author.name %>',
   ' * License: <%= pkg.license %>',
   ' */',
   ''].join('\n');
