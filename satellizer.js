@@ -337,7 +337,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
           if (!token && response) {
             var tokenRootData = config.tokenRoot && config.tokenRoot.split('.').reduce(function(o, x) { return o[x]; }, response.data);
-            token = tokenRootData ? tokenRootData[config.tokenName] : response.data[config.tokenName];
+            token = tokenRootData ? tokenRootData[config.tokenName] : response.data && response.data[config.tokenName];
           }
 
           if (!token) {
@@ -750,29 +750,23 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
               var documentOrigin = document.location.host;
               var popupWindowOrigin = Popup.popupWindow.location.host;
 
-              if (popupWindowOrigin === documentOrigin) {
+              if (popupWindowOrigin === documentOrigin && (Popup.popupWindow.location.search || Popup.popupWindow.location.hash)) {
+                var queryParams = Popup.popupWindow.location.search.substring(1).replace(/\/$/, '');
+                var hashParams = Popup.popupWindow.location.hash.substring(1).replace(/[\/$]/, '');
+                var hash = utils.parseQueryString(hashParams);
+                var qs = utils.parseQueryString(queryParams);
 
-                // Clear the popup's contents
-                Popup.popupWindow.document.removeChild(Popup.popupWindow.document.documentElement);
+                angular.extend(qs, hash);
 
-                if (Popup.popupWindow.location.search || Popup.popupWindow.location.hash) {
-                  var queryParams = Popup.popupWindow.location.search.substring(1).replace(/\/$/, '');
-                  var hashParams = Popup.popupWindow.location.hash.substring(1).replace(/[\/$]/, '');
-                  var hash = utils.parseQueryString(hashParams);
-                  var qs = utils.parseQueryString(queryParams);
-
-                  angular.extend(qs, hash);
-
-                  if (qs.error) {
-                    deferred.reject(qs);
-                  } else {
-                    deferred.resolve(qs);
-                  }
-
-                  $interval.cancel(polling);
-
-                  Popup.popupWindow.close();
+                if (qs.error) {
+                  deferred.reject(qs);
+                } else {
+                  deferred.resolve(qs);
                 }
+
+                $interval.cancel(polling);
+
+                Popup.popupWindow.close();
               }
             } catch (error) {
               // Ignore DOMException: Blocked a frame with origin from accessing a cross-origin frame.
@@ -781,7 +775,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
             if (!Popup.popupWindow || Popup.popupWindow.closed || Popup.popupWindow.closed === undefined) {
               $interval.cancel(polling);
             }
-          }, 40);
+          }, 20);
 
           return deferred.promise;
         };
