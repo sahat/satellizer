@@ -1,6 +1,6 @@
 <?php namespace App\Http\Middleware;
 
-use JWT;
+use Firebase\JWT\JWT;
 use Config;
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
