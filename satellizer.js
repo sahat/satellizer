@@ -750,7 +750,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
               var documentOrigin = document.location.host;
               var popupWindowOrigin = Popup.popupWindow.location.host;
 
-              if (popupWindowOrigin === documentOrigin && (Popup.popupWindow.location.search || Popup.popupWindow.location.hash)) {
+              if ((config.redirectUri || popupWindowOrigin === documentOrigin) && (Popup.popupWindow.location.search || Popup.popupWindow.location.hash)) {
                 var queryParams = Popup.popupWindow.location.search.substring(1).replace(/\/$/, '');
                 var hashParams = Popup.popupWindow.location.hash.substring(1).replace(/[\/$]/, '');
                 var hash = utils.parseQueryString(hashParams);
