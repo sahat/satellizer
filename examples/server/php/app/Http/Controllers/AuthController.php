@@ -115,12 +115,14 @@ class AuthController extends Controller {
         $accessToken = json_decode($accessTokenResponse->getBody(), true);
 
         // Step 2. Retrieve profile information about the current user.
+        $fields = 'id,email,first_name,last_name,link,name';
         $profileResponse = $client->request('GET', 'https://graph.facebook.com/v2.5/me', [
-            'query' => $accessToken
+            'query' => [
+                'access_token' => $accessToken['access_token'],
+                'fields' => $fields
+            ]
         ]);
         $profile = json_decode($profileResponse->getBody(), true);
-
-
 
         // Step 3a. If user is already signed in then link accounts.
         if ($request->header('Authorization'))
@@ -137,6 +139,7 @@ class AuthController extends Controller {
 
             $user = User::find($payload['sub']);
             $user->facebook = $profile['id'];
+            $user->email = $user->email ?: $profile['email'];
             $user->displayName = $user->displayName ?: $profile['name'];
             $user->save();
 
@@ -154,6 +157,7 @@ class AuthController extends Controller {
 
             $user = new User;
             $user->facebook = $profile['id'];
+            $user->email = $profile['email'];
             $user->displayName = $profile['name'];
             $user->save();
 
