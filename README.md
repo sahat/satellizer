@@ -63,6 +63,8 @@ Alternatively, you may [**download**](https://github.com/sahat/satellizer/releas
 <script src="//cdn.jsdelivr.net/satellizer/0.13.4/satellizer.min.js"></script>
 ```
 
+If installed via bower, include the script tag `<script src="bower_components/satellizer/satellizer.js"></script>` or `<script src="bower_components/satellizer/satellizer.min.js"></script>`
+
 **Note:** Sattelizer depends on [`window.atob()`](https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/atob) for decoding JSON Web Tokens. If you need to support *IE9* then use Base64 polyfill above.
 
 
