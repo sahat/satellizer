@@ -775,6 +775,8 @@ $auth.setStorageType('sessionStorage');
 If you are unable to send a token to your server in the following format - `Authorization: Bearer <token>`, then use
 **`$authProvider.authHeader`** and **`$authProvider.authToken`** config options to change the header format. The default values are `Authorization` and `Bearer`, respectively.
 
+For example, if you need to use `Authorization: Basic` header, this is where you change it.
+
 #### How can I avoid sending Authorization header on all HTTP requests?
 By default, once user is authenticated, JWT will be sent on every request. If you would like to prevent that, you could use `skipAuthorization` option in your `$http` request. For example:
 
