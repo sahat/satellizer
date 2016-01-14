@@ -747,12 +747,13 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
           var polling = $interval(function() {
             try {
-              var documentOrigin = document.location.host;
-              var popupWindowOrigin = Popup.popupWindow.location.host;
+              var popupWindowURL = Popup.popupWindow.location;
+              var redirectURL =  document.createElement('a');
+              redirectURL.href = config.redirectUri;
 
-              if (popupWindowOrigin === documentOrigin && (Popup.popupWindow.location.search || Popup.popupWindow.location.hash)) {
-                var queryParams = Popup.popupWindow.location.search.substring(1).replace(/\/$/, '');
-                var hashParams = Popup.popupWindow.location.hash.substring(1).replace(/[\/$]/, '');
+              if (popupWindowURL.origin === redirectURL.origin && (popupWindowURL.search || popupWindowURL.hash)) {
+                var queryParams = popupWindowURL.search.substring(1).replace(/\/$/, '');
+                var hashParams = popupWindowURL.hash.substring(1).replace(/[\/$]/, '');
                 var hash = utils.parseQueryString(hashParams);
                 var qs = utils.parseQueryString(queryParams);
 
