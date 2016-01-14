@@ -747,9 +747,9 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
           var polling = $interval(function() {
             try {
-              var documentURL = new URL(document.location);
-              var popupWindowURL = new URL(Popup.popupWindow.location);
-              var redirectURL = new URL(config.redirectUri);
+              var popupWindowURL = Popup.popupWindow.location;
+              var redirectURL =  document.createElement('a');
+              redirectURL.href = config.redirectUri;
 
               if (popupWindowURL.origin === redirectURL.origin && (popupWindowURL.search || popupWindowURL.hash)) {
                 var queryParams = popupWindowURL.search.substring(1).replace(/\/$/, '');
