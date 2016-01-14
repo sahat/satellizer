@@ -63,10 +63,9 @@ Alternatively, you may [**download**](https://github.com/sahat/satellizer/releas
 ```
 
 If installed via [Bower](http://bower.io/), include one of the following script tags:
-```
+```html
 <script src="bower_components/satellizer/satellizer.js"></script>
-```
-```
+<!-- or -->
 <script src="bower_components/satellizer/satellizer.min.js"></script>
 ```
 
