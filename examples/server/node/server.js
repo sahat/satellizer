@@ -88,10 +88,10 @@ app.use(express.static(path.join(__dirname, '../../client')));
  |--------------------------------------------------------------------------
  */
 function ensureAuthenticated(req, res, next) {
-  if (!req.headers.authorization) {
+  if (!req.header('Authorization')) {
     return res.status(401).send({ message: 'Please make sure your request has an Authorization header' });
   }
-  var token = req.headers.authorization.split(' ')[1];
+  var token = req.header('Authorization').split(' ')[1];
 
   var payload = null;
   try {
@@ -222,12 +222,12 @@ app.post('/auth/google', function(req, res) {
         return res.status(500).send({message: profile.error.message});
       }
       // Step 3a. Link user accounts.
-      if (req.headers.authorization) {
+      if (req.header('Authorization')) {
         User.findOne({ google: profile.sub }, function(err, existingUser) {
           if (existingUser) {
             return res.status(409).send({ message: 'There is already a Google account that belongs to you' });
           }
-          var token = req.headers.authorization.split(' ')[1];
+          var token = req.header('Authorization').split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
           User.findById(payload.sub, function(err, user) {
             if (!user) {
@@ -286,12 +286,12 @@ app.post('/auth/github', function(req, res) {
     request.get({ url: userApiUrl, qs: accessToken, headers: headers, json: true }, function(err, response, profile) {
 
       // Step 3a. Link user accounts.
-      if (req.headers.authorization) {
+      if (req.header('Authorization')) {
         User.findOne({ github: profile.id }, function(err, existingUser) {
           if (existingUser) {
             return res.status(409).send({ message: 'There is already a GitHub account that belongs to you' });
           }
-          var token = req.headers.authorization.split(' ')[1];
+          var token = req.header('Authorization').split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
           User.findById(payload.sub, function(err, user) {
             if (!user) {
@@ -347,13 +347,13 @@ app.post('/auth/instagram', function(req, res) {
   request.post({ url: accessTokenUrl, form: params, json: true }, function(error, response, body) {
 
     // Step 2a. Link user accounts.
-    if (req.headers.authorization) {
+    if (req.header('Authorization')) {
       User.findOne({ instagram: body.user.id }, function(err, existingUser) {
         if (existingUser) {
           return res.status(409).send({ message: 'There is already an Instagram account that belongs to you' });
         }
 
-        var token = req.headers.authorization.split(' ')[1];
+        var token = req.header('Authorization').split(' ')[1];
         var payload = jwt.decode(token, config.TOKEN_SECRET);
 
         User.findById(payload.sub, function(err, user) {
@@ -421,12 +421,12 @@ app.post('/auth/linkedin', function(req, res) {
     request.get({ url: peopleApiUrl, qs: params, json: true }, function(err, response, profile) {
 
       // Step 3a. Link user accounts.
-      if (req.headers.authorization) {
+      if (req.header('Authorization')) {
         User.findOne({ linkedin: profile.id }, function(err, existingUser) {
           if (existingUser) {
             return res.status(409).send({ message: 'There is already a LinkedIn account that belongs to you' });
           }
-          var token = req.headers.authorization.split(' ')[1];
+          var token = req.header('Authorization').split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
           User.findById(payload.sub, function(err, user) {
             if (!user) {
@@ -491,12 +491,12 @@ app.post('/auth/live', function(req, res) {
     },
     function(profile) {
       // Step 3a. Link user accounts.
-      if (req.headers.authorization) {
+      if (req.header('Authorization')) {
         User.findOne({ live: profile.id }, function(err, user) {
           if (user) {
             return res.status(409).send({ message: 'There is already a Windows Live account that belongs to you' });
           }
-          var token = req.headers.authorization.split(' ')[1];
+          var token = req.header('Authorization').split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
           User.findById(payload.sub, function(err, existingUser) {
             if (!existingUser) {
@@ -555,13 +555,13 @@ app.post('/auth/facebook', function(req, res) {
     request.get({ url: graphApiUrl, qs: accessToken, json: true }, function(err, response, profile) {
       if (response.statusCode !== 200) {
         return res.status(500).send({ message: profile.error.message });
-      }
-      if (req.headers.authorization) {
+      } console.log(profile);
+      if (req.header('Authorization')) {
         User.findOne({ facebook: profile.id }, function(err, existingUser) {
           if (existingUser) {
             return res.status(409).send({ message: 'There is already a Facebook account that belongs to you' });
           }
-          var token = req.headers.authorization.split(' ')[1];
+          var token = req.header('Authorization').split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
           User.findById(payload.sub, function(err, user) {
             if (!user) {
@@ -622,12 +622,12 @@ app.post('/auth/yahoo', function(req, res) {
     request.get({ url: socialApiUrl, headers: headers, json: true }, function(err, response, body) {
 
       // Step 3a. Link user accounts.
-      if (req.headers.authorization) {
+      if (req.header('Authorization')) {
         User.findOne({ yahoo: body.profile.guid }, function(err, existingUser) {
           if (existingUser) {
             return res.status(409).send({ message: 'There is already a Yahoo account that belongs to you' });
           }
-          var token = req.headers.authorization.split(' ')[1];
+          var token = req.header('Authorization').split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
           User.findById(payload.sub, function(err, user) {
             if (!user) {
@@ -713,13 +713,13 @@ app.post('/auth/twitter', function(req, res) {
       }, function(err, response, profile) {
 
         // Step 5a. Link user accounts.
-        if (req.headers.authorization) {
+        if (req.header('Authorization')) {
           User.findOne({ twitter: profile.id }, function(err, existingUser) {
             if (existingUser) {
               return res.status(409).send({ message: 'There is already a Twitter account that belongs to you' });
             }
 
-            var token = req.headers.authorization.split(' ')[1];
+            var token = req.header('Authorization').split(' ')[1];
             var payload = jwt.decode(token, config.TOKEN_SECRET);
 
             User.findById(payload.sub, function(err, user) {
@@ -784,12 +784,12 @@ app.post('/auth/foursquare', function(req, res) {
       profile = profile.response.user;
 
       // Step 3a. Link user accounts.
-      if (req.headers.authorization) {
+      if (req.header('Authorization')) {
         User.findOne({ foursquare: profile.id }, function(err, existingUser) {
           if (existingUser) {
             return res.status(409).send({ message: 'There is already a Foursquare account that belongs to you' });
           }
-          var token = req.headers.authorization.split(' ')[1];
+          var token = req.header('Authorization').split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
           User.findById(payload.sub, function(err, user) {
             if (!user) {
@@ -850,12 +850,12 @@ app.post('/auth/twitch', function(req, res) {
     // Step 2. Retrieve information about the current user.
     request.get({ url: profileUrl, qs: params, json: true }, function(err, response, profile) {
       // Step 3a. Link user accounts.
-      if (req.headers.authorization) {
+      if (req.header('Authorization')) {
         User.findOne({ twitch: profile._id }, function(err, existingUser) {
           if (existingUser) {
             return res.status(409).send({ message: 'There is already a Twitch account that belongs to you' });
           }
-          var token = req.headers.authorization.split(' ')[1];
+          var token = req.header('Authorization').split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
           User.findById(payload.sub, function(err, user) {
             if (!user) {
@@ -927,12 +927,12 @@ app.post('/auth/bitbucket', function(req, res) {
         var email = emails.values[0].email;
 
         // Step 3a. Link user accounts.
-        if (req.headers.authorization) {
+        if (req.header('Authorization')) {
           User.findOne({ bitbucket: profile.uuid }, function(err, existingUser) {
             if (existingUser) {
               return res.status(409).send({ message: 'There is already a Bitbucket account that belongs to you' });
             }
-            var token = req.headers.authorization.split(' ')[1];
+            var token = req.header('Authorization').split(' ')[1];
             var payload = jwt.decode(token, config.TOKEN_SECRET);
             User.findById(payload.sub, function(err, user) {
               if (!user) {
