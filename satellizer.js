@@ -742,43 +742,53 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           return deferred.promise;
         };
 
-        Popup.pollPopup = function() {
-          var deferred = $q.defer();
+		Popup.pollPopup = function () {
+			var deferred = $q.defer();
+			var redirect_uri = null;
 
-          var polling = $interval(function() {
-            try {
-              var documentOrigin = document.location.host;
-              var popupWindowOrigin = Popup.popupWindow.location.host;
+			var polling = $interval(function () {
+				try {
+					var documentOrigin = document.location.host;
+					var popupWindowOrigin = Popup.popupWindow.location.host;
 
-              if (popupWindowOrigin === documentOrigin && (Popup.popupWindow.location.search || Popup.popupWindow.location.hash)) {
-                var queryParams = Popup.popupWindow.location.search.substring(1).replace(/\/$/, '');
-                var hashParams = Popup.popupWindow.location.hash.substring(1).replace(/[\/$]/, '');
-                var hash = utils.parseQueryString(hashParams);
-                var qs = utils.parseQueryString(queryParams);
+					if (popupWindowOrigin === documentOrigin && (Popup.popupWindow.location.search || Popup.popupWindow.location.hash)) {
+						var queryParams = Popup.popupWindow.location.search.substring(1).replace(/\/$/, '');
+						var hashParams = Popup.popupWindow.location.hash.substring(1).replace(/[\/$]/, '');
+						var hash = utils.parseQueryString(hashParams);
+						var qs = utils.parseQueryString(queryParams);
 
-                angular.extend(qs, hash);
+						// get the redirect_uri from the querystring here, but only get it the first time
+						if (redirect_uri == null && qs.redirect_uri) {
+							redirect_uri = qs.redirect_uri;
+							return;
+						}
 
-                if (qs.error) {
-                  deferred.reject(qs);
-                } else {
-                  deferred.resolve(qs);
-                }
+						// got the redirect_uri, is the popup window on this uri yet?
+						if (redirect_uri == Popup.popupWindow.location.href.split('#')[0]) {
+							angular.extend(qs, hash);
 
-                $interval.cancel(polling);
+							if (qs.error) {
+								deferred.reject(qs);
+							} else {
+								deferred.resolve(qs);
+							}
 
-                Popup.popupWindow.close();
-              }
-            } catch (error) {
-              // Ignore DOMException: Blocked a frame with origin from accessing a cross-origin frame.
-            }
+							$interval.cancel(polling);
 
-            if (!Popup.popupWindow || Popup.popupWindow.closed || Popup.popupWindow.closed === undefined) {
-              $interval.cancel(polling);
-            }
-          }, 20);
+							Popup.popupWindow.close();
+						}
+					}
+				} catch (error) {
+					// Ignore DOMException: Blocked a frame with origin from accessing a cross-origin frame.
+				}
 
-          return deferred.promise;
-        };
+				if (!Popup.popupWindow || Popup.popupWindow.closed || Popup.popupWindow.closed === undefined) {
+					$interval.cancel(polling);
+				}
+			}, 20);
+
+			return deferred.promise;
+		};
 
         Popup.prepareOptions = function(options) {
           options = options || {};
