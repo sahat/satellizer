@@ -744,6 +744,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
         Popup.pollPopup = function() {
           var deferred = $q.defer();
+		  var redirect_uri = null;
 
           var polling = $interval(function() {
             try {
@@ -756,17 +757,26 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
                 var hash = utils.parseQueryString(hashParams);
                 var qs = utils.parseQueryString(queryParams);
 
-                angular.extend(qs, hash);
+		// get the redirect_uri from the querystring here, but only get it the first time
+		if (redirect_uri == null && qs.redirect_uri) {
+		  redirect_uri = qs.redirect_uri;
+                  return;
+		}
+				
+		// got the redirect_uri, is the popup window on this uri yet?
+		if (redirect_uri == Popup.popupWindow.location.href.split('#')[0]) {
+                  angular.extend(qs, hash);
 
-                if (qs.error) {
-                  deferred.reject(qs);
-                } else {
-                  deferred.resolve(qs);
-                }
+                  if (qs.error) {
+                    deferred.reject(qs);
+                  } else {
+                    deferred.resolve(qs);
+                  }
 
-                $interval.cancel(polling);
+                  $interval.cancel(polling);
 
-                Popup.popupWindow.close();
+                  Popup.popupWindow.close();
+		}
               }
             } catch (error) {
               // Ignore DOMException: Blocked a frame with origin from accessing a cross-origin frame.
