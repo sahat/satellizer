@@ -630,7 +630,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
             var serverUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, defaults.url) : defaults.url;
 
             if (!config.cordova) {
-              popupWindow = popup.open('', defaults.name, defaults.popupOptions, defaults.redirectUri);
+                popupWindow = popup.open('', defaults.name, defaults.popupOptions, defaults.redirectUri);
             }
 
             return $http.post(serverUrl, defaults)
@@ -770,6 +770,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
               }
             } catch (error) {
               // Ignore DOMException: Blocked a frame with origin from accessing a cross-origin frame.
+              // A hack to get around same-origin security policy errors in IE.
             }
 
             if (!Popup.popupWindow || Popup.popupWindow.closed || Popup.popupWindow.closed === undefined) {
