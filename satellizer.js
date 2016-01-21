@@ -747,7 +747,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
           var polling = $interval(function() {
             try {
-			  var popupWindowOrigin = Popup.popupWindow.location.protocol + '//' +
+              var popupWindowOrigin = Popup.popupWindow.location.protocol + '//' +
                 Popup.popupWindow.location.host +
                 Popup.popupWindow.location.pathname;
 				
