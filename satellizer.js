@@ -519,7 +519,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
             if (config.cordova) {
               openPopup = popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri).eventListener(defaults.redirectUri);
             } else {
-              openPopup = popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri).pollPopup();
+              openPopup = popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri).pollPopup(defaults.redirectUri);
             }
 
             return openPopup
@@ -648,7 +648,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
                 if (config.cordova) {
                   popupListener = popupWindow.eventListener(defaults.redirectUri);
                 } else {
-                  popupListener = popupWindow.pollPopup();
+                  popupListener = popupWindow.pollPopup(defaults.redirectUri);
                 }
 
                 return popupListener
@@ -742,15 +742,16 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           return deferred.promise;
         };
 
-        Popup.pollPopup = function() {
+        Popup.pollPopup = function(redirectUri) {
           var deferred = $q.defer();
 
           var polling = $interval(function() {
             try {
-              var documentOrigin = document.location.host;
-              var popupWindowOrigin = Popup.popupWindow.location.host;
-
-              if (popupWindowOrigin === documentOrigin && (Popup.popupWindow.location.search || Popup.popupWindow.location.hash)) {
+			  var popupWindowOrigin = Popup.popupWindow.location.protocol + '//' +
+                Popup.popupWindow.location.host +
+                Popup.popupWindow.location.pathname;
+				
+              if (popupWindowOrigin === redirectUri && (Popup.popupWindow.location.search || Popup.popupWindow.location.hash)) {
                 var queryParams = Popup.popupWindow.location.search.substring(1).replace(/\/$/, '');
                 var hashParams = Popup.popupWindow.location.hash.substring(1).replace(/[\/$]/, '');
                 var hash = utils.parseQueryString(hashParams);
