@@ -555,7 +555,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
                   data[value] = defaults.redirectUri;
                   break;
                 default:
-                  data[value] = oauthData[key]
+                  data[value] = oauthData[key];
               }
             });
 
@@ -747,10 +747,8 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
           var polling = $interval(function() {
             try {
-              var popupWindowOrigin = Popup.popupWindow.location.protocol + '//' +
-                Popup.popupWindow.location.host +
-                Popup.popupWindow.location.pathname;
-				
+              var popupWindowOrigin = Popup.popupWindow.location.origin;
+
               if (popupWindowOrigin === redirectUri && (Popup.popupWindow.location.search || Popup.popupWindow.location.hash)) {
                 var queryParams = Popup.popupWindow.location.search.substring(1).replace(/\/$/, '');
                 var hashParams = Popup.popupWindow.location.hash.substring(1).replace(/[\/$]/, '');
