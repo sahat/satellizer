@@ -51,6 +51,29 @@ describe('SatellizerPopup', function() {
     expect(angular.isObject(open)).toBe(true);
   });
 
+  it('should handle the case when popup redirect has occured but no parameters are set', function() {
+    this.popup.popupWindow = {
+      location: {
+        host: document.location.host
+      }
+    };
+    var open = this.popup.pollPopup();
+    var error;
+    open.catch(function (err) {
+      error = err;
+    });
+    this.$interval.flush(300);
+    expect(error).toBeDefined();
+  });
 
+  it('should handle the case when popup is closed', function() {
+    var open = this.popup.pollPopup();
+    var error;
+    open.catch(function (err) {
+      error = err;
+    });
+    this.$interval.flush(300);
+    expect(error).toBeDefined();
+  });
 });
 
