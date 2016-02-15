@@ -2,7 +2,7 @@
 
 # [Satellizer](https://github.com/sahat/satellizer/)
 
-[![Join the chat at https://gitter.im/sahat/satellizer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/sahat/satellizer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Donate](https://img.shields.io/badge/paypal-donate-blue.svg)](https://paypal.me/sahat) [![Join the chat at https://gitter.im/sahat/satellizer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/sahat/satellizer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](http://img.shields.io/travis/sahat/satellizer.svg?style=flat)](https://travis-ci.org/sahat/satellizer)
 [![Test Coverage](http://img.shields.io/codeclimate/coverage/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
 [![Version](https://img.shields.io/badge/version-0.13.4-brightgreen.svg)](https://www.npmjs.org/package/satellizer)
@@ -43,8 +43,7 @@ in the app *config* block.
 
 ## Installation
 
-The easiest way to get **Satellizer** is by running one of the following
-commands:
+The easiest way to get **Satellizer** is by running one of the following commands:
 
 ```bash
 # Bower
@@ -61,6 +60,13 @@ Alternatively, you may [**download**](https://github.com/sahat/satellizer/releas
 <script src="//cdnjs.cloudflare.com/ajax/libs/Base64/0.3.0/base64.min.js"></script>
 <![endif]-->
 <script src="//cdn.jsdelivr.net/satellizer/0.13.4/satellizer.min.js"></script>
+```
+
+If installed via [Bower](http://bower.io/), include one of the following script tags:
+```html
+<script src="bower_components/satellizer/satellizer.js"></script>
+<!-- or -->
+<script src="bower_components/satellizer/satellizer.min.js"></script>
 ```
 
 **Note:** Sattelizer depends on [`window.atob()`](https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/atob) for decoding JSON Web Tokens. If you need to support *IE9* then use Base64 polyfill above.

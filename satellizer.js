@@ -519,7 +519,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
             if (config.cordova) {
               openPopup = popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri).eventListener(defaults.redirectUri);
             } else {
-              openPopup = popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri).pollPopup();
+              openPopup = popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri).pollPopup(defaults.redirectUri);
             }
 
             return openPopup
@@ -555,7 +555,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
                   data[value] = defaults.redirectUri;
                   break;
                 default:
-                  data[value] = oauthData[key]
+                  data[value] = oauthData[key];
               }
             });
 
@@ -630,7 +630,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
             var serverUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, defaults.url) : defaults.url;
 
             if (!config.cordova) {
-              popupWindow = popup.open('', defaults.name, defaults.popupOptions, defaults.redirectUri);
+                popupWindow = popup.open('', defaults.name, defaults.popupOptions, defaults.redirectUri);
             }
 
             return $http.post(serverUrl, defaults)
@@ -648,7 +648,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
                 if (config.cordova) {
                   popupListener = popupWindow.eventListener(defaults.redirectUri);
                 } else {
-                  popupListener = popupWindow.pollPopup();
+                  popupListener = popupWindow.pollPopup(defaults.redirectUri);
                 }
 
                 return popupListener
@@ -742,15 +742,14 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           return deferred.promise;
         };
 
-        Popup.pollPopup = function() {
+        Popup.pollPopup = function(redirectUri) {
           var deferred = $q.defer();
 
           var polling = $interval(function() {
             try {
-              var documentOrigin = document.location.host;
-              var popupWindowOrigin = Popup.popupWindow.location.host;
+              var popupWindowOrigin = Popup.popupWindow.location.origin;
 
-              if (popupWindowOrigin === documentOrigin && (Popup.popupWindow.location.search || Popup.popupWindow.location.hash)) {
+              if (popupWindowOrigin === redirectUri && (Popup.popupWindow.location.search || Popup.popupWindow.location.hash)) {
                 var queryParams = Popup.popupWindow.location.search.substring(1).replace(/\/$/, '');
                 var hashParams = Popup.popupWindow.location.hash.substring(1).replace(/[\/$]/, '');
                 var hash = utils.parseQueryString(hashParams);
@@ -770,6 +769,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
               }
             } catch (error) {
               // Ignore DOMException: Blocked a frame with origin from accessing a cross-origin frame.
+              // A hack to get around same-origin security policy errors in IE.
             }
 
             if (!Popup.popupWindow || Popup.popupWindow.closed || Popup.popupWindow.closed === undefined) {

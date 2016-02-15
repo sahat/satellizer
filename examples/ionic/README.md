@@ -11,7 +11,7 @@ Ionic is the beautiful, open source front-end SDK for developing hybrid mobile a
 5. <img src="http://cnet2.cbsistatic.com/hub/i/r/2011/10/05/74df5391-fdc1-11e2-8c7c-d4ae52e62bcc/resize/370xauto/26609a1fcbb66cad8783b098ebf0ed80/apple-logo-2.jpg" height="16"> **iOS**
  - `ionic build ios`
  - `ionic emulate ios`
-6. <img src="http://findicons.com/files/icons/820/simply_google/256/google_android.png" height="17"> **Android**
+6. <img src="http://icons.iconarchive.com/icons/carlosjj/google-jfk/128/android-icon.png" height="17"> **Android**
  - `ionic platform add android`
  - `ionic build android`
  - `ionic emulate android`
