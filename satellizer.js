@@ -483,11 +483,12 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
       '$q',
       '$http',
       '$window',
+      '$timeout',
       'SatellizerPopup',
       'SatellizerUtils',
       'SatellizerConfig',
       'SatellizerStorage',
-      function($q, $http, $window, popup, utils, config, storage) {
+      function($q, $http, $window, $timeout, popup, utils, config, storage) {
         return function() {
           var Oauth2 = {};
 
@@ -503,41 +504,45 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
           Oauth2.open = function(options, userData) {
             defaults = utils.merge(options, defaults);
+            var defer = $q.defer();
+            $timeout(function () {
+              var url;
+              var openPopup;
+              var stateName = defaults.name + '_state';
 
-            var url;
-            var openPopup;
-            var stateName = defaults.name + '_state';
+              if (angular.isFunction(defaults.state)) {
+                storage.set(stateName, defaults.state());
+              } else if (angular.isString(defaults.state)) {
+                storage.set(stateName, defaults.state);
+              }
 
-            if (angular.isFunction(defaults.state)) {
-              storage.set(stateName, defaults.state());
-            } else if (angular.isString(defaults.state)) {
-              storage.set(stateName, defaults.state);
-            }
+              url = [defaults.authorizationEndpoint, Oauth2.buildQueryString()].join('?');
 
-            url = [defaults.authorizationEndpoint, Oauth2.buildQueryString()].join('?');
+              if (config.cordova) {
+                openPopup = popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri).eventListener(defaults.redirectUri);
+              } else {
+                openPopup = popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri).pollPopup(defaults.redirectUri);
+              }
 
-            if (config.cordova) {
-              openPopup = popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri).eventListener(defaults.redirectUri);
-            } else {
-              openPopup = popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri).pollPopup(defaults.redirectUri);
-            }
+              return openPopup
+                .then(function(oauthData) {
+                  // When no server URL provided, return popup params as-is.
+                  // This is for a scenario when someone wishes to opt out from
+                  // Satellizer's magic by doing authorization code exchange and
+                  // saving a token manually.
+                  if (defaults.responseType === 'token' || !defaults.url) {
+                    defer.resolve(oauthData);
+                  }
 
-            return openPopup
-              .then(function(oauthData) {
-                // When no server URL provided, return popup params as-is.
-                // This is for a scenario when someone wishes to opt out from
-                // Satellizer's magic by doing authorization code exchange and
-                // saving a token manually.
-                if (defaults.responseType === 'token' || !defaults.url) {
-                  return oauthData;
-                }
+                  if (oauthData.state && oauthData.state !== storage.get(stateName)) {
+                    return defer.reject('OAuth "state" mismatch');
+                  }
 
-                if (oauthData.state && oauthData.state !== storage.get(stateName)) {
-                  return $q.reject('OAuth "state" mismatch');
-                }
+                  defer.resolve(Oauth2.exchangeForToken(oauthData, userData));
+                });
+            });
 
-                return Oauth2.exchangeForToken(oauthData, userData);
-              });
+            return defer.promise;
           };
 
           Oauth2.exchangeForToken = function(oauthData, userData) {
