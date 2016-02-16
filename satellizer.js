@@ -743,11 +743,18 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
         Popup.pollPopup = function(redirectUri) {
           var deferred = $q.defer();
 
+          var redirectUriParser = document.createElement('a');
+          redirectUriParser.href = redirectUri;
+
+          var redirectUriHost = redirectUriParser.protocol + '//' + redirectUriParser.hostname +
+            (redirectUriParser.port ? ':' + redirectUriParser.port: '');
+
           var polling = $interval(function() {
             try {
-              var popupWindowOrigin = Popup.popupWindow.location.origin;
+              var popupWindowHost = Popup.popupWindow.location.protocol + '//' + Popup.popupWindow.location.hostname +
+                (Popup.popupWindow.location.port ? ':' + Popup.popupWindow.location.port: '');
 
-              if (popupWindowOrigin === redirectUri && (Popup.popupWindow.location.search || Popup.popupWindow.location.hash)) {
+              if (popupWindowHost === redirectUriHost && (Popup.popupWindow.location.search || Popup.popupWindow.location.hash)) {
                 var queryParams = Popup.popupWindow.location.search.substring(1).replace(/\/$/, '');
                 var hashParams = Popup.popupWindow.location.hash.substring(1).replace(/[\/$]/, '');
                 var hash = utils.parseQueryString(hashParams);
@@ -859,7 +866,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
         }
         return result;
-      }
+      };
     })
     .factory('SatellizerStorage', ['$window', '$log', 'SatellizerConfig', function($window, $log, config) {
 
