@@ -357,7 +357,6 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
          */
         Shared.isAuthenticated = function() {
           var token = storage.get(tokenName);
-
           // A token is present
           if (token) {
             // Token with a valid JWT format XXX.YYY.ZZZ
@@ -372,7 +371,6 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
                   var isExpired = Math.round(new Date().getTime() / 1000) >= exp;
                   if (isExpired) {
                     // FAIL: Expired token
-                    storage.remove(tokenName);
                     return false;
                   } else {
                     // PASS: Non-expired token
