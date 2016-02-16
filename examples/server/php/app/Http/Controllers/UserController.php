@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Config;
-use JWT;
+use Firebase\JWT\JWT;
 use App\User;
 
 class UserController extends Controller {
