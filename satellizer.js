@@ -531,7 +531,10 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
                 }
 
                 if (oauthData.state && oauthData.state !== storage.get(stateName)) {
-                  return $q.reject('OAuth "state" mismatch');
+                  return $q.reject(
+                    'The value returned in the state parameter does not match the state value from your original ' +
+                    'authorization code request.'
+                  );
                 }
 
                 return Oauth2.exchangeForToken(oauthData, userData);
