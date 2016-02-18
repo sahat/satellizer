@@ -754,7 +754,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
           var polling = $interval(function() {
             if (!Popup.popupWindow || Popup.popupWindow.closed || Popup.popupWindow.closed === undefined) {
-              deferred.reject('Popup window was closed.');
+              deferred.reject('The popup window was closed.');
               $interval.cancel(polling);
             }
 
@@ -777,10 +777,11 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
                     deferred.resolve(qs);
                   }
                 } else {
-                  deferred.reject('Redirect occurred but satellizer found no query or hash parameters.'
-                                  + 'They were either not set by the redirect, or somebody else '
-                                  + 'removed them before satellizer could read them '
-                                  + '(e.g. angular routing mechanism).');
+                  deferred.reject(
+                    'Redirect has occurred but no query or hash parameters were found. ' +
+                    'They were either not set during the redirect, or were removed before Satellizer ' +
+                    'could read them, e.g. AngularJS routing mechanism.'
+                  );
                 }
 
                 $interval.cancel(polling);
