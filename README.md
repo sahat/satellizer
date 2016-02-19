@@ -34,11 +34,11 @@ in the app *config* block.
 - [Obtaining OAuth Keys](#obtaining-oauth-keys)
 - [API Reference](#api-reference)
 - [FAQ](#faq)
- - [Can I change `redirectUri` to something other than base URL?](#can-i-change-redirecturi-to-something-other-than-base-url)
- - [How can I send a token in a format other than `Authorization: Bearer <token>?`](#how-can-i-send-a-token-in-a-format-other-than-authorization-bearer-token)
- - [How can I avoid sending Authorization header on all HTTP requests?](#how-can-i-avoid-sending-authorization-header-on-all-http-requests)
- - [Is there a way to dynamically change `localStorage` to `sessionStorage`?](#is-there-a-way-to-dynamically-change-localstorage-to-sessionstorage)
- - [I am having a problem with Ionic authentication on iOS 9.](#i-am-having-a-problem-with-ionic-authentication-on-ios-9)
+ - [Can I change `redirectUri` to something other than base URL?](#question-can-i-change-redirecturi-to-something-other-than-base-url)
+ - [How can I send a token in a format other than `Authorization: Bearer <token>?`](#question-how-can-i-send-a-token-in-a-format-other-than-authorization-bearer-token)
+ - [How can I avoid sending Authorization header on all HTTP requests?](#question-how-can-i-avoid-sending-authorization-header-on-all-http-requests)
+ - [Is there a way to dynamically change `localStorage` to `sessionStorage`?](#question-is-there-a-way-to-dynamically-change-localstorage-to-sessionstorage)
+ - [I am having a problem with Ionic authentication on iOS 9.](#question-i-am-having-a-problem-with-ionic-authentication-on-ios-9)
 - [Credits](#credits)
 - [License](#license)
 
@@ -778,7 +778,7 @@ $auth.setStorageType('sessionStorage');
 
 ## FAQ
 
-#### Can I change `redirectUri` to something other than base URL?
+#### :question: Can I change `redirectUri` to something other than base URL?
 
 By default, `redirectUri` is set to `window.location.origin` (protocol, hostname, port number of a URL) for all OAuth providers. This `redirectUri` must match *exactly* the URL¹ specified in your OAuth app settings.
 
@@ -800,13 +800,13 @@ As far as Satellizer is concerned, it does not matter what is the value of `redi
 
 ¹ **Note:** Depending on the OAuth provider, it may be called *Site URL*, *Callback URL*, *Redirect URL*, and so on.
 
-#### How can I send a token in a format other than `Authorization: Bearer <token>`?
+#### :question: How can I send a token in a format other than `Authorization: Bearer <token>`?
 If you are unable to send a token to your server in the following format - `Authorization: Bearer <token>`, then use
 **`$authProvider.authHeader`** and **`$authProvider.authToken`** config options to change the header format. The default values are `Authorization` and `Bearer`, respectively.
 
 For example, if you need to use `Authorization: Basic` header, this is where you change it.
 
-#### How can I avoid sending Authorization header on all HTTP requests?
+#### :question: How can I avoid sending Authorization header on all HTTP requests?
 By default, once user is authenticated, JWT will be sent on every request. If you would like to prevent that, you could use `skipAuthorization` option in your `$http` request. For example:
 
 ```js
@@ -817,12 +817,12 @@ $http({
 });
 ```
 
-#### Is there a way to dynamically change `localStorage` to `sessionStorage`?
+#### :question: Is there a way to dynamically change `localStorage` to `sessionStorage`?
 Yes, you can toggle between [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) and [`sessionStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionstorage) via the following Satellizer methods:
 - `$auth.setStorageType('sessionStorage');`
 - `$auth.setStorageType('localStorage');`
 
-#### I am having a problem with Ionic authentication on iOS 9.
+#### :question: I am having a problem with Ionic authentication on iOS 9.
 First, check what kind of error you are getting by opening the Web Inspector from **Develop > Simulator > index.html** menu.
 If you have configured everything correctly, chances are you running into the following error:
 
