@@ -55,20 +55,26 @@ describe('SatellizerOauth2', function() {
     });
 
     it('should URI-encode state value', function() {
-      this.oauth2.open({defaultUrlParams: ['state'], state: 'foo+bar'});
-      expect(this.oauth2.buildQueryString()).toContain('state=foo%2Bbar');
+      this.oauth2.open({defaultUrlParams: ['state'], state: 'foo+bar'})
+        .then(function () {
+          expect(this.oauth2.buildQueryString()).toContain('state=foo%2Bbar');
+        });
     });
 
     it('should use scopePrefix if provided', function() {
-      this.oauth2.open(this.config.providers.google);
-      expect(this.oauth2.buildQueryString()).toContain('scope=openid profile email');
+      this.oauth2.open(this.config.providers.google)
+        .then(function () {
+          expect(this.oauth2.buildQueryString()).toContain('scope=openid profile email');
+        });
     });
 
     it('should remove redirect_uri if param redirectUrl is null', function() {
       var tempProvider = angular.copy(this.config.providers.google);
       tempProvider.redirectUri = null;
-      this.oauth2.open(tempProvider);
-      expect(this.oauth2.buildQueryString()).not.toContain('redirect_uri=');
+      this.oauth2.open(tempProvider)
+        .then(function () {
+          expect(this.oauth2.buildQueryString()).not.toContain('redirect_uri=');
+        });
     });
 
   });
