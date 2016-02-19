@@ -2,8 +2,8 @@
   "name": "satellizer-ionic",
   "version": "0.0.0",
   "dependencies": {
-    "gulp": "^3.9.0",
-    "gulp-sass": "^2.1.1",
+    "gulp": "^3.9.1",
+    "gulp-sass": "^2.2.0",
     "gulp-concat": "^2.6.0",
     "gulp-minify-css": "^1.2.3",
     "gulp-rename": "^1.2.2"
@@ -11,7 +11,7 @@
   "devDependencies": {
     "bower": "^1.7.7",
     "gulp-util": "^3.0.7",
-    "shelljs": "^0.5.3"
+    "shelljs": "^0.6.0"
   },
   "cordovaPlugins": [
     "cordova-plugin-inappbrowser"
