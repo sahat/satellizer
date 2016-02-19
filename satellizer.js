@@ -752,12 +752,6 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
         Popup.pollPopup = function(redirectUri) {
           var deferred = $q.defer();
 
-          var redirectUriParser = document.createElement('a');
-          redirectUriParser.href = redirectUri;
-
-          var redirectUriHost = redirectUriParser.protocol + '//' + redirectUriParser.hostname +
-            (redirectUriParser.port ? ':' + redirectUriParser.port: '');
-
           var polling = $interval(function() {
             if (!Popup.popupWindow || Popup.popupWindow.closed || Popup.popupWindow.closed === undefined) {
               deferred.reject('The popup window was closed.');
