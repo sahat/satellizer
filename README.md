@@ -34,7 +34,7 @@ in the app *config* block.
 - [Obtaining OAuth Keys](#obtaining-oauth-keys)
 - [API Reference](#api-reference)
 - [FAQ](#faq)
- - [Can I change `redirectUri`` to something other than base URL?](#can-i-change-redirecturi-to-something-other-than-base-url)
+ - [Can I change `redirectUri` to something other than base URL?](#can-i-change-redirecturi-to-something-other-than-base-url)
  - [How can I send a token in a format other than `Authorization: Bearer <token>?`](#how-can-i-send-a-token-in-a-format-other-than-authorization-bearer-token)
  - [How can I avoid sending Authorization header on all HTTP requests?](#how-can-i-avoid-sending-authorization-header-on-all-http-requests)
  - [Is there a way to dynamically change `localStorage` to `sessionStorage`?](#is-there-a-way-to-dynamically-change-localstorage-to-sessionstorage)
@@ -780,13 +780,13 @@ $auth.setStorageType('sessionStorage');
 
 #### Can I change `redirectUri` to something other than base URL?
 
-By default, `redirectUri` is set to `window.location.origin` (protocol, hostname, port number of a URL) for all OAuth providers. This `redirectUri` must match *exactly* the URL¹ specified in your OAuth app.
+By default, `redirectUri` is set to `window.location.origin` (protocol, hostname, port number of a URL) for all OAuth providers. This `redirectUri` must match *exactly* the URL¹ specified in your OAuth app settings.
 
 **Facebook (example)**
 ![](http://i.imgur.com/eaykgcZ.png)
 
 
-However, you can set `redirectUri` to any URL you desire. For instance, you may follow the format of [Passport.js](http://passportjs.org/):
+However, you can set `redirectUri` to any URL you desire. For instance, you may follow the naming convention of [Passport.js](http://passportjs.org/):
 ```js
 // Note: Must be absolute path.
 window.location.origin + /auth/facebook/facebook/callback
