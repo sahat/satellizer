@@ -786,11 +786,11 @@ By default, `redirectUri` is set to `window.location.origin` (protocol, hostname
 ![](http://i.imgur.com/eaykgcZ.png)
 
 
-However, you can set `redirectUri` to any URL you desire. For instance, you may follow the naming convention of [Passport.js](http://passportjs.org/):
+However, you can set `redirectUri` to any URL *path* you desire. For instance, you may follow the naming convention of [Passport.js](http://passportjs.org/):
 ```js
 // Note: Must be absolute path.
-window.location.origin + /auth/facebook/facebook/callback
-window.location.origin + /auth/facebook/google/callback
+window.location.origin + '/auth/facebook/facebook/callback'
+window.location.origin + '/auth/facebook/google/callback'
 ...
 ```
 
