@@ -13,7 +13,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
   'use strict';
 
   if (!window.location.origin) {
-    window.location.origin = window.location.protocol + '//' + window.location.host;
+    window.location.origin = window.location.protocol + '//' + window.location.hostname + (window.location.port ? (':' + window.location.port) : '');
   }
 
   angular.module('satellizer', [])
@@ -759,10 +759,18 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
             }
 
             try {
-              var popupWindowHost = Popup.popupWindow.location.protocol + '//' + Popup.popupWindow.location.hostname +
-                    (Popup.popupWindow.location.port ? ':' + Popup.popupWindow.location.port: '');
+              var popupWindowPath = Popup.popupWindow.location.protocol + '//' + Popup.popupWindow.location.hostname +
+                (Popup.popupWindow.location.port ? ':' + Popup.popupWindow.location.port : '') +
+                (Popup.popupWindow.location.pathname !== '/' ? Popup.popupWindow.location.pathname : '');
 
-              if (popupWindowHost === redirectUriHost) {  // Redirect occurred.
+
+              console.log('1. Popup', popupWindowPath);
+              console.log('2. redirectUri', redirectUri);
+
+
+              // Redirect has occurred.
+              if (popupWindowPath === redirectUri) {
+                // Contains query/hash parameters as expected.
                 if (Popup.popupWindow.location.search || Popup.popupWindow.location.hash) {
                   var queryParams = Popup.popupWindow.location.search.substring(1).replace(/\/$/, '');
                   var hashParams = Popup.popupWindow.location.hash.substring(1).replace(/[\/$]/, '');
@@ -777,6 +785,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
                     deferred.resolve(qs);
                   }
                 } else {
+                  // Does not contain query/hash parameters, can't do anything at this point.
                   deferred.reject(
                     'Redirect has occurred but no query or hash parameters were found. ' +
                     'They were either not set during the redirect, or were removed before Satellizer ' +
