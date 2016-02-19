@@ -763,11 +763,6 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
                 (Popup.popupWindow.location.port ? ':' + Popup.popupWindow.location.port : '') +
                 (Popup.popupWindow.location.pathname !== '/' ? Popup.popupWindow.location.pathname : '');
 
-
-              console.log('1. Popup', popupWindowPath);
-              console.log('2. redirectUri', redirectUri);
-
-
               // Redirect has occurred.
               if (popupWindowPath === redirectUri) {
                 // Contains query/hash parameters as expected.
@@ -892,6 +887,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
       var store = {};
 
+      // Check if localStorage or sessionStorage is available or enabled
       var isStorageAvailable = (function() {
         try {
           var supported = config.storageType in $window && $window[config.storageType] !== null;
