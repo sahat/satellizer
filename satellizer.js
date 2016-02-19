@@ -755,9 +755,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           var redirectUriParser = document.createElement('a');
           redirectUriParser.href = redirectUri;
 
-          var redirectUriPath = redirectUriParser.protocol + '//' + redirectUriParser.hostname +
-            (redirectUriParser.port ? ':' + redirectUriParser.port: '') +
-            redirectUriParser.pathname;
+          var redirectUriPath = utils.getFullUrlPath(redirectUriParser);
 
           var polling = $interval(function() {
             if (!Popup.popupWindow || Popup.popupWindow.closed || Popup.popupWindow.closed === undefined) {
@@ -766,9 +764,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
             }
 
             try {
-              var popupWindowPath = Popup.popupWindow.location.protocol + '//' + Popup.popupWindow.location.hostname +
-                (Popup.popupWindow.location.port ? ':' + Popup.popupWindow.location.port : '') +
-                Popup.popupWindow.location.pathname;
+              var popupWindowPath = utils.getFullUrlPath(Popup.popupWindow.location);
 
               // Redirect has occurred.
               if (popupWindowPath === redirectUriPath) {
@@ -831,6 +827,11 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
         return Popup;
       }])
     .service('SatellizerUtils', function() {
+      this.getFullUrlPath = function(location) {
+        return location.protocol + '//' + location.hostname +
+        (location.port ? ':' + location.port : '') + location.pathname;
+      };
+
       this.camelCase = function(name) {
         return name.replace(/([\:\-\_]+(.))/g, function(_, separator, letter, offset) {
           return offset ? letter.toUpperCase() : letter;
