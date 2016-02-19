@@ -752,6 +752,13 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
         Popup.pollPopup = function(redirectUri) {
           var deferred = $q.defer();
 
+          var redirectUriParser = document.createElement('a');
+          redirectUriParser.href = redirectUri;
+
+          var redirectUriPath = redirectUriParser.protocol + '//' + redirectUriParser.hostname +
+            (redirectUriParser.port ? ':' + redirectUriParser.port: '') +
+            redirectUriParser.pathname;
+
           var polling = $interval(function() {
             if (!Popup.popupWindow || Popup.popupWindow.closed || Popup.popupWindow.closed === undefined) {
               deferred.reject('The popup window was closed.');
@@ -761,10 +768,10 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
             try {
               var popupWindowPath = Popup.popupWindow.location.protocol + '//' + Popup.popupWindow.location.hostname +
                 (Popup.popupWindow.location.port ? ':' + Popup.popupWindow.location.port : '') +
-                (Popup.popupWindow.location.pathname !== '/' ? Popup.popupWindow.location.pathname : '');
+                Popup.popupWindow.location.pathname;
 
               // Redirect has occurred.
-              if (popupWindowPath === redirectUri) {
+              if (popupWindowPath === redirectUriPath) {
                 // Contains query/hash parameters as expected.
                 if (Popup.popupWindow.location.search || Popup.popupWindow.location.hash) {
                   var queryParams = Popup.popupWindow.location.search.substring(1).replace(/\/$/, '');
