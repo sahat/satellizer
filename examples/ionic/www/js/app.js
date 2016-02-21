@@ -29,7 +29,6 @@ angular.module('starter', ['ionic', 'satellizer', 'starter.controllers'])
     };
 
     if (ionic.Platform.isIOS() || ionic.Platform.isAndroid()) {
-      $authProvider.cordova = true;
       commonConfig.redirectUri = 'http://localhost/';
     }
 
