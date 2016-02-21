@@ -22,7 +22,7 @@ angular.module('starter', ['ionic', 'satellizer', 'starter.controllers'])
     var commonConfig = {
       popupOptions: {
         location: 'no',
-        toolbar: 'no',
+        toolbar: 'yes',
         width: window.screen.width,
         height: window.screen.height
       }
