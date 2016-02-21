@@ -13,11 +13,9 @@
     "gulp-util": "^3.0.7",
     "shelljs": "^0.5.3"
   },
-  "cordovaPlugins": [
-    "cordova-plugin-inappbrowser"
-  ],
   "cordovaPlatforms": [
-    "ios",
-    "android"
-  ]
+    "android",
+    "ios"
+  ],
+  "cordovaPlugins": []
 }
