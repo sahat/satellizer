@@ -30,8 +30,6 @@ describe('SatellizerOauth2', function() {
 
     it('should exchange code for token', function() {
       this.oauth2.exchangeForToken('code=foo');
-      this.$timeout.flush();
-      this.$timeout.verifyNoPendingTasks();
     });
 
     it('should exchange code for token with custom responseParams', function() {
@@ -49,8 +47,6 @@ describe('SatellizerOauth2', function() {
     it('should handle state param', function() {
       this.oauth2.open(this.config.providers.facebook);
       this.oauth2.exchangeForToken({ state: 'STATE' });
-      this.$timeout.flush();
-      this.$timeout.verifyNoPendingTasks();
     });
 
   });
