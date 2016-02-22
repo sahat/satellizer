@@ -22,14 +22,13 @@ angular.module('starter', ['ionic', 'satellizer', 'starter.controllers'])
     var commonConfig = {
       popupOptions: {
         location: 'no',
-        toolbar: 'no',
+        toolbar: 'yes',
         width: window.screen.width,
         height: window.screen.height
       }
     };
 
     if (ionic.Platform.isIOS() || ionic.Platform.isAndroid()) {
-      $authProvider.cordova = true;
       commonConfig.redirectUri = 'http://localhost/';
     }
 

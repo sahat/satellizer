@@ -21,7 +21,6 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
       httpInterceptor: function() { return true; },
       withCredentials: false,
       tokenRoot: null,
-      cordova: false,
       baseUrl: '/',
       loginUrl: '/auth/login',
       signupUrl: '/auth/signup',
@@ -199,10 +198,6 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
         withCredentials: {
           get: function() { return config.withCredentials; },
           set: function(value) { config.withCredentials = value; }
-        },
-        cordova: {
-          get: function() { return config.cordova; },
-          set: function(value) { config.cordova = value; }
         },
         storageType: {
           get: function() { return config.storageType; },
@@ -517,7 +512,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
               url = [defaults.authorizationEndpoint, Oauth2.buildQueryString()].join('?');
 
-              if (config.cordova) {
+              if (window.cordova) {
                 openPopup = popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri).eventListener(defaults.redirectUri);
               } else {
                 openPopup = popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri).pollPopup(defaults.redirectUri);
@@ -636,7 +631,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
             var popupWindow;
             var serverUrl = config.baseUrl ? utils.joinUrl(config.baseUrl, defaults.url) : defaults.url;
 
-            if (!config.cordova) {
+            if (!window.cordova) {
                 popupWindow = popup.open('', defaults.name, defaults.popupOptions, defaults.redirectUri);
             }
 
@@ -644,7 +639,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
               .then(function(response) {
                 var url = [defaults.authorizationEndpoint, Oauth1.buildQueryString(response.data)].join('?');
 
-                if (config.cordova) {
+                if (window.cordova) {
                   popupWindow = popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri);
                 } else {
                   popupWindow.popupWindow.location = url;
@@ -652,7 +647,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
                 var popupListener;
 
-                if (config.cordova) {
+                if (window.cordova) {
                   popupListener = popupWindow.eventListener(defaults.redirectUri);
                 } else {
                   popupListener = popupWindow.pollPopup(defaults.redirectUri);
@@ -702,7 +697,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
           var stringifiedOptions = Popup.stringifyOptions(Popup.prepareOptions(options));
           var UA = $window.navigator.userAgent;
-          var windowName = (config.cordova || UA.indexOf('CriOS') > -1) ? '_blank' : name;
+          var windowName = (window.cordova || UA.indexOf('CriOS') > -1) ? '_blank' : name;
 
           Popup.popupWindow = $window.open(url, windowName, stringifiedOptions);
 
