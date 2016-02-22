@@ -7,15 +7,16 @@ describe('SatellizerConfig', function() {
     });
   });
 
-  beforeEach(inject(function(SatellizerConfig) {
+  beforeEach(inject(function(SatellizerConfig, SatellizerShared) {
     this.config = SatellizerConfig;
+    this.shared = SatellizerShared;
   }));
 
   it('should set httpInterceptor', function() {
-    this.$authProvider.httpInterceptor = false;
+    this.$authProvider.httpInterceptor = function() { return false; };
     expect(this.config.httpInterceptor()).toEqual(false);
     expect(this.$authProvider.httpInterceptor()).toEqual(false);
-    this.$authProvider.httpInterceptor = true;
+    this.$authProvider.httpInterceptor = function() { return true; };
   });
 
   it('should be able to use an httpInterceptor strategy function', function() {
@@ -76,6 +77,13 @@ describe('SatellizerConfig', function() {
     this.$authProvider.tokenPrefix = 'satellizer';
   });
 
+  it('should work without tokenPrefix', function() {
+    this.$authProvider.tokenPrefix = null;
+    expect(this.config.tokenPrefix).toBe(null);
+    expect(this.$authProvider.tokenPrefix).toBe(null);
+    this.$authProvider.tokenPrefix = 'satellizer';
+  });
+
   it('should set unlinkUrl', function() {
     this.$authProvider.unlinkUrl = '/disconnect';
     expect(this.config.unlinkUrl).toEqual('/disconnect');
@@ -117,13 +125,6 @@ describe('SatellizerConfig', function() {
   it('should add a new oauth1 provider', function() {
     this.$authProvider.oauth1({ name: 'goodreads', url: '/auth/goodreads' });
     expect(this.config.providers['goodreads'].url).toBe('/auth/goodreads');
-  });
-
-  it('should set cordova platform', function() {
-    this.$authProvider.cordova = true;
-    expect(this.config.cordova).toBe(true);
-    expect(this.$authProvider.cordova).toBe(true);
-    this.$authProvider.cordova = false;
   });
 
   it('should set authToken', function() {
