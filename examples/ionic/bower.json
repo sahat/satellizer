@@ -2,6 +2,6 @@
   "name": "satellizer-ionic",
   "devDependencies": {
     "ionic": "^1.2.4",
-    "satellizer": "^0.13.x"
+    "satellizer": "^0.14.0"
   }
 }
