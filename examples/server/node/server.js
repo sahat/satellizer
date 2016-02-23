@@ -577,7 +577,7 @@ app.post('/auth/facebook', function(req, res) {
           });
         });
       } else {
-        // Step 3b. Create a new user account or return an existing one.
+        // Step 3. Create a new user account or return an existing one.
         User.findOne({ facebook: profile.id }, function(err, existingUser) {
           if (existingUser) {
             var token = createJWT(existingUser);
