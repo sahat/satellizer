@@ -206,7 +206,7 @@ class AuthController extends Controller {
             $payload = (array) JWT::decode($token, Config::get('app.token_secret'), array('HS256'));
 
             $user = User::find($payload['sub']);
-            $user->google = $profile['sub'];
+            $user->google = $profile['id'];
             $user->displayName = $user->displayName ?: $profile['name'];
             $user->save();
 
