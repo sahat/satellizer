@@ -183,8 +183,8 @@ def facebook():
             response.status_code = 400
             return response
 
-        u = User(facebook=profile['id'], display_name=profile['name'])
-        db.session.add(u)
+        user.facebook = profile['id']
+        user.display_name = user.display_name or profile['name']
         db.session.commit()
         token = create_token(u)
         return jsonify(token=token)
@@ -238,8 +238,8 @@ def github():
             response.status_code = 400
             return response
 
-        u = User(github=profile['id'], display_name=profile['name'])
-        db.session.add(u)
+        user.github = profile['id']
+        user.display_name = display_name or profile['name']
         db.session.commit()
         token = create_token(u)
         return jsonify(token=token)
@@ -439,8 +439,8 @@ def bitbucket():
             response.status_code = 400
             return response
 
-        u = User(bitbucket=profile['uuid'], display_name=profile['display_name'])
-        db.session.add(u)
+        user.bitbucket = profile['uuid']
+        user.display_name = user.display_name or profile['display_name']
         db.session.commit()
         token = create_token(u)
         return jsonify(token=token)
