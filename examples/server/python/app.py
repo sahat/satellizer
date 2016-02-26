@@ -333,6 +333,29 @@ def linkedin():
     # Step 2. Retrieve information about the current user.
     r = requests.get(people_api_url, params=params)
     profile = json.loads(r.text)
+    
+    # Step 3. (optional) Link accounts.
+    if request.headers.get('Authorization'):
+        user = User.query.filter_by(linkedin=profile['id']).first()
+        if user:
+            response = jsonify(message='There is already a LinkedIn account that belongs to you')
+            response.status_code = 409
+            return response
+
+        payload = parse_token(request)
+
+        user = User.query.filter_by(id=payload['sub']).first()
+        if not user:
+            response = jsonify(message='User not found')
+            response.status_code = 400
+            return response
+        user.linkedin = profile['id']
+        user.display_name = user.display_name or (profile['firstName'] + ' ' + profile['lastName'])
+        db.session.commit()
+        token = create_token(u)
+        return jsonify(token=token)
+
+    # Step 4. Create a new account or return an existing one.
 
     user = User.query.filter_by(linkedin=profile['id']).first()
     if user:
