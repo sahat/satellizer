@@ -7,8 +7,6 @@ class Token
   def initialize token
     @payload = JWT.decode(token, JWT_SECRET, JWT_ALGORITHM).first.with_indifferent_access
     @user_id = @payload[:user_id]
-  rescue JWT::DecodeError
-    nil
   end
 
   def valid?
