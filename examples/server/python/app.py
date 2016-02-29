@@ -186,7 +186,7 @@ def facebook():
         user.facebook = profile['id']
         user.display_name = user.display_name or profile['name']
         db.session.commit()
-        token = create_token(u)
+        token = create_token(user)
         return jsonify(token=token)
 
     # Step 4. Create a new account or return an existing one.
@@ -241,7 +241,7 @@ def github():
         user.github = profile['id']
         user.display_name = display_name or profile['name']
         db.session.commit()
-        token = create_token(u)
+        token = create_token(user)
         return jsonify(token=token)
 
     # Step 4. Create a new account or return an existing one.
@@ -296,7 +296,7 @@ def google():
         user.google = profile['sub']
         user.display_name = user.display_name or profile['name']
         db.session.commit()
-        token = create_token(u)
+        token = create_token(user)
         return jsonify(token=token)
 
     # Step 4. Create a new account or return an existing one.
@@ -352,7 +352,7 @@ def linkedin():
         user.linkedin = profile['id']
         user.display_name = user.display_name or (profile['firstName'] + ' ' + profile['lastName'])
         db.session.commit()
-        token = create_token(u)
+        token = create_token(user)
         return jsonify(token=token)
 
     # Step 4. Create a new account or return an existing one.
@@ -442,7 +442,7 @@ def bitbucket():
         user.bitbucket = profile['uuid']
         user.display_name = user.display_name or profile['display_name']
         db.session.commit()
-        token = create_token(u)
+        token = create_token(user)
         return jsonify(token=token)
 
     # Step 4. Create a new account or return an existing one.
