@@ -828,7 +828,8 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
     .service('SatellizerUtils', function() {
       this.getFullUrlPath = function(location) {
         return location.protocol + '//' + location.hostname +
-        (location.port ? ':' + location.port : '') + location.pathname;
+          (location.port ? ':' + location.port : '') +
+          (/^\//.test(location.pathname) ? location.pathname : '/' + location.pathname);
       };
 
       this.camelCase = function(name) {
