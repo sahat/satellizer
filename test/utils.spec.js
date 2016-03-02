@@ -52,5 +52,57 @@ describe('SatellizerUtils', function() {
     });
   });
 
+  describe('getFullUrlPath()', function() {
+
+    it('should be defined', function() {
+      expect(this.utils.getFullUrlPath).toBeDefined();
+    });
+
+    it('should normalize full url from window.location', function() {
+      var url1 = this.utils.getFullUrlPath({
+        hash: '#/',
+        host: 'localhost:3000',
+        hostname: 'localhost',
+        href: 'http://localhost:3000/#/',
+        origin: 'http://localhost:3000',
+        pathname: '/',
+        port: '3000',
+        protocol: 'http:',
+        search: ''
+      });
+      var url2 = this.utils.getFullUrlPath({
+        protocol: 'http:',
+        hostname: 'google.com',
+        port: '',
+        pathname: '/test'
+      });
+      var url3 = this.utils.getFullUrlPath({
+        protocol: 'https:',
+        hostname: 'google.com',
+        port: '',
+        pathname: '/test'
+      });
+      expect(url1).toEqual('http://localhost:3000/');
+      expect(url2).toEqual('http://google.com:80/test');
+      expect(url3).toEqual('https://google.com:443/test');
+    });
+
+    it('should normalize full url from createElement("a")', function() {
+      var urlElement = document.createElement('a');
+      urlElement.href = 'http://d4507eb5.ngrok.io/#/';
+
+      var url1 = this.utils.getFullUrlPath(urlElement);
+      expect(url1).toEqual('http://d4507eb5.ngrok.io:80/');
+
+      urlElement.href = 'https://google.com/test';
+      var url2 = this.utils.getFullUrlPath(urlElement);
+      expect(url2).toEqual('https://google.com:443/test');
+
+      urlElement.href = 'http://localhost:3000/';
+      var url3 = this.utils.getFullUrlPath(urlElement);
+      expect(url3).toEqual('http://localhost:3000/');
+    });
+  });
+
 });
 
