@@ -765,7 +765,6 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
             try {
               var popupWindowPath = utils.getFullUrlPath(Popup.popupWindow.location);
 
-              console.log('Popup vs redirectUri: ', popupWindowPath, redirectUriPath);
               // Redirect has occurred.
               if (popupWindowPath === redirectUriPath) {
                 // Contains query/hash parameters as expected.
