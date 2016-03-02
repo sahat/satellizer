@@ -765,6 +765,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
             try {
               var popupWindowPath = utils.getFullUrlPath(Popup.popupWindow.location);
 
+              console.log('Popup vs redirectUri: ', popupWindowPath, redirectUriPath);
               // Redirect has occurred.
               if (popupWindowPath === redirectUriPath) {
                 // Contains query/hash parameters as expected.
@@ -827,8 +828,9 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
       }])
     .service('SatellizerUtils', function() {
       this.getFullUrlPath = function(location) {
+        var isHttps = location.protocol === 'https:';
         return location.protocol + '//' + location.hostname +
-          (location.port ? ':' + location.port : '') +
+          ':' + (location.port || (isHttps ? '443' : '80')) +
           (/^\//.test(location.pathname) ? location.pathname : '/' + location.pathname);
       };
 
