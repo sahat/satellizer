@@ -23,7 +23,7 @@ in the app *config* block.
 ## Table of Contents
 
 - [Installation](#installation)
- - [Requirements for Mobile Apps](#-requirements-for-mobile-apps)
+ - [Requirements for Mobile Apps](#requirements-for-mobile-apps)
 - [Usage](#usage)
 - [Configuration](#configuration)
 - [Browser Support](#browser-support)
