@@ -23,6 +23,7 @@ in the app *config* block.
 ## Table of Contents
 
 - [Installation](#installation)
+ - [Requirements for Mobile Apps](#requirements-for-mobile-apps)
 - [Usage](#usage)
 - [Configuration](#configuration)
 - [Browser Support](#browser-support)
@@ -72,6 +73,27 @@ If installed via [Bower](http://bower.io/), include one of the following script 
 
 **Note:** Sattelizer depends on [`window.atob()`](https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/atob) for decoding JSON Web Tokens. If you need to support *IE9* then use Base64 polyfill above.
 
+
+### Requirements for mobile apps
+
+With any Cordova mobile applications or any framework that uses Cordova, such as Ionic framework, you need to add [cordova-plugin-inappbrowser](https://cordova.apache.org/docs/en/3.0.0/cordova/inappbrowser/inappbrowser.html) plugin,
+
+```
+$ cordova plugin add cordova-plugin-inappbrowser
+```
+
+Make sure, **inAppBrowser** is listed in your project,
+
+```
+$ cordova plugins
+cordova-plugin-console 1.0.2 "Console"
+cordova-plugin-device 1.1.1 "Device"
+cordova-plugin-inappbrowser 1.3.0 "InAppBrowser"
+cordova-plugin-splashscreen 3.2.0 "Splashscreen"
+cordova-plugin-statusbar 2.1.1 "StatusBar"
+cordova-plugin-whitelist 1.2.1 "Whitelist"
+ionic-plugin-keyboard 1.0.8 "Keyboard"
+```
 
 ## Usage
 
