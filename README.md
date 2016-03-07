@@ -74,15 +74,15 @@ If installed via [Bower](http://bower.io/), include one of the following script 
 **Note:** Sattelizer depends on [`window.atob()`](https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/atob) for decoding JSON Web Tokens. If you need to support *IE9* then use Base64 polyfill above.
 
 
-### Requirements for mobile apps
+### Requirements for Mobile Apps
 
-With any Cordova mobile applications or any framework that uses Cordova, such as Ionic framework, you need to add [cordova-plugin-inappbrowser](https://cordova.apache.org/docs/en/3.0.0/cordova/inappbrowser/inappbrowser.html) plugin,
+With any Cordova mobile apps or any framework that uses Cordova, such as [Ionic Framework](http://ionicframework.com/), you will need to add [cordova-plugin-inappbrowser](https://cordova.apache.org/docs/en/3.0.0/cordova/inappbrowser/inappbrowser.html) plugin:
 
 ```
 $ cordova plugin add cordova-plugin-inappbrowser
 ```
 
-Make sure, **inAppBrowser** is listed in your project,
+Make sure that **inAppBrowser** is listed in your project:
 
 ```
 $ cordova plugins
