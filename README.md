@@ -1,6 +1,6 @@
 ![Project Logo](https://lh6.googleusercontent.com/-YmfKZZLZKL0/U-KVPFSbiOI/AAAAAAAAEZA/maoYT8iJCnA/w1089-h513-no/sshot-1.png)
 
-# [Satellizer](https://github.com/sahat/satellizer/) 
+# [Satellizer](https://github.com/sahat/satellizer/)
 
 [![Join the chat at https://gitter.im/sahat/satellizer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/sahat/satellizer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](http://img.shields.io/travis/sahat/satellizer.svg?style=flat)](https://travis-ci.org/sahat/satellizer)
@@ -23,6 +23,7 @@ in the app *config* block.
 ## Table of Contents
 
 - [Installation](#installation)
+ - [Requirements for Mobile Apps](#-requirements-for-mobile-apps)
 - [Usage](#usage)
 - [Configuration](#configuration)
 - [Browser Support](#browser-support)
@@ -65,6 +66,27 @@ Alternatively, you may [**download**](https://github.com/sahat/satellizer/releas
 **Note:** Sattelizer depends on [`window.atob()`](https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/atob) for decoding JSON Web Tokens. If you need to support *IE9* then use Base64 polyfill above.
 
 
+### Requirements for mobile apps
+
+With any Cordova mobile applications or any framework that uses Cordova, such as Ionic framework, you need to add [cordova-plugin-inappbrowser](https://cordova.apache.org/docs/en/3.0.0/cordova/inappbrowser/inappbrowser.html) plugin,
+
+```
+$ cordova plugin add cordova-plugin-inappbrowser
+```
+
+Make sure, **inAppBrowser** is listed in your project,
+
+```
+$ cordova plugins
+cordova-plugin-console 1.0.2 "Console"
+cordova-plugin-device 1.1.1 "Device"
+cordova-plugin-inappbrowser 1.3.0 "InAppBrowser"
+cordova-plugin-splashscreen 3.2.0 "Splashscreen"
+cordova-plugin-statusbar 2.1.1 "StatusBar"
+cordova-plugin-whitelist 1.2.1 "Whitelist"
+ionic-plugin-keyboard 1.0.8 "Keyboard"
+```
+
 ## Usage
 
 **Step 1. App Module**
@@ -87,7 +109,7 @@ angular.module('MyApp', ['satellizer'])
     $authProvider.linkedin({
       clientId: 'LinkedIn Client ID'
     });
-    
+
     $authProvider.instagram({
       clientId: 'Instagram Client ID'
     });
@@ -358,18 +380,18 @@ use after page reload.
 ### <img height="34" align="top" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Oauth_logo.svg/180px-Oauth_logo.svg.png"> Login with OAuth 1.0
 
 1. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Open an **empty** popup window via `$auth.authenticate('provider name')`.
-2. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Unlike OAuth 2.0, with OAuth 1.0 you cannot go directly to the authorization 
+2. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Unlike OAuth 2.0, with OAuth 1.0 you cannot go directly to the authorization
 screen without a valid `request_token`.
 3. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** The OAuth 1.0 flow starts with an empty **POST** request to */auth/provider*.
 4. <img height="24" align="top" src="http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/256/Places-network-server-database-icon.png"> **Server:** Obtain and return `request_token`for the authorization popup.
 5. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Set the URL location of a popup to the `authorizationEndpoint` with a valid `request_token` query parameter, as well as popup options for height and width. This will redirect a user to the authorization screen. After this point, the flow is very similar to OAuth 2.0.
 6. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Sign in with your username and password if necessary, then authorize
 the application.
-7. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Send a *POST* request back to the */auth/provider* with 
+7. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Send a *POST* request back to the */auth/provider* with
 `oauth_token` and `oauth_verifier` query parameters.
-8. <img height="24" align="top" src="http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/256/Places-network-server-database-icon.png"> **Server:** Do an OAuth-signed `POST` request to the */access_token* URL since we now have `oauth_token` and 
+8. <img height="24" align="top" src="http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/256/Places-network-server-database-icon.png"> **Server:** Do an OAuth-signed `POST` request to the */access_token* URL since we now have `oauth_token` and
 `oauth_verifier` parameters.
-10. <img height="24" align="top" src="http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/256/Places-network-server-database-icon.png"> **Server:** Look up the user by their unique *Provider ID*. If user already 
+10. <img height="24" align="top" src="http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/256/Places-network-server-database-icon.png"> **Server:** Look up the user by their unique *Provider ID*. If user already
 exists, grab the existing user, otherwise create a new user account.
 11. <img height="24" align="top" src="http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/256/Places-network-server-database-icon.png"> **Server:** Create a JSON Web Token and send it back to the client.
 12. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Parse the token and save it to *Local Storage* for subsequent
@@ -380,15 +402,15 @@ use after page reload.
 
 1. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Open a popup window via `$auth.authenticate('provider name')`.
 2. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Sign in with that provider, if necessary, then authorize the application.
-3. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** After successful authorization, the popup is redirected back to 
+3. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** After successful authorization, the popup is redirected back to
 your app, e.g. *http://localhost:3000*,  with the `code` (authorization code)
 query string parameter.
 4. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** The `code` parameter is sent back to the  parent window that opened the popup.
-5. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Parent window closes the popup and sends a **POST** 
+5. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Parent window closes the popup and sends a **POST**
 request to */auth/provider* with`code` parameter.
 6. <img height="24" align="top" src="http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/256/Places-network-server-database-icon.png"> **Server:** *Authorization code* is exchanged for *access token*.
 7. <img height="24" align="top" src="http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/256/Places-network-server-database-icon.png"> **Server:** User information is retrived using the *access token* from **Step 6**.
-8. <img height="24" align="top" src="http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/256/Places-network-server-database-icon.png"> **Server:** Look up the user by their unique *Provider ID*. If user already 
+8. <img height="24" align="top" src="http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/256/Places-network-server-database-icon.png"> **Server:** Look up the user by their unique *Provider ID*. If user already
 exists, grab the existing user, otherwise create a new user account.
 9. <img height="24" align="top" src="http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/256/Places-network-server-database-icon.png"> **Server:** In both cases of Step 8, create a JSON Web Token and send it back to the client.
 10. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Parse the token and save it to *Local Storage* for subsequent
