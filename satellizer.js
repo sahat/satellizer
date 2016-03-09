@@ -529,7 +529,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
                   // Satellizer's magic by doing authorization code exchange and
                   // saving a token manually.
                   if (defaults.responseType === 'token' || !defaults.url) {
-                    defer.resolve(oauthData);
+                    return defer.resolve(oauthData);
                   }
 
                 if (oauthData.state && oauthData.state !== storage.get(stateName)) {
