@@ -532,12 +532,12 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
                     return defer.resolve(oauthData);
                   }
 
-                if (oauthData.state && oauthData.state !== storage.get(stateName)) {
-                  return defer.reject(
-                    'The value returned in the state parameter does not match the state value from your original ' +
-                    'authorization code request.'
-                  );
-                }
+                  if (oauthData.state && oauthData.state !== storage.get(stateName)) {
+                    return defer.reject(
+                      'The value returned in the state parameter does not match the state value from your original ' +
+                      'authorization code request.'
+                    );
+                  }
 
                   defer.resolve(Oauth2.exchangeForToken(oauthData, userData));
                 });
