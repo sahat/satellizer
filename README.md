@@ -105,6 +105,12 @@ angular.module('MyApp', ['satellizer'])
     $authProvider.facebook({
       clientId: 'Facebook App ID'
     });
+    
+    // if used solely on the client side, set responseType to "token"
+    $authProvider.facebook({
+      clientId: 'Facebook App ID',
+      responseType: 'token'
+    });
 
     $authProvider.google({
       clientId: 'Google Client ID'
@@ -600,7 +606,7 @@ $auth.signup(user)
 
 #### `$auth.authenticate(name, [userData])`
 
-Starts the OAuth 1.0 or the OAuth 2.0 authorization flow by opening a popup window.
+Starts the OAuth 1.0 or the OAuth 2.0 authorization flow by opening a popup window. If used client side, [`responseType: "token"`](#authentication-flow) is required in the provider setup to get the actual access token. 
 
 ##### Parameters
 
