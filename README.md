@@ -105,8 +105,8 @@ angular.module('MyApp', ['satellizer'])
     $authProvider.facebook({
       clientId: 'Facebook App ID'
     });
-    
-    // if used solely on the client side, set responseType to "token"
+
+    // Optional: For client-side use (Implicit Grant), set responseType to 'token'
     $authProvider.facebook({
       clientId: 'Facebook App ID',
       responseType: 'token'
@@ -396,7 +396,7 @@ Satellizer relies on *token-based authentication* using
 [JSON Web Tokens](https://auth0.com/blog/2014/01/07/angularjs-authentication-with-cookies-vs-token/)
 instead of cookies.
 
-Additionally, **authorization** (obtaining user's information with their permission) and **authentication** (app sign-in) requires sever-side implementation. See provided [examples](https://github.com/sahat/satellizer/tree/master/examples/server) implemented in multiple languages for your convenience. In other words, you cannot just launch your AngularJS application and expect everything to work. The only exception is when you use *OAuth 2.0 Implicit Grant* (client-side) authorization by setting `responseType: 'token'` in provider's [configuration](https://github.com/sahat/satellizer#configuration).
+Additionally, **authorization** (obtaining user's information with their permission) and **authentication** (application sign-in) requires sever-side implementation. See provided [examples](https://github.com/sahat/satellizer/tree/master/examples/server) implemented in multiple languages for your convenience. In other words, you cannot just launch your AngularJS application and expect everything to work. The only exception is when you use *OAuth 2.0 Implicit Grant* (client-side) authorization by setting `responseType: 'token'` in provider's [configuration](https://github.com/sahat/satellizer#configuration).
 
 ### <img height="34" align="top" src="http://tech-lives.com/wp-content/uploads/2012/03/Lock-icon.png"> Login with Email and Password
 
