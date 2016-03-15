@@ -21,6 +21,8 @@ var request = require('request');
 
 var config = require('./config');
 
+var availableProviders = ['facebook', 'foursquare', 'google', 'github', 'instagram', 'linkedin', 'live', 'twitter', 'twitch', 'yahoo'];
+
 var userSchema = new mongoose.Schema({
   email: { type: String, unique: true, lowercase: true },
   password: { type: String, select: false },
@@ -38,6 +40,8 @@ var userSchema = new mongoose.Schema({
   twitter: String,
   twitch: String
 });
+
+function toTitleCase(str){return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});}
 
 userSchema.pre('save', function(next) {
   var user = this;
@@ -244,9 +248,22 @@ app.post('/auth/google', function(req, res) {
         });
       } else {
         // Step 3b. Create a new user account or return an existing one.
-        User.findOne({ google: profile.sub }, function(err, existingUser) {
+        User.findOne({ email: profile.email }, function(err, existingUser) {
           if (existingUser) {
-            return res.send({ token: createJWT(existingUser) });
+            var match = false;
+            var matches = '';
+            availableProviders.forEach(function(elem){
+              if (user.google) {
+                match = true;
+              } else if (user.elem) {
+                matches += toTitleCase(elem) + ', ';
+              }
+            });
+            if (match && matches.length < 1) {
+              return res.send({ token: createJWT(existingUser) });
+            } else if (!match && matches.length > 0) {
+              return res.send('You already have a ' + matches + 'Account');
+            }
           }
           var user = new User();
           user.google = profile.sub;
@@ -978,8 +995,7 @@ app.post('/auth/bitbucket', function(req, res) {
  */
 app.post('/auth/unlink', ensureAuthenticated, function(req, res) {
   var provider = req.body.provider;
-  var providers = ['facebook', 'foursquare', 'google', 'github', 'instagram',
-    'linkedin', 'live', 'twitter', 'twitch', 'yahoo'];
+  var providers = availableProviders;
 
   if (providers.indexOf(provider) === -1) {
     return res.status(400).send({ message: 'Unknown OAuth Provider' });
