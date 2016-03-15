@@ -253,13 +253,13 @@ app.post('/auth/google', function(req, res) {
             var match = false;
             var matches = '';
             availableProviders.forEach(function(elem){
-              if (user.google) {
+              if (user.google === profile.sub) {
                 match = true;
               } else if (user.elem) {
                 matches += toTitleCase(elem) + ', ';
               }
             });
-            if (match && matches.length < 1) {
+            if (match) {
               return res.send({ token: createJWT(existingUser) });
             } else if (!match && matches.length > 0) {
               return res.send('You already have a ' + matches + 'Account');
