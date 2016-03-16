@@ -555,7 +555,7 @@ app.post('/auth/facebook', function(req, res) {
     request.get({ url: graphApiUrl, qs: accessToken, json: true }, function(err, response, profile) {
       if (response.statusCode !== 200) {
         return res.status(500).send({ message: profile.error.message });
-      } console.log(profile);
+      }
       if (req.header('Authorization')) {
         User.findOne({ facebook: profile.id }, function(err, existingUser) {
           if (existingUser) {
