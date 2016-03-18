@@ -34,6 +34,7 @@ in the app *config* block.
  - [Logout](#-log-out)
 - [Obtaining OAuth Keys](#obtaining-oauth-keys)
 - [API Reference](#api-reference)
+- [Running Tests](#running-tests)
 - [FAQ](#faq)
  - [Can I change `redirectUri` to something other than base URL?](#question-can-i-change-redirecturi-to-something-other-than-base-url)
  - [How can I send a token in a format other than `Authorization: Bearer <token>?`](#question-how-can-i-send-a-token-in-a-format-other-than-authorization-bearer-token)
@@ -812,7 +813,7 @@ Sets storage type to Local Storage or Session Storage.
 $auth.setStorageType('sessionStorage');
 ```
 
-##### Running Tests
+## Running Tests
 
 1. Install npm packages
 `npm install`
