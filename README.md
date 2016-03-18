@@ -351,6 +351,14 @@ $authProvider.oauth2({
     code: 'code',
     clientId: 'clientId',
     redirectUri: 'redirectUri'
+  },
+  // override exchange params
+  exchangeParams: {
+    // doorkeeper example
+    client_id: "client-id-from-service",
+    client_secret: "client-sercret-from-service",
+    redirect_uri: "redirect-uri-specified-on-service",
+    grant_type: "authorization_code"
   }
 });
 
@@ -803,6 +811,15 @@ Sets storage type to Local Storage or Session Storage.
 ```js
 $auth.setStorageType('sessionStorage');
 ```
+
+##### Running Tests
+
+1. Install npm packages
+`npm install`
+2. Install phantomjs-prebuilt globally
+`npm install -g phantomjs-prebuilt `
+3. Execute packaged karma in project root
+`node_modules/karma/bin/karma start`
 
 ## FAQ
 
