@@ -19,16 +19,18 @@
     "url": "http://sahatyalkabov.com"
   },
   "devDependencies": {
+    "babel-preset-es2015-rollup": "^1.1.1",
     "gulp": "^3.9.1",
     "gulp-complexity": "~0.3.2",
+    "gulp-header": "~1.7.1",
     "gulp-plumber": "^1.1.0",
     "gulp-rename": "^1.2.2",
     "gulp-uglify": "~1.5.2",
-    "gulp-header": "~1.7.1",
     "karma": "^0.13.22",
     "karma-coverage": "^0.5.3",
     "karma-jasmine": "^0.3.7",
-    "karma-phantomjs-launcher": "^1.0.0"
+    "karma-phantomjs-launcher": "^1.0.0",
+    "rollup-plugin-babel": "^2.4.0"
   },
   "license": "MIT",
   "tags": [
