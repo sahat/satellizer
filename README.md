@@ -195,7 +195,6 @@ Below is a complete listing of all default configuration options.
 $authProvider.httpInterceptor = function() { return true; },
 $authProvider.withCredentials = true;
 $authProvider.tokenRoot = null;
-$authProvider.cordova = false;
 $authProvider.baseUrl = '/';
 $authProvider.loginUrl = '/auth/login';
 $authProvider.signupUrl = '/auth/signup';
