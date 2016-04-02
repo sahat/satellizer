@@ -1,47 +1,46 @@
 import qs from 'qs';
 import url from 'url';
 
-import Config from './Config';
-import Utils from './utils';
-
 class Popup {
-  constructor($q, $interval, $window) {
-    this.$q = $q;
+  constructor($interval, $window, SatellizerConfig) {
     this.$interval = $interval;
     this.$window = $window;
+    this.config = SatellizerConfig;
 
     this.popup = null;
     this.url = 'about:blank';
   }
 
-  open(url, name, options) {
-    return new Promise((resolve, reject) => {
+  open(url, name, { width=500, height=500 }, redirectUri) {
+    return new Promise((resolve, reject) => { // todo remove redundant
       this.url = url; // todo remove
 
-      const width = config.width || 500;
-      const height = config.height || 500;
-      const options = {
+      const options = qs.stringify({
         width: width,
         height: height,
         top: this.$window.screenY + ((this.$window.outerHeight - height) / 2.5),
         left: this.$window.screenX + ((this.$window.outerWidth - width) / 2)
-      };
+      }, ',');
 
-      const name = (this.$window.cordova || this.$window.navigator.userAgent.includes('CriOS')) ? '_blank' : name;
+      const name = this.$window.cordova || this.$window.navigator.userAgent.includes('CriOS') ? '_blank' : name;
 
-      this.popup = this.$window.open(this.url, name, qs.stringify(options, ','));
+      this.popup = this.$window.open(this.url, name, options);
 
       if (this.popup && this.popup.focus) {
         this.popup.focus();
       }
 
-      resolve();
+      if (this.$window.cordova) {
+        return this.eventListener(defaults.redirectUri); // todo pass redirect uri
+      } else {
+        return this.polling(redirectUri);
+      }
     });
   }
 
-  poll(redirectUri) {
+  polling(redirectUri) {
     return new Promise((resolve, reject) => {
-      const redirectUri = url.parse(config.redirectUri);
+      const redirectUri = url.parse(redirectUri);
 
       const polling = this.$interval(() => {
         if (!this.popup || this.popup.closed || !this.popup.closed) {
@@ -111,4 +110,6 @@ class Popup {
       });
     });
   }
+
+
 }

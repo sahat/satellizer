@@ -1,119 +1,117 @@
-var config = {};
-
 class AuthProvider {
-  constructor() {
-
+  constructor(SatellizerConfig) {
+    this.config = SatellizerConfig;
   }
 
-  get httpInterceptor() { return config.httpInterceptor; }
+  get httpInterceptor() { return this.config.httpInterceptor; }
   set httpInterceptor(value) {
     if (typeof value === 'function') {
-      config.httpInterceptor = value;
+      this.config.httpInterceptor = value;
     } else {
-      config.httpInterceptor = () => {
+      this.config.httpInterceptor = () => {
         return value;
       };
     }
   }
 
-  get baseUrl() { return config.baseUrl; }
-  set baseUrl(value) { config.baseUrl = value; }
+  get baseUrl() { return this.config.baseUrl; }
+  set baseUrl(value) { this.config.baseUrl = value; }
 
-  get loginUrl() { return config.loginUrl; }
-  set loginUrl(value) { config.loginUrl = value; }
+  get loginUrl() { return this.config.loginUrl; }
+  set loginUrl(value) { this.config.loginUrl = value; }
 
-  get signupUrl() { return config.signupUrl; }
-  set signupUrl(value) { config.signupUrl = value; }
+  get signupUrl() { return this.config.signupUrl; }
+  set signupUrl(value) { this.config.signupUrl = value; }
 
-  get tokenRoot() { return config.tokenRoot; }
-  set tokenRoot(value) { config.tokenRoot = value; }
+  get tokenRoot() { return this.config.tokenRoot; }
+  set tokenRoot(value) { this.config.tokenRoot = value; }
 
-  get tokenName() { return config.tokenName; }
-  set tokenName(value) { config.tokenName = value; }
+  get tokenName() { return this.config.tokenName; }
+  set tokenName(value) { this.config.tokenName = value; }
 
-  get tokenPrefix() { return config.tokenPrefix; }
-  set tokenPrefix(value) { config.tokenPrefix = value; }
+  get tokenPrefix() { return this.config.tokenPrefix; }
+  set tokenPrefix(value) { this.config.tokenPrefix = value; }
 
-  get unlinkUrl() { return config.unlinkUrl; }
-  set unlinkUrl(value) { config.unlinkUrl = value; }
+  get unlinkUrl() { return this.config.unlinkUrl; }
+  set unlinkUrl(value) { this.config.unlinkUrl = value; }
 
-  get authHeader() { return config.authHeader; }
-  set authHeader(value) { config.authHeader = value; }
+  get authHeader() { return this.config.authHeader; }
+  set authHeader(value) { this.config.authHeader = value; }
 
-  get authToken() { return config.authToken; }
-  set authToken(value) { config.authToken = value; }
+  get authToken() { return this.config.authToken; }
+  set authToken(value) { this.config.authToken = value; }
 
-  get withCredentials() { return config.withCredentials; }
-  set withCredentials(value) { config.withCredentials = value; }
+  get withCredentials() { return this.config.withCredentials; }
+  set withCredentials(value) { this.config.withCredentials = value; }
 
-  get storageType() { return config.storageType; }
-  set storageType(value) { config.storageType = value; }
+  get storageType() { return this.config.storageType; }
+  set storageType(value) { this.config.storageType = value; }
 
   facebook(options) {
-    return Object.assign({}, config.providers.facebook, options);
+    return Object.assign({}, this.config.providers.facebook, options);
   }
 
   google(options) {
-    return Object.assign({}, config.providers.google, options);
+    return Object.assign({}, this.config.providers.google, options);
   }
 
   github(options) {
-    return Object.assign({}, config.providers.github, options);
+    return Object.assign({}, this.config.providers.github, options);
   }
 
   instagram(options) {
-    return Object.assign({}, config.providers.instagram, options);
+    return Object.assign({}, this.config.providers.instagram, options);
   }
 
   linkedin(options) {
-    return Object.assign({}, config.providers.linkedin, options);
+    return Object.assign({}, this.config.providers.linkedin, options);
   }
 
   twitter(options) {
-    return Object.assign({}, config.providers.twitter, options);
+    return Object.assign({}, this.config.providers.twitter, options);
   }
 
   twitch(options) {
-    return Object.assign({}, config.providers.twitch, options);
+    return Object.assign({}, this.config.providers.twitch, options);
   }
 
   live(options) {
-    return Object.assign({}, config.providers.live, options);
+    return Object.assign({}, this.config.providers.live, options);
   }
 
   yahoo(options) {
-    return Object.assign({}, config.providers.yahoo, options);
+    return Object.assign({}, this.config.providers.yahoo, options);
   }
 
   bitbucket(options) {
-    return Object.assign({}, config.providers.bitbucket, options);
+    return Object.assign({}, this.config.providers.bitbucket, options);
   }
 
   oauth1(options) {
-    config.providers[options.name] = Object.assign({}, options, {
+    this.config.providers[options.name] = Object.assign({}, options, {
       oauthType: '1.0'
     });
   };
 
   oauth2(options) {
-    config.providers[options.name] = Object.assign({}, options, {
+    this.config.providers[options.name] = Object.assign({}, options, {
       oauthType: '2.0'
     });
   };
 
-  $get($q) {
+  $get($q, SatellizerShared, SatellizerLocal, SatellizerOauth) {
     return {
-      login: (user, options) => local.login(user, options),
-      signup: (user, options) => local.signup(user, options),
-      logout: () => shared.logout(),
-      authenticate: (name, data) => oauth.authenticate(name, data),
-      link: (name, data) => oauth.authenticate(name, data),
-      unlink: (name, options) => oauth.unlink(name, options),
-      getToken: () => shared.getToken(),
-      setToken: (token) => shared.setToken({ access_token: token }),
-      removeToken: () => shared.removeToken(),
-      getPayload: () => shared.getPayload(),
-      setStorageType: (type) => shared.setStorageType(type)
+      login: (user, options) => SatellizerLocal.login(user, options),
+      signup: (user, options) => SatellizerLocal.signup(user, options),
+      logout: () => SatellizerShared.logout(),
+      authenticate: (name, data) => SatellizerOauth.authenticate(name, data),
+      link: (name, data) => SatellizerOauth.authenticate(name, data),
+      unlink: (name, options) => SatellizerOauth.unlink(name, options),
+      getToken: () => SatellizerShared.getToken(),
+      setToken: (token) => SatellizerShared.setToken({ access_token: token }),
+      removeToken: () => SatellizerShared.removeToken(),
+      getPayload: () => SatellizerShared.getPayload(),
+      setStorageType: (type) => SatellizerShared.setStorageType(type)
     }
   }
 }

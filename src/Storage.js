@@ -1,19 +1,18 @@
-import Config from './Config';
-
 class Storage {
-  constructor($window) {
+  constructor($window, SatellizerConfig) {
     this.$window = $window;
+    this.config = SatellizerConfig;
     this.memoryStore = {};
     this.isStorageAvailable = this.checkIfAvailable();
   }
 
   checkIfAvailable() {
     try {
-      const supported = Config.storageType in this.$window && this.$window[Config.storageType] !== null;
+      const supported = this.config.storageType in this.$window && this.$window[this.config.storageType] !== null;
       if (supported) {
         const key = Math.random().toString(36).substring(7);
-        this.$window[Config.storageType].setItem(key, '');
-        this.$window[Config.storageType].removeItem(key);
+        this.$window[this.config.storageType].setItem(key, '');
+        this.$window[this.config.storageType].removeItem(key);
       }
       return supported;
     } catch (e) {
@@ -22,15 +21,15 @@ class Storage {
   }
 
   get(key) {
-    return this.isStorageAvailable ? this.$window[Config.storageType].getItem(key) : this.memoryStore[key];
+    return this.isStorageAvailable ? this.$window[this.config.storageType].getItem(key) : this.memoryStore[key];
   }
 
   set(key, value) {
-    return this.isStorageAvailable ? this.$window[Config.storageType].setItem(key, value) : this.memoryStore[key] = value;
+    return this.isStorageAvailable ? this.$window[this.config.storageType].setItem(key, value) : this.memoryStore[key] = value;
   }
 
   remove(key) {
-    return this.isStorageAvailable ? this.$window[Config.storageType].removeItem(key) : delete this.memoryStore[key];
+    return this.isStorageAvailable ? this.$window[this.config.storageType].removeItem(key) : delete this.memoryStore[key];
   }
 }
 
