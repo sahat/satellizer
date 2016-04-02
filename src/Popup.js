@@ -1,4 +1,4 @@
-import qs from 'qs';
+import qs from 'querystring';
 import url from 'url';
 
 class Popup {
@@ -8,7 +8,7 @@ class Popup {
     this.config = SatellizerConfig;
 
     this.popup = null;
-    this.url = 'about:blank';
+    this.url = 'about:blank'; //todo remove
   }
 
   open(url, name, { width=500, height=500 }, redirectUri) {
@@ -110,6 +110,6 @@ class Popup {
       });
     });
   }
-
-
 }
+
+export default Popup;

@@ -1,18 +1,18 @@
 import url from 'url';
 
 class OAuth {
-  constructor($http, SatellizerConfig, SatellizerShared, SatellizerOAuth1, SatellizerOAuth2) {
+  constructor($http, SatellizerConfig, SatellizerShared, SatellizerOAuth1) {
     this.$http = $http;
     this.config = SatellizerConfig;
     this.shared = SatellizerShared;
-    this.oauth1 = SatellizerOAuth1;
-    this.oauth2 = SatellizerOAuth2;
+    // this.oauth1 = SatellizerOAuth1;
+    // this.oauth2 = SatellizerOAuth2;
   }
 
   authenticate(name, data) {
     return new Promise((resolve, reject) => {
       const provider = this.config.providers[name];
-      const oauth = provider.oauthType === '1.0' ? new this.oauth1() : new this.oauth2();
+      const oauth = provider.oauthType === '1.0' ? this.oauth1() : this.oauth2();
 
       oauth.open(provider, data).then((response) => {
         if (provider.url) {

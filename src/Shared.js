@@ -1,21 +1,21 @@
-import Config from './Config';
-import Storage from './Storage';
-
 class Shared {
-  constructor($q, $window, $log) {
-    const { tokenName, tokenPrefix, tokenRoot } = Config;
-    this.tokenName = tokenPrefix ? [tokenPrefix, tokenName].join('_') : tokenName;
-    this.tokenRoot = tokenRoot;
+  constructor($window, $log, SatellizerConfig, SatellizerStorage) {
     this.$window = $window;
     this.$log = $log;
+    this.config = SatellizerConfig;
+    this.storage = SatellizerStorage;
+
+    const { tokenName, tokenPrefix, tokenRoot } = this.config;
+    this.tokenName = tokenPrefix ? [tokenPrefix, tokenName].join('_') : tokenName;
+    this.tokenRoot = tokenRoot;
   }
 
   getToken() {
-    return Storage.get(this.tokenName);
+    return this.storage.get(this.tokenName);
   }
 
   getPayload() {
-    const token = Storage.get(this.tokenName);
+    const token = this.storage.get(this.tokenName);
 
     if (token && token.split('.').length === 3) {
       try {
@@ -52,15 +52,15 @@ class Shared {
       return this.$log.warn('Expecting a token named "' + tokenPath);
     }
 
-    Storage.set(this.tokenName, token);
+    this.storage.set(this.tokenName, token);
   }
 
   removeToken() {
-    Storage.remove(this.tokenName);
+    this.storage.remove(this.tokenName);
   }
 
   isAuthenticated() {
-    const token = Storage.get(this.tokenName);
+    const token = this.storage.get(this.tokenName);
 
     if (token) {  // Token is present
       if (token.split('.').length === 3) {  // Token with a valid JWT format XXX.YYY.ZZZ
@@ -86,11 +86,11 @@ class Shared {
   }
 
   logout() {
-    Storage.remove(this.tokenName);
+    this.storage.remove(this.tokenName);
   }
 
   setStorageType(type) {
-    Config.storageType = type;
+    this.storageType = type;
   }
 }
 

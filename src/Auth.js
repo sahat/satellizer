@@ -99,18 +99,19 @@ class AuthProvider {
     });
   };
 
-  $get($q, SatellizerShared, SatellizerLocal, SatellizerOauth) {
+  $get(SatellizerShared, SatellizerLocal, SatellizerOAuth) {
     return {
       login: (user, options) => SatellizerLocal.login(user, options),
       signup: (user, options) => SatellizerLocal.signup(user, options),
       logout: () => SatellizerShared.logout(),
-      authenticate: (name, data) => SatellizerOauth.authenticate(name, data),
-      link: (name, data) => SatellizerOauth.authenticate(name, data),
-      unlink: (name, options) => SatellizerOauth.unlink(name, options),
+      authenticate: (name, data) => SatellizerOAuth.authenticate(name, data),
+      link: (name, data) => SatellizerOAuth.authenticate(name, data),
+      unlink: (name, options) => SatellizerOAuth.unlink(name, options),
+      isAuthenticated: () => SatellizerShared.isAuthenticated(),
+      getPayload: () => SatellizerShared.getPayload(),
       getToken: () => SatellizerShared.getToken(),
       setToken: (token) => SatellizerShared.setToken({ access_token: token }),
       removeToken: () => SatellizerShared.removeToken(),
-      getPayload: () => SatellizerShared.getPayload(),
       setStorageType: (type) => SatellizerShared.setStorageType(type)
     }
   }
