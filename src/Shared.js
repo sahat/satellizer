@@ -5,17 +5,16 @@ class Shared {
     this.config = SatellizerConfig;
     this.storage = SatellizerStorage;
 
-    const { tokenName, tokenPrefix, tokenRoot } = this.config;
-    this.tokenName = tokenPrefix ? [tokenPrefix, tokenName].join('_') : tokenName;
-    this.tokenRoot = tokenRoot;
+    const { tokenName, tokenPrefix } = this.config;
+    this.prefixedTokenName = tokenPrefix ? [tokenPrefix, tokenName].join('_') : tokenName;
   }
 
   getToken() {
-    return this.storage.get(this.tokenName);
+    return this.storage.get(this.prefixedTokenName);
   }
 
   getPayload() {
-    const token = this.storage.get(this.tokenName);
+    const token = this.storage.get(this.prefixedTokenName);
 
     if (token && token.split('.').length === 3) {
       try {
@@ -43,24 +42,24 @@ class Shared {
     }
 
     if (!token && response) {
-      const tokenRootData = this.tokenRoot && this.tokenRoot.split('.').reduce(function(o, x) { return o[x]; }, response.data);
-      token = tokenRootData ? tokenRootData[this.tokenName] : response.data && response.data[this.tokenName];
+      const tokenRootData = this.config.tokenRoot && this.config.tokenRoot.split('.').reduce(function(o, x) { return o[x]; }, response.data);
+      token = tokenRootData ? tokenRootData[this.config.tokenName] : response.data && response.data[this.config.tokenName];
     }
 
     if (!token) {
-      const tokenPath = this.tokenRoot ? this.tokenRoot + '.' + this.tokenName : this.tokenName;
+      const tokenPath = this.config.tokenRoot ? this.config.tokenRoot + '.' + this.config.tokenName : this.config.tokenName;
       return this.$log.warn('Expecting a token named "' + tokenPath);
     }
 
-    this.storage.set(this.tokenName, token);
+    this.storage.set(this.prefixedTokenName, token);
   }
 
   removeToken() {
-    this.storage.remove(this.tokenName);
+    this.storage.remove(this.prefixedTokenName);
   }
 
   isAuthenticated() {
-    const token = this.storage.get(this.tokenName);
+    const token = this.storage.get(this.prefixedTokenName);
 
     if (token) {  // Token is present
       if (token.split('.').length === 3) {  // Token with a valid JWT format XXX.YYY.ZZZ
@@ -86,7 +85,7 @@ class Shared {
   }
 
   logout() {
-    this.storage.remove(this.tokenName);
+    this.storage.remove(this.prefixedTokenName);
   }
 
   setStorageType(type) {
