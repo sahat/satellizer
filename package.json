@@ -4,7 +4,8 @@
   "version": "0.14.0",
   "scripts": {
     "start": "node ./examples/server/node/server.js",
-    "test": "karma start"
+    "test": "karma start",
+    "build:umd": "webpack src/ng1.js dist/bundle.js"
   },
   "main": "satellizer.js",
   "homepage": "https://github.com/sahat/satellizer",
@@ -20,17 +21,24 @@
   },
   "devDependencies": {
     "babel-preset-es2015-rollup": "^1.1.1",
+    "babelify": "^7.2.0",
+    "babelify-external-helpers": "^1.1.0",
+    "browserify": "^13.0.0",
     "gulp": "^3.9.1",
     "gulp-complexity": "~0.3.2",
     "gulp-header": "~1.7.1",
     "gulp-plumber": "^1.1.0",
     "gulp-rename": "^1.2.2",
+    "gulp-typescript": "^2.12.1",
     "gulp-uglify": "~1.5.2",
     "karma": "^0.13.22",
     "karma-coverage": "^0.5.3",
     "karma-jasmine": "^0.3.7",
     "karma-phantomjs-launcher": "^1.0.0",
-    "rollup-plugin-babel": "^2.4.0"
+    "rollup-plugin-babel": "^2.4.0",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.7.0"
   },
   "license": "MIT",
   "tags": [
