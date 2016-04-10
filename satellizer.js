@@ -24,7 +24,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
       baseUrl: '/',
       loginUrl: '/auth/login',
       signupUrl: '/auth/signup',
-      unlinkUrl: '/auth/unlink/',
+      unlinkUrl: '/auth/unlink',
       tokenName: 'token',
       tokenPrefix: 'satellizer',
       authHeader: 'Authorization',
