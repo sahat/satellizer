@@ -21,16 +21,18 @@
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-complexity": "~0.3.2",
-    "gulp-header": "~1.7.1",
+    "gulp-header": "~1.8.2",
     "gulp-plumber": "^1.1.0",
     "gulp-rename": "^1.2.2",
     "gulp-uglify": "~1.5.2",
     "jasmine-core": "^2.4.1",
     "karma": "^0.13.22",
-    "karma-coverage": "^0.5.5",
+    "karma-coverage": "^1.0.0",
+    "karma-jasmine": "^1.0.2",
     "karma-jasmine": "^0.3.8",
     "karma-phantomjs-launcher": "^1.0.0",
-    "phantomjs-prebuilt": "^2.1.5"
+    "phantomjs-prebuilt": "^2.1.5",
+    "karma-phantomjs-launcher": "^1.0.0"
   },
   "license": "MIT",
   "tags": [

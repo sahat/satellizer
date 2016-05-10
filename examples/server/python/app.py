@@ -183,10 +183,10 @@ def facebook():
             response.status_code = 400
             return response
 
-        u = User(facebook=profile['id'], display_name=profile['name'])
-        db.session.add(u)
+        user.facebook = profile['id']
+        user.display_name = user.display_name or profile['name']
         db.session.commit()
-        token = create_token(u)
+        token = create_token(user)
         return jsonify(token=token)
 
     # Step 4. Create a new account or return an existing one.
@@ -238,10 +238,10 @@ def github():
             response.status_code = 400
             return response
 
-        u = User(github=profile['id'], display_name=profile['name'])
-        db.session.add(u)
+        user.github = profile['id']
+        user.display_name = display_name or profile['name']
         db.session.commit()
-        token = create_token(u)
+        token = create_token(user)
         return jsonify(token=token)
 
     # Step 4. Create a new account or return an existing one.
@@ -278,6 +278,29 @@ def google():
     r = requests.get(people_api_url, headers=headers)
     profile = json.loads(r.text)
 
+    # Step 3. (optional) Link accounts.
+    if request.headers.get('Authorization'):
+        user = User.query.filter_by(google=profile['sub']).first()
+        if user:
+            response = jsonify(message='There is already a Google account that belongs to you')
+            response.status_code = 409
+            return response
+
+        payload = parse_token(request)
+
+        user = User.query.filter_by(id=payload['sub']).first()
+        if not user:
+            response = jsonify(message='User not found')
+            response.status_code = 400
+            return response
+        user.google = profile['sub']
+        user.display_name = user.display_name or profile['name']
+        db.session.commit()
+        token = create_token(user)
+        return jsonify(token=token)
+
+    # Step 4. Create a new account or return an existing one.
+
     user = User.query.filter_by(google=profile['sub']).first()
     if user:
         token = create_token(user)
@@ -310,6 +333,29 @@ def linkedin():
     # Step 2. Retrieve information about the current user.
     r = requests.get(people_api_url, params=params)
     profile = json.loads(r.text)
+    
+    # Step 3. (optional) Link accounts.
+    if request.headers.get('Authorization'):
+        user = User.query.filter_by(linkedin=profile['id']).first()
+        if user:
+            response = jsonify(message='There is already a LinkedIn account that belongs to you')
+            response.status_code = 409
+            return response
+
+        payload = parse_token(request)
+
+        user = User.query.filter_by(id=payload['sub']).first()
+        if not user:
+            response = jsonify(message='User not found')
+            response.status_code = 400
+            return response
+        user.linkedin = profile['id']
+        user.display_name = user.display_name or (profile['firstName'] + ' ' + profile['lastName'])
+        db.session.commit()
+        token = create_token(user)
+        return jsonify(token=token)
+
+    # Step 4. Create a new account or return an existing one.
 
     user = User.query.filter_by(linkedin=profile['id']).first()
     if user:
@@ -393,10 +439,10 @@ def bitbucket():
             response.status_code = 400
             return response
 
-        u = User(bitbucket=profile['uuid'], display_name=profile['display_name'])
-        db.session.add(u)
+        user.bitbucket = profile['uuid']
+        user.display_name = user.display_name or profile['display_name']
         db.session.commit()
-        token = create_token(u)
+        token = create_token(user)
         return jsonify(token=token)
 
     # Step 4. Create a new account or return an existing one.
