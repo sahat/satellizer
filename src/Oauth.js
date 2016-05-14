@@ -1,12 +1,12 @@
 import url from 'url';
 
 class OAuth {
-  constructor($http, SatellizerConfig, SatellizerShared, SatellizerOAuth1) {
+  constructor($http, SatellizerConfig, SatellizerShared, SatellizerOAuth1, SatellizerOAuth2) {
     this.$http = $http;
     this.config = SatellizerConfig;
     this.shared = SatellizerShared;
-    // this.oauth1 = SatellizerOAuth1;
-    // this.oauth2 = SatellizerOAuth2;
+    this.oauth1 = SatellizerOAuth1;
+    this.oauth2 = SatellizerOAuth2;
   }
 
   authenticate(name, data) {

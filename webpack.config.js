@@ -8,7 +8,7 @@ var webpack = require('webpack');
 
 module.exports = {
   entry: {
-    "satellizer": "./src/ng1.js"
+    'satellizer': './src/ng1.js'
   },
 
   output: {

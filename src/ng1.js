@@ -11,8 +11,8 @@ import Interceptor from './Interceptor';
 import HttpProviderConfig from './HttpProviderConfig';
 
 angular.module('satellizer', [])
-  .constant('SatellizerConfig', Config)
   .provider('$auth', Auth)
+  .constant('SatellizerConfig', Config)
   .service('SatellizerShared', Shared)
   .service('SatellizerLocal', Local)
   .service('SatellizerPopup', Popup)
