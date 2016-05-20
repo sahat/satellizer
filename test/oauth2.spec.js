@@ -20,6 +20,24 @@ describe('SatellizerOauth2', function() {
       //this.oauth2.open();
     });
 
+    it('should propagate promise rejections', inject(function($q, SatellizerPopup) {
+      var error;
+      var message = 'Popup Rejected';
+      var defer = $q.defer();
+
+      spyOn(SatellizerPopup, 'pollPopup').and.returnValue(defer.promise);
+
+      this.oauth2.open(this.config.providers.github).catch(function (err) {
+        error = err;
+      });
+
+      defer.reject(message);
+      this.$timeout.flush();
+      this.$timeout.verifyNoPendingTasks();
+
+      expect(error).toEqual(message);
+    }));
+
   });
 
   describe('exchangeForToken()', function() {
