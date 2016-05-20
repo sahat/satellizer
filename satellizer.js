@@ -522,7 +522,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
                 openPopup = popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri).pollPopup(defaults.redirectUri);
               }
 
-              return openPopup
+              openPopup
                 .then(function(oauthData) {
                   // When no server URL provided, return popup params as-is.
                   // This is for a scenario when someone wishes to opt out from
@@ -540,6 +540,8 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
                   }
 
                   defer.resolve(Oauth2.exchangeForToken(oauthData, userData));
+                }, function (err) {
+                  defer.reject(err);
                 });
             });
 
