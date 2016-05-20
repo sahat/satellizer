@@ -20,6 +20,7 @@
     "url": "http://sahatyalkabov.com"
   },
   "devDependencies": {
+    "babel-eslint": "^6.0.4",
     "babel-preset-es2015-rollup": "^1.1.1",
     "babelify": "^7.2.0",
     "babelify-external-helpers": "^1.1.0",
@@ -27,6 +28,8 @@
     "eslint": "^2.9.0",
     "eslint-config-airbnb": "^8.0.0",
     "eslint-plugin-babel": "^3.2.0",
+    "eslint-plugin-import": "^1.8.0",
+    "eslint-plugin-jsx-a11y": "^1.2.2",
     "eslint-plugin-react": "^5.0.1",
     "gulp": "^3.9.1",
     "gulp-complexity": "~0.3.2",
