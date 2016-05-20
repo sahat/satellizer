@@ -3,17 +3,6 @@ class AuthProvider {
     this.config = SatellizerConfig;
   }
 
-  get httpInterceptor() { return this.config.httpInterceptor; }
-  set httpInterceptor(value) {
-    if (typeof value === 'function') {
-      this.config.httpInterceptor = value;
-    } else {
-      this.config.httpInterceptor = () => {
-        return value;
-      };
-    }
-  }
-
   get baseUrl() { return this.config.baseUrl; }
   set baseUrl(value) { this.config.baseUrl = value; }
 
@@ -47,44 +36,53 @@ class AuthProvider {
   get storageType() { return this.config.storageType; }
   set storageType(value) { this.config.storageType = value; }
 
+  get httpInterceptor() { return this.config.httpInterceptor; }
+  set httpInterceptor(value) {
+    if (typeof value === 'function') {
+      this.config.httpInterceptor = value;
+    } else {
+      this.config.httpInterceptor = () => value;
+    }
+  }
+
   facebook(options) {
     return Object.assign({}, this.config.providers.facebook, options);
   }
 
   google(options) {
-    return Object.assign({}, this.config.providers.google, options);
+    Object.assign(this.config.providers.google, options);
   }
 
   github(options) {
-    return Object.assign({}, this.config.providers.github, options);
+    Object.assign(this.config.providers.github, options);
   }
 
   instagram(options) {
-    return Object.assign({}, this.config.providers.instagram, options);
+    Object.assign(this.config.providers.instagram, options);
   }
 
   linkedin(options) {
-    return Object.assign({}, this.config.providers.linkedin, options);
+    Object.assign(this.config.providers.linkedin, options);
   }
 
   twitter(options) {
-    return Object.assign({}, this.config.providers.twitter, options);
+    Object.assign(this.config.providers.twitter, options);
   }
 
   twitch(options) {
-    return Object.assign({}, this.config.providers.twitch, options);
+    Object.assign(this.config.providers.twitch, options);
   }
 
   live(options) {
-    return Object.assign({}, this.config.providers.live, options);
+    Object.assign(this.config.providers.live, options);
   }
 
   yahoo(options) {
-    return Object.assign({}, this.config.providers.yahoo, options);
+    Object.assign(this.config.providers.yahoo, options);
   }
 
   bitbucket(options) {
-    return Object.assign({}, this.config.providers.bitbucket, options);
+    Object.assign(this.config.providers.bitbucket, options);
   }
 
   oauth1(options) {
