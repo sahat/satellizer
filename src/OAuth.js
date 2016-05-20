@@ -14,18 +14,22 @@ class OAuth {
       const provider = this.config.providers[name];
       const oauth = provider.oauthType === '1.0' ? this.oauth1() : this.oauth2();
 
-      oauth.open(provider, data).then((response) => {
-        if (provider.url) {
-          this.shared.setToken(response, false);
-        }
-        resolve(response);
-      }).catch(error => reject(new Error(error)));
+      return oauth.init(provider, data)
+        .then((response) => {
+          if (provider.url) {
+            this.shared.setToken(response, false);
+          }
+          resolve(response);
+        })
+        .catch((error) => {
+          reject(error);
+        });
     });
   }
 
-  unlink(provider, options = {}) {
+  unlink(provider, options) {
     options.url = options.url ? options.url : url.resolve(this.config.baseUrl, this.config.unlinkUrl);
-    options.data = { provider: provider } || options.data;
+    options.data = { provider } || options.data;
     options.method = options.method || 'POST';
     options.withCredentials = options.withCredentials || this.config.withCredentials;
 
