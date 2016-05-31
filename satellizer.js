@@ -747,6 +747,10 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
             deferred.reject('Authorization Failed');
           });
 
+          Popup.popupWindow.addEventListener('exit', function() {
+            deferred.reject('Popup exit');
+          });
+
           return deferred.promise;
         };
 
