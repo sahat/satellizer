@@ -20,12 +20,14 @@ class OAuth2 {
     };
   }
 
-  open(options, data) {
+  init(options, data) {
     return new Promise((resolve, reject) => {
       Object.assign(this.defaults, options);
 
       this.$timeout(() => {
+        const url = [this.defaults.authorizationEndpoint, this.buildQueryString()].join('?');
         const stateName = this.defaults.name + '_state'; // todo; what if name is undefined
+        const { name, popupOptions, redirectUri } = this.defaults;
 
         if (typeof this.defaults.state === 'function') {
           this.storage.set(stateName, this.defaults.state());
@@ -33,23 +35,23 @@ class OAuth2 {
           this.storage.set(stateName, this.defaults.state);
         }
 
-        const url = [this.defaults.authorizationEndpoint, this.buildQueryString()].join('?');
-        const { name, popupOptions, redirectUri } = this.defaults;
 
-        return this.popup.open(url, name, popupOptions, redirectUri).then((oauth) => {
-          if (this.defaults.responseType === 'token' || !this.defaults.url) {
-            return resolve(oauth);
-          }
+        return this.popup.open(url, name, popupOptions, redirectUri)
+          .then((oauth) => {
+            if (this.defaults.responseType === 'token' || !this.defaults.url) {
+              return resolve(oauth);
+            }
 
-          if (oauth.state && oauth.state !== this.storage.get(stateName)) {
-            return reject(new Error(
-              'The value returned in the state parameter does not match the state value from your original ' +
-              'authorization code request.'
-            ));
-          }
+            if (oauth.state && oauth.state !== this.storage.get(stateName)) {
+              return reject(new Error(
+                'The value returned in the state parameter does not match the state value from your original ' +
+                'authorization code request.'
+              ));
+            }
 
-          return this.exchangeForToken(oauth, data);
-        });
+            return this.exchangeForToken(oauth, data);
+          })
+          .catch(error => reject(error));
       });
     });
   }

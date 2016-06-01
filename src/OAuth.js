@@ -27,13 +27,13 @@ class OAuth {
     });
   }
 
-  unlink(provider, options) {
-    options.url = options.url ? options.url : url.resolve(this.config.baseUrl, this.config.unlinkUrl);
-    options.data = { provider } || options.data;
-    options.method = options.method || 'POST';
-    options.withCredentials = options.withCredentials || this.config.withCredentials;
+  unlink(provider, httpOptions) {
+    httpOptions.url = httpOptions.url ? httpOptions.url : url.resolve(this.config.baseUrl, this.config.unlinkUrl);
+    httpOptions.data = { provider } || httpOptions.data;
+    httpOptions.method = httpOptions.method || 'POST';
+    httpOptions.withCredentials = httpOptions.withCredentials || this.config.withCredentials;
 
-    return this.$http(options);
+    return this.$http(httpOptions);
   }
 }
 

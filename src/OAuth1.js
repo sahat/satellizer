@@ -6,31 +6,19 @@ class OAuth1 {
     this.$window = $window;
     this.config = SatellizerConfig;
     this.popup = SatellizerPopup;
-
-    // todo clean up or include every field here
-    this.defaults = {
-      url: null, // todo ???
-      name: null,
-      popupOptions: null,
-      redirectUri: null,
-      authorizationEndpoint: null
-    };
   }
 
-  open(options, data) {
-    Object.assign(this.defaults, options);
+  init(options, data) {
+    const { name, popupOptions, redirectUri } = options;
 
-    var popupWindow;
-    const { name, popupOptions, redirectUri } = this.defaults;
-
+    let popupWindow;
 
     if (!this.$window.cordova) {
       popupWindow = this.popup.open('about:blank', name, popupOptions, redirectUri);
     }
 
-
     return this.getRequestToken().then((response) => {
-      const url = [this.defaults.authorizationEndpoint, this.buildQueryString(response.data)].join('?');
+      const url = [options.authorizationEndpoint, this.buildQueryString(response.data)].join('?');
 
       if (this.$window.cordova) {
         popupWindow = this.popup.open(url, name, popupOptions, redirectUri);

@@ -105,4 +105,7 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', 'ui.
       }
       return deferred.promise;
     }
+  })
+  .run(function(SatellizerConfig) {
+    console.log(SatellizerConfig.providers.facebook);
   });
