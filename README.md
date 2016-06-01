@@ -5,7 +5,7 @@
 [![Donate](https://img.shields.io/badge/paypal-donate-blue.svg)](https://paypal.me/sahat) [![Join the chat at https://gitter.im/sahat/satellizer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/sahat/satellizer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](http://img.shields.io/travis/sahat/satellizer.svg?style=flat)](https://travis-ci.org/sahat/satellizer)
 [![Test Coverage](http://img.shields.io/codeclimate/coverage/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
-[![Version](https://img.shields.io/badge/version-0.14.0-brightgreen.svg)](https://www.npmjs.org/package/satellizer)
+[![Version](https://img.shields.io/badge/version-0.14.1-brightgreen.svg)](https://www.npmjs.org/package/satellizer)
 
 **Live Demo:** [https://satellizer.herokuapp.com](https://satellizer.herokuapp.com)
 
@@ -61,7 +61,7 @@ Alternatively, you may [**download**](https://github.com/sahat/satellizer/releas
 <!--[if lte IE 9]>
 <script src="//cdnjs.cloudflare.com/ajax/libs/Base64/0.3.0/base64.min.js"></script>
 <![endif]-->
-<script src="//cdn.jsdelivr.net/satellizer/0.14.0/satellizer.min.js"></script>
+<script src="//cdn.jsdelivr.net/satellizer/0.14.1/satellizer.min.js"></script>
 ```
 
 If installed via [Bower](http://bower.io/), include one of the following script tags:
