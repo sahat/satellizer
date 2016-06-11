@@ -7,7 +7,7 @@
 [![Test Coverage](http://img.shields.io/codeclimate/coverage/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
 [![Version](https://img.shields.io/badge/version-0.14.1-brightgreen.svg)](https://www.npmjs.org/package/satellizer) [![Book session on Codementor](https://cdn.codementor.io/badges/book_session_github.svg)](https://www.codementor.io/sahatyalkabov?utm_source=github&utm_medium=button&utm_term=sahatyalkabov&utm_campaign=github)
 
-**Live Demo:** [https://satellizer.herokuapp.com](https://satellizer.herokuapp.com)
+**Live Demo:** http://satellizer.azurewebsites.net/
 
 ---
 
