@@ -566,6 +566,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
                   data[value] = oauthData[key];
               }
             });
+            angular.extend(data, defaults.exchangeParams);
 
             if (oauthData.state) {
               data.state = oauthData.state;

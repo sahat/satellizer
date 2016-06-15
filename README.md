@@ -34,6 +34,7 @@ in the app *config* block.
  - [Logout](#-log-out)
 - [Obtaining OAuth Keys](#obtaining-oauth-keys)
 - [API Reference](#api-reference)
+- [Running Tests](#running-tests)
 - [FAQ](#faq)
  - [Can I change `redirectUri` to something other than base URL?](#question-can-i-change-redirecturi-to-something-other-than-base-url)
  - [How can I send a token in a format other than `Authorization: Bearer <token>?`](#question-how-can-i-send-a-token-in-a-format-other-than-authorization-bearer-token)
@@ -350,6 +351,14 @@ $authProvider.oauth2({
     code: 'code',
     clientId: 'clientId',
     redirectUri: 'redirectUri'
+  },
+  // override exchange params
+  exchangeParams: {
+    // doorkeeper example
+    client_id: "client-id-from-service",
+    client_secret: "client-sercret-from-service",
+    redirect_uri: "redirect-uri-specified-on-service",
+    grant_type: "authorization_code"
   }
 });
 
@@ -802,6 +811,15 @@ Sets storage type to Local Storage or Session Storage.
 ```js
 $auth.setStorageType('sessionStorage');
 ```
+
+## Running Tests
+
+1. Install npm packages
+`npm install`
+2. Install phantomjs-prebuilt globally
+`npm install -g phantomjs-prebuilt `
+3. Execute packaged karma in project root
+`node_modules/karma/bin/karma start`
 
 ## FAQ
 
