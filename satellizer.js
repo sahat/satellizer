@@ -591,7 +591,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
                 if (paramName === 'state') {
                   var stateName = defaults.name + '_state';
-                  paramValue = encodeURIComponent(storage.get(stateName));
+                  paramValue = storage.get(stateName);
                 }
 
                 if (paramName === 'scope' && Array.isArray(paramValue)) {
@@ -602,7 +602,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
                   }
                 }
 
-                keyValuePairs.push([paramName, paramValue]);
+                keyValuePairs.push([paramName, encodeURIComponent(paramValue)]);
               });
             });
 
