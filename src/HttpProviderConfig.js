@@ -1,7 +1,7 @@
-class HttpProviderConfig {
+export default class HttpProviderConfig {
     constructor($httpProvider) {
-        $httpProvider.interceptors.push('SatellizerInterceptor');
+        this.$httpProvider = $httpProvider;
+        $httpProvider.interceptors.push('satellizerInterceptor');
     }
 }
-export default HttpProviderConfig;
-//# sourceMappingURL=HttpProviderConfig.js.map
+HttpProviderConfig.$inject = ['$httpProvider'];

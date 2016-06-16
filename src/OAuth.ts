@@ -5,23 +5,21 @@ import OAuth1 from './OAuth1';
 import OAuth2 from './OAuth2';
 
 export default class OAuth {
-  static $inject = ['$http'];
-
   constructor(private $http: angular.IHttpService,
-              private config: Config,
-              private shared: Shared,
-              private oauth1: OAuth1,
-              private oauth2: OAuth2) {
+              private satellizerConfig: Config,
+              private satellizerShared: Shared,
+              private satellizerOAuth1: OAuth1,
+              private satellizerOAuth2: OAuth2) {
   }
 
   authenticate(name, data) {
     return new Promise((resolve, reject) => {
-      const provider = this.config.providers[name];
-      const initialize: any = provider.oauthType === '1.0' ? this.oauth1.init(provider, data) : this.oauth2.init(provider, data);
+      const provider = this.satellizerConfig.providers[name];
+      const initialize: any = provider.oauthType === '1.0' ? this.satellizerOAuth1.init(provider, data) : this.satellizerOAuth2.init(provider, data);
 
       return initialize.then((response) => {
         if (provider.url) {
-          this.shared.setToken(response);
+          this.satellizerShared.setToken(response);
         }
         resolve(response);
       }).catch((error) => {
@@ -31,10 +29,10 @@ export default class OAuth {
   }
 
   unlink(provider, httpOptions) {
-    httpOptions.url = httpOptions.url ? httpOptions.url : resolve(this.config.baseUrl, this.config.unlinkUrl);
+    httpOptions.url = httpOptions.url ? httpOptions.url : resolve(this.satellizerConfig.baseUrl, this.satellizerConfig.unlinkUrl);
     httpOptions.data = { provider } || httpOptions.data;
     httpOptions.method = httpOptions.method || 'POST';
-    httpOptions.withCredentials = httpOptions.withCredentials || this.config.withCredentials;
+    httpOptions.withCredentials = httpOptions.withCredentials || this.satellizerConfig.withCredentials;
 
     return this.$http(httpOptions);
   }

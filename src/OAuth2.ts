@@ -3,13 +3,7 @@ import Config from './Config';
 import Popup from './Popup';
 import Storage from './Storage';
 
-interface IOAuth2 {
-  init(options: any, data: any): angular.IHttpPromise<any>;
-}
-
 export default class OAuth2 {
-  static $inject = ['$http', '$window', '$timeout'];
-
   private defaults: {
     name: string,
     url: string,
@@ -32,9 +26,9 @@ export default class OAuth2 {
   constructor(private $http: angular.IHttpService,
               private $window: angular.IWindowService,
               private $timeout: angular.ITimeoutService,
-              private config: Config,
-              private popup: Popup,
-              private storage: Storage) {
+              private satellizerConfig: Config,
+              private satellizerPopup: Popup,
+              private satellizerStorage: Storage) {
     this.defaults = {
       url: null,
       clientId: null,
@@ -65,25 +59,27 @@ export default class OAuth2 {
         const { name, state, popupOptions, redirectUri, responseType } = this.defaults;
 
         if (typeof state === 'function') {
-          this.storage.set(stateName, state());
+          this.satellizerStorage.set(stateName, state());
         } else if (typeof state === 'string') {
-          this.storage.set(stateName, state);
+          this.satellizerStorage.set(stateName, state);
         }
 
-        this.popup.open(url, name, popupOptions, redirectUri).then((oauth: any): void|Promise<any>|angular.IHttpPromise<any> => {
-          if (responseType === 'token' || !url) {
-            return resolve(oauth);
-          }
+        this.satellizerPopup.open(url, name, popupOptions, redirectUri)
+          .then((oauth: any): void|Promise<any>|angular.IHttpPromise<any> => {
 
-          if (oauth.state && oauth.state !== this.storage.get(stateName)) {
-            return reject(new Error(
-              'The value returned in the state parameter does not match the state value from your original ' +
-              'authorization code request.'
-            ));
-          }
+            if (responseType === 'token' || !url) {
+              return resolve(oauth);
+            }
 
-          return this.exchangeForToken(oauth, data);
-        })
+            if (oauth.state && oauth.state !== this.satellizerStorage.get(stateName)) {
+              return reject(new Error(
+                'The value returned in the state parameter does not match the state value from your original ' +
+                'authorization code request.'
+              ));
+            }
+
+            resolve(this.exchangeForToken(oauth, data));
+          })
           .catch(error => reject(error));
       });
     });
@@ -133,9 +129,9 @@ export default class OAuth2 {
       payload.state = oauth.state;
     }
 
-    let exchangeForTokenUrl = this.config.baseUrl ? resolve(this.config.baseUrl, this.defaults.url) : this.defaults.url;
+    let exchangeForTokenUrl = this.satellizerConfig.baseUrl ? resolve(this.satellizerConfig.baseUrl, this.defaults.url) : this.defaults.url;
 
-    return this.$http.post(exchangeForTokenUrl, payload, { withCredentials: this.config.withCredentials });
+    return this.$http.post(exchangeForTokenUrl, payload, { withCredentials: this.satellizerConfig.withCredentials });
   }
 
   buildQueryString() {
@@ -153,7 +149,7 @@ export default class OAuth2 {
 
         if (paramName === 'state') {
           const stateName = this.defaults.name + '_state'; // todo what if name undefined
-          paramValue = encodeURIComponent(this.storage.get(stateName));
+          paramValue = encodeURIComponent(this.satellizerStorage.get(stateName));
         }
 
         if (paramName === 'scope' && Array.isArray(paramValue)) {
@@ -163,6 +159,7 @@ export default class OAuth2 {
             paramValue = [this.defaults.scopePrefix, paramValue].join(this.defaults.scopeDelimiter);
           }
         }
+
 
         keyValuePairs.push([paramName, paramValue]);
       });

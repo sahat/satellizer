@@ -1,17 +1,16 @@
 import Config from './Config';
 
 export default class Storage {
-  static $inject = ['$window'];
-
   private memoryStore: Object;
 
-  constructor(private $window: angular.IHttpService, private config: Config) {
+  constructor(private $window: angular.IHttpService,
+              private satellizerConfig: Config) {
     this.memoryStore = {};
   }
 
   get(key: string) {
     try {
-      return this.$window[this.config.storageType].getItem(key);
+      return this.$window[this.satellizerConfig.storageType].getItem(key);
     } catch (e) {
       return this.memoryStore[key];
     }
@@ -19,7 +18,7 @@ export default class Storage {
 
   set(key: string, value: string) {
     try {
-      this.$window[this.config.storageType].setItem(key, value);
+      this.$window[this.satellizerConfig.storageType].setItem(key, value);
     } catch (e) {
       this.memoryStore[key] = value;
     }
@@ -27,7 +26,7 @@ export default class Storage {
 
   remove(key: string) {
     try {
-      this.$window[this.config.storageType].removeItem(key);
+      this.$window[this.satellizerConfig.storageType].removeItem(key);
     } catch (e) {
       delete this.memoryStore[key];
     }

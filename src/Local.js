@@ -1,28 +1,27 @@
-import url from 'url';
+import { resolve } from 'url';
 class Local {
-    constructor($http, SatellizerConfig, SatellizerShared) {
+    constructor($http, satellizerConfig, satellizerShared) {
         this.$http = $http;
-        this.config = SatellizerConfig;
-        this.shared = SatellizerShared;
+        this.satellizerConfig = satellizerConfig;
+        this.satellizerShared = satellizerShared;
     }
     login(user, options = {}) {
-        options.url = options.url ? options.url : url.resolve(this.config.baseUrl, this.config.loginUrl);
+        options.url = options.url ? options.url : resolve(this.satellizerConfig.baseUrl, this.satellizerConfig.loginUrl);
         options.data = user || options.data;
         options.method = options.method || 'POST';
-        options.withCredentials = options.withCredentials || this.config.withCredentials;
+        options.withCredentials = options.withCredentials || this.satellizerConfig.withCredentials;
         return this.$http(options).then((response) => {
-            this.shared.setToken(response);
+            this.satellizerShared.setToken(response);
             return response;
         });
     }
     signup(user, options = {}) {
         options = options || {};
-        options.url = options.url ? options.url : url.resolve(this.config.baseUrl, this.config.signupUrl);
+        options.url = options.url ? options.url : resolve(this.satellizerConfig.baseUrl, this.satellizerConfig.signupUrl);
         options.data = user || options.data;
         options.method = options.method || 'POST';
-        options.withCredentials = options.withCredentials || this.config.withCredentials;
+        options.withCredentials = options.withCredentials || this.satellizerConfig.withCredentials;
         return this.$http(options);
     }
 }
 export default Local;
-//# sourceMappingURL=Local.js.map

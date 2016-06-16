@@ -8,31 +8,28 @@ var banner = pkg.description + '\n' +
   '@license MIT License, http://www.opensource.org/licenses/MIT';
 
 module.exports = {
-  devtool: 'source-map',
+  // devtool: 'source-map',
 
-  entry: [
-    path.join(__dirname, 'src', 'Satellizer.ts')
-  ],
+  entry: './dist/NG1.js',
 
   output: {
     filename: 'satellizer.js',
-
-    path: path.join(__dirname, 'dist'),
+    path: path.join(__dirname, 'examples', 'client', 'vendor'),
     library: 'satellizer',
     libraryTarget: 'umd',
     umdNamedDefine: true
   },
 
   plugins: [
-    new webpack.optimize.UglifyJsPlugin({
-      include: /\.min\.js$/, minimize: true
-    }),
+    // new webpack.optimize.UglifyJsPlugin({
+    //   include: /.js$/, minimize: true
+    // }),
     new webpack.BannerPlugin(banner)
   ],
 
   module: {
     loaders: [
-      { test: /\.ts$/, loader: 'ts', exclude: /node_modules/ }
+      { test: /\.js$/, loader: 'babel-loader', exclude: /node_modules/ }
     ]
   }
 };

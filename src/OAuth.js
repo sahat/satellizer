@@ -1,35 +1,31 @@
-import url from 'url';
-class OAuth {
-    constructor($http, SatellizerConfig, SatellizerShared, SatellizerOAuth1, SatellizerOAuth2) {
+import { resolve } from 'url';
+export default class OAuth {
+    constructor($http, satellizerConfig, satellizerShared, satellizerOAuth1, satellizerOAuth2) {
         this.$http = $http;
-        this.config = SatellizerConfig;
-        this.shared = SatellizerShared;
-        this.oauth1 = SatellizerOAuth1;
-        this.oauth2 = SatellizerOAuth2;
+        this.satellizerConfig = satellizerConfig;
+        this.satellizerShared = satellizerShared;
+        this.satellizerOAuth1 = satellizerOAuth1;
+        this.satellizerOAuth2 = satellizerOAuth2;
     }
     authenticate(name, data) {
         return new Promise((resolve, reject) => {
-            const provider = this.config.providers[name];
-            const oauth = provider.oauthType === '1.0' ? this.oauth1() : this.oauth2();
-            return oauth.init(provider, data)
-                .then((response) => {
+            const provider = this.satellizerConfig.providers[name];
+            const initialize = provider.oauthType === '1.0' ? this.satellizerOAuth1.init(provider, data) : this.satellizerOAuth2.init(provider, data);
+            return initialize.then((response) => {
                 if (provider.url) {
-                    this.shared.setToken(response, false);
+                    this.satellizerShared.setToken(response);
                 }
                 resolve(response);
-            })
-                .catch((error) => {
+            }).catch((error) => {
                 reject(error);
             });
         });
     }
     unlink(provider, httpOptions) {
-        httpOptions.url = httpOptions.url ? httpOptions.url : url.resolve(this.config.baseUrl, this.config.unlinkUrl);
+        httpOptions.url = httpOptions.url ? httpOptions.url : resolve(this.satellizerConfig.baseUrl, this.satellizerConfig.unlinkUrl);
         httpOptions.data = { provider } || httpOptions.data;
         httpOptions.method = httpOptions.method || 'POST';
-        httpOptions.withCredentials = httpOptions.withCredentials || this.config.withCredentials;
+        httpOptions.withCredentials = httpOptions.withCredentials || this.satellizerConfig.withCredentials;
         return this.$http(httpOptions);
     }
 }
-export default OAuth;
-//# sourceMappingURL=OAuth.js.map

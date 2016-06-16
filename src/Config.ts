@@ -1,4 +1,8 @@
 export default class Config {
+  static get getConstant() {
+    return new Config();
+  }
+
   baseUrl = '/';
   loginUrl = '/auth/login';
   signupUrl = '/auth/signup';

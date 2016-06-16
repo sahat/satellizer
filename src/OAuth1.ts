@@ -7,8 +7,6 @@ interface IOAuth1 {
 }
 
 export default class OAuth1 implements IOAuth1 {
-  static $inject = ['$http', '$window'];
-
   private defaults: {
     url: string,
     redirectUri: string
@@ -16,8 +14,8 @@ export default class OAuth1 implements IOAuth1 {
 
   constructor(private $http: angular.IHttpService,
               private $window: angular.IWindowService,
-              private config: Config,
-              private popup: Popup) {
+              private satellizerConfig: Config,
+              private satellizerPopup: Popup) {
     this.defaults = {
       url: null,
       redirectUri: null
@@ -30,14 +28,14 @@ export default class OAuth1 implements IOAuth1 {
     let popupWindow;
 
     if (!this.$window['cordova']) {
-      popupWindow = this.popup.open('about:blank', name, popupOptions, redirectUri);
+      popupWindow = this.satellizerPopup.open('about:blank', name, popupOptions, redirectUri);
     }
 
     return this.getRequestToken().then((response) => {
       const url = [options.authorizationEndpoint, this.buildQueryString(response.data)].join('?');
 
       if (this.$window['cordova']) {
-        popupWindow = this.popup.open(url, name, popupOptions, redirectUri);
+        popupWindow = this.satellizerPopup.open(url, name, popupOptions, redirectUri);
       } else {
         popupWindow.popupWindow.location = url;
       }
@@ -58,14 +56,14 @@ export default class OAuth1 implements IOAuth1 {
   }
 
   getRequestToken() {
-    const url = this.config.baseUrl ? resolve(this.config.baseUrl, this.defaults.url) : this.defaults.url;
+    const url = this.satellizerConfig.baseUrl ? resolve(this.satellizerConfig.baseUrl, this.defaults.url) : this.defaults.url;
     return this.$http.post(url, this.defaults);
   }
 
   exchangeForToken(oauth, data) {
     const payload = Object.assign({}, data, oauth);
-    const exchangeForTokenUrl = this.config.baseUrl ? resolve(this.config.baseUrl, this.defaults.url) : this.defaults.url;
-    return this.$http.post(exchangeForTokenUrl, payload, { withCredentials: this.config.withCredentials });
+    const exchangeForTokenUrl = this.satellizerConfig.baseUrl ? resolve(this.satellizerConfig.baseUrl, this.defaults.url) : this.defaults.url;
+    return this.$http.post(exchangeForTokenUrl, payload, { withCredentials: this.satellizerConfig.withCredentials });
   }
 
   buildQueryString(obj) {

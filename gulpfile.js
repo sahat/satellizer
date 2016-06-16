@@ -5,7 +5,7 @@ var plumber = require('gulp-plumber');
 var complexity = require('gulp-complexity');
 var header = require('gulp-header');
 var pkg = require('./package.json');
-var ts = require('gulp-typescript');
+var tsc = require('gulp-typescript');
 var buffer = require('vinyl-buffer');
 var source = require('vinyl-source-stream');
 var babelify = require('babelify');
@@ -19,16 +19,29 @@ var banner = ['/**',
   ' */',
   ''].join('\n');
 
-gulp.task('ts', function () {
-  return gulp.src('src/*.ts')
-    .pipe(ts({
-      out: 'output.js',
-      noImplicitAny: false,
-      removeComments: false,
-      sourceMap: true,
-      target: 'es6'
-    }))
-    .pipe(gulp.dest('dist'));
+// gulp.task('ts', function () {
+//   return gulp.src('src/*.ts')
+//     .pipe(ts({
+//       out: 'output.js',
+//       noImplicitAny: false,
+//       removeComments: false,
+//       sourceMap: true,
+//       target: 'es6'
+//     }))
+//     .pipe(gulp.dest('dist'));
+// });
+
+
+gulp.task('compile-ts', function () {
+  var tsProject = tsc.createProject('tsconfig.json');
+
+  var tsResult = gulp.src(['./src/*.ts',  './typings/**/*.ts'])
+    .pipe(tsc(tsProject));
+
+  tsResult.dts.pipe(gulp.dest('./dist'));
+
+  return tsResult.js
+    .pipe(gulp.dest('./dist'));
 });
 
 gulp.task('minify', function() {

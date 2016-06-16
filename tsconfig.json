@@ -4,13 +4,7 @@
     "noImplicitAny": false,
     "noResolve": true,
     "removeComments": false,
-    "sourceMap": true,
-    "target": "es6",
-    "listFiles": true,
-    "outDir": "dist"
+    "target": "es2015"
   },
-  "exclude": [
-    "node_modules",
-    "temp"
-  ]
+  "exclude": ["node_modules"]
 }

@@ -1,24 +1,26 @@
 class Shared {
-    constructor($window, $log, SatellizerConfig, SatellizerStorage) {
+    constructor($q, $window, $log, satellizerConfig, satellizerStorage) {
+        this.$q = $q;
         this.$window = $window;
         this.$log = $log;
-        this.config = SatellizerConfig;
-        this.storage = SatellizerStorage;
-        const { tokenName, tokenPrefix } = this.config;
+        this.satellizerConfig = satellizerConfig;
+        this.satellizerStorage = satellizerStorage;
+        const { tokenName, tokenPrefix } = this.satellizerConfig;
         this.prefixedTokenName = tokenPrefix ? [tokenPrefix, tokenName].join('_') : tokenName;
     }
     getToken() {
-        return this.storage.get(this.prefixedTokenName);
+        return this.satellizerStorage.get(this.prefixedTokenName);
     }
     getPayload() {
-        const token = this.storage.get(this.prefixedTokenName);
+        const token = this.satellizerStorage.get(this.prefixedTokenName);
         if (token && token.split('.').length === 3) {
             try {
                 const base64Url = token.split('.')[1];
                 const base64 = base64Url.replace('-', '+').replace('_', '/');
                 return JSON.parse(decodeURIComponent(window.atob(base64)));
             }
-            catch (e) { }
+            catch (e) {
+            }
         }
     }
     setToken(response) {
@@ -36,20 +38,20 @@ class Shared {
             }
         }
         if (!token && response) {
-            const tokenRootData = this.config.tokenRoot && this.config.tokenRoot.split('.').reduce(function (o, x) { return o[x]; }, response.data);
-            token = tokenRootData ? tokenRootData[this.config.tokenName] : response.data && response.data[this.config.tokenName];
+            const tokenRootData = this.satellizerConfig.tokenRoot && this.satellizerConfig.tokenRoot.split('.').reduce(function (o, x) { return o[x]; }, response.data);
+            token = tokenRootData ? tokenRootData[this.satellizerConfig.tokenName] : response.data && response.data[this.satellizerConfig.tokenName];
         }
         if (!token) {
-            const tokenPath = this.config.tokenRoot ? this.config.tokenRoot + '.' + this.config.tokenName : this.config.tokenName;
+            const tokenPath = this.satellizerConfig.tokenRoot ? this.satellizerConfig.tokenRoot + '.' + this.satellizerConfig.tokenName : this.satellizerConfig.tokenName;
             return this.$log.warn('Expecting a token named "' + tokenPath);
         }
-        this.storage.set(this.prefixedTokenName, token);
+        this.satellizerStorage.set(this.prefixedTokenName, token);
     }
     removeToken() {
-        this.storage.remove(this.prefixedTokenName);
+        this.satellizerStorage.remove(this.prefixedTokenName);
     }
     isAuthenticated() {
-        const token = this.storage.get(this.prefixedTokenName);
+        const token = this.satellizerStorage.get(this.prefixedTokenName);
         if (token) {
             if (token.split('.').length === 3) {
                 try {
@@ -75,11 +77,11 @@ class Shared {
         return false; // FAIL: No token at all
     }
     logout() {
-        this.storage.remove(this.prefixedTokenName);
+        this.satellizerStorage.remove(this.prefixedTokenName);
+        return this.$q.when();
     }
     setStorageType(type) {
-        this.storageType = type;
+        this.satellizerConfig.storageType = type;
     }
 }
 export default Shared;
-//# sourceMappingURL=Shared.js.map

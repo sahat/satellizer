@@ -1,20 +1,29 @@
-import url from 'url';
-class OAuth2 {
-    constructor($http, $window, $timeout, SatellizerConfig, SatellizerPopup, SatellizerStorage) {
+import { resolve } from 'url';
+export default class OAuth2 {
+    constructor($http, $window, $timeout, satellizerConfig, satellizerPopup, satellizerStorage) {
         this.$http = $http;
         this.$window = $window;
         this.$timeout = $timeout;
-        this.config = SatellizerConfig;
-        this.popup = SatellizerPopup;
-        this.storage = SatellizerStorage;
+        this.satellizerConfig = satellizerConfig;
+        this.satellizerPopup = satellizerPopup;
+        this.satellizerStorage = satellizerStorage;
         this.defaults = {
+            url: null,
+            clientId: null,
+            name: null,
+            authorizationEndpoint: null,
+            redirectUri: null,
+            scopePrefix: null,
+            scopeDelimiter: null,
+            state: null,
             defaultUrlParams: ['response_type', 'client_id', 'redirect_uri'],
             responseType: 'code',
             responseParams: {
                 code: 'code',
                 clientId: 'clientId',
                 redirectUri: 'redirectUri'
-            }
+            },
+            popupOptions: { width: null, height: null }
         };
     }
     init(options, data) {
@@ -22,24 +31,24 @@ class OAuth2 {
             Object.assign(this.defaults, options);
             this.$timeout(() => {
                 const url = [this.defaults.authorizationEndpoint, this.buildQueryString()].join('?');
-                const stateName = this.defaults.name + '_state'; // todo; what if name is undefined
-                const { name, popupOptions, redirectUri } = this.defaults;
-                if (typeof this.defaults.state === 'function') {
-                    this.storage.set(stateName, this.defaults.state());
+                const stateName = this.defaults.name + '_state'; // TODO what if name is undefined
+                const { name, state, popupOptions, redirectUri, responseType } = this.defaults;
+                if (typeof state === 'function') {
+                    this.satellizerStorage.set(stateName, state());
                 }
-                else if (typeof this.defaults.state === 'string') {
-                    this.storage.set(stateName, this.defaults.state);
+                else if (typeof state === 'string') {
+                    this.satellizerStorage.set(stateName, state);
                 }
-                return this.popup.open(url, name, popupOptions, redirectUri)
+                this.satellizerPopup.open(url, name, popupOptions, redirectUri)
                     .then((oauth) => {
-                    if (this.defaults.responseType === 'token' || !this.defaults.url) {
+                    if (responseType === 'token' || !url) {
                         return resolve(oauth);
                     }
-                    if (oauth.state && oauth.state !== this.storage.get(stateName)) {
+                    if (oauth.state && oauth.state !== this.satellizerStorage.get(stateName)) {
                         return reject(new Error('The value returned in the state parameter does not match the state value from your original ' +
                             'authorization code request.'));
                     }
-                    return this.exchangeForToken(oauth, data);
+                    resolve(this.exchangeForToken(oauth, data));
                 })
                     .catch(error => reject(error));
             });
@@ -85,22 +94,22 @@ class OAuth2 {
         if (oauth.state) {
             payload.state = oauth.state;
         }
-        var exchangeForTokenUrl = this.config.baseUrl ? url.resolve(this.config.baseUrl, this.defaults.url) : this.defaults.url;
-        return this.$http.post(exchangeForTokenUrl, payload, { withCredentials: this.config.withCredentials });
+        let exchangeForTokenUrl = this.satellizerConfig.baseUrl ? resolve(this.satellizerConfig.baseUrl, this.defaults.url) : this.defaults.url;
+        return this.$http.post(exchangeForTokenUrl, payload, { withCredentials: this.satellizerConfig.withCredentials });
     }
     buildQueryString() {
         const keyValuePairs = [];
         const urlParamsCategories = ['defaultUrlParams', 'requiredUrlParams', 'optionalUrlParams'];
         angular.forEach(urlParamsCategories, (paramsCategory) => {
             angular.forEach(this.defaults[paramsCategory], (paramName) => {
-                const camelizedName = utils.camelCase(paramName);
+                const camelizedName = this.camelCase(paramName);
                 let paramValue = angular.isFunction(this.defaults[paramName]) ? this.defaults[paramName]() : this.defaults[camelizedName];
                 if (paramName === 'redirect_uri' && !paramValue) {
                     return;
                 }
                 if (paramName === 'state') {
                     const stateName = this.defaults.name + '_state'; // todo what if name undefined
-                    paramValue = encodeURIComponent(this.storage.get(stateName));
+                    paramValue = encodeURIComponent(this.satellizerStorage.get(stateName));
                 }
                 if (paramName === 'scope' && Array.isArray(paramValue)) {
                     paramValue = paramValue.join(this.defaults.scopeDelimiter);
@@ -119,5 +128,3 @@ class OAuth2 {
         });
     }
 }
-export default OAuth2;
-//# sourceMappingURL=OAuth2.js.map

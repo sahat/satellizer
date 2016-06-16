@@ -39,7 +39,7 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', 'ui.
     $urlRouterProvider.otherwise('/');
 
     $authProvider.facebook({
-      clientId: '657854390977827'
+      clientId: '603122136500203'
     });
 
     $authProvider.google({
@@ -105,7 +105,4 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', 'ui.
       }
       return deferred.promise;
     }
-  })
-  .run(function(SatellizerConfig) {
-    console.log(SatellizerConfig.providers.facebook);
   });

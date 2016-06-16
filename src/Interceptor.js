@@ -1,22 +1,22 @@
-class Interceptor {
-    constructor($q, SatellizerConfig, SatellizerShared, SatellizerStorage) {
+export default class Interceptor {
+    constructor($q, satellizerConfig, satellizerShared, satellizerStorage) {
         this.$q = $q;
-        this.config = SatellizerConfig;
-        this.shared = SatellizerShared;
-        this.storage = SatellizerStorage;
+        this.satellizerConfig = satellizerConfig;
+        this.satellizerShared = satellizerShared;
+        this.satellizerStorage = satellizerStorage;
     }
     request(request) {
         if (request.skipAuthorization) {
             return request;
         }
-        if (this.shared.isAuthenticated() && this.config.httpInterceptor(request)) {
-            const tokenName = this.config.tokenPrefix ?
-                [this.config.tokenPrefix, this.config.tokenName].join('_') : this.config.tokenName;
-            let token = this.storage.get(tokenName);
-            if (this.config.authHeader && this.config.authToken) {
-                token = this.config.authToken + ' ' + token;
+        if (this.satellizerShared.isAuthenticated() && this.satellizerConfig.httpInterceptor(request)) {
+            const tokenName = this.satellizerConfig.tokenPrefix ?
+                [this.satellizerConfig.tokenPrefix, this.satellizerConfig.tokenName].join('_') : this.satellizerConfig.tokenName;
+            let token = this.satellizerStorage.get(tokenName);
+            if (this.satellizerConfig.authHeader && this.satellizerConfig.authToken) {
+                token = this.satellizerConfig.authToken + ' ' + token;
             }
-            request.headers[this.config.authHeader] = token;
+            request.headers[this.satellizerConfig.authHeader] = token;
         }
         return request;
     }
@@ -24,5 +24,4 @@ class Interceptor {
         return this.$q.reject(response);
     }
 }
-export default Interceptor;
-//# sourceMappingURL=Interceptor.js.map
+Interceptor.$inject = ['$q', 'satellizerConfig', 'satellizerShared', 'satellizerStorage'];
