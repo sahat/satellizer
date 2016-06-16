@@ -11,23 +11,22 @@ export default class OAuth {
               private config: Config,
               private shared: Shared,
               private oauth1: OAuth1,
-              private oauth2: OAuth2) {}
+              private oauth2: OAuth2) {
+  }
 
   authenticate(name, data) {
     return new Promise((resolve, reject) => {
       const provider = this.config.providers[name];
-      const oauth: OAuth1|OAuth2 = provider.oauthType === '1.0' ? this.oauth1() : this.oauth2();
+      const initialize: any = provider.oauthType === '1.0' ? this.oauth1.init(provider, data) : this.oauth2.init(provider, data);
 
-      return oauth.init(provider, data)
-        .then((response) => {
-          if (provider.url) {
-            this.shared.setToken(response, false);
-          }
-          resolve(response);
-        })
-        .catch((error) => {
-          reject(error);
-        });
+      return initialize.then((response) => {
+        if (provider.url) {
+          this.shared.setToken(response);
+        }
+        resolve(response);
+      }).catch((error) => {
+        reject(error);
+      });
     });
   }
 

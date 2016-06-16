@@ -2,7 +2,11 @@ import { resolve } from 'url';
 import Config from './Config';
 import Popup from './Popup';
 
-class OAuth1 {
+interface IOAuth1 {
+  init(options: any, data: any): angular.IPromise<any>;
+}
+
+export default class OAuth1 implements IOAuth1 {
   static $inject = ['$http', '$window'];
 
   private defaults: {
@@ -72,5 +76,3 @@ class OAuth1 {
     return str.join('&');
   }
 }
-
-export default OAuth1;

@@ -1,20 +1,24 @@
-
 import { resolve } from 'url';
 import Config from './Config';
 import Popup from './Popup';
 import Storage from './Storage';
 
-class OAuth2 {
+interface IOAuth2 {
+  init(options: any, data: any): angular.IHttpPromise<any>;
+}
+
+export default class OAuth2 {
   static $inject = ['$http', '$window', '$timeout'];
 
   private defaults: {
-    clientId: string,
     name: string,
+    url: string,
+    clientId: string,
     authorizationEndpoint: string,
     redirectUri: string,
     scopePrefix: string,
     scopeDelimiter: string,
-    state: string|Function,
+    state?: string|(() => string),
     defaultUrlParams: Array<string>,
     responseType: string,
     responseParams: {
@@ -23,7 +27,6 @@ class OAuth2 {
       redirectUri: string
     },
     popupOptions: { width: number, height: number }
-
   };
 
   constructor(private $http: angular.IHttpService,
@@ -33,6 +36,7 @@ class OAuth2 {
               private popup: Popup,
               private storage: Storage) {
     this.defaults = {
+      url: null,
       clientId: null,
       name: null,
       authorizationEndpoint: null,
@@ -57,30 +61,29 @@ class OAuth2 {
 
       this.$timeout(() => {
         const url = [this.defaults.authorizationEndpoint, this.buildQueryString()].join('?');
-        const stateName = this.defaults.name + '_state'; // todo; what if name is undefined
-        const { name, popupOptions, redirectUri } = this.defaults;
+        const stateName = this.defaults.name + '_state'; // TODO what if name is undefined
+        const { name, state, popupOptions, redirectUri, responseType } = this.defaults;
 
-        if (typeof this.defaults.state === 'function') {
-          this.storage.set(stateName, this.defaults.state());
-        } else if (typeof this.defaults.state === 'string') {
-          this.storage.set(stateName, this.defaults.state);
+        if (typeof state === 'function') {
+          this.storage.set(stateName, state());
+        } else if (typeof state === 'string') {
+          this.storage.set(stateName, state);
         }
 
-        return this.popup.open(url, name, popupOptions, redirectUri)
-          .then((oauth: any) => {
-            if (this.defaults.responseType === 'token' || !this.defaults.url) {
-              return resolve(oauth);
-            }
+        this.popup.open(url, name, popupOptions, redirectUri).then((oauth: any): void|Promise<any>|angular.IHttpPromise<any> => {
+          if (responseType === 'token' || !url) {
+            return resolve(oauth);
+          }
 
-            if (oauth.state && oauth.state !== this.storage.get(stateName)) {
-              return reject(new Error(
-                'The value returned in the state parameter does not match the state value from your original ' +
-                'authorization code request.'
-              ));
-            }
+          if (oauth.state && oauth.state !== this.storage.get(stateName)) {
+            return reject(new Error(
+              'The value returned in the state parameter does not match the state value from your original ' +
+              'authorization code request.'
+            ));
+          }
 
-            return this.exchangeForToken(oauth, data);
-          })
+          return this.exchangeForToken(oauth, data);
+        })
           .catch(error => reject(error));
       });
     });
@@ -144,7 +147,9 @@ class OAuth2 {
         const camelizedName = this.camelCase(paramName);
         let paramValue = angular.isFunction(this.defaults[paramName]) ? this.defaults[paramName]() : this.defaults[camelizedName];
 
-        if (paramName === 'redirect_uri' && !paramValue) { return; }
+        if (paramName === 'redirect_uri' && !paramValue) {
+          return;
+        }
 
         if (paramName === 'state') {
           const stateName = this.defaults.name + '_state'; // todo what if name undefined
@@ -167,10 +172,8 @@ class OAuth2 {
   }
 
   camelCase(name) {
-    return name.replace(/([\:\-\_]+(.))/g, function(_, separator, letter, offset) {
+    return name.replace(/([\:\-\_]+(.))/g, function (_, separator, letter, offset) {
       return offset ? letter.toUpperCase() : letter;
     });
   }
 }
-
-export default OAuth2;

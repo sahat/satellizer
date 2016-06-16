@@ -2,7 +2,11 @@ import { parse as queryParse, stringify } from 'querystring';
 import { parse as urlParse } from 'url';
 import Config from './Config';
 
-class Popup {
+interface IPopup {
+  open(url: string, name: string, popupOptions: { width: number, height: number }, redirectUri: string): Function|Promise<any>;
+}
+
+export default class Popup implements IPopup {
   static $inject = ['$interval', '$window'];
 
   private popup: any;
@@ -21,9 +25,12 @@ class Popup {
     };
   }
 
-  open(url, name, { width = 500, height = 500 }, redirectUri) {
+  open(url: string, name: string, popupOptions: { width: number, height: number }, redirectUri: string) {
     return new Promise((resolve, reject) => { // toTODOdo remove redundant
       this.url = url; // TODO remove
+
+      const width = popupOptions.width || 500;
+      const height = popupOptions.height || 500;
 
       const options = stringify({
         width: width,
@@ -121,5 +128,3 @@ class Popup {
     });
   }
 }
-
-export default Popup;
