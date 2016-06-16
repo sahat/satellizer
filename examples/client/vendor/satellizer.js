@@ -102,11 +102,21 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _Storage2 = _interopRequireDefault(_Storage);
 
+	var _Interceptor = __webpack_require__(17);
+
+	var _Interceptor2 = _interopRequireDefault(_Interceptor);
+
+	var _HttpProviderConfig = __webpack_require__(18);
+
+	var _HttpProviderConfig2 = _interopRequireDefault(_HttpProviderConfig);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	angular.module('satellizer', []).provider('$auth', ['satellizerConfig', function (satellizerConfig) {
 	    return new _AuthProvider2.default(satellizerConfig);
-	}]).constant('satellizerConfig', _Config2.default.getConstant).service('satellizerShared', ['$q', '$window', '$log', 'satellizerConfig', 'satellizerStorage', _Shared2.default]).service('satellizerLocal', ['$http', 'satellizerConfig', 'satellizerShared', _Local2.default]).service('satellizerPopup', ['$interval', '$window', _Popup2.default]).service('satellizerOAuth', ['$http', 'satellizerConfig', 'satellizerShared', 'satellizerOAuth1', 'satellizerOAuth2', _OAuth2.default]).service('satellizerOAuth2', ['$http', '$window', '$timeout', 'satellizerConfig', 'satellizerPopup', 'satellizerStorage', _OAuth4.default]).service('satellizerOAuth1', ['$http', '$window', 'satellizerConfig', 'satellizerPopup', _OAuth6.default]).service('satellizerStorage', ['$window', 'satellizerConfig', _Storage2.default]);
+	}]).constant('satellizerConfig', _Config2.default.getConstant).service('satellizerShared', ['$q', '$window', '$log', 'satellizerConfig', 'satellizerStorage', _Shared2.default]).service('satellizerLocal', ['$http', 'satellizerConfig', 'satellizerShared', _Local2.default]).service('satellizerPopup', ['$interval', '$window', _Popup2.default]).service('satellizerOAuth', ['$http', 'satellizerConfig', 'satellizerShared', 'satellizerOAuth1', 'satellizerOAuth2', _OAuth2.default]).service('satellizerOAuth2', ['$http', '$window', '$timeout', 'satellizerConfig', 'satellizerPopup', 'satellizerStorage', _OAuth4.default]).service('satellizerOAuth1', ['$http', '$window', 'satellizerConfig', 'satellizerPopup', _OAuth6.default]).service('satellizerStorage', ['$window', 'satellizerConfig', _Storage2.default]).service('satellizerInterceptor', _Interceptor2.default).config(['$httpProvider', function ($httpProvider) {
+	    return new _HttpProviderConfig2.default($httpProvider);
+	}]);
 	exports.default = 'satellizer';
 
 /***/ },
@@ -2224,7 +2234,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (this.$window['cordova']) {
 	                return this.eventListener(this.defaults.redirectUri); // TODO pass redirect uri
 	            } else {
-	                    console.log('polling');
 	                    return this.polling(redirectUri);
 	                }
 	        }
@@ -2250,7 +2259,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	                                if (params.error) {
 	                                    reject(new Error(params.error));
 	                                } else {
-	                                    console.log('resolving');
 	                                    resolve(params);
 	                                }
 	                            } else {
@@ -2334,7 +2342,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	                var provider = _this.satellizerConfig.providers[name];
 	                var initialize = provider.oauthType === '1.0' ? _this.satellizerOAuth1.init(provider, data) : _this.satellizerOAuth2.init(provider, data);
 	                return initialize.then(function (response) {
-	                    console.log(response);
 	                    if (provider.url) {
 	                        _this.satellizerShared.setToken(response);
 	                    }
@@ -2680,6 +2687,73 @@ return /******/ (function(modules) { // webpackBootstrap
 	}();
 
 	exports.default = Storage;
+
+/***/ },
+/* 17 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var Interceptor = function Interceptor($q, satellizerConfig, satellizerShared, satellizerStorage) {
+	    var _this = this;
+
+	    _classCallCheck(this, Interceptor);
+
+	    this.$q = $q;
+	    this.satellizerConfig = satellizerConfig;
+	    this.satellizerShared = satellizerShared;
+	    this.satellizerStorage = satellizerStorage;
+	    this.request = function (request) {
+	        if (request.skipAuthorization) {
+	            return request;
+	        }
+	        if (_this.satellizerShared.isAuthenticated() && _this.satellizerConfig.httpInterceptor(request)) {
+	            var tokenName = _this.satellizerConfig.tokenPrefix ? [_this.satellizerConfig.tokenPrefix, _this.satellizerConfig.tokenName].join('_') : _this.satellizerConfig.tokenName;
+	            var token = _this.satellizerStorage.get(tokenName);
+	            if (_this.satellizerConfig.authHeader && _this.satellizerConfig.authToken) {
+	                token = _this.satellizerConfig.authToken + ' ' + token;
+	            }
+	            request.headers[_this.satellizerConfig.authHeader] = token;
+	        }
+	        return request;
+	    };
+	    this.responseError = function (response) {
+	        return _this.$q.reject(response);
+	    };
+	};
+
+	exports.default = Interceptor;
+
+	Interceptor.$inject = ['$q', 'satellizerConfig', 'satellizerShared', 'satellizerStorage'];
+
+/***/ },
+/* 18 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var HttpProviderConfig = function HttpProviderConfig($httpProvider) {
+	    _classCallCheck(this, HttpProviderConfig);
+
+	    this.$httpProvider = $httpProvider;
+	    $httpProvider.interceptors.push('satellizerInterceptor');
+	};
+
+	exports.default = HttpProviderConfig;
+
+	HttpProviderConfig.$inject = ['$httpProvider'];
 
 /***/ }
 /******/ ])

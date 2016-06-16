@@ -20,8 +20,8 @@ angular.module('satellizer', [])
   .service('satellizerOAuth2', ['$http', '$window', '$timeout', 'satellizerConfig', 'satellizerPopup', 'satellizerStorage', OAuth2])
   .service('satellizerOAuth1', ['$http', '$window', 'satellizerConfig', 'satellizerPopup', OAuth1])
   .service('satellizerStorage', ['$window', 'satellizerConfig', Storage])
-  // .service('satellizerInterceptor', Interceptor)
-  // .config(['$httpProvider', ($httpProvider) => new HttpProviderConfig($httpProvider)]);
+  .service('satellizerInterceptor', Interceptor)
+  .config(['$httpProvider', ($httpProvider) => new HttpProviderConfig($httpProvider)]);
 
 export default 'satellizer';
 

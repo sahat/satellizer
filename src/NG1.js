@@ -7,6 +7,8 @@ import OAuth from './OAuth';
 import OAuth2 from './OAuth2';
 import OAuth1 from './OAuth1';
 import Storage from './Storage';
+import Interceptor from './Interceptor';
+import HttpProviderConfig from './HttpProviderConfig';
 angular.module('satellizer', [])
     .provider('$auth', ['satellizerConfig', (satellizerConfig) => new AuthProvider(satellizerConfig)])
     .constant('satellizerConfig', Config.getConstant)
@@ -16,5 +18,7 @@ angular.module('satellizer', [])
     .service('satellizerOAuth', ['$http', 'satellizerConfig', 'satellizerShared', 'satellizerOAuth1', 'satellizerOAuth2', OAuth])
     .service('satellizerOAuth2', ['$http', '$window', '$timeout', 'satellizerConfig', 'satellizerPopup', 'satellizerStorage', OAuth2])
     .service('satellizerOAuth1', ['$http', '$window', 'satellizerConfig', 'satellizerPopup', OAuth1])
-    .service('satellizerStorage', ['$window', 'satellizerConfig', Storage]);
+    .service('satellizerStorage', ['$window', 'satellizerConfig', Storage])
+    .service('satellizerInterceptor', Interceptor)
+    .config(['$httpProvider', ($httpProvider) => new HttpProviderConfig($httpProvider)]);
 export default 'satellizer';
