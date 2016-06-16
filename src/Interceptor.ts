@@ -1,10 +1,14 @@
-class Interceptor {
-  constructor($q, SatellizerConfig, SatellizerShared, SatellizerStorage) {
-    this.$q = $q;
-    this.config = SatellizerConfig;
-    this.shared = SatellizerShared;
-    this.storage = SatellizerStorage;
-  }
+import Config from './Config';
+import Shared from './Shared';
+import Storage from './Storage';
+
+export default class Interceptor {
+  static $inject = ['$q'];
+
+  constructor(private $q: angular.IQService,
+              private config: Config,
+              private shared: Shared,
+              private storage: Storage) {}
 
   request(request) {
     if (request.skipAuthorization) {
@@ -30,5 +34,3 @@ class Interceptor {
     return this.$q.reject(response);
   }
 }
-
-export default Interceptor;

@@ -1,0 +1,30 @@
+{
+  /*
+   * Possible values:
+   * - the name of a built-in config
+   * - the name of an NPM module which has a "main" file that exports a config object
+   * - a relative path to a JSON file
+   */
+  "extends": "tslint:latest",
+  "rules": {
+    /*
+     * Any rules specified here will override those from the base config we are extending
+     */
+    "member-access": false,
+    "no-namespace": false,
+    "no-reference": false,
+    "object-literal-sort-keys": false,
+    "quotemark": false,
+    "no-constructor-vars": false,
+    "no-trailing-whitespace": false,
+    "max-line-length": false,
+    "trailing-comma": false,
+    "no-string-literal": false
+  },
+  "rulesDirectory": [
+    /*
+     * A list of relative or absolute paths to directories that contain custom rules.
+     * See the Custom Rules documentation below for more details.
+     */
+  ]
+}

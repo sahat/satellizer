@@ -1,54 +1,50 @@
-"use strict";
-var querystring_1 = require('querystring');
-var url_1 = require('url');
-var Popup = (function () {
-    function Popup($interval, $window, SatellizerConfig) {
+import qs from 'querystring';
+import url from 'url';
+class Popup {
+    constructor($interval, $window, SatellizerConfig) {
         this.$interval = $interval;
         this.$window = $window;
         this.config = SatellizerConfig;
         this.popup = null;
         this.url = 'about:blank'; //todo remove
     }
-    Popup.prototype.open = function (url, name, _a, redirectUri) {
-        var _this = this;
-        var _b = _a.width, width = _b === void 0 ? 500 : _b, _c = _a.height, height = _c === void 0 ? 500 : _c;
-        return new Promise(function (resolve, reject) {
-            _this.url = url; // todo remove
-            var options = querystring_1["default"].stringify({
+    open(url, name, { width = 500, height = 500 }, redirectUri) {
+        return new Promise((resolve, reject) => {
+            this.url = url; // todo remove
+            const options = qs.stringify({
                 width: width,
                 height: height,
-                top: _this.$window.screenY + ((_this.$window.outerHeight - height) / 2.5),
-                left: _this.$window.screenX + ((_this.$window.outerWidth - width) / 2)
+                top: this.$window.screenY + ((this.$window.outerHeight - height) / 2.5),
+                left: this.$window.screenX + ((this.$window.outerWidth - width) / 2)
             }, ',');
-            var name = _this.$window.cordova || _this.$window.navigator.userAgent.includes('CriOS') ? '_blank' : name;
-            _this.popup = _this.$window.open(_this.url, name, options);
-            if (_this.popup && _this.popup.focus) {
-                _this.popup.focus();
+            const name = this.$window.cordova || this.$window.navigator.userAgent.includes('CriOS') ? '_blank' : name;
+            this.popup = this.$window.open(this.url, name, options);
+            if (this.popup && this.popup.focus) {
+                this.popup.focus();
             }
-            if (_this.$window.cordova) {
-                return _this.eventListener(defaults.redirectUri); // todo pass redirect uri
+            if (this.$window.cordova) {
+                return this.eventListener(defaults.redirectUri); // todo pass redirect uri
             }
             else {
-                return _this.polling(redirectUri);
+                return this.polling(redirectUri);
             }
         });
-    };
-    Popup.prototype.polling = function (redirectUri) {
-        var _this = this;
-        return new Promise(function (resolve, reject) {
-            var redirectUri = url_1["default"].parse(redirectUri);
-            var polling = _this.$interval(function () {
-                if (!_this.popup || _this.popup.closed || !_this.popup.closed) {
-                    _this.$interval.cancel(polling);
+    }
+    polling(redirectUri) {
+        return new Promise((resolve, reject) => {
+            const redirectUri = url.parse(redirectUri);
+            const polling = this.$interval(() => {
+                if (!this.popup || this.popup.closed || !this.popup.closed) {
+                    this.$interval.cancel(polling);
                     reject(new Error('The popup window was closed'));
                 }
                 try {
-                    var popupUrl = _this.popup.location.host + _this.popup.location.pathname;
+                    const popupUrl = this.popup.location.host + this.popup.location.pathname;
                     if (popupUrl === redirectUri.host + redirectUri.pathname) {
-                        if (_this.popup.location.search || _this.popup.location.hash) {
-                            var query = querystring_1["default"].parse(_this.popup.location.search.substring(1).replace(/\/$/, ''));
-                            var hash = querystring_1["default"].parse(_this.popup.location.hash.substring(1).replace(/[\/$]/, ''));
-                            var params = Object.assign({}, query, hash);
+                        if (this.popup.location.search || this.popup.location.hash) {
+                            const query = qs.parse(this.popup.location.search.substring(1).replace(/\/$/, ''));
+                            const hash = qs.parse(this.popup.location.hash.substring(1).replace(/[\/$]/, ''));
+                            const params = Object.assign({}, query, hash);
                             if (params.error) {
                                 reject(new Error(params.error));
                             }
@@ -61,42 +57,40 @@ var Popup = (function () {
                                 'They were either not set during the redirect, or were removed—typically by a ' +
                                 'routing library—before Satellizer could read it.'));
                         }
-                        _this.$interval.cancel(polling);
-                        _this.popup.close();
+                        this.$interval.cancel(polling);
+                        this.popup.close();
                     }
                 }
                 catch (error) {
                 }
             }, 20);
         });
-    };
-    Popup.prototype.eventListener = function (redirectUri) {
-        var _this = this;
-        return new Promise(function (resolve, reject) {
-            _this.popup.addEventListener('loadstart', function (event) {
+    }
+    eventListener(redirectUri) {
+        return new Promise((resolve, reject) => {
+            this.popup.addEventListener('loadstart', (event) => {
                 if (!event.url.includes(redirectUri)) {
                     return;
                 }
-                var url = url.parse(event.url);
+                const url = url.parse(event.url);
                 if (url.search || url.hash) {
-                    var query = querystring_1["default"].parse(url.search.substring(1).replace(/\/$/, ''));
-                    var hash = querystring_1["default"].parse(url.hash.substring(1).replace(/[\/$]/, ''));
-                    var params = Object.assign({}, query, hash);
+                    const query = qs.parse(url.search.substring(1).replace(/\/$/, ''));
+                    const hash = qs.parse(url.hash.substring(1).replace(/[\/$]/, ''));
+                    const params = Object.assign({}, query, hash);
                     if (params.error) {
                         reject(new Error(params.error));
                     }
                     else {
                         resolve(params);
                     }
-                    _this.popup.close();
+                    this.popup.close();
                 }
             });
-            _this.popup.addEventListener('loaderror', function () {
+            this.popup.addEventListener('loaderror', function () {
                 reject(new Error('Authorization failed'));
             });
         });
-    };
-    return Popup;
-}());
-exports.__esModule = true;
-exports["default"] = Popup;
+    }
+}
+export default Popup;
+//# sourceMappingURL=Popup.js.map

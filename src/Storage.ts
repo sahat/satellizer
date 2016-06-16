@@ -1,36 +1,35 @@
-class Storage {
-  constructor($window, SatellizerConfig) {
-    this.$window = $window;
-    this.config = SatellizerConfig;
+import Config from './Config';
+
+export default class Storage {
+  static $inject = ['$window'];
+
+  private memoryStore: Object;
+
+  constructor(private $window: angular.IHttpService, private config: Config) {
     this.memoryStore = {};
-    this.isStorageAvailable = this.checkIfAvailable();
   }
 
-  checkIfAvailable() {
+  get(key: string) {
     try {
-      const supported = this.config.storageType in this.$window && this.$window[this.config.storageType] !== null;
-      if (supported) {
-        const key = Math.random().toString(36).substring(7);
-        this.$window[this.config.storageType].setItem(key, '');
-        this.$window[this.config.storageType].removeItem(key);
-      }
-      return supported;
+      return this.$window[this.config.storageType].getItem(key);
     } catch (e) {
-      return false;
+      return this.memoryStore[key];
     }
   }
 
-  get(key) {
-    return this.isStorageAvailable ? this.$window[this.config.storageType].getItem(key) : this.memoryStore[key];
+  set(key: string, value: string) {
+    try {
+      this.$window[this.config.storageType].setItem(key, value);
+    } catch (e) {
+      this.memoryStore[key] = value;
+    }
   }
 
-  set(key, value) {
-    return this.isStorageAvailable ? this.$window[this.config.storageType].setItem(key, value) : this.memoryStore[key] = value;
-  }
-
-  remove(key) {
-    return this.isStorageAvailable ? this.$window[this.config.storageType].removeItem(key) : delete this.memoryStore[key];
+  remove(key: string) {
+    try {
+      this.$window[this.config.storageType].removeItem(key);
+    } catch (e) {
+      delete this.memoryStore[key];
+    }
   }
 }
-
-export default Storage;

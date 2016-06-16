@@ -1,25 +1,26 @@
+var webpack = require('webpack');
+var path = require('path');
 var pkg = require('./package.json');
+
 var banner = pkg.description + '\n' +
   '@version v' + pkg.version + '\n' +
   '@link ' + pkg.homepage + '\n' +
   '@license MIT License, http://www.opensource.org/licenses/MIT';
 
-var webpack = require('webpack');
-
 module.exports = {
-  entry: {
-    'satellizer': './src/ng1.js'
-  },
-
-  output: {
-    library: 'satellizer',
-    libraryTarget: 'umd'
-  },
-
   devtool: 'source-map',
 
-  resolve: {
-    extensions: ['', '.js']
+  entry: [
+    path.join(__dirname, 'src', 'Satellizer.ts')
+  ],
+
+  output: {
+    filename: 'satellizer.js',
+
+    path: path.join(__dirname, 'dist'),
+    library: 'satellizer',
+    libraryTarget: 'umd',
+    umdNamedDefine: true
   },
 
   plugins: [
@@ -30,10 +31,8 @@ module.exports = {
   ],
 
   module: {
-    loaders: [{
-      test: /\.js$/,
-      loaders: ['babel-loader'],
-      exclude: /node_modules/
-    }]
+    loaders: [
+      { test: /\.ts$/, loader: 'ts', exclude: /node_modules/ }
+    ]
   }
 };

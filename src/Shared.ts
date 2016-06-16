@@ -1,10 +1,15 @@
-class Shared {
-  constructor($window, $log, SatellizerConfig, SatellizerStorage) {
-    this.$window = $window;
-    this.$log = $log;
-    this.config = SatellizerConfig;
-    this.storage = SatellizerStorage;
+import Config from './Config';
+import Storage from './Storage';
 
+class Shared {
+  static $inject = ['$window', '$log'];
+
+  private prefixedTokenName: string;
+
+  constructor(private $window: angular.IWindowService,
+              private $log: angular.ILogService,
+              private config: Config,
+              private storage: Storage) {
     const { tokenName, tokenPrefix } = this.config;
     this.prefixedTokenName = tokenPrefix ? [tokenPrefix, tokenName].join('_') : tokenName;
   }
@@ -21,7 +26,9 @@ class Shared {
         const base64Url = token.split('.')[1];
         const base64 = base64Url.replace('-', '+').replace('_', '/');
         return JSON.parse(decodeURIComponent(window.atob(base64)));
-      } catch (e) {}
+      } catch (e) {
+        // no-op
+      }
     }
   }
 
@@ -89,7 +96,7 @@ class Shared {
   }
 
   setStorageType(type) {
-    this.storageType = type;
+    this.config.storageType = type;
   }
 }
 

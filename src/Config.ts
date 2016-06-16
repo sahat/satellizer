@@ -1,17 +1,17 @@
-export default {
-  httpInterceptor: () => true,
-  withCredentials: false,
-  tokenRoot: null,
-  baseUrl: '/',
-  loginUrl: '/auth/login',
-  signupUrl: '/auth/signup',
-  unlinkUrl: '/auth/unlink/',
-  tokenName: 'token',
-  tokenPrefix: 'satellizer',
-  authHeader: 'Authorization',
-  authToken: 'Bearer',
-  storageType: 'localStorage',
-  providers: {
+export default class Config {
+  baseUrl = '/';
+  loginUrl = '/auth/login';
+  signupUrl = '/auth/signup';
+  unlinkUrl = '/auth/unlink/';
+  tokenName = 'token';
+  tokenPrefix = 'satellizer';
+  authHeader = 'Authorization';
+  authToken = 'Bearer';
+  storageType = 'localStorage';
+  tokenRoot = null;
+  withCredentials = false;
+
+  providers = {
     facebook: {
       name: 'facebook',
       url: '/auth/facebook',
@@ -37,8 +37,8 @@ export default {
       display: 'popup',
       oauthType: '2.0',
       popupOptions: { width: 452, height: 633 },
-      state: function() {
-        var rand = Math.random().toString(36).substr(2);
+      state: function () {
+        let rand = Math.random().toString(36).substr(2);
         return encodeURIComponent(rand);
       }
     },
@@ -128,5 +128,7 @@ export default {
       oauthType: '2.0',
       popupOptions: { width: 1028, height: 529 }
     }
-  }
+  };
+
+  httpInterceptor: any = () => true;
 };

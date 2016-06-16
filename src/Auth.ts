@@ -1,7 +1,7 @@
+import Config from './Config';
+
 class AuthProvider {
-  constructor(SatellizerConfig) {
-    this.config = SatellizerConfig;
-  }
+  constructor(private config: Config) {}
 
   get baseUrl() { return this.config.baseUrl; }
   set baseUrl(value) { this.config.baseUrl = value; }
@@ -111,7 +111,7 @@ class AuthProvider {
       setToken: (token) => SatellizerShared.setToken({ access_token: token }),
       removeToken: () => SatellizerShared.removeToken(),
       setStorageType: (type) => SatellizerShared.setStorageType(type)
-    }
+    };
   }
 }
 

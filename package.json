@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node ./examples/server/node/server.js",
     "test": "karma start",
-    "build:umd": "webpack src/ng1.js dist/bundle.js"
+    "build:umd": "webpack src/Satellizer.ts dist/satellizer.js"
   },
   "main": "satellizer.js",
   "homepage": "https://github.com/sahat/satellizer",
@@ -43,9 +43,13 @@
     "karma-jasmine": "^0.3.7",
     "karma-phantomjs-launcher": "^1.0.0",
     "rollup-plugin-babel": "^2.4.0",
+    "ts-loader": "^0.8.2",
+    "tslint-loader": "^2.1.4",
+    "typescript": "^1.8.10",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
-    "watchify": "^3.7.0"
+    "watchify": "^3.7.0",
+    "webpack": "^1.13.1"
   },
   "license": "MIT",
   "tags": [
@@ -71,5 +75,9 @@
     "sign-in",
     "social",
     "twitch"
-  ]
+  ],
+  "dependencies": {
+    "angular": "^1.5.7",
+    "angular-route": "^1.5.7"
+  }
 }

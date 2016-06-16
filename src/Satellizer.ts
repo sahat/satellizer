@@ -1,3 +1,6 @@
+// import 'angular';
+// import 'angular-route';
+
 import Config from './Config';
 import Auth from './Auth';
 import Shared from './Shared';
@@ -10,7 +13,8 @@ import Storage from './Storage';
 import Interceptor from './Interceptor';
 import HttpProviderConfig from './HttpProviderConfig';
 
-angular.module('satellizer', [])
+angular
+  .module('satellizer', [])
   .provider('$auth', Auth)
   .constant('SatellizerConfig', Config)
   .service('SatellizerShared', Shared)
@@ -24,3 +28,4 @@ angular.module('satellizer', [])
   .config('$httpProvider', HttpProviderConfig);
 
 export default 'satellizer';
+

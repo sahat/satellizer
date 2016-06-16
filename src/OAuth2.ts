@@ -1,22 +1,53 @@
-import url from 'url';
+
+import { resolve } from 'url';
+import Config from './Config';
+import Popup from './Popup';
+import Storage from './Storage';
 
 class OAuth2 {
-  constructor($http, $window, $timeout, SatellizerConfig, SatellizerPopup, SatellizerStorage) {
-    this.$http = $http;
-    this.$window = $window;
-    this.$timeout = $timeout;
-    this.config = SatellizerConfig;
-    this.popup = SatellizerPopup;
-    this.storage = SatellizerStorage;
+  static $inject = ['$http', '$window', '$timeout'];
 
+  private defaults: {
+    clientId: string,
+    name: string,
+    authorizationEndpoint: string,
+    redirectUri: string,
+    scopePrefix: string,
+    scopeDelimiter: string,
+    state: string|Function,
+    defaultUrlParams: Array<string>,
+    responseType: string,
+    responseParams: {
+      code: string,
+      clientId: string,
+      redirectUri: string
+    },
+    popupOptions: { width: number, height: number }
+
+  };
+
+  constructor(private $http: angular.IHttpService,
+              private $window: angular.IWindowService,
+              private $timeout: angular.ITimeoutService,
+              private config: Config,
+              private popup: Popup,
+              private storage: Storage) {
     this.defaults = {
+      clientId: null,
+      name: null,
+      authorizationEndpoint: null,
+      redirectUri: null,
+      scopePrefix: null,
+      scopeDelimiter: null,
+      state: null,
       defaultUrlParams: ['response_type', 'client_id', 'redirect_uri'],
       responseType: 'code',
       responseParams: {
         code: 'code',
         clientId: 'clientId',
         redirectUri: 'redirectUri'
-      }
+      },
+      popupOptions: { width: null, height: null }
     };
   }
 
@@ -35,9 +66,8 @@ class OAuth2 {
           this.storage.set(stateName, this.defaults.state);
         }
 
-
         return this.popup.open(url, name, popupOptions, redirectUri)
-          .then((oauth) => {
+          .then((oauth: any) => {
             if (this.defaults.responseType === 'token' || !this.defaults.url) {
               return resolve(oauth);
             }
@@ -100,7 +130,7 @@ class OAuth2 {
       payload.state = oauth.state;
     }
 
-    var exchangeForTokenUrl = this.config.baseUrl ? url.resolve(this.config.baseUrl, this.defaults.url) : this.defaults.url;
+    let exchangeForTokenUrl = this.config.baseUrl ? resolve(this.config.baseUrl, this.defaults.url) : this.defaults.url;
 
     return this.$http.post(exchangeForTokenUrl, payload, { withCredentials: this.config.withCredentials });
   }
@@ -111,7 +141,7 @@ class OAuth2 {
 
     angular.forEach(urlParamsCategories, (paramsCategory) => {
       angular.forEach(this.defaults[paramsCategory], (paramName) => {
-        const camelizedName = utils.camelCase(paramName);
+        const camelizedName = this.camelCase(paramName);
         let paramValue = angular.isFunction(this.defaults[paramName]) ? this.defaults[paramName]() : this.defaults[camelizedName];
 
         if (paramName === 'redirect_uri' && !paramValue) { return; }

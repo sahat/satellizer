@@ -1,9 +1,7 @@
-"use strict";
-var HttpProviderConfig = (function () {
-    function HttpProviderConfig($httpProvider) {
+class HttpProviderConfig {
+    constructor($httpProvider) {
         $httpProvider.interceptors.push('SatellizerInterceptor');
     }
-    return HttpProviderConfig;
-}());
-exports.__esModule = true;
-exports["default"] = HttpProviderConfig;
+}
+export default HttpProviderConfig;
+//# sourceMappingURL=HttpProviderConfig.js.map

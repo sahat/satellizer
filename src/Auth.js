@@ -1,146 +1,96 @@
-"use strict";
-var AuthProvider = (function () {
-    function AuthProvider(SatellizerConfig) {
+class AuthProvider {
+    constructor(SatellizerConfig) {
         this.config = SatellizerConfig;
     }
-    Object.defineProperty(AuthProvider.prototype, "baseUrl", {
-        get: function () { return this.config.baseUrl; },
-        set: function (value) { this.config.baseUrl = value; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AuthProvider.prototype, "loginUrl", {
-        get: function () { return this.config.loginUrl; },
-        set: function (value) { this.config.loginUrl = value; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AuthProvider.prototype, "signupUrl", {
-        get: function () { return this.config.signupUrl; },
-        set: function (value) { this.config.signupUrl = value; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AuthProvider.prototype, "tokenRoot", {
-        get: function () { return this.config.tokenRoot; },
-        set: function (value) { this.config.tokenRoot = value; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AuthProvider.prototype, "tokenName", {
-        get: function () { return this.config.tokenName; },
-        set: function (value) { this.config.tokenName = value; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AuthProvider.prototype, "tokenPrefix", {
-        get: function () { return this.config.tokenPrefix; },
-        set: function (value) { this.config.tokenPrefix = value; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AuthProvider.prototype, "unlinkUrl", {
-        get: function () { return this.config.unlinkUrl; },
-        set: function (value) { this.config.unlinkUrl = value; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AuthProvider.prototype, "authHeader", {
-        get: function () { return this.config.authHeader; },
-        set: function (value) { this.config.authHeader = value; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AuthProvider.prototype, "authToken", {
-        get: function () { return this.config.authToken; },
-        set: function (value) { this.config.authToken = value; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AuthProvider.prototype, "withCredentials", {
-        get: function () { return this.config.withCredentials; },
-        set: function (value) { this.config.withCredentials = value; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AuthProvider.prototype, "storageType", {
-        get: function () { return this.config.storageType; },
-        set: function (value) { this.config.storageType = value; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(AuthProvider.prototype, "httpInterceptor", {
-        get: function () { return this.config.httpInterceptor; },
-        set: function (value) {
-            if (typeof value === 'function') {
-                this.config.httpInterceptor = value;
-            }
-            else {
-                this.config.httpInterceptor = function () { return value; };
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    AuthProvider.prototype.facebook = function (options) {
+    get baseUrl() { return this.config.baseUrl; }
+    set baseUrl(value) { this.config.baseUrl = value; }
+    get loginUrl() { return this.config.loginUrl; }
+    set loginUrl(value) { this.config.loginUrl = value; }
+    get signupUrl() { return this.config.signupUrl; }
+    set signupUrl(value) { this.config.signupUrl = value; }
+    get tokenRoot() { return this.config.tokenRoot; }
+    set tokenRoot(value) { this.config.tokenRoot = value; }
+    get tokenName() { return this.config.tokenName; }
+    set tokenName(value) { this.config.tokenName = value; }
+    get tokenPrefix() { return this.config.tokenPrefix; }
+    set tokenPrefix(value) { this.config.tokenPrefix = value; }
+    get unlinkUrl() { return this.config.unlinkUrl; }
+    set unlinkUrl(value) { this.config.unlinkUrl = value; }
+    get authHeader() { return this.config.authHeader; }
+    set authHeader(value) { this.config.authHeader = value; }
+    get authToken() { return this.config.authToken; }
+    set authToken(value) { this.config.authToken = value; }
+    get withCredentials() { return this.config.withCredentials; }
+    set withCredentials(value) { this.config.withCredentials = value; }
+    get storageType() { return this.config.storageType; }
+    set storageType(value) { this.config.storageType = value; }
+    get httpInterceptor() { return this.config.httpInterceptor; }
+    set httpInterceptor(value) {
+        if (typeof value === 'function') {
+            this.config.httpInterceptor = value;
+        }
+        else {
+            this.config.httpInterceptor = () => value;
+        }
+    }
+    facebook(options) {
         return Object.assign({}, this.config.providers.facebook, options);
-    };
-    AuthProvider.prototype.google = function (options) {
+    }
+    google(options) {
         Object.assign(this.config.providers.google, options);
-    };
-    AuthProvider.prototype.github = function (options) {
+    }
+    github(options) {
         Object.assign(this.config.providers.github, options);
-    };
-    AuthProvider.prototype.instagram = function (options) {
+    }
+    instagram(options) {
         Object.assign(this.config.providers.instagram, options);
-    };
-    AuthProvider.prototype.linkedin = function (options) {
+    }
+    linkedin(options) {
         Object.assign(this.config.providers.linkedin, options);
-    };
-    AuthProvider.prototype.twitter = function (options) {
+    }
+    twitter(options) {
         Object.assign(this.config.providers.twitter, options);
-    };
-    AuthProvider.prototype.twitch = function (options) {
+    }
+    twitch(options) {
         Object.assign(this.config.providers.twitch, options);
-    };
-    AuthProvider.prototype.live = function (options) {
+    }
+    live(options) {
         Object.assign(this.config.providers.live, options);
-    };
-    AuthProvider.prototype.yahoo = function (options) {
+    }
+    yahoo(options) {
         Object.assign(this.config.providers.yahoo, options);
-    };
-    AuthProvider.prototype.bitbucket = function (options) {
+    }
+    bitbucket(options) {
         Object.assign(this.config.providers.bitbucket, options);
-    };
-    AuthProvider.prototype.oauth1 = function (options) {
+    }
+    oauth1(options) {
         this.config.providers[options.name] = Object.assign({}, options, {
             oauthType: '1.0'
         });
-    };
+    }
     ;
-    AuthProvider.prototype.oauth2 = function (options) {
+    oauth2(options) {
         this.config.providers[options.name] = Object.assign({}, options, {
             oauthType: '2.0'
         });
-    };
+    }
     ;
-    AuthProvider.prototype.$get = function (SatellizerShared, SatellizerLocal, SatellizerOAuth) {
+    $get(SatellizerShared, SatellizerLocal, SatellizerOAuth) {
         return {
-            login: function (user, options) { return SatellizerLocal.login(user, options); },
-            signup: function (user, options) { return SatellizerLocal.signup(user, options); },
-            logout: function () { return SatellizerShared.logout(); },
-            authenticate: function (name, data) { return SatellizerOAuth.authenticate(name, data); },
-            link: function (name, data) { return SatellizerOAuth.authenticate(name, data); },
-            unlink: function (name, options) { return SatellizerOAuth.unlink(name, options); },
-            isAuthenticated: function () { return SatellizerShared.isAuthenticated(); },
-            getPayload: function () { return SatellizerShared.getPayload(); },
-            getToken: function () { return SatellizerShared.getToken(); },
-            setToken: function (token) { return SatellizerShared.setToken({ access_token: token }); },
-            removeToken: function () { return SatellizerShared.removeToken(); },
-            setStorageType: function (type) { return SatellizerShared.setStorageType(type); }
+            login: (user, options) => SatellizerLocal.login(user, options),
+            signup: (user, options) => SatellizerLocal.signup(user, options),
+            logout: () => SatellizerShared.logout(),
+            authenticate: (name, data) => SatellizerOAuth.authenticate(name, data),
+            link: (name, data) => SatellizerOAuth.authenticate(name, data),
+            unlink: (name, options) => SatellizerOAuth.unlink(name, options),
+            isAuthenticated: () => SatellizerShared.isAuthenticated(),
+            getPayload: () => SatellizerShared.getPayload(),
+            getToken: () => SatellizerShared.getToken(),
+            setToken: (token) => SatellizerShared.setToken({ access_token: token }),
+            removeToken: () => SatellizerShared.removeToken(),
+            setStorageType: (type) => SatellizerShared.setStorageType(type)
         };
-    };
-    return AuthProvider;
-}());
-exports.__esModule = true;
-exports["default"] = AuthProvider;
+    }
+}
+export default AuthProvider;
+//# sourceMappingURL=Auth.js.map

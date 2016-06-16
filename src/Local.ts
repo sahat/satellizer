@@ -1,14 +1,16 @@
-import url from 'url';
+import { resolve } from 'url';
+import Config from './Config';
+import Shared from './Shared';
 
 class Local {
-  constructor($http, SatellizerConfig, SatellizerShared) {
-    this.$http = $http;
-    this.config = SatellizerConfig;
-    this.shared = SatellizerShared;
-  }
+  static $inject = ['$http'];
 
-  login(user, options = {}) {
-    options.url = options.url ? options.url : url.resolve(this.config.baseUrl, this.config.loginUrl);
+  constructor(private $http: angular.IHttpService,
+              private config: Config,
+              private shared: Shared) {}
+
+  login(user, options: any = {}) {
+    options.url = options.url ? options.url : resolve(this.config.baseUrl, this.config.loginUrl);
     options.data = user || options.data;
     options.method = options.method || 'POST';
     options.withCredentials = options.withCredentials || this.config.withCredentials;
@@ -19,9 +21,9 @@ class Local {
     });
   }
 
-  signup(user, options = {}) {
+  signup(user, options: any = {}) {
     options = options || {};
-    options.url = options.url ? options.url : url.resolve(this.config.baseUrl, this.config.signupUrl);
+    options.url = options.url ? options.url : resolve(this.config.baseUrl, this.config.signupUrl);
     options.data = user || options.data;
     options.method = options.method || 'POST';
     options.withCredentials = options.withCredentials || this.config.withCredentials;

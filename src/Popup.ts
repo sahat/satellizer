@@ -1,37 +1,47 @@
-import qs from 'querystring';
-import url from 'url';
+import { parse as queryParse, stringify } from 'querystring';
+import { parse as urlParse } from 'url';
+import Config from './Config';
 
 class Popup {
-  constructor($interval, $window, SatellizerConfig) {
-    this.$interval = $interval;
-    this.$window = $window;
-    this.config = SatellizerConfig;
+  static $inject = ['$interval', '$window'];
 
+  private popup: any;
+  private url: string;
+  private defaults: {
+    redirectUri: string
+  };
+  
+  constructor(private $interval: angular.IIntervalService,
+              private $window: angular.IWindowService,
+              private config: Config) {
     this.popup = null;
-    this.url = 'about:blank'; //todo remove
+    this.url = 'about:blank'; // TODO remove
+    this.defaults = {
+      redirectUri: null
+    };
   }
 
-  open(url, name, { width=500, height=500 }, redirectUri) {
-    return new Promise((resolve, reject) => { // todo remove redundant
-      this.url = url; // todo remove
+  open(url, name, { width = 500, height = 500 }, redirectUri) {
+    return new Promise((resolve, reject) => { // toTODOdo remove redundant
+      this.url = url; // TODO remove
 
-      const options = qs.stringify({
+      const options = stringify({
         width: width,
         height: height,
         top: this.$window.screenY + ((this.$window.outerHeight - height) / 2.5),
         left: this.$window.screenX + ((this.$window.outerWidth - width) / 2)
       }, ',');
 
-      const name = this.$window.cordova || this.$window.navigator.userAgent.includes('CriOS') ? '_blank' : name;
+      const popupName = this.$window['cordova'] || this.$window.navigator.userAgent.includes('CriOS') ? '_blank' : name;
 
-      this.popup = this.$window.open(this.url, name, options);
+      this.popup = this.$window.open(this.url, popupName, options);
 
       if (this.popup && this.popup.focus) {
         this.popup.focus();
       }
 
-      if (this.$window.cordova) {
-        return this.eventListener(defaults.redirectUri); // todo pass redirect uri
+      if (this.$window['cordova']) {
+        return this.eventListener(this.defaults.redirectUri); // TODO pass redirect uri
       } else {
         return this.polling(redirectUri);
       }
@@ -40,7 +50,7 @@ class Popup {
 
   polling(redirectUri) {
     return new Promise((resolve, reject) => {
-      const redirectUri = url.parse(redirectUri);
+      const redirectUriObject = urlParse(redirectUri);
 
       const polling = this.$interval(() => {
         if (!this.popup || this.popup.closed || !this.popup.closed) {
@@ -51,10 +61,10 @@ class Popup {
         try {
           const popupUrl = this.popup.location.host + this.popup.location.pathname;
 
-          if (popupUrl === redirectUri.host + redirectUri.pathname) {
+          if (popupUrl === redirectUriObject.host + redirectUriObject.pathname) {
             if (this.popup.location.search || this.popup.location.hash) {
-              const query = qs.parse(this.popup.location.search.substring(1).replace(/\/$/, ''));
-              const hash = qs.parse(this.popup.location.hash.substring(1).replace(/[\/$]/, ''));
+              const query = queryParse(this.popup.location.search.substring(1).replace(/\/$/, ''));
+              const hash = queryParse(this.popup.location.hash.substring(1).replace(/[\/$]/, ''));
               const params = Object.assign({}, query, hash);
 
               if (params.error) {
@@ -88,11 +98,11 @@ class Popup {
           return;
         }
 
-        const url = url.parse(event.url);
+        const url = urlParse(event.url);
 
         if (url.search || url.hash) {
-          const query = qs.parse(url.search.substring(1).replace(/\/$/, ''));
-          const hash = qs.parse(url.hash.substring(1).replace(/[\/$]/, ''));
+          const query = queryParse(url.search.substring(1).replace(/\/$/, ''));
+          const hash = queryParse(url.hash.substring(1).replace(/[\/$]/, ''));
           const params = Object.assign({}, query, hash);
 
           if (params.error) {

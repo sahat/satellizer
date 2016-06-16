@@ -20,8 +20,14 @@ var banner = ['/**',
   ''].join('\n');
 
 gulp.task('ts', function () {
-  return gulp.src('src/**/*.ts')
-    .pipe(ts({ noImplicitAny: true, out: 'output.js' }))
+  return gulp.src('src/*.ts')
+    .pipe(ts({
+      out: 'output.js',
+      noImplicitAny: false,
+      removeComments: false,
+      sourceMap: true,
+      target: 'es6'
+    }))
     .pipe(gulp.dest('dist'));
 });
 
