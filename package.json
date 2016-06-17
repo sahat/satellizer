@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node ./examples/server/node/server.js",
     "test": "karma start",
-    "build:umd": "webpack src/Satellizer.ts dist/satellizer.js"
+    "build": "rm -rf dist && tsc",
+    "build:umd": "webpack"
   },
   "main": "satellizer.js",
   "homepage": "https://github.com/sahat/satellizer",

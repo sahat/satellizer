@@ -1,6 +1,6 @@
-import Config from './Config';
-import Shared from './Shared';
-import Storage from './Storage';
+import Config from './config';
+import Shared from './shared';
+import Storage from './storage';
 
 export default class Interceptor {
 
@@ -17,7 +17,7 @@ export default class Interceptor {
       return request;
     }
 
-    if (this.satellizerShared.isAuthenticated() && this.satellizerConfig.httpInterceptor(request)) {
+    if (this.satellizerShared.isAuthenticated() && this.satellizerConfig.httpInterceptor()) {
       const tokenName = this.satellizerConfig.tokenPrefix ?
         [this.satellizerConfig.tokenPrefix, this.satellizerConfig.tokenName].join('_') : this.satellizerConfig.tokenName;
       let token = this.satellizerStorage.get(tokenName);

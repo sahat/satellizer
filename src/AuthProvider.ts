@@ -1,4 +1,4 @@
-import Config from './Config';
+import Config from './config';
 
 export default class AuthProvider {
   static $inject = ['satellizerConfig'];

@@ -4,7 +4,8 @@
     "noImplicitAny": false,
     "noResolve": true,
     "removeComments": false,
-    "target": "es2015"
+    "target": "es2015",
+    "outDir": "dist"
   },
   "exclude": ["node_modules"]
 }

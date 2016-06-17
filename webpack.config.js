@@ -10,7 +10,7 @@ var banner = pkg.description + '\n' +
 module.exports = {
   // devtool: 'source-map',
 
-  entry: './dist/NG1.js',
+  entry: './dist/ng1.js',
 
   output: {
     filename: 'satellizer.js',
