@@ -21,7 +21,7 @@ export default class Popup implements IPopup {
     };
   }
 
-  open(url: string, name: string, popupOptions: { width: number, height: number }, redirectUri: string) {
+  open(url: string, name: string, popupOptions: { width: number, height: number }, redirectUri: string): Promise<any> {
     this.url = url; // TODO remove
 
     const width = popupOptions.width || 500;
@@ -49,7 +49,7 @@ export default class Popup implements IPopup {
     }
   }
 
-  polling(redirectUri) {
+  polling(redirectUri): Promise<any> {
     return new Promise((resolve, reject) => {
       const redirectUriObject = urlParse(redirectUri);
 
@@ -92,7 +92,7 @@ export default class Popup implements IPopup {
     });
   }
 
-  eventListener(redirectUri) {
+  eventListener(redirectUri): Promise<any> {
     return new Promise((resolve, reject) => {
       this.popup.addEventListener('loadstart', (event) => {
         if (!event.url.includes(redirectUri)) {

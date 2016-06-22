@@ -134,5 +134,5 @@ export default class Config {
     }
   };
 
-  httpInterceptor: any = () => true;
+  httpInterceptor: any = (): boolean => true;
 };

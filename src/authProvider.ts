@@ -5,40 +5,40 @@ export default class AuthProvider {
 
   constructor(private satellizerConfig: Config) {}
 
-  get baseUrl() { return this.satellizerConfig.baseUrl; }
+  get baseUrl(): string { return this.satellizerConfig.baseUrl; }
   set baseUrl(value) { this.satellizerConfig.baseUrl = value; }
 
-  get loginUrl() { return this.satellizerConfig.loginUrl; }
+  get loginUrl(): string { return this.satellizerConfig.loginUrl; }
   set loginUrl(value) { this.satellizerConfig.loginUrl = value; }
 
-  get signupUrl() { return this.satellizerConfig.signupUrl; }
+  get signupUrl(): string { return this.satellizerConfig.signupUrl; }
   set signupUrl(value) { this.satellizerConfig.signupUrl = value; }
 
-  get tokenRoot() { return this.satellizerConfig.tokenRoot; }
+  get tokenRoot(): string { return this.satellizerConfig.tokenRoot; }
   set tokenRoot(value) { this.satellizerConfig.tokenRoot = value; }
 
-  get tokenName() { return this.satellizerConfig.tokenName; }
+  get tokenName(): string { return this.satellizerConfig.tokenName; }
   set tokenName(value) { this.satellizerConfig.tokenName = value; }
 
-  get tokenPrefix() { return this.satellizerConfig.tokenPrefix; }
+  get tokenPrefix(): string { return this.satellizerConfig.tokenPrefix; }
   set tokenPrefix(value) { this.satellizerConfig.tokenPrefix = value; }
 
-  get unlinkUrl() { return this.satellizerConfig.unlinkUrl; }
+  get unlinkUrl(): string { return this.satellizerConfig.unlinkUrl; }
   set unlinkUrl(value) { this.satellizerConfig.unlinkUrl = value; }
 
-  get authHeader() { return this.satellizerConfig.authHeader; }
+  get authHeader(): string { return this.satellizerConfig.authHeader; }
   set authHeader(value) { this.satellizerConfig.authHeader = value; }
 
-  get authToken() { return this.satellizerConfig.authToken; }
+  get authToken(): string { return this.satellizerConfig.authToken; }
   set authToken(value) { this.satellizerConfig.authToken = value; }
 
-  get withCredentials() { return this.satellizerConfig.withCredentials; }
+  get withCredentials(): boolean { return this.satellizerConfig.withCredentials; }
   set withCredentials(value) { this.satellizerConfig.withCredentials = value; }
 
-  get storageType() { return this.satellizerConfig.storageType; }
+  get storageType(): string { return this.satellizerConfig.storageType; }
   set storageType(value) { this.satellizerConfig.storageType = value; }
 
-  get httpInterceptor() { return this.satellizerConfig.httpInterceptor; }
+  get httpInterceptor(): boolean { return this.satellizerConfig.httpInterceptor; }
   set httpInterceptor(value) {
     if (typeof value === 'function') {
       this.satellizerConfig.httpInterceptor = value;
@@ -47,59 +47,59 @@ export default class AuthProvider {
     }
   }
 
-  facebook(options) {
+  facebook(options): void {
     Object.assign(this.satellizerConfig.providers.facebook, options);
   }
 
-  google(options) {
+  google(options): void {
     Object.assign(this.satellizerConfig.providers.google, options);
   }
 
-  github(options) {
+  github(options): void {
     Object.assign(this.satellizerConfig.providers.github, options);
   }
 
-  instagram(options) {
+  instagram(options): void {
     Object.assign(this.satellizerConfig.providers.instagram, options);
   }
 
-  linkedin(options) {
+  linkedin(options): void {
     Object.assign(this.satellizerConfig.providers.linkedin, options);
   }
 
-  twitter(options) {
+  twitter(options): void {
     Object.assign(this.satellizerConfig.providers.twitter, options);
   }
 
-  twitch(options) {
+  twitch(options): void {
     Object.assign(this.satellizerConfig.providers.twitch, options);
   }
 
-  live(options) {
+  live(options): void {
     Object.assign(this.satellizerConfig.providers.live, options);
   }
 
-  yahoo(options) {
+  yahoo(options): void {
     Object.assign(this.satellizerConfig.providers.yahoo, options);
   }
 
-  bitbucket(options) {
+  bitbucket(options): void {
     Object.assign(this.satellizerConfig.providers.bitbucket, options);
   }
 
-  oauth1(options) {
+  oauth1(options): void {
     this.satellizerConfig.providers[options.name] = Object.assign({}, options, {
       oauthType: '1.0'
     });
   }
 
-  oauth2(options) {
+  oauth2(options): void {
     this.satellizerConfig.providers[options.name] = Object.assign({}, options, {
       oauthType: '2.0'
     });
   }
 
-  $get(satellizerShared, satellizerLocal, satellizerOAuth) {
+  $get(satellizerShared, satellizerLocal, satellizerOAuth): any {
     return {
       login: (user, options) => satellizerLocal.login(user, options),
       signup: (user, options) => satellizerLocal.signup(user, options),

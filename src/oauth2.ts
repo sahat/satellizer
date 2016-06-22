@@ -51,7 +51,7 @@ export default class OAuth2 {
     };
   }
 
-  init(options, data) {
+  init(options, data): Promise<any> {
     return new Promise((resolve, reject) => {
       Object.assign(this.defaults, options);
 
@@ -89,27 +89,6 @@ export default class OAuth2 {
 
   exchangeForToken(oauth, data): angular.IHttpPromise<any> {
     const payload = Object.assign({}, data);
-
-    // TODO: use this instead
-    // for (const key in this.defaults.responseParams) {
-    //   if (this.defaults.responseParams.hasOwnProperty(key)) {
-    //     const value = this.defaults.responseParams[key];
-    //
-    //     switch (key) {
-    //       case 'code':
-    //         payload[value] = oauth.code;
-    //         break;
-    //       case 'clientId':
-    //         payload[value] = this.defaults.clientId;
-    //         break;
-    //       case 'redirectUri':
-    //         payload[value] = this.defaults.redirectUri;
-    //         break;
-    //       default:
-    //         payload[value] = oauth[key];
-    //     }
-    //   }
-    // }
 
     angular.forEach(this.defaults.responseParams, (value, key) => {
       switch (key) {

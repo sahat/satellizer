@@ -12,7 +12,7 @@ export default class Interceptor {
               private satellizerStorage: Storage) {
   }
 
-  request = (request) => {
+  request = (request): any => {
     if (request.skipAuthorization) {
       return request;
     }
@@ -32,7 +32,7 @@ export default class Interceptor {
     return request;
   };
 
-  responseError = (response) => {
+  responseError = (response): any => {
     return this.$q.reject(response);
   };
 }

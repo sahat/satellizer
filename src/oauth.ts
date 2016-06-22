@@ -14,7 +14,7 @@ export default class OAuth {
               private satellizerOAuth2: OAuth2) {
   }
 
-  authenticate(name, data) {
+  authenticate(name, data): Promise<any> {
     return new Promise((resolve, reject) => {
       const provider = this.satellizerConfig.providers[name];
       const initialize: any = provider.oauthType === '1.0' ? this.satellizerOAuth1.init(provider, data) : this.satellizerOAuth2.init(provider, data);
@@ -30,7 +30,7 @@ export default class OAuth {
     });
   }
 
-  unlink(provider, httpOptions) {
+  unlink(provider, httpOptions): angular.IHttpPromise<any> {
     httpOptions.url = httpOptions.url ? httpOptions.url : resolve(this.satellizerConfig.baseUrl, this.satellizerConfig.unlinkUrl);
     httpOptions.data = { provider } || httpOptions.data;
     httpOptions.method = httpOptions.method || 'POST';

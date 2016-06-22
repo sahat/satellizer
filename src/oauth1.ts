@@ -24,7 +24,7 @@ export default class OAuth1 implements IOAuth1 {
     };
   }
 
-  init(options, data) {
+  init(options, data): angular.IHttpPromise<any> {
     const { name, popupOptions, redirectUri } = options;
 
     let popupWindow;
