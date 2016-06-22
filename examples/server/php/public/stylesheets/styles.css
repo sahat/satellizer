@@ -295,11 +295,6 @@ ul {
   background-color: #444;
   border: 1px solid #3b3b3b;
 }
-.btn-gitlab {
-  color: #fff;
-  background-color: #2d9fd8;
-  border: 1px solid #2d9fd8;
-}
 
 .btn-github:hover,
 .btn-github:focus {
