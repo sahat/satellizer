@@ -1,5 +1,5 @@
 /**
- * Satellizer 0.14.0
+ * Satellizer 0.14.1
  * (c) 2016 Sahat Yalkabov
  * License: MIT
  */
@@ -24,7 +24,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
       baseUrl: '/',
       loginUrl: '/auth/login',
       signupUrl: '/auth/signup',
-      unlinkUrl: '/auth/unlink/',
+      unlinkUrl: '/auth/unlink',
       tokenName: 'token',
       tokenPrefix: 'satellizer',
       authHeader: 'Authorization',
@@ -522,7 +522,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
                 openPopup = popup.open(url, defaults.name, defaults.popupOptions, defaults.redirectUri).pollPopup(defaults.redirectUri);
               }
 
-              return openPopup
+              openPopup
                 .then(function(oauthData) {
                   // When no server URL provided, return popup params as-is.
                   // This is for a scenario when someone wishes to opt out from
@@ -540,6 +540,8 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
                   }
 
                   defer.resolve(Oauth2.exchangeForToken(oauthData, userData));
+                }, function (err) {
+                  defer.reject(err);
                 });
             });
 
@@ -589,7 +591,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
                 if (paramName === 'state') {
                   var stateName = defaults.name + '_state';
-                  paramValue = encodeURIComponent(storage.get(stateName));
+                  paramValue = storage.get(stateName);
                 }
 
                 if (paramName === 'scope' && Array.isArray(paramValue)) {
@@ -600,7 +602,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
                   }
                 }
 
-                keyValuePairs.push([paramName, paramValue]);
+                keyValuePairs.push([paramName, encodeURIComponent(paramValue)]);
               });
             });
 
