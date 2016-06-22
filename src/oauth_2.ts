@@ -1,10 +1,12 @@
 import { resolve } from 'url';
-import Config from './Config';
-import Shared from './Shared';
-import OAuth1 from './OAuth1';
-import OAuth2 from './OAuth2';
+import Config from './config';
+import Shared from './shared';
+import OAuth1 from './oauth1';
+import OAuth2 from './oauth2';
 
 export default class OAuth {
+  static $inject = ['$http', 'satellizerConfig', 'satellizerShared', 'satellizerOAuth1', 'satellizerOAuth2'];
+  
   constructor(private $http: angular.IHttpService,
               private satellizerConfig: Config,
               private satellizerShared: Shared,

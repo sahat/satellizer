@@ -1,9 +1,11 @@
 import { resolve } from 'url';
-import Config from './Config';
-import Popup from './Popup';
-import Storage from './Storage';
+import Config from './config';
+import Popup from './popup';
+import Storage from './storage';
 
 export default class OAuth2 {
+  static $inject = ['$http', '$window', '$timeout', 'satellizerConfig', 'satellizerPopup', 'satellizerStorage'];
+  
   private defaults: {
     name: string,
     url: string,
@@ -85,7 +87,7 @@ export default class OAuth2 {
     });
   }
 
-  exchangeForToken(oauth, data) {
+  exchangeForToken(oauth, data): angular.IHttpPromise<any> {
     const payload = Object.assign({}, data);
 
     // TODO: use this instead
@@ -134,7 +136,7 @@ export default class OAuth2 {
     return this.$http.post(exchangeForTokenUrl, payload, { withCredentials: this.satellizerConfig.withCredentials });
   }
 
-  buildQueryString() {
+  buildQueryString(): string {
     const keyValuePairs = [];
     const urlParamsCategories = ['defaultUrlParams', 'requiredUrlParams', 'optionalUrlParams'];
 
@@ -160,7 +162,6 @@ export default class OAuth2 {
           }
         }
 
-
         keyValuePairs.push([paramName, paramValue]);
       });
     });
@@ -168,8 +169,8 @@ export default class OAuth2 {
     return keyValuePairs.map(pair => pair.join('=')).join('&');
   }
 
-  camelCase(name) {
-    return name.replace(/([\:\-\_]+(.))/g, function (_, separator, letter, offset) {
+  camelCase(name): string {
+    return name.replace(/([\:\-\_]+(.))/g, (_, separator, letter, offset) => {
       return offset ? letter.toUpperCase() : letter;
     });
   }

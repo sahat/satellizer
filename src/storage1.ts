@@ -1,10 +1,13 @@
-import Config from './Config';
+import Config from './config';
 
 export default class Storage {
+  static $inject = ['$window', 'satellizerConfig'];
+  
   private memoryStore: Object;
 
   constructor(private $window: angular.IHttpService,
               private satellizerConfig: Config) {
+    
     this.memoryStore = {};
   }
 

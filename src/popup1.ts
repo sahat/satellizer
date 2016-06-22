@@ -6,6 +6,8 @@ interface IPopup {
 }
 
 export default class Popup implements IPopup {
+  static $inject = ['$interval', '$window'];
+  
   private popup: any;
   private url: string;
   private defaults: { redirectUri: string };

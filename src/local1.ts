@@ -1,8 +1,10 @@
 import { resolve } from 'url';
-import Config from './Config';
-import Shared from './Shared';
+import Config from './config';
+import Shared from './shared';
 
 class Local {
+  static $inject = ['$http', 'satellizerConfig', 'satellizerShared'];
+
   constructor(private $http: angular.IHttpService,
               private satellizerConfig: Config,
               private satellizerShared: Shared) {}

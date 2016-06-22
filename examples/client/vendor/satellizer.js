@@ -66,57 +66,57 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: true
 	});
 
-	var _Config = __webpack_require__(1);
+	var _config = __webpack_require__(1);
 
-	var _Config2 = _interopRequireDefault(_Config);
+	var _config2 = _interopRequireDefault(_config);
 
-	var _AuthProvider = __webpack_require__(2);
+	var _authProvider = __webpack_require__(2);
 
-	var _AuthProvider2 = _interopRequireDefault(_AuthProvider);
+	var _authProvider2 = _interopRequireDefault(_authProvider);
 
-	var _Shared = __webpack_require__(3);
+	var _shared = __webpack_require__(3);
 
-	var _Shared2 = _interopRequireDefault(_Shared);
+	var _shared2 = _interopRequireDefault(_shared);
 
-	var _Local = __webpack_require__(4);
+	var _local = __webpack_require__(4);
 
-	var _Local2 = _interopRequireDefault(_Local);
+	var _local2 = _interopRequireDefault(_local);
 
-	var _Popup = __webpack_require__(12);
+	var _popup = __webpack_require__(12);
 
-	var _Popup2 = _interopRequireDefault(_Popup);
+	var _popup2 = _interopRequireDefault(_popup);
 
-	var _OAuth = __webpack_require__(13);
+	var _oauth = __webpack_require__(13);
 
-	var _OAuth2 = _interopRequireDefault(_OAuth);
+	var _oauth2 = _interopRequireDefault(_oauth);
 
-	var _OAuth3 = __webpack_require__(14);
+	var _oauth3 = __webpack_require__(14);
 
-	var _OAuth4 = _interopRequireDefault(_OAuth3);
+	var _oauth4 = _interopRequireDefault(_oauth3);
 
-	var _OAuth5 = __webpack_require__(15);
+	var _oauth5 = __webpack_require__(15);
 
-	var _OAuth6 = _interopRequireDefault(_OAuth5);
+	var _oauth6 = _interopRequireDefault(_oauth5);
 
-	var _Storage = __webpack_require__(16);
+	var _storage = __webpack_require__(16);
 
-	var _Storage2 = _interopRequireDefault(_Storage);
+	var _storage2 = _interopRequireDefault(_storage);
 
-	var _Interceptor = __webpack_require__(17);
+	var _interceptor = __webpack_require__(17);
 
-	var _Interceptor2 = _interopRequireDefault(_Interceptor);
+	var _interceptor2 = _interopRequireDefault(_interceptor);
 
-	var _HttpProviderConfig = __webpack_require__(18);
+	var _httpProviderConfig = __webpack_require__(18);
 
-	var _HttpProviderConfig2 = _interopRequireDefault(_HttpProviderConfig);
+	var _httpProviderConfig2 = _interopRequireDefault(_httpProviderConfig);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	angular.module('satellizer', []).provider('$auth', ['satellizerConfig', function (satellizerConfig) {
-	    return new _AuthProvider2.default(satellizerConfig);
-	}]).constant('satellizerConfig', _Config2.default.getConstant).service('satellizerShared', ['$q', '$window', '$log', 'satellizerConfig', 'satellizerStorage', _Shared2.default]).service('satellizerLocal', ['$http', 'satellizerConfig', 'satellizerShared', _Local2.default]).service('satellizerPopup', ['$interval', '$window', _Popup2.default]).service('satellizerOAuth', ['$http', 'satellizerConfig', 'satellizerShared', 'satellizerOAuth1', 'satellizerOAuth2', _OAuth2.default]).service('satellizerOAuth2', ['$http', '$window', '$timeout', 'satellizerConfig', 'satellizerPopup', 'satellizerStorage', _OAuth4.default]).service('satellizerOAuth1', ['$http', '$window', 'satellizerConfig', 'satellizerPopup', _OAuth6.default]).service('satellizerStorage', ['$window', 'satellizerConfig', _Storage2.default]).service('satellizerInterceptor', _Interceptor2.default).config(['$httpProvider', function ($httpProvider) {
-	    return new _HttpProviderConfig2.default($httpProvider);
-	}]);
+	    return new _authProvider2.default(satellizerConfig);
+	}]).constant('satellizerConfig', _config2.default.getConstant).service('satellizerShared', _shared2.default).service('satellizerLocal', _local2.default).service('satellizerPopup', _popup2.default).service('satellizerOAuth', _oauth2.default).service('satellizerOAuth2', _oauth4.default).service('satellizerOAuth1', _oauth6.default).service('satellizerStorage', _storage2.default).service('satellizerInterceptor', _interceptor2.default).config(function ($httpProvider) {
+	    return new _httpProviderConfig2.default($httpProvider);
+	});
 	exports.default = 'satellizer';
 
 /***/ },
@@ -644,6 +644,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return Shared;
 	}();
 
+	Shared.$inject = ['$q', '$window', '$log', 'satellizerConfig', 'satellizerStorage'];
 	exports.default = Shared;
 
 /***/ },
@@ -704,6 +705,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return Local;
 	}();
 
+	Local.$inject = ['$http', 'satellizerConfig', 'satellizerShared'];
 	exports.default = Local;
 
 /***/ },
@@ -2306,6 +2308,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.default = Popup;
 
+	Popup.$inject = ['$interval', '$window'];
+
 /***/ },
 /* 13 */
 /***/ function(module, exports, __webpack_require__) {
@@ -2366,6 +2370,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	}();
 
 	exports.default = OAuth;
+
+	OAuth.$inject = ['$http', 'satellizerConfig', 'satellizerShared', 'satellizerOAuth1', 'satellizerOAuth2'];
 
 /***/ },
 /* 14 */
@@ -2541,6 +2547,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.default = OAuth2;
 
+	OAuth2.$inject = ['$http', '$window', '$timeout', 'satellizerConfig', 'satellizerPopup', 'satellizerStorage'];
+
 /***/ },
 /* 15 */
 /***/ function(module, exports, __webpack_require__) {
@@ -2631,11 +2639,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.default = OAuth1;
 
+	OAuth1.$inject = ['$http', '$window', 'satellizerConfig', 'satellizerPopup'];
+
 /***/ },
 /* 16 */
 /***/ function(module, exports) {
 
-	"use strict";
+	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
@@ -2655,7 +2665,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    _createClass(Storage, [{
-	        key: "get",
+	        key: 'get',
 	        value: function get(key) {
 	            try {
 	                return this.$window[this.satellizerConfig.storageType].getItem(key);
@@ -2664,7 +2674,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        }
 	    }, {
-	        key: "set",
+	        key: 'set',
 	        value: function set(key, value) {
 	            try {
 	                this.$window[this.satellizerConfig.storageType].setItem(key, value);
@@ -2673,7 +2683,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        }
 	    }, {
-	        key: "remove",
+	        key: 'remove',
 	        value: function remove(key) {
 	            try {
 	                this.$window[this.satellizerConfig.storageType].removeItem(key);
@@ -2687,6 +2697,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	}();
 
 	exports.default = Storage;
+
+	Storage.$inject = ['$window', 'satellizerConfig'];
 
 /***/ },
 /* 17 */
@@ -2713,7 +2725,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (request.skipAuthorization) {
 	            return request;
 	        }
-	        if (_this.satellizerShared.isAuthenticated() && _this.satellizerConfig.httpInterceptor(request)) {
+	        if (_this.satellizerShared.isAuthenticated() && _this.satellizerConfig.httpInterceptor()) {
 	            var tokenName = _this.satellizerConfig.tokenPrefix ? [_this.satellizerConfig.tokenPrefix, _this.satellizerConfig.tokenName].join('_') : _this.satellizerConfig.tokenName;
 	            var token = _this.satellizerStorage.get(tokenName);
 	            if (_this.satellizerConfig.authHeader && _this.satellizerConfig.authToken) {

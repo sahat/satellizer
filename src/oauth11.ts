@@ -1,12 +1,14 @@
 import { resolve } from 'url';
-import Config from './Config';
-import Popup from './Popup';
+import Config from './config';
+import Popup from './popup';
 
 interface IOAuth1 {
   init(options: any, data: any): angular.IPromise<any>;
 }
 
 export default class OAuth1 implements IOAuth1 {
+  static $inject = ['$http', '$window', 'satellizerConfig', 'satellizerPopup'];
+  
   private defaults: {
     url: string,
     redirectUri: string
@@ -55,18 +57,18 @@ export default class OAuth1 implements IOAuth1 {
 
   }
 
-  getRequestToken() {
+  getRequestToken(): angular.IHttpPromise<any> {
     const url = this.satellizerConfig.baseUrl ? resolve(this.satellizerConfig.baseUrl, this.defaults.url) : this.defaults.url;
     return this.$http.post(url, this.defaults);
   }
 
-  exchangeForToken(oauth, data) {
+  exchangeForToken(oauth, data): angular.IHttpPromise<any> {
     const payload = Object.assign({}, data, oauth);
     const exchangeForTokenUrl = this.satellizerConfig.baseUrl ? resolve(this.satellizerConfig.baseUrl, this.defaults.url) : this.defaults.url;
     return this.$http.post(exchangeForTokenUrl, payload, { withCredentials: this.satellizerConfig.withCredentials });
   }
 
-  buildQueryString(obj) {
+  buildQueryString(obj): string {
     const str = [];
     angular.forEach(obj, function (value, key) {
       str.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
