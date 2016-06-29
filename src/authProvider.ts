@@ -26,11 +26,11 @@ export default class AuthProvider {
   get unlinkUrl(): string { return this.satellizerConfig.unlinkUrl; }
   set unlinkUrl(value) { this.satellizerConfig.unlinkUrl = value; }
 
-  get authHeader(): string { return this.satellizerConfig.authHeader; }
-  set authHeader(value) { this.satellizerConfig.authHeader = value; }
+  get tokenHeader(): string { return this.satellizerConfig.tokenHeader; }
+  set tokenHeader(value) { this.satellizerConfig.tokenHeader = value; }
 
-  get authToken(): string { return this.satellizerConfig.authToken; }
-  set authToken(value) { this.satellizerConfig.authToken = value; }
+  get tokenType(): string { return this.satellizerConfig.tokenType; }
+  set tokenType(value) { this.satellizerConfig.tokenType = value; }
 
   get withCredentials(): boolean { return this.satellizerConfig.withCredentials; }
   set withCredentials(value) { this.satellizerConfig.withCredentials = value; }

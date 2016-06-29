@@ -9,8 +9,8 @@ export default class Config {
   unlinkUrl = '/auth/unlink/';
   tokenName = 'token';
   tokenPrefix = 'satellizer';
-  authHeader = 'Authorization';
-  authToken = 'Bearer';
+  tokenHeader = 'Authorization';
+  tokenType = 'Bearer';
   storageType = 'localStorage';
   tokenRoot = null;
   withCredentials = false;

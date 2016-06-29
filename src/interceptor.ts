@@ -22,11 +22,11 @@ export default class Interceptor {
         [this.satellizerConfig.tokenPrefix, this.satellizerConfig.tokenName].join('_') : this.satellizerConfig.tokenName;
       let token = this.satellizerStorage.get(tokenName);
 
-      if (this.satellizerConfig.authHeader && this.satellizerConfig.authToken) {
-        token = this.satellizerConfig.authToken + ' ' + token;
+      if (this.satellizerConfig.tokenHeader && this.satellizerConfig.tokenType) {
+        token = this.satellizerConfig.tokenType + ' ' + token;
       }
 
-      request.headers[this.satellizerConfig.authHeader] = token;
+      request.headers[this.satellizerConfig.tokenHeader] = token;
     }
 
     return request;
