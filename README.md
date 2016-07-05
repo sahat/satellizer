@@ -40,6 +40,7 @@ in the app *config* block.
  - [How can I avoid sending Authorization header on all HTTP requests?](#question-how-can-i-avoid-sending-authorization-header-on-all-http-requests)
  - [Is there a way to dynamically change `localStorage` to `sessionStorage`?](#question-is-there-a-way-to-dynamically-change-localstorage-to-sessionstorage)
  - [I am having a problem with Ionic authentication on iOS 9.](#question-i-am-having-a-problem-with-ionic-authentication-on-ios-9)
+- [Community Resources](#community-resources)
 - [Credits](#credits)
 - [License](#license)
 
@@ -856,6 +857,13 @@ If you have configured everything correctly, chances are you running into the fo
 > Failed to load resource: The resource could not be loaded because the App Transport Security policy requires the use of a secure connection.
 
 Follow instructions on this [StackOverflow post](http://stackoverflow.com/questions/32631184/the-resource-could-not-be-loaded-because-the-app-transport-security-policy-requi) by adding `NSAppTransportSecurity` to *info.plist*. That should fix the problem.
+
+## Community Resources
+
+### Tutorials
+- Ionic JWT auth with facebook using nodejs. [Part 1](http://blog.grossman.io/ionic-jwt-auth-with-facebook-using-nodejs-part-1/) & [Part 2](http://blog.grossman.io/ionic-jwt-auth-with-facebook-using-nodejs-part-2-2/)
+- [Build an Instagram clone with AngularJS, Satellizer, Node.js and MongoDB](https://hackhands.com/building-instagram-clone-angularjs-satellizer-nodejs-mongodb/)
+
 
 ## Credits
 
