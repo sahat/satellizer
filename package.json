@@ -25,7 +25,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-uglify": "~1.5.2",
     "gulp-header": "~1.8.2",
-    "karma": "^0.13.22",
+    "karma": "^1.0.0",
     "karma-coverage": "^1.0.0",
     "karma-jasmine": "^1.0.2",
     "karma-phantomjs-launcher": "^1.0.0"
