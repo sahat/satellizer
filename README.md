@@ -861,7 +861,7 @@ Follow instructions on this [StackOverflow post](http://stackoverflow.com/questi
 ## Community Resources
 
 ### Tutorials
-- Ionic JWT auth with facebook using nodejs. [Part 1](http://blog.grossman.io/ionic-jwt-auth-with-facebook-using-nodejs-part-1/) & [Part 2](http://blog.grossman.io/ionic-jwt-auth-with-facebook-using-nodejs-part-2-2/)
+- Ionic JWT auth with Facebook using Node.js ([Part 1](http://blog.grossman.io/ionic-jwt-auth-with-facebook-using-nodejs-part-1/) and [Part 2](http://blog.grossman.io/ionic-jwt-auth-with-facebook-using-nodejs-part-2-2/))
 - [Build an Instagram clone with AngularJS, Satellizer, Node.js and MongoDB](https://hackhands.com/building-instagram-clone-angularjs-satellizer-nodejs-mongodb/)
 
 
