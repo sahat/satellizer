@@ -1,4 +1,5 @@
 import Config from './config';
+import { IOAuth1Options, IOAuth2Options } from './interface';
 
 export default class AuthProvider {
   static $inject = ['satellizerConfig'];
@@ -47,53 +48,53 @@ export default class AuthProvider {
     }
   }
 
-  facebook(options): void {
+  facebook(options: IOAuth2Options): void {
     Object.assign(this.satellizerConfig.providers.facebook, options);
   }
 
-  google(options): void {
+  google(options: IOAuth2Options): void {
     Object.assign(this.satellizerConfig.providers.google, options);
   }
 
-  github(options): void {
+  github(options: IOAuth2Options): void {
     Object.assign(this.satellizerConfig.providers.github, options);
   }
 
-  instagram(options): void {
+  instagram(options: IOAuth2Options): void {
     Object.assign(this.satellizerConfig.providers.instagram, options);
   }
 
-  linkedin(options): void {
+  linkedin(options: IOAuth2Options): void {
     Object.assign(this.satellizerConfig.providers.linkedin, options);
   }
 
-  twitter(options): void {
+  twitter(options: IOAuth1Options): void {
     Object.assign(this.satellizerConfig.providers.twitter, options);
   }
 
-  twitch(options): void {
+  twitch(options: IOAuth2Options): void {
     Object.assign(this.satellizerConfig.providers.twitch, options);
   }
 
-  live(options): void {
+  live(options: IOAuth2Options): void {
     Object.assign(this.satellizerConfig.providers.live, options);
   }
 
-  yahoo(options): void {
+  yahoo(options: IOAuth2Options): void {
     Object.assign(this.satellizerConfig.providers.yahoo, options);
   }
 
-  bitbucket(options): void {
+  bitbucket(options: IOAuth2Options): void {
     Object.assign(this.satellizerConfig.providers.bitbucket, options);
   }
 
-  oauth1(options): void {
+  oauth1(options: IOAuth1Options): void {
     this.satellizerConfig.providers[options.name] = Object.assign({}, options, {
       oauthType: '1.0'
     });
   }
 
-  oauth2(options): void {
+  oauth2(options: IOAuth2Options): void {
     this.satellizerConfig.providers[options.name] = Object.assign({}, options, {
       oauthType: '2.0'
     });

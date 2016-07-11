@@ -2,28 +2,12 @@ import { resolve } from 'url';
 import Config from './config';
 import Popup from './popup';
 import Storage from './storage';
+import { IOAuth2Options } from './interface';
 
 export default class OAuth2 {
   static $inject = ['$http', '$window', '$timeout', 'satellizerConfig', 'satellizerPopup', 'satellizerStorage'];
   
-  private defaults: {
-    name: string,
-    url: string,
-    clientId: string,
-    authorizationEndpoint: string,
-    redirectUri: string,
-    scopePrefix: string,
-    scopeDelimiter: string,
-    state?: string|(() => string),
-    defaultUrlParams: Array<string>,
-    responseType: string,
-    responseParams: {
-      code: string,
-      clientId: string,
-      redirectUri: string
-    },
-    popupOptions: { width: number, height: number }
-  };
+  private defaults: IOAuth2Options;
 
   constructor(private $http: angular.IHttpService,
               private $window: angular.IWindowService,
@@ -32,14 +16,16 @@ export default class OAuth2 {
               private satellizerPopup: Popup,
               private satellizerStorage: Storage) {
     this.defaults = {
+      name: null,
       url: null,
       clientId: null,
-      name: null,
       authorizationEndpoint: null,
       redirectUri: null,
+      scope: null,
       scopePrefix: null,
       scopeDelimiter: null,
       state: null,
+      requiredUrlParams: null,
       defaultUrlParams: ['response_type', 'client_id', 'redirect_uri'],
       responseType: 'code',
       responseParams: {
@@ -47,6 +33,7 @@ export default class OAuth2 {
         clientId: 'clientId',
         redirectUri: 'redirectUri'
       },
+      oauthType: '2.0',
       popupOptions: { width: null, height: null }
     };
   }
