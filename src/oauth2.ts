@@ -6,15 +6,21 @@ import { IOAuth2Options } from './interface';
 
 export default class OAuth2 {
   static $inject = ['$http', '$window', '$timeout', 'satellizerConfig', 'satellizerPopup', 'satellizerStorage'];
-  
+
+  static camelCase(name): string {
+    return name.replace(/([\:\-\_]+(.))/g, (_, separator, letter, offset) => {
+      return offset ? letter.toUpperCase() : letter;
+    });
+  }
+
   private defaults: IOAuth2Options;
 
   constructor(private $http: angular.IHttpService,
               private $window: angular.IWindowService,
               private $timeout: angular.ITimeoutService,
-              private satellizerConfig: Config,
-              private satellizerPopup: Popup,
-              private satellizerStorage: Storage) {
+              private Config: Config,
+              private Popup: Popup,
+              private Storage: Storage) {
     this.defaults = {
       name: null,
       url: null,
@@ -38,49 +44,49 @@ export default class OAuth2 {
     };
   }
 
-  init(options, data): Promise<any> {
+  init(options: IOAuth2Options, userData: any): Promise<any> {
     return new Promise((resolve, reject) => {
       Object.assign(this.defaults, options);
 
       this.$timeout(() => {
         const url = [this.defaults.authorizationEndpoint, this.buildQueryString()].join('?');
-        const stateName = this.defaults.name + '_state'; // TODO what if name is undefined
+        const stateName = this.defaults.name + '_state';
         const { name, state, popupOptions, redirectUri, responseType } = this.defaults;
 
         if (typeof state === 'function') {
-          this.satellizerStorage.set(stateName, state());
+          this.Storage.set(stateName, state());
         } else if (typeof state === 'string') {
-          this.satellizerStorage.set(stateName, state);
+          this.Storage.set(stateName, state);
         }
 
-        this.satellizerPopup.open(url, name, popupOptions, redirectUri)
+        this.Popup.open(url, name, popupOptions, redirectUri)
           .then((oauth: any): void|Promise<any>|angular.IHttpPromise<any> => {
 
             if (responseType === 'token' || !url) {
               return resolve(oauth);
             }
 
-            if (oauth.state && oauth.state !== this.satellizerStorage.get(stateName)) {
+            if (oauth.state && oauth.state !== this.Storage.get(stateName)) {
               return reject(new Error(
                 'The value returned in the state parameter does not match the state value from your original ' +
                 'authorization code request.'
               ));
             }
 
-            resolve(this.exchangeForToken(oauth, data));
+            resolve(this.exchangeForToken(oauth, userData));
           })
           .catch(error => reject(error));
       });
     });
   }
 
-  exchangeForToken(oauth, data): angular.IHttpPromise<any> {
-    const payload = Object.assign({}, data);
+  exchangeForToken(oauthData: { code?, state? }, userData: any): angular.IHttpPromise<any> {
+    const payload = Object.assign({}, userData);
 
     angular.forEach(this.defaults.responseParams, (value, key) => {
       switch (key) {
         case 'code':
-          payload[value] = oauth.code;
+          payload[value] = oauthData.code;
           break;
         case 'clientId':
           payload[value] = this.defaults.clientId;
@@ -89,17 +95,19 @@ export default class OAuth2 {
           payload[value] = this.defaults.redirectUri;
           break;
         default:
-          payload[value] = oauth[key];
+          payload[value] = oauthData[key];
       }
     });
 
-    if (oauth.state) {
-      payload.state = oauth.state;
+    if (oauthData.state) {
+      payload.state = oauthData.state;
     }
 
-    let exchangeForTokenUrl = this.satellizerConfig.baseUrl ? resolve(this.satellizerConfig.baseUrl, this.defaults.url) : this.defaults.url;
+    let exchangeForTokenUrl = this.Config.baseUrl ?
+      resolve(this.Config.baseUrl, this.defaults.url) :
+      this.defaults.url;
 
-    return this.$http.post(exchangeForTokenUrl, payload, { withCredentials: this.satellizerConfig.withCredentials });
+    return this.$http.post(exchangeForTokenUrl, payload, { withCredentials: this.Config.withCredentials });
   }
 
   buildQueryString(): string {
@@ -108,21 +116,18 @@ export default class OAuth2 {
 
     angular.forEach(urlParamsCategories, (paramsCategory) => {
       angular.forEach(this.defaults[paramsCategory], (paramName) => {
-        const camelizedName = this.camelCase(paramName);
+        const camelizedName = OAuth2.camelCase(paramName);
         let paramValue = angular.isFunction(this.defaults[paramName]) ? this.defaults[paramName]() : this.defaults[camelizedName];
 
         if (paramName === 'redirect_uri' && !paramValue) {
           return;
         }
-
         if (paramName === 'state') {
-          const stateName = this.defaults.name + '_state'; // todo what if name undefined
-          paramValue = encodeURIComponent(this.satellizerStorage.get(stateName));
+          const stateName = this.defaults.name + '_state';
+          paramValue = encodeURIComponent(this.Storage.get(stateName));
         }
-
         if (paramName === 'scope' && Array.isArray(paramValue)) {
           paramValue = paramValue.join(this.defaults.scopeDelimiter);
-
           if (this.defaults.scopePrefix) {
             paramValue = [this.defaults.scopePrefix, paramValue].join(this.defaults.scopeDelimiter);
           }
@@ -133,11 +138,5 @@ export default class OAuth2 {
     });
 
     return keyValuePairs.map(pair => pair.join('=')).join('&');
-  }
-
-  camelCase(name): string {
-    return name.replace(/([\:\-\_]+(.))/g, (_, separator, letter, offset) => {
-      return offset ? letter.toUpperCase() : letter;
-    });
   }
 }
