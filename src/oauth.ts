@@ -1,4 +1,4 @@
-import { resolve } from 'url';
+import { joinUrl } from './utils';
 import Config from './config';
 import Shared from './shared';
 import OAuth1 from './oauth1';
@@ -31,7 +31,7 @@ export default class OAuth {
   }
 
   unlink(provider, httpOptions): angular.IHttpPromise<any> {
-    httpOptions.url = httpOptions.url ? httpOptions.url : resolve(this.SatellizerConfig.baseUrl, this.SatellizerConfig.unlinkUrl);
+    httpOptions.url = httpOptions.url ? httpOptions.url : joinUrl(this.SatellizerConfig.baseUrl, this.SatellizerConfig.unlinkUrl);
     httpOptions.data = { provider } || httpOptions.data;
     httpOptions.method = httpOptions.method || 'POST';
     httpOptions.withCredentials = httpOptions.withCredentials || this.SatellizerConfig.withCredentials;

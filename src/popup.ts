@@ -1,7 +1,7 @@
 import { parse as queryParse, stringify } from 'querystring';
 import { parse as urlParse } from 'url';
 
-interface IPopup {
+export interface IPopup {
   open(url: string, name: string, popupOptions: { width: number, height: number }, redirectUri: string): Function|Promise<any>;
 }
 

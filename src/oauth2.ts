@@ -1,4 +1,4 @@
-import { resolve } from 'url';
+import { joinUrl } from './utils';
 import Config from './config';
 import Popup from './popup';
 import Storage from './storage';
@@ -104,7 +104,7 @@ export default class OAuth2 {
     }
 
     let exchangeForTokenUrl = this.SatellizerConfig.baseUrl ?
-      resolve(this.SatellizerConfig.baseUrl, this.defaults.url) :
+      joinUrl(this.SatellizerConfig.baseUrl, this.defaults.url) :
       this.defaults.url;
 
     return this.$http.post(exchangeForTokenUrl, payload, { withCredentials: this.SatellizerConfig.withCredentials });

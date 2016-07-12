@@ -100,20 +100,20 @@ export default class AuthProvider {
     });
   }
 
-  $get(satellizerShared, satellizerLocal, satellizerOAuth): any {
+  $get(SatellizerShared, SatellizerLocal, SatellizerOAuth): any {
     return {
-      login: (user, options) => satellizerLocal.login(user, options),
-      signup: (user, options) => satellizerLocal.signup(user, options),
-      logout: () => satellizerShared.logout(),
-      authenticate: (name, data) => satellizerOAuth.authenticate(name, data),
-      link: (name, data) => satellizerOAuth.authenticate(name, data),
-      unlink: (name, options) => satellizerOAuth.unlink(name, options),
-      isAuthenticated: () => satellizerShared.isAuthenticated(),
-      getPayload: () => satellizerShared.getPayload(),
-      getToken: () => satellizerShared.getToken(),
-      setToken: (token) => satellizerShared.setToken({ access_token: token }),
-      removeToken: () => satellizerShared.removeToken(),
-      setStorageType: (type) => satellizerShared.setStorageType(type)
+      login: (user, options) => SatellizerLocal.login(user, options),
+      signup: (user, options) => SatellizerLocal.signup(user, options),
+      logout: () => SatellizerShared.logout(),
+      authenticate: (name, data) => SatellizerOAuth.authenticate(name, data),
+      link: (name, data) => SatellizerOAuth.authenticate(name, data),
+      unlink: (name, options) => SatellizerOAuth.unlink(name, options),
+      isAuthenticated: () => SatellizerShared.isAuthenticated(),
+      getPayload: () => SatellizerShared.getPayload(),
+      getToken: () => SatellizerShared.getToken(),
+      setToken: (token) => SatellizerShared.setToken({ access_token: token }),
+      removeToken: () => SatellizerShared.removeToken(),
+      setStorageType: (type) => SatellizerShared.setStorageType(type)
     };
   }
 }

@@ -1,9 +1,9 @@
-import { resolve } from 'url';
+import { joinUrl } from './utils';
 import Config from './config';
 import Popup from './popup';
 import { IOAuth1Options } from './interface';
 
-interface IOAuth1 {
+export interface IOAuth1 {
   init(options: any, data: any): angular.IPromise<any>;
 }
 
@@ -65,13 +65,13 @@ export default class OAuth1 implements IOAuth1 {
   }
 
   getRequestToken(): angular.IHttpPromise<any> {
-    const url = this.SatellizerConfig.baseUrl ? resolve(this.SatellizerConfig.baseUrl, this.defaults.url) : this.defaults.url;
+    const url = this.SatellizerConfig.baseUrl ? joinUrl(this.SatellizerConfig.baseUrl, this.defaults.url) : this.defaults.url;
     return this.$http.post(url, this.defaults);
   }
 
   exchangeForToken(oauth, userData): angular.IHttpPromise<any> {
     const payload = Object.assign({}, userData, oauth);
-    const exchangeForTokenUrl = this.SatellizerConfig.baseUrl ? resolve(this.SatellizerConfig.baseUrl, this.defaults.url) : this.defaults.url;
+    const exchangeForTokenUrl = this.SatellizerConfig.baseUrl ? joinUrl(this.SatellizerConfig.baseUrl, this.defaults.url) : this.defaults.url;
     return this.$http.post(exchangeForTokenUrl, payload, { withCredentials: this.SatellizerConfig.withCredentials });
   }
 
