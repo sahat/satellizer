@@ -2,6 +2,6 @@ export default class HttpProviderConfig {
   static $inject = ['$httpProvider'];
 
   constructor(private $httpProvider: angular.IHttpProvider) {
-    $httpProvider.interceptors.push('satellizerInterceptor');
+    $httpProvider.interceptors.push('SatellizerInterceptor');
   }
 }

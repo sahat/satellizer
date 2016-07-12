@@ -4,12 +4,12 @@ import Storage from './storage';
 
 export default class Interceptor {
 
-  static $inject = ['$q', 'satellizerConfig', 'satellizerShared', 'satellizerStorage'];
+  static $inject = ['$q', 'SatellizerConfig', 'SatellizerShared', 'SatellizerStorage'];
 
   constructor(private $q: angular.IQService,
-              private satellizerConfig: Config,
-              private satellizerShared: Shared,
-              private satellizerStorage: Storage) {
+              private SatellizerConfig: Config,
+              private SatellizerShared: Shared,
+              private SatellizerStorage: Storage) {
   }
 
   request = (request): any => {
@@ -17,16 +17,16 @@ export default class Interceptor {
       return request;
     }
 
-    if (this.satellizerShared.isAuthenticated() && this.satellizerConfig.httpInterceptor()) {
-      const tokenName = this.satellizerConfig.tokenPrefix ?
-        [this.satellizerConfig.tokenPrefix, this.satellizerConfig.tokenName].join('_') : this.satellizerConfig.tokenName;
-      let token = this.satellizerStorage.get(tokenName);
+    if (this.SatellizerShared.isAuthenticated() && this.SatellizerConfig.httpInterceptor()) {
+      const tokenName = this.SatellizerConfig.tokenPrefix ?
+        [this.SatellizerConfig.tokenPrefix, this.SatellizerConfig.tokenName].join('_') : this.SatellizerConfig.tokenName;
+      let token = this.SatellizerStorage.get(tokenName);
 
-      if (this.satellizerConfig.tokenHeader && this.satellizerConfig.tokenType) {
-        token = this.satellizerConfig.tokenType + ' ' + token;
+      if (this.SatellizerConfig.tokenHeader && this.SatellizerConfig.tokenType) {
+        token = this.SatellizerConfig.tokenType + ' ' + token;
       }
 
-      request.headers[this.satellizerConfig.tokenHeader] = token;
+      request.headers[this.SatellizerConfig.tokenHeader] = token;
     }
 
     return request;

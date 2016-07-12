@@ -11,16 +11,16 @@ import Interceptor from './interceptor';
 import HttpProviderConfig from './httpProviderConfig';
 
 angular.module('satellizer', [])
-  .provider('$auth', ['satellizerConfig', (satellizerConfig) => new AuthProvider(satellizerConfig)])
-  .constant('satellizerConfig', Config.getConstant)
-  .service('satellizerShared', Shared)
-  .service('satellizerLocal', Local)
-  .service('satellizerPopup', Popup)
-  .service('satellizerOAuth', OAuth)
-  .service('satellizerOAuth2', OAuth2)
-  .service('satellizerOAuth1', OAuth1)
-  .service('satellizerStorage', Storage)
-  .service('satellizerInterceptor', Interceptor)
+  .provider('$auth', ['SatellizerConfig', (SatellizerConfig) => new AuthProvider(SatellizerConfig)])
+  .constant('SatellizerConfig', Config.getConstant)
+  .service('SatellizerShared', Shared)
+  .service('SatellizerLocal', Local)
+  .service('SatellizerPopup', Popup)
+  .service('SatellizerOAuth', OAuth)
+  .service('SatellizerOAuth2', OAuth2)
+  .service('SatellizerOAuth1', OAuth1)
+  .service('SatellizerStorage', Storage)
+  .service('SatellizerInterceptor', Interceptor)
   .config(($httpProvider) => new HttpProviderConfig($httpProvider));
 
 export default 'satellizer';

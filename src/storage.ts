@@ -1,15 +1,15 @@
 import Config from './config';
 
 export default class Storage {
-  static $inject = ['$window', 'satellizerConfig'];
+  static $inject = ['$window', 'SatellizerConfig'];
 
   private memoryStore: any;
   private storageType: string;
 
   constructor(private $window: angular.IHttpService,
-              private satellizerConfig: Config) {
+              private SatellizerConfig: Config) {
     this.memoryStore = {};
-    this.storageType = satellizerConfig.storageType;
+    this.storageType = SatellizerConfig.storageType;
   }
 
   get(key: string): string {

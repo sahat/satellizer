@@ -2,25 +2,25 @@ import Config from './config';
 import Storage from './storage';
 
 class Shared {
-  static $inject = ['$q', '$window', '$log', 'satellizerConfig', 'satellizerStorage'];
+  static $inject = ['$q', '$window', '$log', 'SatellizerConfig', 'SatellizerStorage'];
   
   private prefixedTokenName: string;
 
   constructor(private $q: angular.IQService,
               private $window: angular.IWindowService,
               private $log: angular.ILogService,
-              private satellizerConfig: Config,
-              private satellizerStorage: Storage) {
-    const { tokenName, tokenPrefix } = this.satellizerConfig;
+              private SatellizerConfig: Config,
+              private SatellizerStorage: Storage) {
+    const { tokenName, tokenPrefix } = this.SatellizerConfig;
     this.prefixedTokenName = tokenPrefix ? [tokenPrefix, tokenName].join('_') : tokenName;
   }
 
   getToken(): string {
-    return this.satellizerStorage.get(this.prefixedTokenName);
+    return this.SatellizerStorage.get(this.prefixedTokenName);
   }
 
   getPayload(): any {
-    const token = this.satellizerStorage.get(this.prefixedTokenName);
+    const token = this.SatellizerStorage.get(this.prefixedTokenName);
 
     if (token && token.split('.').length === 3) {
       try {
@@ -50,24 +50,24 @@ class Shared {
     }
 
     if (!token && response) {
-      const tokenRootData = this.satellizerConfig.tokenRoot && this.satellizerConfig.tokenRoot.split('.').reduce(function(o, x) { return o[x]; }, response.data);
-      token = tokenRootData ? tokenRootData[this.satellizerConfig.tokenName] : response.data && response.data[this.satellizerConfig.tokenName];
+      const tokenRootData = this.SatellizerConfig.tokenRoot && this.SatellizerConfig.tokenRoot.split('.').reduce(function(o, x) { return o[x]; }, response.data);
+      token = tokenRootData ? tokenRootData[this.SatellizerConfig.tokenName] : response.data && response.data[this.SatellizerConfig.tokenName];
     }
 
     if (!token) {
-      const tokenPath = this.satellizerConfig.tokenRoot ? this.satellizerConfig.tokenRoot + '.' + this.satellizerConfig.tokenName : this.satellizerConfig.tokenName;
+      const tokenPath = this.SatellizerConfig.tokenRoot ? this.SatellizerConfig.tokenRoot + '.' + this.SatellizerConfig.tokenName : this.SatellizerConfig.tokenName;
       return this.$log.warn('Expecting a token named "' + tokenPath);
     }
 
-    this.satellizerStorage.set(this.prefixedTokenName, token);
+    this.SatellizerStorage.set(this.prefixedTokenName, token);
   }
 
   removeToken(): void {
-    this.satellizerStorage.remove(this.prefixedTokenName);
+    this.SatellizerStorage.remove(this.prefixedTokenName);
   }
 
   isAuthenticated(): boolean {
-    const token = this.satellizerStorage.get(this.prefixedTokenName);
+    const token = this.SatellizerStorage.get(this.prefixedTokenName);
 
     if (token) {  // Token is present
       if (token.split('.').length === 3) {  // Token with a valid JWT format XXX.YYY.ZZZ
@@ -88,12 +88,12 @@ class Shared {
   }
 
   logout(): angular.IPromise<void> {
-    this.satellizerStorage.remove(this.prefixedTokenName);
+    this.SatellizerStorage.remove(this.prefixedTokenName);
     return this.$q.when();
   }
 
   setStorageType(type): void {
-    this.satellizerConfig.storageType = type;
+    this.SatellizerConfig.storageType = type;
   }
 }
 

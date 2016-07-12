@@ -5,7 +5,7 @@ import Storage from './storage';
 import { IOAuth2Options } from './interface';
 
 export default class OAuth2 {
-  static $inject = ['$http', '$window', '$timeout', 'satellizerConfig', 'satellizerPopup', 'satellizerStorage'];
+  static $inject = ['$http', '$window', '$timeout', 'SatellizerConfig', 'SatellizerPopup', 'SatellizerStorage'];
 
   static camelCase(name): string {
     return name.replace(/([\:\-\_]+(.))/g, (_, separator, letter, offset) => {
@@ -18,9 +18,9 @@ export default class OAuth2 {
   constructor(private $http: angular.IHttpService,
               private $window: angular.IWindowService,
               private $timeout: angular.ITimeoutService,
-              private Config: Config,
-              private Popup: Popup,
-              private Storage: Storage) {
+              private SatellizerConfig: Config,
+              private SatellizerPopup: Popup,
+              private SatellizerStorage: Storage) {
     this.defaults = {
       name: null,
       url: null,
@@ -54,19 +54,19 @@ export default class OAuth2 {
         const { name, state, popupOptions, redirectUri, responseType } = this.defaults;
 
         if (typeof state === 'function') {
-          this.Storage.set(stateName, state());
+          this.SatellizerStorage.set(stateName, state());
         } else if (typeof state === 'string') {
-          this.Storage.set(stateName, state);
+          this.SatellizerStorage.set(stateName, state);
         }
 
-        this.Popup.open(url, name, popupOptions, redirectUri)
+        this.SatellizerPopup.open(url, name, popupOptions, redirectUri)
           .then((oauth: any): void|Promise<any>|angular.IHttpPromise<any> => {
 
             if (responseType === 'token' || !url) {
               return resolve(oauth);
             }
 
-            if (oauth.state && oauth.state !== this.Storage.get(stateName)) {
+            if (oauth.state && oauth.state !== this.SatellizerStorage.get(stateName)) {
               return reject(new Error(
                 'The value returned in the state parameter does not match the state value from your original ' +
                 'authorization code request.'
@@ -103,11 +103,11 @@ export default class OAuth2 {
       payload.state = oauthData.state;
     }
 
-    let exchangeForTokenUrl = this.Config.baseUrl ?
-      resolve(this.Config.baseUrl, this.defaults.url) :
+    let exchangeForTokenUrl = this.SatellizerConfig.baseUrl ?
+      resolve(this.SatellizerConfig.baseUrl, this.defaults.url) :
       this.defaults.url;
 
-    return this.$http.post(exchangeForTokenUrl, payload, { withCredentials: this.Config.withCredentials });
+    return this.$http.post(exchangeForTokenUrl, payload, { withCredentials: this.SatellizerConfig.withCredentials });
   }
 
   buildQueryString(): string {
@@ -124,7 +124,7 @@ export default class OAuth2 {
         }
         if (paramName === 'state') {
           const stateName = this.defaults.name + '_state';
-          paramValue = encodeURIComponent(this.Storage.get(stateName));
+          paramValue = encodeURIComponent(this.SatellizerStorage.get(stateName));
         }
         if (paramName === 'scope' && Array.isArray(paramValue)) {
           paramValue = paramValue.join(this.defaults.scopeDelimiter);

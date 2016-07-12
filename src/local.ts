@@ -3,30 +3,30 @@ import Config from './config';
 import Shared from './shared';
 
 class Local {
-  static $inject = ['$http', 'satellizerConfig', 'satellizerShared'];
+  static $inject = ['$http', 'SatellizerConfig', 'SatellizerShared'];
 
   constructor(private $http: angular.IHttpService,
-              private satellizerConfig: Config,
-              private satellizerShared: Shared) {}
+              private SatellizerConfig: Config,
+              private SatellizerShared: Shared) {}
 
   login(user: string|Object, options?: any): angular.IHttpPromise<any> {
-    options.url = options.url ? options.url : resolve(this.satellizerConfig.baseUrl, this.satellizerConfig.loginUrl);
+    options.url = options.url ? options.url : resolve(this.SatellizerConfig.baseUrl, this.SatellizerConfig.loginUrl);
     options.data = user || options.data;
     options.method = options.method || 'POST';
-    options.withCredentials = options.withCredentials || this.satellizerConfig.withCredentials;
+    options.withCredentials = options.withCredentials || this.SatellizerConfig.withCredentials;
 
     return this.$http(options).then((response) => {
-      this.satellizerShared.setToken(response);
+      this.SatellizerShared.setToken(response);
       return response;
     });
   }
 
   signup(user: string|Object, options?: any): angular.IHttpPromise<any> {
     options = options || {};
-    options.url = options.url ? options.url : resolve(this.satellizerConfig.baseUrl, this.satellizerConfig.signupUrl);
+    options.url = options.url ? options.url : resolve(this.SatellizerConfig.baseUrl, this.SatellizerConfig.signupUrl);
     options.data = user || options.data;
     options.method = options.method || 'POST';
-    options.withCredentials = options.withCredentials || this.satellizerConfig.withCredentials;
+    options.withCredentials = options.withCredentials || this.SatellizerConfig.withCredentials;
 
     return this.$http(options);
   }

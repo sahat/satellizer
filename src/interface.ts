@@ -25,10 +25,11 @@ export interface IOAuth1Options {
   url: string;
   authorizationEndpoint: string;
   redirectUri: string;
-  requiredUrlParams: string[];
   scope: string[];
+  scopePrefix: string;
   scopeDelimiter: string;
-  display: string;
+  requiredUrlParams: string[];
+  defaultUrlParams: string[];
   oauthType: string;
   popupOptions: { width: number, height: number };
 }

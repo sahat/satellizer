@@ -2,100 +2,100 @@ import Config from './config';
 import { IOAuth1Options, IOAuth2Options } from './interface';
 
 export default class AuthProvider {
-  static $inject = ['satellizerConfig'];
+  static $inject = ['SatellizerConfig'];
 
-  constructor(private satellizerConfig: Config) {}
+  constructor(private SatellizerConfig: Config) {}
 
-  get baseUrl(): string { return this.satellizerConfig.baseUrl; }
-  set baseUrl(value) { this.satellizerConfig.baseUrl = value; }
+  get baseUrl(): string { return this.SatellizerConfig.baseUrl; }
+  set baseUrl(value) { this.SatellizerConfig.baseUrl = value; }
 
-  get loginUrl(): string { return this.satellizerConfig.loginUrl; }
-  set loginUrl(value) { this.satellizerConfig.loginUrl = value; }
+  get loginUrl(): string { return this.SatellizerConfig.loginUrl; }
+  set loginUrl(value) { this.SatellizerConfig.loginUrl = value; }
 
-  get signupUrl(): string { return this.satellizerConfig.signupUrl; }
-  set signupUrl(value) { this.satellizerConfig.signupUrl = value; }
+  get signupUrl(): string { return this.SatellizerConfig.signupUrl; }
+  set signupUrl(value) { this.SatellizerConfig.signupUrl = value; }
 
-  get tokenRoot(): string { return this.satellizerConfig.tokenRoot; }
-  set tokenRoot(value) { this.satellizerConfig.tokenRoot = value; }
+  get tokenRoot(): string { return this.SatellizerConfig.tokenRoot; }
+  set tokenRoot(value) { this.SatellizerConfig.tokenRoot = value; }
 
-  get tokenName(): string { return this.satellizerConfig.tokenName; }
-  set tokenName(value) { this.satellizerConfig.tokenName = value; }
+  get tokenName(): string { return this.SatellizerConfig.tokenName; }
+  set tokenName(value) { this.SatellizerConfig.tokenName = value; }
 
-  get tokenPrefix(): string { return this.satellizerConfig.tokenPrefix; }
-  set tokenPrefix(value) { this.satellizerConfig.tokenPrefix = value; }
+  get tokenPrefix(): string { return this.SatellizerConfig.tokenPrefix; }
+  set tokenPrefix(value) { this.SatellizerConfig.tokenPrefix = value; }
 
-  get unlinkUrl(): string { return this.satellizerConfig.unlinkUrl; }
-  set unlinkUrl(value) { this.satellizerConfig.unlinkUrl = value; }
+  get unlinkUrl(): string { return this.SatellizerConfig.unlinkUrl; }
+  set unlinkUrl(value) { this.SatellizerConfig.unlinkUrl = value; }
 
-  get tokenHeader(): string { return this.satellizerConfig.tokenHeader; }
-  set tokenHeader(value) { this.satellizerConfig.tokenHeader = value; }
+  get tokenHeader(): string { return this.SatellizerConfig.tokenHeader; }
+  set tokenHeader(value) { this.SatellizerConfig.tokenHeader = value; }
 
-  get tokenType(): string { return this.satellizerConfig.tokenType; }
-  set tokenType(value) { this.satellizerConfig.tokenType = value; }
+  get tokenType(): string { return this.SatellizerConfig.tokenType; }
+  set tokenType(value) { this.SatellizerConfig.tokenType = value; }
 
-  get withCredentials(): boolean { return this.satellizerConfig.withCredentials; }
-  set withCredentials(value) { this.satellizerConfig.withCredentials = value; }
+  get withCredentials(): boolean { return this.SatellizerConfig.withCredentials; }
+  set withCredentials(value) { this.SatellizerConfig.withCredentials = value; }
 
-  get storageType(): string { return this.satellizerConfig.storageType; }
-  set storageType(value) { this.satellizerConfig.storageType = value; }
+  get storageType(): string { return this.SatellizerConfig.storageType; }
+  set storageType(value) { this.SatellizerConfig.storageType = value; }
 
-  get httpInterceptor(): boolean { return this.satellizerConfig.httpInterceptor; }
+  get httpInterceptor(): boolean { return this.SatellizerConfig.httpInterceptor; }
   set httpInterceptor(value) {
     if (typeof value === 'function') {
-      this.satellizerConfig.httpInterceptor = value;
+      this.SatellizerConfig.httpInterceptor = value;
     } else {
-      this.satellizerConfig.httpInterceptor = () => value;
+      this.SatellizerConfig.httpInterceptor = () => value;
     }
   }
 
   facebook(options: IOAuth2Options): void {
-    Object.assign(this.satellizerConfig.providers.facebook, options);
+    Object.assign(this.SatellizerConfig.providers.facebook, options);
   }
 
   google(options: IOAuth2Options): void {
-    Object.assign(this.satellizerConfig.providers.google, options);
+    Object.assign(this.SatellizerConfig.providers.google, options);
   }
 
   github(options: IOAuth2Options): void {
-    Object.assign(this.satellizerConfig.providers.github, options);
+    Object.assign(this.SatellizerConfig.providers.github, options);
   }
 
   instagram(options: IOAuth2Options): void {
-    Object.assign(this.satellizerConfig.providers.instagram, options);
+    Object.assign(this.SatellizerConfig.providers.instagram, options);
   }
 
   linkedin(options: IOAuth2Options): void {
-    Object.assign(this.satellizerConfig.providers.linkedin, options);
+    Object.assign(this.SatellizerConfig.providers.linkedin, options);
   }
 
   twitter(options: IOAuth1Options): void {
-    Object.assign(this.satellizerConfig.providers.twitter, options);
+    Object.assign(this.SatellizerConfig.providers.twitter, options);
   }
 
   twitch(options: IOAuth2Options): void {
-    Object.assign(this.satellizerConfig.providers.twitch, options);
+    Object.assign(this.SatellizerConfig.providers.twitch, options);
   }
 
   live(options: IOAuth2Options): void {
-    Object.assign(this.satellizerConfig.providers.live, options);
+    Object.assign(this.SatellizerConfig.providers.live, options);
   }
 
   yahoo(options: IOAuth2Options): void {
-    Object.assign(this.satellizerConfig.providers.yahoo, options);
+    Object.assign(this.SatellizerConfig.providers.yahoo, options);
   }
 
   bitbucket(options: IOAuth2Options): void {
-    Object.assign(this.satellizerConfig.providers.bitbucket, options);
+    Object.assign(this.SatellizerConfig.providers.bitbucket, options);
   }
 
   oauth1(options: IOAuth1Options): void {
-    this.satellizerConfig.providers[options.name] = Object.assign({}, options, {
+    this.SatellizerConfig.providers[options.name] = Object.assign({}, options, {
       oauthType: '1.0'
     });
   }
 
   oauth2(options: IOAuth2Options): void {
-    this.satellizerConfig.providers[options.name] = Object.assign({}, options, {
+    this.SatellizerConfig.providers[options.name] = Object.assign({}, options, {
       oauthType: '2.0'
     });
   }

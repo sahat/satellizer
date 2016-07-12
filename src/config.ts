@@ -1,3 +1,5 @@
+import { IOAuth1Options, IOAuth2Options } from './interface';
+
 export default class Config {
   static get getConstant() {
     return new Config();
@@ -14,7 +16,6 @@ export default class Config {
   storageType = 'localStorage';
   tokenRoot = null;
   withCredentials = false;
-
   providers = {
     facebook: {
       name: 'facebook',
@@ -41,10 +42,7 @@ export default class Config {
       display: 'popup',
       oauthType: '2.0',
       popupOptions: { width: 452, height: 633 },
-      state: function () {
-        let rand = Math.random().toString(36).substr(2);
-        return encodeURIComponent(rand);
-      }
+      state: () => { encodeURIComponent(Math.random().toString(36).substr(2)); }
     },
     github: {
       name: 'github',
@@ -133,6 +131,5 @@ export default class Config {
       popupOptions: { width: 1028, height: 529 }
     }
   };
-
   httpInterceptor: any = (): boolean => true;
 };

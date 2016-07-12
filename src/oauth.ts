@@ -5,23 +5,23 @@ import OAuth1 from './oauth1';
 import OAuth2 from './oauth2';
 
 export default class OAuth {
-  static $inject = ['$http', 'satellizerConfig', 'satellizerShared', 'satellizerOAuth1', 'satellizerOAuth2'];
+  static $inject = ['$http', 'SatellizerConfig', 'SatellizerShared', 'SatellizerOAuth1', 'SatellizerOAuth2'];
   
   constructor(private $http: angular.IHttpService,
-              private satellizerConfig: Config,
-              private satellizerShared: Shared,
-              private satellizerOAuth1: OAuth1,
-              private satellizerOAuth2: OAuth2) {
+              private SatellizerConfig: Config,
+              private SatellizerShared: Shared,
+              private SatellizerOAuth1: OAuth1,
+              private SatellizerOAuth2: OAuth2) {
   }
 
   authenticate(name, data): Promise<any> {
     return new Promise((resolve, reject) => {
-      const provider = this.satellizerConfig.providers[name];
-      const initialize: any = provider.oauthType === '1.0' ? this.satellizerOAuth1.init(provider, data) : this.satellizerOAuth2.init(provider, data);
+      const provider = this.SatellizerConfig.providers[name];
+      const initialize: any = provider.oauthType === '1.0' ? this.SatellizerOAuth1.init(provider, data) : this.SatellizerOAuth2.init(provider, data);
 
       return initialize.then((response) => {
         if (provider.url) {
-          this.satellizerShared.setToken(response);
+          this.SatellizerShared.setToken(response);
         }
         resolve(response);
       }).catch((error) => {
@@ -31,10 +31,10 @@ export default class OAuth {
   }
 
   unlink(provider, httpOptions): angular.IHttpPromise<any> {
-    httpOptions.url = httpOptions.url ? httpOptions.url : resolve(this.satellizerConfig.baseUrl, this.satellizerConfig.unlinkUrl);
+    httpOptions.url = httpOptions.url ? httpOptions.url : resolve(this.SatellizerConfig.baseUrl, this.SatellizerConfig.unlinkUrl);
     httpOptions.data = { provider } || httpOptions.data;
     httpOptions.method = httpOptions.method || 'POST';
-    httpOptions.withCredentials = httpOptions.withCredentials || this.satellizerConfig.withCredentials;
+    httpOptions.withCredentials = httpOptions.withCredentials || this.SatellizerConfig.withCredentials;
 
     return this.$http(httpOptions);
   }
