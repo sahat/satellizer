@@ -2,6 +2,7 @@
   "globalDependencies": {
     "angular": "registry:dt/angular#1.5.0+20160614091201",
     "angular-route": "registry:dt/angular-route#1.3.0+20160317120654",
+    "es6-shim": "registry:dt/es6-shim#0.31.2+20160602141504",
     "jquery": "registry:dt/jquery#1.10.0+20160417213236",
     "node": "registry:dt/node#6.0.0+20160613154055"
   }
