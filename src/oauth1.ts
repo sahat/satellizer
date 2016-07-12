@@ -1,6 +1,7 @@
 import { resolve } from 'url';
 import Config from './config';
 import Popup from './popup';
+import { IOAuth1Options } from './interface';
 
 interface IOAuth1 {
   init(options: any, data: any): angular.IPromise<any>;
@@ -9,22 +10,28 @@ interface IOAuth1 {
 export default class OAuth1 implements IOAuth1 {
   static $inject = ['$http', '$window', 'satellizerConfig', 'satellizerPopup'];
   
-  private defaults: {
-    url: string,
-    redirectUri: string
-  };
+  private defaults: IOAuth1Options;
 
   constructor(private $http: angular.IHttpService,
               private $window: angular.IWindowService,
               private satellizerConfig: Config,
               private satellizerPopup: Popup) {
     this.defaults = {
+      name: null,
       url: null,
-      redirectUri: null
+      authorizationEndpoint: null,
+      scope: null,
+      scopePrefix: null,
+      scopeDelimiter: null,
+      redirectUri: null,
+      requiredUrlParams: null,
+      defaultUrlParams: null,
+      oauthType: '1.0',
+      popupOptions: { width: null, height: null }
     };
-  }
+  };
 
-  init(options, data): angular.IHttpPromise<any> {
+  init(options: IOAuth1Options, userData: any): angular.IHttpPromise<any> {
     const { name, popupOptions, redirectUri } = options;
 
     let popupWindow;
@@ -51,7 +58,7 @@ export default class OAuth1 implements IOAuth1 {
       }
 
       return popupListener.then((popupResponse) => {
-        return this.exchangeForToken(popupResponse, data);
+        return this.exchangeForToken(popupResponse, userData);
       });
     });
 
@@ -62,8 +69,8 @@ export default class OAuth1 implements IOAuth1 {
     return this.$http.post(url, this.defaults);
   }
 
-  exchangeForToken(oauth, data): angular.IHttpPromise<any> {
-    const payload = Object.assign({}, data, oauth);
+  exchangeForToken(oauth, userData): angular.IHttpPromise<any> {
+    const payload = Object.assign({}, userData, oauth);
     const exchangeForTokenUrl = this.satellizerConfig.baseUrl ? resolve(this.satellizerConfig.baseUrl, this.defaults.url) : this.defaults.url;
     return this.$http.post(exchangeForTokenUrl, payload, { withCredentials: this.satellizerConfig.withCredentials });
   }
