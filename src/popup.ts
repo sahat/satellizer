@@ -1,5 +1,4 @@
-import { parse as queryParse, stringify } from 'querystring';
-import { parse as urlParse } from 'url';
+import { parseQueryString, getFullUrlPath } from './utils';
 
 export interface IPopup {
   open(url: string, name: string, popupOptions: { width: number, height: number }, redirectUri: string): Function|Promise<any>;
@@ -7,7 +6,7 @@ export interface IPopup {
 
 export default class Popup implements IPopup {
   static $inject = ['$interval', '$window'];
-  
+
   private popup: any;
   private url: string;
   private defaults: { redirectUri: string };
@@ -21,18 +20,26 @@ export default class Popup implements IPopup {
     };
   }
 
+  stringifyOptions (options: any) {
+    const parts = [];
+    angular.forEach(options, function (value, key) {
+      parts.push(key + '=' + value);
+    });
+    return parts.join(',');
+  }
+
   open(url: string, name: string, popupOptions: { width: number, height: number }, redirectUri: string): Promise<any> {
     this.url = url; // TODO remove
 
     const width = popupOptions.width || 500;
     const height = popupOptions.height || 500;
 
-    const options = stringify({
+    const options = this.stringifyOptions({
       width: width,
       height: height,
       top: this.$window.screenY + ((this.$window.outerHeight - height) / 2.5),
       left: this.$window.screenX + ((this.$window.outerWidth - width) / 2)
-    }, ',');
+    });
 
     const popupName = this.$window['cordova'] || this.$window.navigator.userAgent.includes('CriOS') ? '_blank' : name;
 
@@ -51,7 +58,9 @@ export default class Popup implements IPopup {
 
   polling(redirectUri): Promise<any> {
     return new Promise((resolve, reject) => {
-      const redirectUriObject = urlParse(redirectUri);
+      const redirectUriParser = document.createElement('a');
+      redirectUriParser.href = redirectUri;
+      const redirectUriPath = getFullUrlPath(redirectUriParser);
 
       const polling = this.$interval(() => {
         if (!this.popup || this.popup.closed || this.popup.closed === undefined) {
@@ -60,12 +69,12 @@ export default class Popup implements IPopup {
         }
 
         try {
-          const popupUrl = this.popup.location.host + this.popup.location.pathname;
+          const popupWindowPath = getFullUrlPath(this.popup.location);
 
-          if (popupUrl === redirectUriObject.host + redirectUriObject.pathname) {
+          if (popupWindowPath === redirectUriPath) {
             if (this.popup.location.search || this.popup.location.hash) {
-              const query = queryParse(this.popup.location.search.substring(1).replace(/\/$/, ''));
-              const hash = queryParse(this.popup.location.hash.substring(1).replace(/[\/$]/, ''));
+              const query = parseQueryString(this.popup.location.search.substring(1).replace(/\/$/, ''));
+              const hash = parseQueryString(this.popup.location.hash.substring(1).replace(/[\/$]/, ''));
               const params = Object.assign({}, query, hash);
 
               if (params.error) {
@@ -99,11 +108,12 @@ export default class Popup implements IPopup {
           return;
         }
 
-        const url = urlParse(event.url);
+        const parser = document.createElement('a');
+        parser.href = event.url;
 
-        if (url.search || url.hash) {
-          const query = queryParse(url.search.substring(1).replace(/\/$/, ''));
-          const hash = queryParse(url.hash.substring(1).replace(/[\/$]/, ''));
+        if (parser.search || parser.hash) {
+          const query = parseQueryString(parser.search.substring(1).replace(/\/$/, ''));
+          const hash = parseQueryString(parser.hash.substring(1).replace(/[\/$]/, ''));
           const params = Object.assign({}, query, hash);
 
           if (params.error) {
