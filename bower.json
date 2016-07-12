@@ -1,21 +1,8 @@
 {
   "name": "satellizer",
-  "main": "satellizer.js",
+  "main": "dist/satellizer.js",
   "homepage": "https://github.com/sahat/satellizer",
-  "ignore": [
-    ".gitignore",
-    ".jshintrc",
-    ".travis.yml",
-    "bower_components",
-    "node_modules",
-    "karma.conf.js",
-    "package.json",
-    "gulpfile.js",
-    "examples",
-    "coverage",
-    "test"
-  ],
   "dependencies": {
-    "angular": ">=1.3.x"
+    "angular": ">=1.3.x && <= 1.5.x"
   }
 }

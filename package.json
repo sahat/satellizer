@@ -1,29 +1,32 @@
 {
   "name": "satellizer",
   "description": "Token-based AngularJS Authentication",
-  "version": "0.14.1",
+  "version": "0.15.0",
+  "main": "dist/satellizer.js",
   "scripts": {
     "start": "node ./examples/server/node/server.js",
     "test": "karma start",
-    "build": "rm -rf dist && tsc",
-    "build:umd": "webpack"
-  },
-  "main": "satellizer.js",
-  "homepage": "https://github.com/sahat/satellizer",
-  "bugs": "https://github.com/sahat/satellizer/issues",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/sahat/satellizer.git"
+    "build": "npm run clean && tsc && rollup -c && uglifyjs dist/satellizer.js -o dist/satellizer.min.js",
+    "clean": "rimraf build dist coverage"
   },
   "author": {
     "name": "Sahat Yalkabov",
     "email": "sahat@me.com",
     "url": "http://sahatyalkabov.com"
   },
+  "homepage": "https://github.com/sahat/satellizer",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sahat/satellizer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sahat/satellizer/issues"
+  },
+  "license": "MIT",
   "devDependencies": {
-    "babel-loader": "^6.2.4",
     "babel-core": "^6.9.1",
     "babel-eslint": "^6.0.4",
+    "babel-loader": "^6.2.4",
     "babel-preset-es2015-rollup": "^1.1.1",
     "babelify": "^7.2.0",
     "babelify-external-helpers": "^1.1.0",
@@ -36,29 +39,29 @@
     "eslint-plugin-react": "^5.0.1",
     "gulp": "^3.9.1",
     "gulp-complexity": "~0.3.2",
-    "gulp-header": "~1.7.1",
+    "gulp-header": "~1.8.2",
     "gulp-plumber": "^1.1.0",
     "gulp-rename": "^1.2.2",
     "gulp-typescript": "^2.12.1",
     "gulp-uglify": "~1.5.2",
-    "gulp-header": "~1.8.2",
     "karma": "^0.13.22",
     "karma-coverage": "^1.0.0",
     "karma-jasmine": "^1.0.2",
-    "karma-phantomjs-launcher": "^1.0.0"
-    "karma-coverage": "^0.5.3",
-    "karma-jasmine": "^0.3.7",
     "karma-phantomjs-launcher": "^1.0.0",
+    "rollup": "^0.34.1",
     "rollup-plugin-babel": "^2.4.0",
+    "rollup-plugin-node-resolve": "^1.7.1",
+    "rollup-plugin-typescript": "^0.7.6",
+    "rollup-plugin-uglify": "^1.0.1",
     "ts-loader": "^0.8.2",
     "tslint-loader": "^2.1.4",
     "typescript": "^1.8.10",
+    "uglify-js": "^2.7.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.7.0",
     "webpack": "^1.13.1"
   },
-  "license": "MIT",
   "tags": [
     "authentication",
     "login",

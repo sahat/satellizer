@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
-    "declaration": false,
+    "declaration": true,
+    "sourceMap": true,
     "noImplicitAny": false,
     "noResolve": true,
-    "removeComments": false,
     "target": "es5",
+    "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": "lib"
+    "outDir": "build"
   },
   "exclude": ["node_modules"]
 }
