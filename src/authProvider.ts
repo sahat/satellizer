@@ -1,5 +1,6 @@
 import Config from './config';
-import { IOAuth1Options, IOAuth2Options } from './interface';
+import { IOAuth1Options } from './oauth1';
+import { IOAuth2Options } from './oauth2';
 
 export default class AuthProvider {
   static $inject = ['SatellizerConfig'];

@@ -10,7 +10,7 @@ class Local {
               private SatellizerConfig: Config,
               private SatellizerShared: Shared) {}
 
-  login(user: string|Object, options?: any): angular.IHttpPromise<any> {
+  login(user: string|Object, options: any = {}): angular.IHttpPromise<any> {
     options.url = options.url ? options.url : joinUrl(this.SatellizerConfig.baseUrl, this.SatellizerConfig.loginUrl);
     options.data = user || options.data;
     options.method = options.method || 'POST';
@@ -22,8 +22,7 @@ class Local {
     });
   }
 
-  signup(user: string|Object, options?: any): angular.IHttpPromise<any> {
-    options = options || {};
+  signup(user: string|Object, options: any = {}): angular.IHttpPromise<any> {
     options.url = options.url ? options.url : joinUrl(this.SatellizerConfig.baseUrl, this.SatellizerConfig.signupUrl);
     options.data = user || options.data;
     options.method = options.method || 'POST';

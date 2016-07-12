@@ -2,7 +2,28 @@ import { joinUrl } from './utils';
 import Config from './config';
 import Popup from './popup';
 import Storage from './storage';
-import { IOAuth2Options } from './interface';
+
+export interface IOAuth2Options {
+  name: string;
+  url: string;
+  clientId: string;
+  authorizationEndpoint: string;
+  redirectUri: string;
+  scope: string[];
+  scopePrefix: string;
+  scopeDelimiter: string;
+  state?: string|(() => string);
+  requiredUrlParams: string[];
+  defaultUrlParams: string[];
+  responseType: string;
+  responseParams: {
+    code: string,
+    clientId: string,
+    redirectUri: string
+  };
+  oauthType: string;
+  popupOptions: { width: number, height: number };
+}
 
 export default class OAuth2 {
   static $inject = ['$http', '$window', '$timeout', 'SatellizerConfig', 'SatellizerPopup', 'SatellizerStorage'];

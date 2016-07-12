@@ -1,5 +1,3 @@
-import { IOAuth1Options, IOAuth2Options } from './interface';
-
 export default class Config {
   static get getConstant() {
     return new Config();

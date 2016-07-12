@@ -14,10 +14,10 @@ export default class OAuth {
               private SatellizerOAuth2: OAuth2) {
   }
 
-  authenticate(name, data): Promise<any> {
+  authenticate(name: string, userData: any): Promise<any> {
     return new Promise((resolve, reject) => {
       const provider = this.SatellizerConfig.providers[name];
-      const initialize: any = provider.oauthType === '1.0' ? this.SatellizerOAuth1.init(provider, data) : this.SatellizerOAuth2.init(provider, data);
+      const initialize: any = provider.oauthType === '1.0' ? this.SatellizerOAuth1.init(provider, userData) : this.SatellizerOAuth2.init(provider, userData);
 
       return initialize.then((response) => {
         if (provider.url) {
@@ -30,9 +30,9 @@ export default class OAuth {
     });
   }
 
-  unlink(provider, httpOptions): angular.IHttpPromise<any> {
+  unlink(provider: string, httpOptions: any = {}): angular.IHttpPromise<any> {
     httpOptions.url = httpOptions.url ? httpOptions.url : joinUrl(this.SatellizerConfig.baseUrl, this.SatellizerConfig.unlinkUrl);
-    httpOptions.data = { provider } || httpOptions.data;
+    httpOptions.data = { provider: provider } || httpOptions.data;
     httpOptions.method = httpOptions.method || 'POST';
     httpOptions.withCredentials = httpOptions.withCredentials || this.SatellizerConfig.withCredentials;
 
