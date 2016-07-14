@@ -4,10 +4,9 @@ import Storage from './storage';
 
 export default class Interceptor {
 
-  static $inject = ['$q', 'SatellizerConfig', 'SatellizerShared', 'SatellizerStorage'];
+  static $inject = ['SatellizerConfig', 'SatellizerShared', 'SatellizerStorage'];
 
-  constructor(private $q: angular.IQService,
-              private SatellizerConfig: Config,
+  constructor(private SatellizerConfig: Config,
               private SatellizerShared: Shared,
               private SatellizerStorage: Storage) {
   }
@@ -30,9 +29,5 @@ export default class Interceptor {
     }
 
     return request;
-  };
-
-  responseError = (response): any => {
-    return this.$q.reject(response);
   };
 }

@@ -1,8 +1,7 @@
 "use strict";
 var Interceptor = (function () {
-    function Interceptor($q, SatellizerConfig, SatellizerShared, SatellizerStorage) {
+    function Interceptor(SatellizerConfig, SatellizerShared, SatellizerStorage) {
         var _this = this;
-        this.$q = $q;
         this.SatellizerConfig = SatellizerConfig;
         this.SatellizerShared = SatellizerShared;
         this.SatellizerStorage = SatellizerStorage;
@@ -21,11 +20,8 @@ var Interceptor = (function () {
             }
             return request;
         };
-        this.responseError = function (response) {
-            return _this.$q.reject(response);
-        };
     }
-    Interceptor.$inject = ['$q', 'SatellizerConfig', 'SatellizerShared', 'SatellizerStorage'];
+    Interceptor.$inject = ['SatellizerConfig', 'SatellizerShared', 'SatellizerStorage'];
     return Interceptor;
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
