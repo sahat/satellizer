@@ -933,11 +933,10 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
     }])
     .factory('SatellizerInterceptor', [
-      '$q',
       'SatellizerConfig',
       'SatellizerStorage',
       'SatellizerShared',
-      function($q, config, storage, shared) {
+      function(config, storage, shared) {
         return {
           request: function(request) {
             if (request.skipAuthorization) {
@@ -956,9 +955,6 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
             }
 
             return request;
-          },
-          responseError: function(response) {
-            return $q.reject(response);
           }
         };
       }])
