@@ -932,12 +932,8 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
       };
 
     }])
-    .factory('SatellizerInterceptor', [
-      '$q',
-      'SatellizerConfig',
-      'SatellizerStorage',
-      'SatellizerShared',
-      function($q, config, storage, shared) {
+    .config(['$httpProvider', function($httpProvider) {
+      function satellizerInterceptor($q, config, storage, shared) {
         return {
           request: function(request) {
             if (request.skipAuthorization) {
@@ -961,9 +957,14 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
             return $q.reject(response);
           }
         };
-      }])
-    .config(['$httpProvider', function($httpProvider) {
-      $httpProvider.interceptors.push('SatellizerInterceptor');
+      };
+      satellizerInterceptor.$inject = [
+        '$q',
+        'SatellizerConfig',
+        'SatellizerStorage',
+        'SatellizerShared',
+      ];
+      $httpProvider.interceptors.push(satellizerInterceptor);
     }]);
 
 })(window, window.angular);
