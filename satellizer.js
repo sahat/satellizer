@@ -11,10 +11,10 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
 (function(window, angular, undefined) {
   'use strict';
-
-  if (!window.location.origin) {
-    window.location.origin = window.location.protocol + '//' + window.location.hostname + (window.location.port ? (':' + window.location.port) : '');
-  }
+  var windowLocationOrigin = window.location.origin ||
+    window.location.protocol +
+    '//' + window.location.hostname +
+    (window.location.port ? (':' + window.location.port) : '');
 
   angular.module('satellizer', [])
     .constant('SatellizerConfig', {
@@ -35,7 +35,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           name: 'facebook',
           url: '/auth/facebook',
           authorizationEndpoint: 'https://www.facebook.com/v2.5/dialog/oauth',
-          redirectUri: window.location.origin + '/',
+          redirectUri: windowLocationOrigin + '/',
           requiredUrlParams: ['display', 'scope'],
           scope: ['email'],
           scopeDelimiter: ',',
@@ -47,7 +47,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           name: 'google',
           url: '/auth/google',
           authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
-          redirectUri: window.location.origin,
+          redirectUri: windowLocationOrigin,
           requiredUrlParams: ['scope'],
           optionalUrlParams: ['display', 'state'],
           scope: ['profile', 'email'],
@@ -65,7 +65,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           name: 'github',
           url: '/auth/github',
           authorizationEndpoint: 'https://github.com/login/oauth/authorize',
-          redirectUri: window.location.origin,
+          redirectUri: windowLocationOrigin,
           optionalUrlParams: ['scope'],
           scope: ['user:email'],
           scopeDelimiter: ' ',
@@ -76,7 +76,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           name: 'instagram',
           url: '/auth/instagram',
           authorizationEndpoint: 'https://api.instagram.com/oauth/authorize',
-          redirectUri: window.location.origin,
+          redirectUri: windowLocationOrigin,
           requiredUrlParams: ['scope'],
           scope: ['basic'],
           scopeDelimiter: '+',
@@ -86,7 +86,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           name: 'linkedin',
           url: '/auth/linkedin',
           authorizationEndpoint: 'https://www.linkedin.com/oauth/v2/authorization',
-          redirectUri: window.location.origin,
+          redirectUri: windowLocationOrigin,
           requiredUrlParams: ['state'],
           scope: ['r_emailaddress'],
           scopeDelimiter: ' ',
@@ -98,7 +98,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           name: 'twitter',
           url: '/auth/twitter',
           authorizationEndpoint: 'https://api.twitter.com/oauth/authenticate',
-          redirectUri: window.location.origin,
+          redirectUri: windowLocationOrigin,
           oauthType: '1.0',
           popupOptions: { width: 495, height: 645 }
         },
@@ -106,7 +106,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           name: 'twitch',
           url: '/auth/twitch',
           authorizationEndpoint: 'https://api.twitch.tv/kraken/oauth2/authorize',
-          redirectUri: window.location.origin,
+          redirectUri: windowLocationOrigin,
           requiredUrlParams: ['scope'],
           scope: ['user_read'],
           scopeDelimiter: ' ',
@@ -118,7 +118,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           name: 'live',
           url: '/auth/live',
           authorizationEndpoint: 'https://login.live.com/oauth20_authorize.srf',
-          redirectUri: window.location.origin,
+          redirectUri: windowLocationOrigin,
           requiredUrlParams: ['display', 'scope'],
           scope: ['wl.emails'],
           scopeDelimiter: ' ',
@@ -130,7 +130,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           name: 'yahoo',
           url: '/auth/yahoo',
           authorizationEndpoint: 'https://api.login.yahoo.com/oauth2/request_auth',
-          redirectUri: window.location.origin,
+          redirectUri: windowLocationOrigin,
           scope: [],
           scopeDelimiter: ',',
           oauthType: '2.0',
@@ -140,7 +140,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
           name: 'bitbucket',
           url: '/auth/bitbucket',
           authorizationEndpoint: 'https://bitbucket.org/site/oauth2/authorize',
-          redirectUri: window.location.origin + '/',
+          redirectUri: windowLocationOrigin + '/',
           requiredUrlParams: ['scope'],
           scope: ['email'],
           scopeDelimiter: ' ',
