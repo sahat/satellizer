@@ -1,34 +1,43 @@
-module.exports = function(config) {
+module.exports = function (config) {
   config.set({
     files: [
-      'examples/client/vendor/angular.js',
-      'examples/client/vendor/angular-mocks.js',
-      'satellizer.js',
-      'test/*.spec.js'
+      'test/*.spec.ts'
     ],
 
-    autoWatch: true,
+    browsers: ['PhantomJS'],
 
     frameworks: ['jasmine'],
-
-    browsers: ['PhantomJS'],
 
     plugins: [
       'karma-phantomjs-launcher',
       'karma-jasmine',
-      'karma-coverage'
+      'karma-coverage',
+      'karma-webpack'
     ],
 
-    reporters: ['progress', 'coverage'],
+    singleRun: true,
+
+    autoWatch: false,
+
+    reporters: ['dots'],
 
     preprocessors: {
-      'satellizer.js': ['coverage']
+      'test/*.spec.ts': ['webpack']
     },
 
-    coverageReporter: {
-      type: 'lcov',
-      dir: 'coverage',
-      subdir: '.'
+    webpack: {
+      resolve: {
+        extensions: ['', '.ts', '.js']
+      },
+      module: {
+        loaders: [
+          { test: /\.ts$/, loader: 'ts' }
+        ]
+      }
+    },
+
+    webpackMiddleware: {
+      noInfo: true
     }
   });
 };
