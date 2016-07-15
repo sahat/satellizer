@@ -16,6 +16,9 @@ export default class AuthProvider {
   get signupUrl(): string { return this.SatellizerConfig.signupUrl; }
   set signupUrl(value) { this.SatellizerConfig.signupUrl = value; }
 
+  get unlinkUrl(): string { return this.SatellizerConfig.unlinkUrl; }
+  set unlinkUrl(value) { this.SatellizerConfig.unlinkUrl = value; }
+
   get tokenRoot(): string { return this.SatellizerConfig.tokenRoot; }
   set tokenRoot(value) { this.SatellizerConfig.tokenRoot = value; }
 
@@ -24,9 +27,6 @@ export default class AuthProvider {
 
   get tokenPrefix(): string { return this.SatellizerConfig.tokenPrefix; }
   set tokenPrefix(value) { this.SatellizerConfig.tokenPrefix = value; }
-
-  get unlinkUrl(): string { return this.SatellizerConfig.unlinkUrl; }
-  set unlinkUrl(value) { this.SatellizerConfig.unlinkUrl = value; }
 
   get tokenHeader(): string { return this.SatellizerConfig.tokenHeader; }
   set tokenHeader(value) { this.SatellizerConfig.tokenHeader = value; }
@@ -50,53 +50,53 @@ export default class AuthProvider {
   }
 
   facebook(options: IOAuth2Options): void {
-    Object.assign(this.SatellizerConfig.providers.facebook, options);
+    angular.extend(this.SatellizerConfig.providers.facebook, options);
   }
 
   google(options: IOAuth2Options): void {
-    Object.assign(this.SatellizerConfig.providers.google, options);
+    angular.extend(this.SatellizerConfig.providers.google, options);
   }
 
   github(options: IOAuth2Options): void {
-    Object.assign(this.SatellizerConfig.providers.github, options);
+    angular.extend(this.SatellizerConfig.providers.github, options);
   }
 
   instagram(options: IOAuth2Options): void {
-    Object.assign(this.SatellizerConfig.providers.instagram, options);
+    angular.extend(this.SatellizerConfig.providers.instagram, options);
   }
 
   linkedin(options: IOAuth2Options): void {
-    Object.assign(this.SatellizerConfig.providers.linkedin, options);
+    angular.extend(this.SatellizerConfig.providers.linkedin, options);
   }
 
   twitter(options: IOAuth1Options): void {
-    Object.assign(this.SatellizerConfig.providers.twitter, options);
+    angular.extend(this.SatellizerConfig.providers.twitter, options);
   }
 
   twitch(options: IOAuth2Options): void {
-    Object.assign(this.SatellizerConfig.providers.twitch, options);
+    angular.extend(this.SatellizerConfig.providers.twitch, options);
   }
 
   live(options: IOAuth2Options): void {
-    Object.assign(this.SatellizerConfig.providers.live, options);
+    angular.extend(this.SatellizerConfig.providers.live, options);
   }
 
   yahoo(options: IOAuth2Options): void {
-    Object.assign(this.SatellizerConfig.providers.yahoo, options);
+    angular.extend(this.SatellizerConfig.providers.yahoo, options);
   }
 
   bitbucket(options: IOAuth2Options): void {
-    Object.assign(this.SatellizerConfig.providers.bitbucket, options);
+    angular.extend(this.SatellizerConfig.providers.bitbucket, options);
   }
 
   oauth1(options: IOAuth1Options): void {
-    this.SatellizerConfig.providers[options.name] = Object.assign({}, options, {
+    this.SatellizerConfig.providers[options.name] = angular.extend(options, {
       oauthType: '1.0'
     });
   }
 
   oauth2(options: IOAuth2Options): void {
-    this.SatellizerConfig.providers[options.name] = Object.assign({}, options, {
+    this.SatellizerConfig.providers[options.name] = angular.extend(options, {
       oauthType: '2.0'
     });
   }
