@@ -1,6 +1,6 @@
 import { joinUrl, getFullUrlPath, parseQueryString } from '../src/utils';
 
-describe('Utils', function() {
+describe('Utils', function () {
 
   describe('parseQueryString()', () => {
 
@@ -64,7 +64,7 @@ describe('Utils', function() {
       expect(url3).toEqual('https://google.com:443/test');
     });
 
-    it('should normalize full url from createElement("a")', function() {
+    it('should normalize full url from createElement("a")', function () {
       const urlElement = document.createElement('a');
 
       urlElement.href = 'http://d4507eb5.ngrok.io/#/';

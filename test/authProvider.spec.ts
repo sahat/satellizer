@@ -7,7 +7,7 @@ import AuthProvider from '../src/authProvider';
 let config;
 let authProvider;
 
-describe('SatellizerConfig', () => {
+describe('AuthProvider', () => {
 
   beforeEach(() => {
     config = new Config();

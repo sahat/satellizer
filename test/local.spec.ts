@@ -23,7 +23,7 @@ describe('Local', () => {
     local = new Local($http, config, shared);
   }));
 
-  afterEach(function() {
+  afterEach(function () {
     window.localStorage.clear();
     window.sessionStorage.clear();
     httpBackend.verifyNoOutstandingExpectation();
@@ -37,7 +37,7 @@ describe('Local', () => {
     });
 
     it('should return a user object on successful login', () => {
-      let result;
+      let result = null;
       const user = { email: 'john@email.com', password: 'password' };
       const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7Il9pZCI6IjUzZjYxZTEwNmZjNjFhNmMxM2I1Mjc4ZCIsImVtYWlsIjoic2FoYXQ_QG1lLmNvbSIsIl9fdiI6MH0sImlhdCI6MTQwODgyMTA5MTY3NiwiZXhwIjoxNDA5NDI1ODkxNjc2fQ.0l-ql-ZVjHiILMcMegNb3bNqapt3TZwjHy_ieduioiQ';
 
@@ -54,7 +54,7 @@ describe('Local', () => {
     });
 
     it('should fail login with incorrect credentials', () => {
-      let result;
+      let result = null;
       const user = { email: 'foo@bar.com', password: 'invalid' };
 
       httpBackend.expectPOST(config.loginUrl).respond(401, 'Wrong email or password');
@@ -71,7 +71,6 @@ describe('Local', () => {
 
   });
 
-
   describe('signup()', () => {
 
     it('should have a signup function', () => {
@@ -80,7 +79,7 @@ describe('Local', () => {
     });
 
     it('should create a new user', () => {
-      let result;
+      let result = null;
       const user = { email: 'john@email.com', password: '1234' };
       const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7Il9pZCI6IjUzZjYxZTEwNmZjNjFhNmMxM2I1Mjc4ZCIsImVtYWlsIjoic2FoYXQ_QG1lLmNvbSIsIl9fdiI6MH0sImlhdCI6MTQwODgyMTA5MTY3NiwiZXhwIjoxNDA5NDI1ODkxNjc2fQ.0l-ql-ZVjHiILMcMegNb3bNqapt3TZwjHy_ieduioiQ';
 
@@ -96,7 +95,7 @@ describe('Local', () => {
     });
 
     it('should be able to handle signup errors', () => {
-      let result;
+      let result = null;
       const user = { email: 'foo@bar.com', password: '1234' };
 
       httpBackend.expectPOST(config.signupUrl).respond(400);
@@ -111,5 +110,5 @@ describe('Local', () => {
     });
 
   });
-  
+
 });

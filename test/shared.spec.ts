@@ -2,8 +2,6 @@ import Shared from '../src/shared';
 import Storage from '../src/storage';
 import Config from '../src/config';
 
-let httpBackend;
-let location;
 let window;
 let config;
 let storage;
@@ -11,9 +9,7 @@ let shared;
 
 describe('Shared', () => {
 
-  beforeEach(angular.mock.inject(($q, $window, $log, $httpBackend, $location) => {
-    httpBackend = $httpBackend;
-    location = $location;
+  beforeEach(angular.mock.inject(($q, $window, $log) => {
     window = $window;
     config = new Config();
     storage = new Storage($window, config);
