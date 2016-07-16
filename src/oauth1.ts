@@ -5,6 +5,9 @@ import { IOAuth1Options } from './oauth1';
 
 export interface IOAuth1 {
   init(options: any, data: any): angular.IPromise<any>;
+  getRequestToken(): angular.IHttpPromise<any>;
+  exchangeForToken(oauth: any, userData: any): angular.IHttpPromise<any>;
+  buildQueryString(obj: any): string;
 }
 
 export interface IOAuth1Options {
