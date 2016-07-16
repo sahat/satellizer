@@ -1,13 +1,16 @@
 import { parseQueryString, getFullUrlPath } from './utils';
 
 export interface IPopup {
-  open(url: string, name: string, popupOptions: { width: number, height: number }, redirectUri: string): Function|Promise<any>;
+  open(url: string, name: string, popupOptions: { width: number, height: number }): void;
+  stringifyOptions (options: any): string;
+  polling(redirectUri: string): Promise<any>;
+  eventListener(redirectUri: string): Promise<any>;
 }
 
 export default class Popup implements IPopup {
   static $inject = ['$interval', '$window'];
 
-  private popup: any;
+  public popup: any;
   private url: string;
   private defaults: { redirectUri: string };
   
@@ -20,7 +23,7 @@ export default class Popup implements IPopup {
     };
   }
 
-  stringifyOptions (options: any) {
+  stringifyOptions (options: any): string {
     const parts = [];
     angular.forEach(options, function (value, key) {
       parts.push(key + '=' + value);
@@ -28,7 +31,7 @@ export default class Popup implements IPopup {
     return parts.join(',');
   }
 
-  open(url: string, name: string, popupOptions: { width: number, height: number }, redirectUri: string): Promise<any> {
+  open(url: string, name: string, popupOptions: { width: number, height: number }): void {
     this.url = url; // TODO remove
 
     const width = popupOptions.width || 500;
@@ -41,22 +44,22 @@ export default class Popup implements IPopup {
       left: this.$window.screenX + ((this.$window.outerWidth - width) / 2)
     });
 
-    const popupName = this.$window['cordova'] || this.$window.navigator.userAgent.includes('CriOS') ? '_blank' : name;
+    const popupName = this.$window['cordova'] || this.$window.navigator.userAgent.indexOf('CriOS') > -1 ? '_blank' : name;
 
-    this.popup = this.$window.open(this.url, popupName, options);
+    this.popup = window.open(this.url, popupName, options);
 
     if (this.popup && this.popup.focus) {
       this.popup.focus();
     }
-
-    if (this.$window['cordova']) {
-      return this.eventListener(this.defaults.redirectUri); // TODO pass redirect uri
-    } else {
-      return this.polling(redirectUri);
-    }
+    //
+    // if (this.$window['cordova']) {
+    //   return this.eventListener(this.defaults.redirectUri); // TODO pass redirect uri
+    // } else {
+    //   return this.polling(redirectUri);
+    // }
   }
 
-  polling(redirectUri): Promise<any> {
+  polling(redirectUri: string): Promise<any> {
     return new Promise((resolve, reject) => {
       const redirectUriParser = document.createElement('a');
       redirectUriParser.href = redirectUri;

@@ -6,7 +6,8 @@ import { IOAuth1Options } from './oauth1';
 export interface IOAuth1 {
   init(options: any, data: any): angular.IPromise<any>;
   getRequestToken(): angular.IHttpPromise<any>;
-  exchangeForToken(oauth: any, userData: any): angular.IHttpPromise<any>;
+  openPopup(options: IOAuth1Options, response: angular.IHttpPromiseCallbackArg<any>): Promise<any>;
+  exchangeForToken(oauthData: any, userData: any): angular.IHttpPromise<any>;
   buildQueryString(obj: any): string;
 }
 
@@ -49,36 +50,29 @@ export default class OAuth1 implements IOAuth1 {
   };
 
   init(options: IOAuth1Options, userData: any): angular.IHttpPromise<any> {
-    const { name, popupOptions, redirectUri } = options;
-
-    let popupWindow;
+    Object.assign(this.defaults, options);
 
     if (!this.$window['cordova']) {
-      popupWindow = this.SatellizerPopup.open('about:blank', name, popupOptions, redirectUri);
+      this.SatellizerPopup.open('about:blank', options.name, options.popupOptions);
     }
 
     return this.getRequestToken().then((response) => {
-      const url = [options.authorizationEndpoint, this.buildQueryString(response.data)].join('?');
-
-      if (this.$window['cordova']) {
-        popupWindow = this.SatellizerPopup.open(url, name, popupOptions, redirectUri);
-      } else {
-        popupWindow.popupWindow.location = url;
-      }
-
-      let popupListener;
-
-      if (this.$window['cordova']) {
-        popupListener = popupWindow.eventListener(this.defaults.redirectUri);
-      } else {
-        popupListener = popupWindow.pollPopup(this.defaults.redirectUri);
-      }
-
-      return popupListener.then((popupResponse) => {
+      return this.openPopup(options, response).then((popupResponse) => {
         return this.exchangeForToken(popupResponse, userData);
       });
     });
+  }
 
+  openPopup(options: IOAuth1Options, response: angular.IHttpPromiseCallbackArg<any>): Promise<any> {
+    const popupUrl = [options.authorizationEndpoint, this.buildQueryString(response.data)].join('?');
+
+    if (this.$window['cordova']) {
+      this.SatellizerPopup.open(popupUrl, options.name, options.popupOptions);
+      return this.SatellizerPopup.eventListener(this.defaults.redirectUri);
+    } else {
+      this.SatellizerPopup.popup.location = popupUrl;
+      return this.SatellizerPopup.polling(this.defaults.redirectUri);
+    }
   }
 
   getRequestToken(): angular.IHttpPromise<any> {
@@ -86,8 +80,8 @@ export default class OAuth1 implements IOAuth1 {
     return this.$http.post(url, this.defaults);
   }
 
-  exchangeForToken(oauth, userData): angular.IHttpPromise<any> {
-    const payload = Object.assign({}, userData, oauth);
+  exchangeForToken(oauthData, userData): angular.IHttpPromise<any> {
+    const payload = Object.assign({}, userData, oauthData);
     const exchangeForTokenUrl = this.SatellizerConfig.baseUrl ? joinUrl(this.SatellizerConfig.baseUrl, this.defaults.url) : this.defaults.url;
     return this.$http.post(exchangeForTokenUrl, payload, { withCredentials: this.SatellizerConfig.withCredentials });
   }
