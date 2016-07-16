@@ -85,7 +85,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
         linkedin: {
           name: 'linkedin',
           url: '/auth/linkedin',
-          authorizationEndpoint: 'https://www.linkedin.com/oauth/v2/authorization',
+          authorizationEndpoint: 'https://www.linkedin.com/uas/oauth2/authorization',
           redirectUri: window.location.origin,
           requiredUrlParams: ['state'],
           scope: ['r_emailaddress'],
@@ -944,10 +944,11 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
 
     }])
     .factory('SatellizerInterceptor', [
+      '$q',
       'SatellizerConfig',
       'SatellizerStorage',
       'SatellizerShared',
-      function(config, storage, shared) {
+      function($q, config, storage, shared) {
         return {
           request: function(request) {
             if (request.skipAuthorization) {
@@ -966,6 +967,9 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
             }
 
             return request;
+          },
+          responseError: function(response) {
+            return $q.reject(response);
           }
         };
       }])
