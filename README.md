@@ -42,7 +42,7 @@ in the app *config* block.
 
 ## Installation
 
-#### Browser
+#### <img src="https://upload.wikimedia.org/wikipedia/commons/e/e2/Google_Chrome_icon_%282011%29.svg" height="24" align="top"> Browser
 
 ```html
 <script src="angular.js"></script>
@@ -53,13 +53,13 @@ in the app *config* block.
 <script src="https://cdn.jsdelivr.net/satellizer/0.15.0/satellizer.min.js"></script>
 ```
 
-#### NPM
+#### <img src="https://upload.wikimedia.org/wikipedia/commons/d/db/Npm-logo.svg" height="24" align="top"> NPM
 
 ```
 $ npm install satellizer
 ```
 
-#### Bower
+#### <img src="https://bower.io/img/bower-logo.svg" height="24" align="top"> Bower
 
 ```
 $ bower install satellizer
