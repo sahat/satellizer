@@ -167,6 +167,12 @@
             enumerable: true,
             configurable: true
         });
+        Object.defineProperty(AuthProvider.prototype, "unlinkUrl", {
+            get: function () { return this.SatellizerConfig.unlinkUrl; },
+            set: function (value) { this.SatellizerConfig.unlinkUrl = value; },
+            enumerable: true,
+            configurable: true
+        });
         Object.defineProperty(AuthProvider.prototype, "tokenRoot", {
             get: function () { return this.SatellizerConfig.tokenRoot; },
             set: function (value) { this.SatellizerConfig.tokenRoot = value; },
@@ -182,12 +188,6 @@
         Object.defineProperty(AuthProvider.prototype, "tokenPrefix", {
             get: function () { return this.SatellizerConfig.tokenPrefix; },
             set: function (value) { this.SatellizerConfig.tokenPrefix = value; },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(AuthProvider.prototype, "unlinkUrl", {
-            get: function () { return this.SatellizerConfig.unlinkUrl; },
-            set: function (value) { this.SatellizerConfig.unlinkUrl = value; },
             enumerable: true,
             configurable: true
         });
@@ -229,42 +229,42 @@
             configurable: true
         });
         AuthProvider.prototype.facebook = function (options) {
-            Object.assign(this.SatellizerConfig.providers.facebook, options);
+            angular.extend(this.SatellizerConfig.providers.facebook, options);
         };
         AuthProvider.prototype.google = function (options) {
-            Object.assign(this.SatellizerConfig.providers.google, options);
+            angular.extend(this.SatellizerConfig.providers.google, options);
         };
         AuthProvider.prototype.github = function (options) {
-            Object.assign(this.SatellizerConfig.providers.github, options);
+            angular.extend(this.SatellizerConfig.providers.github, options);
         };
         AuthProvider.prototype.instagram = function (options) {
-            Object.assign(this.SatellizerConfig.providers.instagram, options);
+            angular.extend(this.SatellizerConfig.providers.instagram, options);
         };
         AuthProvider.prototype.linkedin = function (options) {
-            Object.assign(this.SatellizerConfig.providers.linkedin, options);
+            angular.extend(this.SatellizerConfig.providers.linkedin, options);
         };
         AuthProvider.prototype.twitter = function (options) {
-            Object.assign(this.SatellizerConfig.providers.twitter, options);
+            angular.extend(this.SatellizerConfig.providers.twitter, options);
         };
         AuthProvider.prototype.twitch = function (options) {
-            Object.assign(this.SatellizerConfig.providers.twitch, options);
+            angular.extend(this.SatellizerConfig.providers.twitch, options);
         };
         AuthProvider.prototype.live = function (options) {
-            Object.assign(this.SatellizerConfig.providers.live, options);
+            angular.extend(this.SatellizerConfig.providers.live, options);
         };
         AuthProvider.prototype.yahoo = function (options) {
-            Object.assign(this.SatellizerConfig.providers.yahoo, options);
+            angular.extend(this.SatellizerConfig.providers.yahoo, options);
         };
         AuthProvider.prototype.bitbucket = function (options) {
-            Object.assign(this.SatellizerConfig.providers.bitbucket, options);
+            angular.extend(this.SatellizerConfig.providers.bitbucket, options);
         };
         AuthProvider.prototype.oauth1 = function (options) {
-            this.SatellizerConfig.providers[options.name] = Object.assign({}, options, {
+            this.SatellizerConfig.providers[options.name] = angular.extend(options, {
                 oauthType: '1.0'
             });
         };
         AuthProvider.prototype.oauth2 = function (options) {
-            this.SatellizerConfig.providers[options.name] = Object.assign({}, options, {
+            this.SatellizerConfig.providers[options.name] = angular.extend(options, {
                 oauthType: '2.0'
             });
         };
@@ -288,6 +288,89 @@
         return AuthProvider;
     }());
 
+    function joinUrl(baseUrl, url) {
+        if (/^(?:[a-z]+:)?\/\//i.test(url)) {
+            return url;
+        }
+        var joined = [baseUrl, url].join('/');
+        var normalize = function (str) {
+            return str
+                .replace(/[\/]+/g, '/')
+                .replace(/\/\?/g, '?')
+                .replace(/\/\#/g, '#')
+                .replace(/\:\//g, '://');
+        };
+        return normalize(joined);
+    }
+    function getFullUrlPath(location) {
+        var isHttps = location.protocol === 'https:';
+        return location.protocol + '//' + location.hostname +
+            ':' + (location.port || (isHttps ? '443' : '80')) +
+            (/^\//.test(location.pathname) ? location.pathname : '/' + location.pathname);
+    }
+    function parseQueryString(str) {
+        var obj = {};
+        var key;
+        var value;
+        angular.forEach((str || '').split('&'), function (keyValue) {
+            if (keyValue) {
+                value = keyValue.split('=');
+                key = decodeURIComponent(value[0]);
+                obj[key] = angular.isDefined(value[1]) ? decodeURIComponent(value[1]) : true;
+            }
+        });
+        return obj;
+    }
+    function decodeBase64(str) {
+        var buffer;
+        if (typeof module !== 'undefined' && module.exports) {
+            try {
+                buffer = require('buffer').Buffer;
+            }
+            catch (err) {
+            }
+        }
+        var fromCharCode = String.fromCharCode;
+        var re_btou = new RegExp([
+            '[\xC0-\xDF][\x80-\xBF]',
+            '[\xE0-\xEF][\x80-\xBF]{2}',
+            '[\xF0-\xF7][\x80-\xBF]{3}'
+        ].join('|'), 'g');
+        var cb_btou = function (cccc) {
+            switch (cccc.length) {
+                case 4:
+                    var cp = ((0x07 & cccc.charCodeAt(0)) << 18)
+                        | ((0x3f & cccc.charCodeAt(1)) << 12)
+                        | ((0x3f & cccc.charCodeAt(2)) << 6)
+                        | (0x3f & cccc.charCodeAt(3));
+                    var offset = cp - 0x10000;
+                    return (fromCharCode((offset >>> 10) + 0xD800)
+                        + fromCharCode((offset & 0x3FF) + 0xDC00));
+                case 3:
+                    return fromCharCode(((0x0f & cccc.charCodeAt(0)) << 12)
+                        | ((0x3f & cccc.charCodeAt(1)) << 6)
+                        | (0x3f & cccc.charCodeAt(2)));
+                default:
+                    return fromCharCode(((0x1f & cccc.charCodeAt(0)) << 6)
+                        | (0x3f & cccc.charCodeAt(1)));
+            }
+        };
+        var btou = function (b) {
+            return b.replace(re_btou, cb_btou);
+        };
+        var _decode = buffer ? function (a) {
+            return (a.constructor === buffer.constructor
+                ? a : new buffer(a, 'base64')).toString();
+        }
+            : function (a) {
+                return btou(atob(a));
+            };
+        return _decode(String(str).replace(/[-_]/g, function (m0) {
+            return m0 === '-' ? '+' : '/';
+        })
+            .replace(/[^A-Za-z0-9\+\/]/g, ''));
+    }
+
     var Shared = (function () {
         function Shared($q, $window, $log, SatellizerConfig, SatellizerStorage) {
             this.$q = $q;
@@ -307,7 +390,7 @@
                 try {
                     var base64Url = token.split('.')[1];
                     var base64 = base64Url.replace('-', '+').replace('_', '/');
-                    return JSON.parse(decodeURIComponent(window.atob(base64)));
+                    return JSON.parse(decodeBase64(base64));
                 }
                 catch (e) {
                 }
@@ -371,40 +454,6 @@
         return Shared;
     }());
 
-    function joinUrl(baseUrl, url) {
-        if (/^(?:[a-z]+:)?\/\//i.test(url)) {
-            return url;
-        }
-        var joined = [baseUrl, url].join('/');
-        var normalize = function (str) {
-            return str
-                .replace(/[\/]+/g, '/')
-                .replace(/\/\?/g, '?')
-                .replace(/\/\#/g, '#')
-                .replace(/\:\//g, '://');
-        };
-        return normalize(joined);
-    }
-    function getFullUrlPath(location) {
-        var isHttps = location.protocol === 'https:';
-        return location.protocol + '//' + location.hostname +
-            ':' + (location.port || (isHttps ? '443' : '80')) +
-            (/^\//.test(location.pathname) ? location.pathname : '/' + location.pathname);
-    }
-    function parseQueryString(str) {
-        var obj = {};
-        var key;
-        var value;
-        angular.forEach((str || '').split('&'), function (keyValue) {
-            if (keyValue) {
-                value = keyValue.split('=');
-                key = decodeURIComponent(value[0]);
-                obj[key] = angular.isDefined(value[1]) ? decodeURIComponent(value[1]) : true;
-            }
-        });
-        return obj;
-    }
-
     var Local = (function () {
         function Local($http, SatellizerConfig, SatellizerShared) {
             this.$http = $http;
@@ -452,7 +501,7 @@
             });
             return parts.join(',');
         };
-        Popup.prototype.open = function (url, name, popupOptions, redirectUri) {
+        Popup.prototype.open = function (url, name, popupOptions) {
             this.url = url; // TODO remove
             var width = popupOptions.width || 500;
             var height = popupOptions.height || 500;
@@ -462,17 +511,17 @@
                 top: this.$window.screenY + ((this.$window.outerHeight - height) / 2.5),
                 left: this.$window.screenX + ((this.$window.outerWidth - width) / 2)
             });
-            var popupName = this.$window['cordova'] || this.$window.navigator.userAgent.includes('CriOS') ? '_blank' : name;
-            this.popup = this.$window.open(this.url, popupName, options);
+            var popupName = this.$window['cordova'] || this.$window.navigator.userAgent.indexOf('CriOS') > -1 ? '_blank' : name;
+            this.popup = window.open(this.url, popupName, options);
             if (this.popup && this.popup.focus) {
                 this.popup.focus();
             }
-            if (this.$window['cordova']) {
-                return this.eventListener(this.defaults.redirectUri); // TODO pass redirect uri
-            }
-            else {
-                return this.polling(redirectUri);
-            }
+            //
+            // if (this.$window['cordova']) {
+            //   return this.eventListener(this.defaults.redirectUri); // TODO pass redirect uri
+            // } else {
+            //   return this.polling(redirectUri);
+            // }
         };
         Popup.prototype.polling = function (redirectUri) {
             var _this = this;
@@ -628,8 +677,8 @@
                     else if (typeof state === 'string') {
                         _this.SatellizerStorage.set(stateName, state);
                     }
-                    _this.SatellizerPopup.open(url, name, popupOptions, redirectUri)
-                        .then(function (oauth) {
+                    _this.SatellizerPopup.open(url, name, popupOptions);
+                    _this.SatellizerPopup.polling(redirectUri).then(function (oauth) {
                         if (responseType === 'token' || !url) {
                             return resolve(oauth);
                         }
@@ -722,37 +771,33 @@
         ;
         OAuth1.prototype.init = function (options, userData) {
             var _this = this;
-            var name = options.name, popupOptions = options.popupOptions, redirectUri = options.redirectUri;
-            var popupWindow;
+            Object.assign(this.defaults, options);
             if (!this.$window['cordova']) {
-                popupWindow = this.SatellizerPopup.open('about:blank', name, popupOptions, redirectUri);
+                this.SatellizerPopup.open('about:blank', options.name, options.popupOptions);
             }
             return this.getRequestToken().then(function (response) {
-                var url = [options.authorizationEndpoint, _this.buildQueryString(response.data)].join('?');
-                if (_this.$window['cordova']) {
-                    popupWindow = _this.SatellizerPopup.open(url, name, popupOptions, redirectUri);
-                }
-                else {
-                    popupWindow.popupWindow.location = url;
-                }
-                var popupListener;
-                if (_this.$window['cordova']) {
-                    popupListener = popupWindow.eventListener(_this.defaults.redirectUri);
-                }
-                else {
-                    popupListener = popupWindow.pollPopup(_this.defaults.redirectUri);
-                }
-                return popupListener.then(function (popupResponse) {
+                return _this.openPopup(options, response).then(function (popupResponse) {
                     return _this.exchangeForToken(popupResponse, userData);
                 });
             });
+        };
+        OAuth1.prototype.openPopup = function (options, response) {
+            var popupUrl = [options.authorizationEndpoint, this.buildQueryString(response.data)].join('?');
+            if (this.$window['cordova']) {
+                this.SatellizerPopup.open(popupUrl, options.name, options.popupOptions);
+                return this.SatellizerPopup.eventListener(this.defaults.redirectUri);
+            }
+            else {
+                this.SatellizerPopup.popup.location = popupUrl;
+                return this.SatellizerPopup.polling(this.defaults.redirectUri);
+            }
         };
         OAuth1.prototype.getRequestToken = function () {
             var url = this.SatellizerConfig.baseUrl ? joinUrl(this.SatellizerConfig.baseUrl, this.defaults.url) : this.defaults.url;
             return this.$http.post(url, this.defaults);
         };
-        OAuth1.prototype.exchangeForToken = function (oauth, userData) {
-            var payload = Object.assign({}, userData, oauth);
+        OAuth1.prototype.exchangeForToken = function (oauthData, userData) {
+            var payload = Object.assign({}, userData, oauthData);
             var exchangeForTokenUrl = this.SatellizerConfig.baseUrl ? joinUrl(this.SatellizerConfig.baseUrl, this.defaults.url) : this.defaults.url;
             return this.$http.post(exchangeForTokenUrl, payload, { withCredentials: this.SatellizerConfig.withCredentials });
         };
@@ -803,9 +848,8 @@
     }());
 
     var Interceptor = (function () {
-        function Interceptor($q, SatellizerConfig, SatellizerShared, SatellizerStorage) {
+        function Interceptor(SatellizerConfig, SatellizerShared, SatellizerStorage) {
             var _this = this;
-            this.$q = $q;
             this.SatellizerConfig = SatellizerConfig;
             this.SatellizerShared = SatellizerShared;
             this.SatellizerStorage = SatellizerStorage;
@@ -824,11 +868,8 @@
                 }
                 return request;
             };
-            this.responseError = function (response) {
-                return _this.$q.reject(response);
-            };
         }
-        Interceptor.$inject = ['$q', 'SatellizerConfig', 'SatellizerShared', 'SatellizerStorage'];
+        Interceptor.$inject = ['SatellizerConfig', 'SatellizerShared', 'SatellizerStorage'];
         return Interceptor;
     }());
 
@@ -853,8 +894,9 @@
         .service('SatellizerStorage', Storage)
         .service('SatellizerInterceptor', Interceptor)
         .config(function ($httpProvider) { return new HttpProviderConfig($httpProvider); });
-    var index = 'satellizer';
+    var ng1 = 'satellizer';
 
-    return index;
+    return ng1;
 
 }));
+//# sourceMappingURL=satellizer.js.map
