@@ -23,7 +23,7 @@ describe('Local', () => {
     local = new Local($http, config, shared);
   }));
 
-  afterEach(function () {
+  afterEach(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
     httpBackend.verifyNoOutstandingExpectation();

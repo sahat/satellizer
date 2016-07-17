@@ -1,12 +1,14 @@
 import Popup from '../src/popup';
 
 let interval;
+let window;
 let popup;
 
 describe('Popup', () => {
 
   beforeEach(angular.mock.inject(($interval, $window) => {
     interval = $interval;
+    window = $window;
     popup = new Popup($interval, $window);
   }));
 
@@ -21,12 +23,13 @@ describe('Popup', () => {
   });
 
   it('should open a new popup', () => {
-    const open = popup.open('about:blank', 'test', { width: 500, height: 500});
+    spyOn(window, 'open');
+    popup.open('about:blank', 'test', { width: 500, height: 500 });
     interval.flush(300);
-    expect(angular.isObject(open)).toBe(true);
+    expect(window.open).toHaveBeenCalled();
   });
-  
-  it('should poll popup', function() {
+
+  it('should poll popup', () => {
     const open = popup.polling();
     interval.flush(300);
     expect(angular.isObject(open)).toBe(true);
@@ -53,7 +56,9 @@ describe('Popup', () => {
     };
     const open = popup.polling();
     let error = null;
-    open.catch((err) => { error = err; });
+    open.catch((err) => {
+      error = err;
+    });
     interval.flush(300);
     expect(error).toBeDefined();
   });
@@ -61,7 +66,9 @@ describe('Popup', () => {
   it('should handle the case when popup is closed', () => {
     const open = popup.polling();
     let error = null;
-    open.catch((err) => { error = err; });
+    open.catch((err) => {
+      error = err;
+    });
     interval.flush(300);
     expect(error).toBeDefined();
   });

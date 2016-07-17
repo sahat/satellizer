@@ -28,7 +28,7 @@ describe('OAuth', () => {
     oauth = new OAuth($http, config, shared, oauth1, oauth2);
   }));
 
-  afterEach(function () {
+  afterEach(() => {
     httpBackend.verifyNoOutstandingExpectation();
     httpBackend.verifyNoOutstandingRequest();
   });
