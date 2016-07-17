@@ -1,6 +1,8 @@
 module.exports = function (config) {
   config.set({
     files: [
+      'examples/client/vendor/angular.js',
+      'examples/client/vendor/angular-mocks.js',
       'node_modules/babel-polyfill/dist/polyfill.js',
       'test/*.spec.ts'
     ],

@@ -1,6 +1,3 @@
-import 'angular';
-import 'angular-mocks';
-
 import Config from '../src/config';
 import Storage from '../src/storage';
 import Shared from '../src/shared';
