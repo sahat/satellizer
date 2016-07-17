@@ -67,7 +67,8 @@ mongoose.connection.on('error', function(err) {
 
 var app = express();
 
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.NODE_PORT || 3000);
+app.set('host', process.env.NODE_IP || 'localhost');
 app.use(cors());
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -1001,6 +1002,6 @@ app.post('/auth/unlink', ensureAuthenticated, function(req, res) {
  | Start the Server
  |--------------------------------------------------------------------------
  */
-app.listen(app.get('port'), function() {
+app.listen(app.get('port'), app.get('host'), function() {
   console.log('Express server listening on port ' + app.get('port'));
 });
