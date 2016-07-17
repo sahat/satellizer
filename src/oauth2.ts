@@ -34,7 +34,7 @@ export default class OAuth2 {
     });
   }
 
-  private defaults: IOAuth2Options;
+  public defaults: IOAuth2Options;
 
   constructor(private $http: angular.IHttpService,
               private $window: angular.IWindowService,
@@ -80,22 +80,23 @@ export default class OAuth2 {
           this.SatellizerStorage.set(stateName, state);
         }
 
-        this.SatellizerPopup.open(url, name, popupOptions, redirectUri)
-          .then((oauth: any): void|Promise<any>|angular.IHttpPromise<any> => {
+        this.SatellizerPopup.open(url, name, popupOptions);
 
-            if (responseType === 'token' || !url) {
-              return resolve(oauth);
-            }
+        this.SatellizerPopup.polling(redirectUri).then((oauth: any): void|Promise<any>|angular.IHttpPromise<any> => {
 
-            if (oauth.state && oauth.state !== this.SatellizerStorage.get(stateName)) {
-              return reject(new Error(
-                'The value returned in the state parameter does not match the state value from your original ' +
-                'authorization code request.'
-              ));
-            }
+          if (responseType === 'token' || !url) {
+            return resolve(oauth);
+          }
 
-            resolve(this.exchangeForToken(oauth, userData));
-          })
+          if (oauth.state && oauth.state !== this.SatellizerStorage.get(stateName)) {
+            return reject(new Error(
+              'The value returned in the state parameter does not match the state value from your original ' +
+              'authorization code request.'
+            ));
+          }
+
+          resolve(this.exchangeForToken(oauth, userData));
+        })
           .catch(error => reject(error));
       });
     });
