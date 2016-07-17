@@ -2,12 +2,13 @@
 
 # [Satellizer](https://github.com/sahat/satellizer/)
 
-[![Donate](https://img.shields.io/badge/paypal-donate-blue.svg)](https://paypal.me/sahat) [![Join the chat at https://gitter.im/sahat/satellizer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/sahat/satellizer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Donate](https://img.shields.io/badge/paypal-donate-blue.svg)](https://paypal.me/sahat)
+[![Join the chat at https://gitter.im/sahat/satellizer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/sahat/satellizer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](http://img.shields.io/travis/sahat/satellizer.svg?style=flat)](https://travis-ci.org/sahat/satellizer)
-[![Test Coverage](http://img.shields.io/codeclimate/coverage/github/sahat/satellizer.svg?style=flat)](https://codeclimate.com/github/sahat/satellizer)
-[![Version](https://img.shields.io/badge/version-0.14.1-brightgreen.svg)](https://www.npmjs.org/package/satellizer) [![Book session on Codementor](https://cdn.codementor.io/badges/book_session_github.svg)](https://www.codementor.io/sahatyalkabov?utm_source=github&utm_medium=button&utm_term=sahatyalkabov&utm_campaign=github)
+[![npm version](https://badge.fury.io/js/satellizer.svg)](https://badge.fury.io/js/satellizer)
+[![Book session on Codementor](https://cdn.codementor.io/badges/book_session_github.svg)](https://www.codementor.io/sahatyalkabov?utm_source=github&utm_medium=button&utm_term=sahatyalkabov&utm_campaign=github)
 
-**Live Demo:** http://satellizer-satellizer.rhcloud.com
+**Live Demo:** http://satellizer-sahat.rhcloud.com
 
 ---
 
@@ -35,42 +36,34 @@ in the app *config* block.
 - [Obtaining OAuth Keys](#obtaining-oauth-keys)
 - [API Reference](#api-reference)
 - [FAQ](#faq)
- - [Can I change `redirectUri` to something other than base URL?](#question-can-i-change-redirecturi-to-something-other-than-base-url)
- - [How can I send a token in a format other than `Authorization: Bearer <token>?`](#question-how-can-i-send-a-token-in-a-format-other-than-authorization-bearer-token)
- - [How can I avoid sending Authorization header on all HTTP requests?](#question-how-can-i-avoid-sending-authorization-header-on-all-http-requests)
- - [Is there a way to dynamically change `localStorage` to `sessionStorage`?](#question-is-there-a-way-to-dynamically-change-localstorage-to-sessionstorage)
- - [I am having a problem with Ionic authentication on iOS 9.](#question-i-am-having-a-problem-with-ionic-authentication-on-ios-9)
 - [Community Resources](#community-resources)
 - [Credits](#credits)
 - [License](#license)
 
 ## Installation
 
-The easiest way to get **Satellizer** is by running one of the following commands:
-
-```bash
-# Bower
-bower install satellizer
-
-# NPM
-npm install satellizer
-```
-
-Alternatively, you may [**download**](https://github.com/sahat/satellizer/releases) the latest release or use the CDN:
+#### Browser
 
 ```html
-<script src="//cdn.jsdelivr.net/satellizer/0.14.1/satellizer.min.js"></script>
+<script src="angular.js"></script>
+<script src="satellizer.js"></script>
 ```
-
-If installed via [Bower](http://bower.io/), include one of the following script tags:
 ```html
-<script src="bower_components/satellizer/satellizer.js"></script>
-<!-- or -->
-<script src="bower_components/satellizer/satellizer.min.js"></script>
+<!-- Satellizer CDN -->
+<script src="https://cdn.jsdelivr.net/satellizer/0.15.0/satellizer.min.js"></script>
 ```
 
-**Note:** Sattelizer depends on [`window.atob()`](https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/atob) for decoding JSON Web Tokens. If you need to support *IE9* then use Base64 polyfill above.
+#### NPM
 
+```
+$ npm install satellizer
+```
+
+#### Bower
+
+```
+$ bower install satellizer
+```
 
 ### Requirements for Mobile Apps
 
