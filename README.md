@@ -58,9 +58,6 @@ npm install satellizer
 Alternatively, you may [**download**](https://github.com/sahat/satellizer/releases) the latest release or use the CDN:
 
 ```html
-<!--[if lte IE 9]>
-<script src="//cdnjs.cloudflare.com/ajax/libs/Base64/0.3.0/base64.min.js"></script>
-<![endif]-->
 <script src="//cdn.jsdelivr.net/satellizer/0.14.1/satellizer.min.js"></script>
 ```
 
@@ -377,7 +374,7 @@ $authProvider.oauth1({
       <td><img src="http://upload.wikimedia.org/wikipedia/commons/d/d4/Opera_browser_logo_2013.png" height="35"></td>
     </tr>
     <tr>
-      <td align="center">9*</td>
+      <td align="center">9+</td>
       <td align="center">✓</td>
       <td align="center">✓</td>
       <td align="center">✓</td>
@@ -386,8 +383,6 @@ $authProvider.oauth1({
     </tr>
   </tbody>
 </table>
-
-__*__ Requires [Base64](https://github.com/davidchambers/Base64.js/) polyfill.
 
 ## Authentication Flow
 
