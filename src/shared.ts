@@ -1,5 +1,6 @@
 import Config from './config';
 import Storage from './storage';
+import { decodeBase64 } from './utils';
 
 class Shared {
   static $inject = ['$q', '$window', '$log', 'SatellizerConfig', 'SatellizerStorage'];
@@ -26,7 +27,7 @@ class Shared {
       try {
         const base64Url = token.split('.')[1];
         const base64 = base64Url.replace('-', '+').replace('_', '/');
-        return JSON.parse(decodeURIComponent(window.atob(base64)));
+        return JSON.parse(decodeBase64(base64));
       } catch (e) {
         // no-op
       }
