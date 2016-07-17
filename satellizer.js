@@ -894,7 +894,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
         return result;
       };
     })
-    .factory('SatellizerStorage', ['$window', '$log', 'SatellizerConfig', function($window, $log, config) {
+    .factory('SatellizerStorage', ['$window', '$log', '$rootScope', 'SatellizerConfig', function($window, $log, $rootScope, config) {
 
       var store = {};
 
@@ -918,6 +918,13 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
       if (!isStorageAvailable) {
         $log.warn(config.storageType + ' is not available.');
       }
+      
+      var tokenName = config.tokenPrefix ? config.tokenPrefix + '_' + config.tokenName : config.tokenName;
+      $window.addEventListener('storage', function(event) {
+        if (event.key === tokenName) {
+          $rootScope.$evalAsync();
+        }
+      });
 
       return {
         get: function(key) {
