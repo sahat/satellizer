@@ -10,6 +10,8 @@
     "no-trailing-whitespace": false,
     "max-line-length": false,
     "trailing-comma": false,
-    "no-string-literal": false
+    "no-string-literal": false,
+    "variable-name": false,
+    "no-bitwise": false
   }
 }
