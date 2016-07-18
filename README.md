@@ -8,7 +8,7 @@
 [![npm version](https://badge.fury.io/js/satellizer.svg)](https://badge.fury.io/js/satellizer)
 [![Book session on Codementor](https://cdn.codementor.io/badges/book_session_github.svg)](https://www.codementor.io/sahatyalkabov?utm_source=github&utm_medium=button&utm_term=sahatyalkabov&utm_campaign=github)
 
-[**Live Demo**]()https://satellizer-sahat.rhcloud.com)
+[**Live Demo**](https://satellizer-sahat.rhcloud.com)
 
 ---
 
