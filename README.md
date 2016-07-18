@@ -8,7 +8,7 @@
 [![npm version](https://badge.fury.io/js/satellizer.svg)](https://badge.fury.io/js/satellizer)
 [![Book session on Codementor](https://cdn.codementor.io/badges/book_session_github.svg)](https://www.codementor.io/sahatyalkabov?utm_source=github&utm_medium=button&utm_term=sahatyalkabov&utm_campaign=github)
 
-**Live Demo:** http://satellizer-sahat.rhcloud.com
+[**Live Demo**]()https://satellizer-sahat.rhcloud.com)
 
 ---
 
@@ -42,7 +42,7 @@ in the app *config* block.
 
 ## Installation
 
-#### <img src="https://upload.wikimedia.org/wikipedia/commons/e/e2/Google_Chrome_icon_%282011%29.svg" height="24" align="top"> Browser
+#### <img src="https://upload.wikimedia.org/wikipedia/commons/e/e2/Google_Chrome_icon_%282011%29.svg" height="22" align="top"> Browser
 
 ```html
 <script src="angular.js"></script>
@@ -53,13 +53,13 @@ in the app *config* block.
 <script src="https://cdn.jsdelivr.net/satellizer/0.15.0/satellizer.min.js"></script>
 ```
 
-#### <img src="https://upload.wikimedia.org/wikipedia/commons/d/db/Npm-logo.svg" height="24" align="top"> NPM
+#### <img src="https://upload.wikimedia.org/wikipedia/commons/d/db/Npm-logo.svg" height="22" align="top"> NPM
 
 ```
 $ npm install satellizer
 ```
 
-#### <img src="https://bower.io/img/bower-logo.svg" height="24" align="top"> Bower
+#### <img src="https://bower.io/img/bower-logo.svg" height="22" align="top"> Bower
 
 ```
 $ bower install satellizer
@@ -97,7 +97,7 @@ angular.module('MyApp', ['satellizer'])
       clientId: 'Facebook App ID'
     });
 
-    // Optional: For client-side use (Implicit Grant), set responseType to 'token'
+    // Optional: For client-side use (Implicit Grant), set responseType to 'token' (default: 'code')
     $authProvider.facebook({
       clientId: 'Facebook App ID',
       responseType: 'token'
@@ -192,8 +192,8 @@ $authProvider.signupUrl = '/auth/signup';
 $authProvider.unlinkUrl = '/auth/unlink/';
 $authProvider.tokenName = 'token';
 $authProvider.tokenPrefix = 'satellizer';
-$authProvider.authHeader = 'Authorization';
-$authProvider.authToken = 'Bearer';
+$authProvider.tokenHeader = 'Authorization';
+$authProvider.tokenType = 'Bearer';
 $authProvider.storageType = 'localStorage';
 
 // Facebook
@@ -818,7 +818,7 @@ As far as Satellizer is concerned, it does not matter what is the value of `redi
 
 #### :question: How can I send a token in a format other than `Authorization: Bearer <token>`?
 If you are unable to send a token to your server in the following format - `Authorization: Bearer <token>`, then use
-**`$authProvider.authHeader`** and **`$authProvider.authToken`** config options to change the header format. The default values are `Authorization` and `Bearer`, respectively.
+**`$authProvider.tokenHeader`** and **`$authProvider.tokenType`** config options to change the header format. The default values are `Authorization` and `Bearer`, respectively.
 
 For example, if you need to use `Authorization: Basic` header, this is where you change it.
 
