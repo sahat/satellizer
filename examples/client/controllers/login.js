@@ -13,12 +13,10 @@ angular.module('MyApp')
     $scope.authenticate = function(provider) {
       $auth.authenticate(provider)
         .then(function() {
-          console.log('suc')
           toastr.success('You have successfully signed in with ' + provider + '!');
           $location.path('/');
         })
         .catch(function(error) {
-          console.log('err')
           if (error.error) {
             // Popup error - invalid redirect_uri, pressed cancel button, etc.
             toastr.error(error.error);
