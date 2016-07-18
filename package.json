@@ -4,8 +4,10 @@
   "version": "0.15.0",
   "main": "dist/satellizer.js",
   "scripts": {
-    "start": "node ./examples/server/node/server.js",
+    "start": "pm2 start ./examples/server/node/server.js",
+    "stop": "pm2 stop all",
     "test": "karma start",
+    "dev": "node ./examples/server/node/server.js",
     "build": "npm run clean && tsc && rollup -c && uglifyjs dist/satellizer.js -o dist/satellizer.min.js",
     "clean": "rimraf build dist",
     "copy": "cp dist/satellizer.js examples/client/vendor && cp -R examples/client/ examples/server/php/public/"
@@ -35,6 +37,7 @@
     "moment": "^2.12.0",
     "mongoose": "^4.4.6",
     "morgan": "^1.7.0",
+    "pm2": "^1.1.3",
     "request": "^2.69.0"
   },
   "devDependencies": {
