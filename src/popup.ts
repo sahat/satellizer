@@ -129,8 +129,12 @@ export default class Popup implements IPopup {
         }
       });
 
-      this.popup.addEventListener('loaderror', function() {
+      this.popup.addEventListener('loaderror', () => {
         reject(new Error('Authorization failed'));
+      });
+
+      this.popup.addEventListener('exit', () => {
+        reject(new Error('The popup window was closed'));
       });
     });
   }

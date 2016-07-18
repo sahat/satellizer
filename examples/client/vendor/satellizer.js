@@ -593,6 +593,9 @@
                 _this.popup.addEventListener('loaderror', function () {
                     reject(new Error('Authorization failed'));
                 });
+                _this.popup.addEventListener('exit', function () {
+                    reject(new Error('The popup window was closed'));
+                });
             });
         };
         Popup.$inject = ['$interval', '$window'];
@@ -875,7 +878,7 @@
                 return config;
             };
         }
-        Interceptor.factory = function (SatellizerConfig, SatellizerShared, SatellizerStorage) {
+        Interceptor.Factory = function (SatellizerConfig, SatellizerShared, SatellizerStorage) {
             return new Interceptor(SatellizerConfig, SatellizerShared, SatellizerStorage);
         };
         Interceptor.$inject = ['SatellizerConfig', 'SatellizerShared', 'SatellizerStorage'];
@@ -885,7 +888,7 @@
     var HttpProviderConfig = (function () {
         function HttpProviderConfig($httpProvider) {
             this.$httpProvider = $httpProvider;
-            $httpProvider.interceptors.push(Interceptor.factory);
+            $httpProvider.interceptors.push(Interceptor.Factory);
         }
         HttpProviderConfig.$inject = ['$httpProvider'];
         return HttpProviderConfig;
