@@ -39,7 +39,7 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', 'ui.
     $urlRouterProvider.otherwise('/');
 
     $authProvider.facebook({
-      clientId: '603122136500203'
+      clientId: '657854390977827'
     });
 
     $authProvider.google({
@@ -59,7 +59,7 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', 'ui.
     });
 
     $authProvider.yahoo({
-      clientId: 'dj0yJmk9SDVkM2RhNWJSc2ZBJmQ9WVdrOWIzVlFRMWxzTXpZbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD0yYw--'
+      clientId: 'dj0yJmk9OWtXdlJzQ05aZlVwJmQ9WVdrOU0yWjVZa2hJTm0wbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD1jYw--'
     });
 
     $authProvider.twitter({
@@ -75,7 +75,7 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', 'ui.
     });
 
     $authProvider.bitbucket({
-      clientId: '48UepjQDYaZFuMWaDj'
+      clientId: '7jVUGppM2YabSdbdx8'
     });
 
     $authProvider.oauth2({
