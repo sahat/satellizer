@@ -859,9 +859,9 @@
             this.SatellizerConfig = SatellizerConfig;
             this.SatellizerShared = SatellizerShared;
             this.SatellizerStorage = SatellizerStorage;
-            this.request = function (request) {
-                if (request.skipAuthorization) {
-                    return request;
+            this.request = function (config) {
+                if (config['skipAuthorization']) {
+                    return config;
                 }
                 if (_this.SatellizerShared.isAuthenticated() && _this.SatellizerConfig.httpInterceptor()) {
                     var tokenName = _this.SatellizerConfig.tokenPrefix ?
@@ -870,11 +870,14 @@
                     if (_this.SatellizerConfig.tokenHeader && _this.SatellizerConfig.tokenType) {
                         token = _this.SatellizerConfig.tokenType + ' ' + token;
                     }
-                    request.headers[_this.SatellizerConfig.tokenHeader] = token;
+                    config.headers[_this.SatellizerConfig.tokenHeader] = token;
                 }
-                return request;
+                return config;
             };
         }
+        Interceptor.factory = function (SatellizerConfig, SatellizerShared, SatellizerStorage) {
+            return new Interceptor(SatellizerConfig, SatellizerShared, SatellizerStorage);
+        };
         Interceptor.$inject = ['SatellizerConfig', 'SatellizerShared', 'SatellizerStorage'];
         return Interceptor;
     }());
@@ -882,7 +885,7 @@
     var HttpProviderConfig = (function () {
         function HttpProviderConfig($httpProvider) {
             this.$httpProvider = $httpProvider;
-            $httpProvider.interceptors.push('SatellizerInterceptor');
+            $httpProvider.interceptors.push(Interceptor.factory);
         }
         HttpProviderConfig.$inject = ['$httpProvider'];
         return HttpProviderConfig;
