@@ -916,6 +916,10 @@ app.post('/auth/bitbucket', function(req, res) {
 
   // Step 1. Exchange authorization code for access token.
   request.post({ url: accessTokenUrl, form: formData, headers: headers, json: true }, function(err, response, body) {
+    if (body.error) {
+      return res.status(400).send({ message: body.error_description });
+    }
+    
     var params = {
       access_token: body.access_token
     };
