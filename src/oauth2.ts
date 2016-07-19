@@ -67,7 +67,7 @@ export default class OAuth2 {
 
   init(options: IOAuth2Options, userData: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      Object.assign(this.defaults, options);
+      angular.extend(this.defaults, options);
 
       this.$timeout(() => {
         const stateName = this.defaults.name + '_state';
@@ -103,7 +103,7 @@ export default class OAuth2 {
   }
 
   exchangeForToken(oauthData: { code?, state? }, userData: any): angular.IHttpPromise<any> {
-    const payload = Object.assign({}, userData);
+    const payload = angular.extend({}, userData);
 
     angular.forEach(this.defaults.responseParams, (value, key) => {
       switch (key) {

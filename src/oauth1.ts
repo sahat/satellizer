@@ -27,7 +27,7 @@ export interface IOAuth1Options {
 
 export default class OAuth1 implements IOAuth1 {
   static $inject = ['$http', '$window', 'SatellizerConfig', 'SatellizerPopup'];
-  
+
   private defaults: IOAuth1Options;
 
   constructor(private $http: angular.IHttpService,
@@ -50,7 +50,7 @@ export default class OAuth1 implements IOAuth1 {
   };
 
   init(options: IOAuth1Options, userData: any): angular.IHttpPromise<any> {
-    Object.assign(this.defaults, options);
+    angular.extend(this.defaults, options);
 
     if (!this.$window['cordova']) {
       this.SatellizerPopup.open('about:blank', options.name, options.popupOptions);
@@ -81,7 +81,7 @@ export default class OAuth1 implements IOAuth1 {
   }
 
   exchangeForToken(oauthData, userData): angular.IHttpPromise<any> {
-    const payload = Object.assign({}, userData, oauthData);
+    const payload = angular.extend({}, userData, oauthData);
     const exchangeForTokenUrl = this.SatellizerConfig.baseUrl ? joinUrl(this.SatellizerConfig.baseUrl, this.defaults.url) : this.defaults.url;
     return this.$http.post(exchangeForTokenUrl, payload, { withCredentials: this.SatellizerConfig.withCredentials });
   }

@@ -13,7 +13,7 @@ export default class Popup implements IPopup {
   public popup: any;
   private url: string;
   private defaults: { redirectUri: string };
-  
+
   constructor(private $interval: angular.IIntervalService,
               private $window: angular.IWindowService) {
     this.popup = null;
@@ -78,7 +78,7 @@ export default class Popup implements IPopup {
             if (this.popup.location.search || this.popup.location.hash) {
               const query = parseQueryString(this.popup.location.search.substring(1).replace(/\/$/, ''));
               const hash = parseQueryString(this.popup.location.hash.substring(1).replace(/[\/$]/, ''));
-              const params = Object.assign({}, query, hash);
+              const params = angular.extend({}, query, hash);
 
               if (params.error) {
                 reject(new Error(params.error));
@@ -117,7 +117,7 @@ export default class Popup implements IPopup {
         if (parser.search || parser.hash) {
           const query = parseQueryString(parser.search.substring(1).replace(/\/$/, ''));
           const hash = parseQueryString(parser.hash.substring(1).replace(/[\/$]/, ''));
-          const params = Object.assign({}, query, hash);
+          const params = angular.extend({}, query, hash);
 
           if (params.error) {
             reject(new Error(params.error));
