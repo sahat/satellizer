@@ -22,10 +22,10 @@ describe('OAuth', () => {
     config = new Config();
     storage = new Storage($window, config);
     shared = new Shared($q, $window, $log, config, storage);
-    popup = new Popup($interval, $window);
+    popup = new Popup($interval, $window, $q);
     oauth1 = new OAuth1($http, $window, config, popup);
-    oauth2 = new OAuth2($http, $window, $timeout, config, popup, storage);
-    oauth = new OAuth($http, config, shared, oauth1, oauth2);
+    oauth2 = new OAuth2($http, $window, $timeout, $q, config, popup, storage);
+    oauth = new OAuth($http, $q, config, shared, oauth1, oauth2);
   }));
 
   afterEach(() => {

@@ -6,7 +6,7 @@ import { IOAuth1Options } from './oauth1';
 export interface IOAuth1 {
   init(options: any, data: any): angular.IPromise<any>;
   getRequestToken(): angular.IHttpPromise<any>;
-  openPopup(options: IOAuth1Options, response: angular.IHttpPromiseCallbackArg<any>): Promise<any>;
+  openPopup(options: IOAuth1Options, response: angular.IHttpPromiseCallbackArg<any>): angular.IPromise<any>;
   exchangeForToken(oauthData: any, userData: any): angular.IHttpPromise<any>;
   buildQueryString(obj: any): string;
 }
@@ -63,7 +63,7 @@ export default class OAuth1 implements IOAuth1 {
     });
   }
 
-  openPopup(options: IOAuth1Options, response: angular.IHttpPromiseCallbackArg<any>): Promise<any> {
+  openPopup(options: IOAuth1Options, response: angular.IHttpPromiseCallbackArg<any>): angular.IPromise<any> {
     const popupUrl = [options.authorizationEndpoint, this.buildQueryString(response.data)].join('?');
 
     if (this.$window['cordova']) {

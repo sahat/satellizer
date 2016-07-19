@@ -3,8 +3,8 @@ import { parseQueryString, getFullUrlPath } from './utils';
 export interface IPopup {
   open(url: string, name: string, popupOptions: { width: number, height: number }): void;
   stringifyOptions (options: any): string;
-  polling(redirectUri: string): Promise<any>;
-  eventListener(redirectUri: string): Promise<any>;
+  polling(redirectUri: string): angular.IPromise<any>;
+  eventListener(redirectUri: string): angular.IPromise<any>;
 }
 
 export default class Popup implements IPopup {
@@ -15,7 +15,8 @@ export default class Popup implements IPopup {
   private defaults: { redirectUri: string };
 
   constructor(private $interval: angular.IIntervalService,
-              private $window: angular.IWindowService) {
+              private $window: angular.IWindowService,
+              private $q: angular.IQService) {
     this.popup = null;
     this.url = 'about:blank'; // TODO remove
     this.defaults = {
@@ -59,8 +60,8 @@ export default class Popup implements IPopup {
     // }
   }
 
-  polling(redirectUri: string): Promise<any> {
-    return new Promise((resolve, reject) => {
+  polling(redirectUri: string): angular.IPromise<any> {
+    return this.$q((resolve, reject) => {
       const redirectUriParser = document.createElement('a');
       redirectUriParser.href = redirectUri;
       const redirectUriPath = getFullUrlPath(redirectUriParser);
@@ -104,8 +105,8 @@ export default class Popup implements IPopup {
     });
   }
 
-  eventListener(redirectUri): Promise<any> {
-    return new Promise((resolve, reject) => {
+  eventListener(redirectUri): angular.IPromise<any> {
+    return this.$q((resolve, reject) => {
       this.popup.addEventListener('loadstart', (event) => {
         if (!event.url.includes(redirectUri)) {
           return;

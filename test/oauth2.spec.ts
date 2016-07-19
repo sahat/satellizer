@@ -26,8 +26,8 @@ describe('OAuth2', () => {
     config = new Config();
     storage = new Storage($window, config);
     shared = new Shared($q, $window, $log, config, storage);
-    popup = new Popup($interval, $window);
-    oauth2 = new OAuth2($http, $window, $timeout, config, popup, storage);
+    popup = new Popup($interval, $window, $q);
+    oauth2 = new OAuth2($http, $window, $timeout, $q, config, popup, storage);
   }));
 
   afterEach(() => {

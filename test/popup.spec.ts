@@ -6,10 +6,10 @@ let popup;
 
 describe('Popup', () => {
 
-  beforeEach(angular.mock.inject(($interval, $window) => {
+  beforeEach(angular.mock.inject(($interval, $window, $q) => {
     interval = $interval;
     window = $window;
-    popup = new Popup($interval, $window);
+    popup = new Popup($interval, $window, $q);
   }));
 
   it('should be defined', () => {
