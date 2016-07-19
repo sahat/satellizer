@@ -35,3 +35,5 @@ export default class Interceptor implements angular.IHttpInterceptor {
     return config;
   };
 }
+
+Interceptor.Factory.$inject = ['SatellizerConfig', 'SatellizerShared', 'SatellizerStorage'];

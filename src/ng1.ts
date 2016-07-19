@@ -21,7 +21,7 @@ angular.module('satellizer', [])
   .service('SatellizerOAuth1', OAuth1)
   .service('SatellizerStorage', Storage)
   .service('SatellizerInterceptor', Interceptor)
-  .config(($httpProvider) => new HttpProviderConfig($httpProvider));
+  .config(['$httpProvider', ($httpProvider) => new HttpProviderConfig($httpProvider)]);
 
 export default 'satellizer';
 
