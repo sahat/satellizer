@@ -4,10 +4,8 @@
   "version": "0.15.0",
   "main": "dist/satellizer.js",
   "scripts": {
-    "start": "pm2 start ./examples/server/node/server.js",
-    "stop": "pm2 stop all",
+    "start": "supervisor ./examples/server/node/server.js",
     "test": "karma start",
-    "dev": "node ./examples/server/node/server.js",
     "build": "npm run clean && tsc && rollup -c && uglifyjs dist/satellizer.js -o dist/satellizer.min.js",
     "clean": "rimraf build dist",
     "copy": "cp dist/satellizer.js examples/client/vendor && cp -R examples/client/ examples/server/php/public/"
