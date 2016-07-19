@@ -6,5 +6,8 @@
     "es6-shim": "registry:dt/es6-shim#0.31.2+20160602141504",
     "jquery": "registry:dt/jquery#1.10.0+20160417213236",
     "node": "registry:dt/node#6.0.0+20160613154055"
+  },
+  "globalDevDependencies": {
+    "jasmine": "registry:dt/jasmine#2.2.0+20160621224255"
   }
 }
