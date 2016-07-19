@@ -50,7 +50,7 @@ in the app *config* block.
 ```
 ```html
 <!-- Satellizer CDN -->
-<script src="https://cdn.jsdelivr.net/satellizer/0.15.0/satellizer.min.js"></script>
+<script src="https://cdn.jsdelivr.net/satellizer/0.15.1/satellizer.min.js"></script>
 ```
 
 #### <img src="https://upload.wikimedia.org/wikipedia/commons/d/db/Npm-logo.svg" height="22" align="top"> NPM

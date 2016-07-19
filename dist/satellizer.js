@@ -1,5 +1,5 @@
 /**
- * Satellizer 0.15.0
+ * Satellizer 0.15.1
  * (c) 2016 Sahat Yalkabov 
  * License: MIT 
  */
@@ -49,7 +49,7 @@
                     display: 'popup',
                     oauthType: '2.0',
                     popupOptions: { width: 452, height: 633 },
-                    state: function () { encodeURIComponent(Math.random().toString(36).substr(2)); }
+                    state: function () { return encodeURIComponent(Math.random().toString(36).substr(2)); }
                 },
                 github: {
                     name: 'github',
@@ -677,7 +677,6 @@
             return new Promise(function (resolve, reject) {
                 Object.assign(_this.defaults, options);
                 _this.$timeout(function () {
-                    var url = [_this.defaults.authorizationEndpoint, _this.buildQueryString()].join('?');
                     var stateName = _this.defaults.name + '_state';
                     var _a = _this.defaults, name = _a.name, state = _a.state, popupOptions = _a.popupOptions, redirectUri = _a.redirectUri, responseType = _a.responseType;
                     if (typeof state === 'function') {
@@ -686,6 +685,7 @@
                     else if (typeof state === 'string') {
                         _this.SatellizerStorage.set(stateName, state);
                     }
+                    var url = [_this.defaults.authorizationEndpoint, _this.buildQueryString()].join('?');
                     _this.SatellizerPopup.open(url, name, popupOptions);
                     _this.SatellizerPopup.polling(redirectUri).then(function (oauth) {
                         if (responseType === 'token' || !url) {
@@ -826,11 +826,10 @@
             this.$window = $window;
             this.SatellizerConfig = SatellizerConfig;
             this.memoryStore = {};
-            this.storageType = SatellizerConfig.storageType;
         }
         Storage.prototype.get = function (key) {
             try {
-                return this.$window[this.storageType].getItem(key);
+                return this.$window[this.SatellizerConfig.storageType].getItem(key);
             }
             catch (e) {
                 return this.memoryStore[key];
@@ -838,7 +837,7 @@
         };
         Storage.prototype.set = function (key, value) {
             try {
-                this.$window[this.storageType].setItem(key, value);
+                this.$window[this.SatellizerConfig.storageType].setItem(key, value);
             }
             catch (e) {
                 this.memoryStore[key] = value;
@@ -846,7 +845,7 @@
         };
         Storage.prototype.remove = function (key) {
             try {
-                this.$window[this.storageType].removeItem(key);
+                this.$window[this.SatellizerConfig.storageType].removeItem(key);
             }
             catch (e) {
                 delete this.memoryStore[key];
