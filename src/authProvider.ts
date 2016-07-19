@@ -118,3 +118,5 @@ export default class AuthProvider {
     };
   }
 }
+
+AuthProvider.prototype.$get.$inject = ['SatellizerShared', 'SatellizerLocal', 'SatellizerOAuth'];
