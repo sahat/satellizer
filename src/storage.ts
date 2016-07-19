@@ -9,12 +9,11 @@ export default class Storage {
   constructor(private $window: angular.IHttpService,
               private SatellizerConfig: Config) {
     this.memoryStore = {};
-    this.storageType = SatellizerConfig.storageType;
   }
 
   get(key: string): string {
     try {
-      return this.$window[this.storageType].getItem(key);
+      return this.$window[this.SatellizerConfig.storageType].getItem(key);
     } catch (e) {
       return this.memoryStore[key];
     }
@@ -22,7 +21,7 @@ export default class Storage {
 
   set(key: string, value: string): void {
     try {
-      this.$window[this.storageType].setItem(key, value);
+      this.$window[this.SatellizerConfig.storageType].setItem(key, value);
     } catch (e) {
       this.memoryStore[key] = value;
     }
@@ -30,7 +29,7 @@ export default class Storage {
 
   remove(key: string): void {
     try {
-      this.$window[this.storageType].removeItem(key);
+      this.$window[this.SatellizerConfig.storageType].removeItem(key);
     } catch (e) {
       delete this.memoryStore[key];
     }

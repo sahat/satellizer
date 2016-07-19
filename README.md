@@ -1,4 +1,4 @@
-![Project Logo](https://lh6.googleusercontent.com/-YmfKZZLZKL0/U-KVPFSbiOI/AAAAAAAAEZA/maoYT8iJCnA/w1089-h513-no/sshot-1.png)
+![Project Logo](http://i.imgur.com/yutNy7x.jpg)
 
 # [Satellizer](https://github.com/sahat/satellizer/)
 
