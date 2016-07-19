@@ -70,7 +70,6 @@ export default class OAuth2 {
       Object.assign(this.defaults, options);
 
       this.$timeout(() => {
-        const url = [this.defaults.authorizationEndpoint, this.buildQueryString()].join('?');
         const stateName = this.defaults.name + '_state';
         const { name, state, popupOptions, redirectUri, responseType } = this.defaults;
 
@@ -79,6 +78,7 @@ export default class OAuth2 {
         } else if (typeof state === 'string') {
           this.SatellizerStorage.set(stateName, state);
         }
+        const url = [this.defaults.authorizationEndpoint, this.buildQueryString()].join('?');
 
         this.SatellizerPopup.open(url, name, popupOptions);
 

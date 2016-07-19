@@ -40,7 +40,7 @@ export default class Config {
       display: 'popup',
       oauthType: '2.0',
       popupOptions: { width: 452, height: 633 },
-      state: () => { encodeURIComponent(Math.random().toString(36).substr(2)); }
+      state: () => encodeURIComponent(Math.random().toString(36).substr(2))
     },
     github: {
       name: 'github',
