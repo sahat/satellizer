@@ -7,6 +7,8 @@
 [![Build Status](http://img.shields.io/travis/sahat/satellizer.svg?style=flat)](https://travis-ci.org/sahat/satellizer)
 [![npm version](https://badge.fury.io/js/satellizer.svg)](https://badge.fury.io/js/satellizer)
 [![Book session on Codementor](https://cdn.codementor.io/badges/book_session_github.svg)](https://www.codementor.io/sahatyalkabov?utm_source=github&utm_medium=button&utm_term=sahatyalkabov&utm_campaign=github)
+[![OpenCollective](https://opencollective.com/satellizer/backers/badge.svg)](#backers) 
+[![OpenCollective](https://opencollective.com/satellizer/sponsors/badge.svg)](#sponsors)
 
 [**Live Demo**](https://satellizer-sahat.rhcloud.com)
 
@@ -37,6 +39,8 @@ in the app *config* block.
 - [API Reference](#api-reference)
 - [FAQ](#faq)
 - [Community Resources](#community-resources)
+- [Backers](#backers)
+- [Sponsors](#sponsors)
 - [Credits](#credits)
 - [License](#license)
 
@@ -864,6 +868,76 @@ Follow instructions on this [StackOverflow post](http://stackoverflow.com/questi
 
 Additionally, I would like to thank all other contributors who have reported
 bugs, submitted pull requests and suggested new features!
+
+
+
+## Backers
+Support us with a monthly donation and help us continue our activities. [[Become a backer](https://opencollective.com/satellizer#backer)]
+
+<a href="https://opencollective.com/satellizer/backer/0/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/0/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/1/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/1/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/2/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/2/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/3/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/3/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/4/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/4/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/5/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/5/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/6/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/6/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/7/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/7/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/8/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/8/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/9/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/9/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/10/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/10/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/11/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/11/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/12/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/12/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/13/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/13/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/14/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/14/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/15/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/15/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/16/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/16/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/17/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/17/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/18/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/18/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/19/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/19/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/20/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/20/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/21/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/21/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/22/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/22/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/23/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/23/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/24/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/24/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/25/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/25/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/26/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/26/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/27/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/27/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/28/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/28/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/backer/29/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/29/avatar.svg"></a>
+
+## Sponsors
+Become a sponsor and get your logo on our README on Github with a link to your site. [[Become a sponsor](https://opencollective.com/satellizer#sponsor)]
+
+<a href="https://opencollective.com/satellizer/sponsor/0/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/0/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/1/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/1/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/2/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/2/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/3/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/3/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/4/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/4/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/5/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/5/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/6/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/6/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/7/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/7/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/8/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/8/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/9/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/9/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/10/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/10/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/11/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/11/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/12/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/12/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/13/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/13/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/14/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/14/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/15/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/15/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/16/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/16/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/17/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/17/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/18/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/18/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/19/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/19/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/20/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/20/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/21/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/21/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/22/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/22/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/23/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/23/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/24/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/24/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/25/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/25/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/26/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/26/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/27/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/27/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/28/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/28/avatar.svg"></a>
+<a href="https://opencollective.com/satellizer/sponsor/29/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/29/avatar.svg"></a>
 
 ## License
 
