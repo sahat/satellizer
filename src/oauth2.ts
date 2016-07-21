@@ -26,7 +26,7 @@ export interface IOAuth2Options {
 }
 
 export default class OAuth2 {
-  static $inject = ['$http', '$window', '$timeout', 'SatellizerConfig', 'SatellizerPopup', 'SatellizerStorage'];
+  static $inject = ['$http', '$window', '$timeout', '$q', 'SatellizerConfig', 'SatellizerPopup', 'SatellizerStorage'];
 
   static camelCase(name): string {
     return name.replace(/([\:\-\_]+(.))/g, (_, separator, letter, offset) => {

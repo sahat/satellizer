@@ -5,7 +5,7 @@ import OAuth1 from './oauth1';
 import OAuth2 from './oauth2';
 
 export default class OAuth {
-  static $inject = ['$http', 'SatellizerConfig', 'SatellizerShared', 'SatellizerOAuth1', 'SatellizerOAuth2'];
+  static $inject = ['$http', '$q', 'SatellizerConfig', 'SatellizerShared', 'SatellizerOAuth1', 'SatellizerOAuth2'];
 
   constructor(private $http: angular.IHttpService,
               private $q: angular.IQService,

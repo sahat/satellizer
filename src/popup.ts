@@ -8,7 +8,7 @@ export interface IPopup {
 }
 
 export default class Popup implements IPopup {
-  static $inject = ['$interval', '$window'];
+  static $inject = ['$interval', '$window', '$q'];
 
   public popup: any;
   private url: string;
