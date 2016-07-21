@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
-    "declaration": true,
+    "declaration": false,
     "sourceMap": true,
     "noImplicitAny": false,
-    "noResolve": true,
     "target": "es5",
     "module": "commonjs",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "moduleResolution": "node",
     "outDir": "build"
   },

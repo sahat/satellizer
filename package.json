@@ -49,13 +49,15 @@
     "rollup-plugin-node-resolve": "^1.7.1",
     "rollup-plugin-typescript": "^0.7.6",
     "rollup-plugin-uglify": "^1.0.1",
+    "rxjs": "^5.0.0-beta.10",
     "ts-loader": "^0.8.2",
     "ts-node": "^0.9.3",
     "tslint": "~3.13.0",
     "tslint-loader": "^2.1.4",
     "typescript": "^1.8.10",
     "uglify-js": "^2.7.0",
-    "webpack": "^1.13.1"
+    "webpack": "^1.13.1",
+    "zone.js": "^0.6.12"
   },
   "tags": [
     "authentication",
