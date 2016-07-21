@@ -1,0 +1,8 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/0a23a2055d6f8f40fd39b5c1368ba6232842a057/angularjs/angular-mocks.d.ts",
+    "raw": "registry:dt/angular-mocks#1.5.0+20160608104721",
+    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/0a23a2055d6f8f40fd39b5c1368ba6232842a057/angularjs/angular-mocks.d.ts"
+  }
+}
