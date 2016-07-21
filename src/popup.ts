@@ -3,8 +3,8 @@ import { parseQueryString, getFullUrlPath } from './utils';
 export interface IPopup {
   open(url: string, name: string, popupOptions: { width: number, height: number }): void;
   stringifyOptions (options: any): string;
-  polling(redirectUri: string): Promise<any>;
-  eventListener(redirectUri: string): Promise<any>;
+  polling(redirectUri: string): angular.IPromise<any>;
+  eventListener(redirectUri: string): angular.IPromise<any>;
 }
 
 export default class Popup implements IPopup {
@@ -13,9 +13,10 @@ export default class Popup implements IPopup {
   public popup: any;
   private url: string;
   private defaults: { redirectUri: string };
-  
+
   constructor(private $interval: angular.IIntervalService,
-              private $window: angular.IWindowService) {
+              private $window: angular.IWindowService,
+              private $q: angular.IQService) {
     this.popup = null;
     this.url = 'about:blank'; // TODO remove
     this.defaults = {
@@ -59,8 +60,8 @@ export default class Popup implements IPopup {
     // }
   }
 
-  polling(redirectUri: string): Promise<any> {
-    return new Promise((resolve, reject) => {
+  polling(redirectUri: string): angular.IPromise<any> {
+    return this.$q((resolve, reject) => {
       const redirectUriParser = document.createElement('a');
       redirectUriParser.href = redirectUri;
       const redirectUriPath = getFullUrlPath(redirectUriParser);
@@ -78,7 +79,7 @@ export default class Popup implements IPopup {
             if (this.popup.location.search || this.popup.location.hash) {
               const query = parseQueryString(this.popup.location.search.substring(1).replace(/\/$/, ''));
               const hash = parseQueryString(this.popup.location.hash.substring(1).replace(/[\/$]/, ''));
-              const params = Object.assign({}, query, hash);
+              const params = angular.extend({}, query, hash);
 
               if (params.error) {
                 reject(new Error(params.error));
@@ -104,8 +105,8 @@ export default class Popup implements IPopup {
     });
   }
 
-  eventListener(redirectUri): Promise<any> {
-    return new Promise((resolve, reject) => {
+  eventListener(redirectUri): angular.IPromise<any> {
+    return this.$q((resolve, reject) => {
       this.popup.addEventListener('loadstart', (event) => {
         if (!event.url.includes(redirectUri)) {
           return;
@@ -117,7 +118,7 @@ export default class Popup implements IPopup {
         if (parser.search || parser.hash) {
           const query = parseQueryString(parser.search.substring(1).replace(/\/$/, ''));
           const hash = parseQueryString(parser.hash.substring(1).replace(/[\/$]/, ''));
-          const params = Object.assign({}, query, hash);
+          const params = angular.extend({}, query, hash);
 
           if (params.error) {
             reject(new Error(params.error));

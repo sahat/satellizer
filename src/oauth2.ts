@@ -39,6 +39,7 @@ export default class OAuth2 {
   constructor(private $http: angular.IHttpService,
               private $window: angular.IWindowService,
               private $timeout: angular.ITimeoutService,
+              private $q: angular.IQService,
               private SatellizerConfig: Config,
               private SatellizerPopup: Popup,
               private SatellizerStorage: Storage) {
@@ -65,9 +66,9 @@ export default class OAuth2 {
     };
   }
 
-  init(options: IOAuth2Options, userData: any): Promise<any> {
-    return new Promise((resolve, reject) => {
-      Object.assign(this.defaults, options);
+  init(options: IOAuth2Options, userData: any): angular.IPromise<any> {
+    return this.$q((resolve, reject) => {
+      angular.extend(this.defaults, options);
 
       this.$timeout(() => {
         const stateName = this.defaults.name + '_state';
@@ -82,7 +83,7 @@ export default class OAuth2 {
 
         this.SatellizerPopup.open(url, name, popupOptions);
 
-        this.SatellizerPopup.polling(redirectUri).then((oauth: any): void|Promise<any>|angular.IHttpPromise<any> => {
+        this.SatellizerPopup.polling(redirectUri).then((oauth: any): void|angular.IPromise<any>|angular.IHttpPromise<any> => {
 
           if (responseType === 'token' || !url) {
             return resolve(oauth);
@@ -103,7 +104,7 @@ export default class OAuth2 {
   }
 
   exchangeForToken(oauthData: { code?, state? }, userData: any): angular.IHttpPromise<any> {
-    const payload = Object.assign({}, userData);
+    const payload = angular.extend({}, userData);
 
     angular.forEach(this.defaults.responseParams, (value, key) => {
       switch (key) {

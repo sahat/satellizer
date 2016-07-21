@@ -18,7 +18,7 @@ describe('OAuth1', () => {
     config = new Config();
     storage = new Storage($window, config);
     shared = new Shared($q, $window, $log, config, storage);
-    popup = new Popup($interval, $window);
+    popup = new Popup($interval, $window, $q);
     oauth1 = new OAuth1($http, $window, config, popup);
   }));
 
