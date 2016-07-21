@@ -1,5 +1,5 @@
 /**
- * Satellizer 0.15.1
+ * Satellizer 0.15.3
  * (c) 2016 Sahat Yalkabov 
  * License: MIT 
  */
@@ -293,6 +293,7 @@
         AuthProvider.$inject = ['SatellizerConfig'];
         return AuthProvider;
     }());
+    AuthProvider.prototype.$get.$inject = ['SatellizerShared', 'SatellizerLocal', 'SatellizerOAuth'];
 
     function joinUrl(baseUrl, url) {
         if (/^(?:[a-z]+:)?\/\//i.test(url)) {
@@ -491,9 +492,10 @@
     }());
 
     var Popup = (function () {
-        function Popup($interval, $window) {
+        function Popup($interval, $window, $q) {
             this.$interval = $interval;
             this.$window = $window;
+            this.$q = $q;
             this.popup = null;
             this.url = 'about:blank'; // TODO remove
             this.defaults = {
@@ -531,7 +533,7 @@
         };
         Popup.prototype.polling = function (redirectUri) {
             var _this = this;
-            return new Promise(function (resolve, reject) {
+            return this.$q(function (resolve, reject) {
                 var redirectUriParser = document.createElement('a');
                 redirectUriParser.href = redirectUri;
                 var redirectUriPath = getFullUrlPath(redirectUriParser);
@@ -546,7 +548,7 @@
                             if (_this.popup.location.search || _this.popup.location.hash) {
                                 var query = parseQueryString(_this.popup.location.search.substring(1).replace(/\/$/, ''));
                                 var hash = parseQueryString(_this.popup.location.hash.substring(1).replace(/[\/$]/, ''));
-                                var params = Object.assign({}, query, hash);
+                                var params = angular.extend({}, query, hash);
                                 if (params.error) {
                                     reject(new Error(params.error));
                                 }
@@ -570,7 +572,7 @@
         };
         Popup.prototype.eventListener = function (redirectUri) {
             var _this = this;
-            return new Promise(function (resolve, reject) {
+            return this.$q(function (resolve, reject) {
                 _this.popup.addEventListener('loadstart', function (event) {
                     if (!event.url.includes(redirectUri)) {
                         return;
@@ -580,7 +582,7 @@
                     if (parser.search || parser.hash) {
                         var query = parseQueryString(parser.search.substring(1).replace(/\/$/, ''));
                         var hash = parseQueryString(parser.hash.substring(1).replace(/[\/$]/, ''));
-                        var params = Object.assign({}, query, hash);
+                        var params = angular.extend({}, query, hash);
                         if (params.error) {
                             reject(new Error(params.error));
                         }
@@ -598,13 +600,14 @@
                 });
             });
         };
-        Popup.$inject = ['$interval', '$window'];
+        Popup.$inject = ['$interval', '$window', '$q'];
         return Popup;
     }());
 
     var OAuth = (function () {
-        function OAuth($http, SatellizerConfig, SatellizerShared, SatellizerOAuth1, SatellizerOAuth2) {
+        function OAuth($http, $q, SatellizerConfig, SatellizerShared, SatellizerOAuth1, SatellizerOAuth2) {
             this.$http = $http;
+            this.$q = $q;
             this.SatellizerConfig = SatellizerConfig;
             this.SatellizerShared = SatellizerShared;
             this.SatellizerOAuth1 = SatellizerOAuth1;
@@ -612,7 +615,7 @@
         }
         OAuth.prototype.authenticate = function (name, userData) {
             var _this = this;
-            return new Promise(function (resolve, reject) {
+            return this.$q(function (resolve, reject) {
                 var provider = _this.SatellizerConfig.providers[name];
                 var initialize = provider.oauthType === '1.0' ? _this.SatellizerOAuth1.init(provider, userData) : _this.SatellizerOAuth2.init(provider, userData);
                 return initialize.then(function (response) {
@@ -633,15 +636,16 @@
             httpOptions.withCredentials = httpOptions.withCredentials || this.SatellizerConfig.withCredentials;
             return this.$http(httpOptions);
         };
-        OAuth.$inject = ['$http', 'SatellizerConfig', 'SatellizerShared', 'SatellizerOAuth1', 'SatellizerOAuth2'];
+        OAuth.$inject = ['$http', '$q', 'SatellizerConfig', 'SatellizerShared', 'SatellizerOAuth1', 'SatellizerOAuth2'];
         return OAuth;
     }());
 
     var OAuth2 = (function () {
-        function OAuth2($http, $window, $timeout, SatellizerConfig, SatellizerPopup, SatellizerStorage) {
+        function OAuth2($http, $window, $timeout, $q, SatellizerConfig, SatellizerPopup, SatellizerStorage) {
             this.$http = $http;
             this.$window = $window;
             this.$timeout = $timeout;
+            this.$q = $q;
             this.SatellizerConfig = SatellizerConfig;
             this.SatellizerPopup = SatellizerPopup;
             this.SatellizerStorage = SatellizerStorage;
@@ -674,8 +678,8 @@
         };
         OAuth2.prototype.init = function (options, userData) {
             var _this = this;
-            return new Promise(function (resolve, reject) {
-                Object.assign(_this.defaults, options);
+            return this.$q(function (resolve, reject) {
+                angular.extend(_this.defaults, options);
                 _this.$timeout(function () {
                     var stateName = _this.defaults.name + '_state';
                     var _a = _this.defaults, name = _a.name, state = _a.state, popupOptions = _a.popupOptions, redirectUri = _a.redirectUri, responseType = _a.responseType;
@@ -703,7 +707,7 @@
         };
         OAuth2.prototype.exchangeForToken = function (oauthData, userData) {
             var _this = this;
-            var payload = Object.assign({}, userData);
+            var payload = angular.extend({}, userData);
             angular.forEach(this.defaults.responseParams, function (value, key) {
                 switch (key) {
                     case 'code':
@@ -753,7 +757,7 @@
             });
             return keyValuePairs.map(function (pair) { return pair.join('='); }).join('&');
         };
-        OAuth2.$inject = ['$http', '$window', '$timeout', 'SatellizerConfig', 'SatellizerPopup', 'SatellizerStorage'];
+        OAuth2.$inject = ['$http', '$window', '$timeout', '$q', 'SatellizerConfig', 'SatellizerPopup', 'SatellizerStorage'];
         return OAuth2;
     }());
 
@@ -780,7 +784,7 @@
         ;
         OAuth1.prototype.init = function (options, userData) {
             var _this = this;
-            Object.assign(this.defaults, options);
+            angular.extend(this.defaults, options);
             if (!this.$window['cordova']) {
                 this.SatellizerPopup.open('about:blank', options.name, options.popupOptions);
             }
@@ -806,7 +810,7 @@
             return this.$http.post(url, this.defaults);
         };
         OAuth1.prototype.exchangeForToken = function (oauthData, userData) {
-            var payload = Object.assign({}, userData, oauthData);
+            var payload = angular.extend({}, userData, oauthData);
             var exchangeForTokenUrl = this.SatellizerConfig.baseUrl ? joinUrl(this.SatellizerConfig.baseUrl, this.defaults.url) : this.defaults.url;
             return this.$http.post(exchangeForTokenUrl, payload, { withCredentials: this.SatellizerConfig.withCredentials });
         };
@@ -883,6 +887,7 @@
         Interceptor.$inject = ['SatellizerConfig', 'SatellizerShared', 'SatellizerStorage'];
         return Interceptor;
     }());
+    Interceptor.Factory.$inject = ['SatellizerConfig', 'SatellizerShared', 'SatellizerStorage'];
 
     var HttpProviderConfig = (function () {
         function HttpProviderConfig($httpProvider) {
@@ -904,7 +909,7 @@
         .service('SatellizerOAuth1', OAuth1)
         .service('SatellizerStorage', Storage)
         .service('SatellizerInterceptor', Interceptor)
-        .config(function ($httpProvider) { return new HttpProviderConfig($httpProvider); });
+        .config(['$httpProvider', function ($httpProvider) { return new HttpProviderConfig($httpProvider); }]);
     var ng1 = 'satellizer';
 
     return ng1;
