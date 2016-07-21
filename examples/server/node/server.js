@@ -919,7 +919,7 @@ app.post('/auth/bitbucket', function(req, res) {
     if (body.error) {
       return res.status(400).send({ message: body.error_description });
     }
-    
+
     var params = {
       access_token: body.access_token
     };
@@ -975,6 +975,30 @@ app.post('/auth/bitbucket', function(req, res) {
     });
   });
 });
+
+/*
+ |--------------------------------------------------------------------------
+ | Login with Spotify
+ |--------------------------------------------------------------------------
+ */
+
+ app.post('/auth/spotify', function(req, res) {
+   var tokenUrl = 'https://accounts.spotify.com/api/token';
+
+   var params = {
+     grant_type: 'authorization_code',
+     code: req.body.code,
+     redirect_uri: req.body.redirectUri
+   };
+
+   var headers = {
+     Authorization: 'Basic ' + new Buffer(req.body.clientId + ':' + config.SPOTIFY_SECRET).toString('base64')
+   };
+
+   request.post(tokenUrl, { json: true, form: params, headers: headers, json: true }, function(err, response, body) {
+     console.log(body);
+   });
+ });
 
 /*
  |--------------------------------------------------------------------------
