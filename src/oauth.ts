@@ -1,7 +1,7 @@
 import { joinUrl } from './utils';
 import Config from './config';
 import Shared from './shared';
-import OAuth1 from './oauth1';
+import OAuth1 from './ng1/oauth1';
 import OAuth2 from './oauth2';
 
 export default class OAuth {

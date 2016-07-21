@@ -1,6 +1,6 @@
-import { joinUrl } from './utils';
-import Config from './config';
-import Popup from './popup';
+import { joinUrl } from '../utils';
+import Config from '../config';
+import Popup from '../popup';
 import { IOAuth1Options } from './oauth1';
 
 export interface IOAuth1 {
@@ -26,14 +26,13 @@ export interface IOAuth1Options {
 }
 
 export default class OAuth1 implements IOAuth1 {
-  static $inject = ['$http', '$window', 'SatellizerConfig', 'SatellizerPopup'];
-
   private defaults: IOAuth1Options;
 
   constructor(private $http: angular.IHttpService,
               private $window: angular.IWindowService,
               private SatellizerConfig: Config,
               private SatellizerPopup: Popup) {
+
     this.defaults = {
       name: null,
       url: null,

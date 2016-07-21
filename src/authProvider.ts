@@ -1,5 +1,5 @@
 import Config from './config';
-import { IOAuth1Options } from './oauth1';
+import { IOAuth1Options } from './core/oauth1';
 import { IOAuth2Options } from './oauth2';
 
 export default class AuthProvider {

@@ -5,7 +5,6 @@ import Shared from './shared';
 class Local {
   static $inject = ['$http', 'SatellizerConfig', 'SatellizerShared'];
 
-
   constructor(private $http: angular.IHttpService,
               private SatellizerConfig: Config,
               private SatellizerShared: Shared) {}

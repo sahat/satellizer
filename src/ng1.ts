@@ -5,7 +5,7 @@ import Local from './local';
 import Popup from './popup';
 import OAuth from './oauth';
 import OAuth2 from './oauth2';
-import OAuth1 from './oauth1';
+import OAuth1 from './ng1/oauth1';
 import Storage from './storage';
 import Interceptor from './interceptor';
 import HttpProviderConfig from './httpProviderConfig';

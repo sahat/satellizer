@@ -1,6 +1,6 @@
 import { IHttp } from '../core/http';
 
-export default class Http implements IHttp {
+export default class HttpWrapper implements IHttp {
   constructor(private $http: angular.IHttpService) {
   }
 
@@ -12,3 +12,5 @@ export default class Http implements IHttp {
     return this.$http.post(url, data, config);
   }
 }
+
+HttpWrapper.$inject = ['$http'];
