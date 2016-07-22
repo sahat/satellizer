@@ -139,7 +139,7 @@ export default class Config {
       scopePrefix: '',
       scopeDelimiter: ',',
       oauthType: '2.0',
-      popupOptions: { width: 1028, height: 529 },
+      popupOptions: { width: 500, height: 530 },
       state: () => encodeURIComponent(Math.random().toString(36).substr(2))
     }
   };
