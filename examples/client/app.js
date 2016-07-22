@@ -79,7 +79,7 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', 'ui.
     });
 
     $authProvider.spotify({
-      clientId: '2a21f879645d40158770397d8e02d9f0' // TODO Remove this
+      clientId: '' // TODO Replace with example client ID
     });
 
     $authProvider.oauth2({
