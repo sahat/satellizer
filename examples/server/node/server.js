@@ -1017,7 +1017,7 @@ app.post('/auth/bitbucket', function(req, res) {
              }
              user.spotify = profile.id;
              user.email = user.email || profile.email;
-             user.picture = user.picture || profile.images.length > 0 ? proflile.images[0].url : '';
+             user.picture = user.picture || profile.images.length > 0 ? profile.images[0].url : '';
              user.displayName = user.displayName || profile.displayName || profile.id;
 
              user.save(function() {
@@ -1035,7 +1035,7 @@ app.post('/auth/bitbucket', function(req, res) {
            var user = new User();
            user.spotify = profile.id;
            user.email = profile.email;
-           user.picture = profile.images.length > 0 ? proflile.images[0].url : '';
+           user.picture = profile.images.length > 0 ? profile.images[0].url : '';
            user.displayName = profile.displayName || profile.id;
 
            user.save(function(err) {
