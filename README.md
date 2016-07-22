@@ -7,7 +7,7 @@
 [![Build Status](http://img.shields.io/travis/sahat/satellizer.svg?style=flat)](https://travis-ci.org/sahat/satellizer)
 [![npm version](https://badge.fury.io/js/satellizer.svg)](https://badge.fury.io/js/satellizer)
 [![Book session on Codementor](https://cdn.codementor.io/badges/book_session_github.svg)](https://www.codementor.io/sahatyalkabov?utm_source=github&utm_medium=button&utm_term=sahatyalkabov&utm_campaign=github)
-[![OpenCollective](https://opencollective.com/satellizer/backers/badge.svg)](#backers) 
+[![OpenCollective](https://opencollective.com/satellizer/backers/badge.svg)](#backers)
 [![OpenCollective](https://opencollective.com/satellizer/sponsors/badge.svg)](#sponsors)
 
 [**Live Demo**](https://satellizer-sahat.rhcloud.com)
@@ -506,6 +506,20 @@ and specify `mylocalwebsite.net` as your *Redirect URL* in the **API Settings** 
  - **Authorization callback URL**: *http://localhost:3000*
 - Click on the **Register application** button
 
+<img
+src="http://i.imgur.com/qCkAeZl.png"
+width="150" />
+- Visit
+[https://developer.spotify.com](https://developer.spotify.com)
+- Select **My Apps** on the top menu
+- Select **Create an App** on the right side
+ - **Application Name**: Your app name
+ - **Application Description**: Your app Description
+- Click **Create**
+- Fill out the following:
+ - **Redirect URIs**: *http://localhost:3000*
+- Click **Save**
+
 <hr>
 
 ## API Reference
@@ -598,7 +612,7 @@ $auth.signup(user)
 
 #### `$auth.authenticate(name, [userData])`
 
-Starts the OAuth 1.0 or the OAuth 2.0 authorization flow by opening a popup window. If used client side, [`responseType: "token"`](#authentication-flow) is required in the provider setup to get the actual access token. 
+Starts the OAuth 1.0 or the OAuth 2.0 authorization flow by opening a popup window. If used client side, [`responseType: "token"`](#authentication-flow) is required in the provider setup to get the actual access token.
 
 ##### Parameters
 
