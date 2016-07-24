@@ -136,6 +136,20 @@
                     scopeDelimiter: ' ',
                     oauthType: '2.0',
                     popupOptions: { width: 1028, height: 529 }
+                },
+                spotify: {
+                    name: 'spotify',
+                    url: '/auth/spotify',
+                    authorizationEndpoint: 'https://accounts.spotify.com/authorize',
+                    redirectUri: window.location.origin,
+                    optionalUrlParams: ['state'],
+                    requiredUrlParams: ['scope'],
+                    scope: ['user-read-email'],
+                    scopePrefix: '',
+                    scopeDelimiter: ',',
+                    oauthType: '2.0',
+                    popupOptions: { width: 500, height: 530 },
+                    state: function () { return encodeURIComponent(Math.random().toString(36).substr(2)); }
                 }
             };
             this.httpInterceptor = function () { return true; };
@@ -263,6 +277,9 @@
         };
         AuthProvider.prototype.bitbucket = function (options) {
             angular.extend(this.SatellizerConfig.providers.bitbucket, options);
+        };
+        AuthProvider.prototype.spotify = function (options) {
+            angular.extend(this.SatellizerConfig.providers.spotify, options);
         };
         AuthProvider.prototype.oauth1 = function (options) {
             this.SatellizerConfig.providers[options.name] = angular.extend(options, {

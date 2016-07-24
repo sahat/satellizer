@@ -1,5 +1,32 @@
 angular.module('MyApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', 'ui.router', 'satellizer'])
   .config(function($stateProvider, $urlRouterProvider, $authProvider) {
+
+    /**
+     * Helper auth functions
+     */
+    var skipIfLoggedIn = function($q, $auth) {
+      var deferred = $q.defer();
+      if ($auth.isAuthenticated()) {
+        deferred.reject();
+      } else {
+        deferred.resolve();
+      }
+      return deferred.promise;
+    };
+
+    var loginRequired = function($q, $location, $auth) {
+      var deferred = $q.defer();
+      if ($auth.isAuthenticated()) {
+        deferred.resolve();
+      } else {
+        $location.path('/login');
+      }
+      return deferred.promise;
+    };
+
+    /**
+     * App routes
+     */
     $stateProvider
       .state('home', {
         url: '/',
@@ -35,47 +62,53 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', 'ui.
           loginRequired: loginRequired
         }
       });
-
     $urlRouterProvider.otherwise('/');
 
+    /**
+     *  Satellizer config
+     */
     $authProvider.facebook({
-      clientId: '603122136500203'
+      clientId: 'YOUR_FACEBOOK_APP_ID'
     });
 
     $authProvider.google({
-      clientId: '925504469943-ftfpddjifbiveu590geaegj3ei6ij9bh.apps.googleusercontent.com'
+      clientId: 'YOUR_GOOGLE_CLIENT_ID'
     });
 
     $authProvider.github({
-      clientId: '0ba2600b1dbdb756688b'
+      clientId: 'YOUR_GITHUB_CLIENT_ID'
     });
 
     $authProvider.linkedin({
-      clientId: '77cw786yignpzj'
+      clientId: 'YOUR_LINKEDIN_CLIENT_ID'
     });
 
     $authProvider.instagram({
-      clientId: '799d1f8ea0e44ac8b70e7f18fcacedd1'
+      clientId: 'YOUR_INSTAGRAM_CLIENT_ID'
     });
 
     $authProvider.yahoo({
-      clientId: 'dj0yJmk9OWtXdlJzQ05aZlVwJmQ9WVdrOU0yWjVZa2hJTm0wbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD1jYw--'
+      clientId: 'YOUR_YAHOO_CLIENT_ID'
+    });
+
+    $authProvider.live({
+      clientId: 'YOUR_MICROSOFT_CLIENT_ID'
+    });
+
+    $authProvider.twitch({
+      clientId: 'YOUR_TWITCH_CLIENT_ID'
+    });
+
+    $authProvider.bitbucket({
+      clientId: 'YOUR_BITBUCKET_CLIENT_ID'
+    });
+
+    $authProvider.spotify({
+      clientId: 'YOUR_SPOTIFY_CLIENT_ID'
     });
 
     $authProvider.twitter({
       url: '/auth/twitter'
-    });
-
-    $authProvider.live({
-      clientId: '000000004C12E68D'
-    });
-
-    $authProvider.twitch({
-      clientId: 'qhc3lft06xipnmndydcr3wau939a20z'
-    });
-
-    $authProvider.bitbucket({
-      clientId: '7jVUGppM2YabSdbdx8'
     });
 
     $authProvider.oauth2({
@@ -85,24 +118,4 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', 'ui.
       redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
       authorizationEndpoint: 'https://foursquare.com/oauth2/authenticate'
     });
-
-    function skipIfLoggedIn($q, $auth) {
-      var deferred = $q.defer();
-      if ($auth.isAuthenticated()) {
-        deferred.reject();
-      } else {
-        deferred.resolve();
-      }
-      return deferred.promise;
-    }
-
-    function loginRequired($q, $location, $auth) {
-      var deferred = $q.defer();
-      if ($auth.isAuthenticated()) {
-        deferred.resolve();
-      } else {
-        $location.path('/login');
-      }
-      return deferred.promise;
-    }
   });

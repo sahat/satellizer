@@ -357,6 +357,17 @@ ul {
   background-color: #0d2c4a;
 }
 
+.btn-spotify {
+  color: #fff;
+  background-color: #2ebd59;
+}
+
+.btn-spotify:hover,
+.btn-spotify:focus {
+  color: #fff;
+  background-color: #29a34e;
+}
+
 /*********************
 * Animations
 *********************/
