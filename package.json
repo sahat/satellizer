@@ -6,9 +6,11 @@
   "scripts": {
     "start": "supervisor ./examples/server/node/server.js",
     "test": "karma start",
-    "build": "npm run clean && tsc && rollup -c && uglifyjs dist/satellizer.js -o dist/satellizer.min.js",
+    "build": "npm run clean && tsc && rollup -c && uglifyjs dist/satellizer.js -o dist/satellizer.min.js && npm run copy",
     "clean": "rimraf build dist",
-    "copy": "cp dist/satellizer.js examples/client/vendor && cp -R examples/client/ examples/server/php/public/"
+    "copy": "cp dist/satellizer.js examples/client/vendor && cp -R examples/client/ examples/server/php/public/",
+    "bump": "npm version patch",
+    "preversion": "npm test && npm run build && git add -A dist && git commit -m 'Release'"
   },
   "author": {
     "name": "Sahat Yalkabov",
