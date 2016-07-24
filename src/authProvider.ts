@@ -89,6 +89,10 @@ export default class AuthProvider {
     angular.extend(this.SatellizerConfig.providers.bitbucket, options);
   }
 
+  spotify(options: IOAuth2Options): void {
+    angular.extend(this.SatellizerConfig.providers.spotify, options);
+  }
+
   oauth1(options: IOAuth1Options): void {
     this.SatellizerConfig.providers[options.name] = angular.extend(options, {
       oauthType: '1.0'

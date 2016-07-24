@@ -78,6 +78,10 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', 'ui.
       clientId: '7jVUGppM2YabSdbdx8'
     });
 
+    $authProvider.spotify({
+      clientId: '' // TODO Replace with example client ID
+    });
+
     $authProvider.oauth2({
       name: 'foursquare',
       url: '/auth/foursquare',
