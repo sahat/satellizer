@@ -36,13 +36,14 @@ export default class OAuth2 {
 
   public defaults: IOAuth2Options;
 
-  constructor(private $http: angular.IHttpService,
-              private $window: angular.IWindowService,
-              private $timeout: angular.ITimeoutService,
+  constructor(private $http: ng.IHttpService,
+              private $window: ng.IWindowService,
+              private $timeout: ng.ITimeoutService,
               private $q: angular.IQService,
               private SatellizerConfig: Config,
               private SatellizerPopup: Popup,
               private SatellizerStorage: Storage) {
+
     this.defaults = {
       name: null,
       url: null,
@@ -69,7 +70,6 @@ export default class OAuth2 {
   init(options: IOAuth2Options, userData: any): angular.IPromise<any> {
     return this.$q((resolve, reject) => {
       angular.extend(this.defaults, options);
-
       this.$timeout(() => {
         const stateName = this.defaults.name + '_state';
         const { name, state, popupOptions, redirectUri, responseType } = this.defaults;

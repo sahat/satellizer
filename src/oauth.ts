@@ -1,26 +1,57 @@
 import { joinUrl } from './utils';
 import Config from './config';
+import Popup from './popup';
+import Storage from './storage';
 import Shared from './shared';
 import OAuth1 from './oauth1';
 import OAuth2 from './oauth2';
 
 export default class OAuth {
-  static $inject = ['$http', '$q', 'SatellizerConfig', 'SatellizerShared', 'SatellizerOAuth1', 'SatellizerOAuth2'];
+  static $inject = [
+    '$http',
+    '$window',
+    '$timeout',
+    '$q',
+    'SatellizerConfig',
+    'SatellizerPopup',
+    'SatellizerStorage',
+    'SatellizerShared',
+    'SatellizerOAuth1',
+    'SatellizerOAuth2'
+  ];
 
-  constructor(private $http: angular.IHttpService,
-              private $q: angular.IQService,
+  private oauth1: OAuth1;
+  private oauth2: OAuth2;
+
+  constructor(private $http: ng.IHttpService,
+              private $window: ng.IWindowService,
+              private $timeout: ng.ITimeoutService,
+              private $q: ng.IQService,
               private SatellizerConfig: Config,
+              private SatellizerPopup: Popup,
+              private SatellizerStorage: Storage,
               private SatellizerShared: Shared,
               private SatellizerOAuth1: OAuth1,
-              private SatellizerOAuth2: OAuth2) {
-  }
+              private SatellizerOAuth2: OAuth2) {}
 
   authenticate(name: string, userData: any): angular.IPromise<any> {
     return this.$q((resolve, reject) => {
       const provider = this.SatellizerConfig.providers[name];
-      const initialize: any = provider.oauthType === '1.0' ? this.SatellizerOAuth1.init(provider, userData) : this.SatellizerOAuth2.init(provider, userData);
 
-      return initialize.then((response) => {
+      let oauth = null;
+
+      switch (provider.oauthType) {
+        case '1.0':
+          oauth = new OAuth1(this.$http, this.$window, this.SatellizerConfig, this.SatellizerPopup);
+          break;
+        case '2.0':
+          oauth = new OAuth2(this.$http, this.$window, this.$timeout, this.$q, this.SatellizerConfig, this.SatellizerPopup, this.SatellizerStorage);
+          break;
+        default:
+          return reject(new Error('Unknown OAuth Type'));
+      }
+
+      return oauth.init(provider, userData).then((response) => {
         if (provider.url) {
           this.SatellizerShared.setToken(response);
         }

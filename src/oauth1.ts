@@ -30,10 +30,11 @@ export default class OAuth1 implements IOAuth1 {
 
   private defaults: IOAuth1Options;
 
-  constructor(private $http: angular.IHttpService,
-              private $window: angular.IWindowService,
+  constructor(private $http: ng.IHttpService,
+              private $window: ng.IWindowService,
               private SatellizerConfig: Config,
               private SatellizerPopup: Popup) {
+
     this.defaults = {
       name: null,
       url: null,

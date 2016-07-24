@@ -25,7 +25,7 @@ describe('OAuth', () => {
     popup = new Popup($interval, $window, $q);
     oauth1 = new OAuth1($http, $window, config, popup);
     oauth2 = new OAuth2($http, $window, $timeout, $q, config, popup, storage);
-    oauth = new OAuth($http, $q, config, shared, oauth1, oauth2);
+    oauth = new OAuth($http, $window, $timeout, $q, config, popup, storage, shared, oauth1, oauth2);
   }));
 
   afterEach(() => {

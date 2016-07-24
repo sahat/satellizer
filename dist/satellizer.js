@@ -604,40 +604,68 @@
         return Popup;
     }());
 
-    var OAuth = (function () {
-        function OAuth($http, $q, SatellizerConfig, SatellizerShared, SatellizerOAuth1, SatellizerOAuth2) {
+    var OAuth1 = (function () {
+        function OAuth1($http, $window, SatellizerConfig, SatellizerPopup) {
             this.$http = $http;
-            this.$q = $q;
+            this.$window = $window;
             this.SatellizerConfig = SatellizerConfig;
-            this.SatellizerShared = SatellizerShared;
-            this.SatellizerOAuth1 = SatellizerOAuth1;
-            this.SatellizerOAuth2 = SatellizerOAuth2;
+            this.SatellizerPopup = SatellizerPopup;
+            this.defaults = {
+                name: null,
+                url: null,
+                authorizationEndpoint: null,
+                scope: null,
+                scopePrefix: null,
+                scopeDelimiter: null,
+                redirectUri: null,
+                requiredUrlParams: null,
+                defaultUrlParams: null,
+                oauthType: '1.0',
+                popupOptions: { width: null, height: null }
+            };
         }
-        OAuth.prototype.authenticate = function (name, userData) {
+        ;
+        OAuth1.prototype.init = function (options, userData) {
             var _this = this;
-            return this.$q(function (resolve, reject) {
-                var provider = _this.SatellizerConfig.providers[name];
-                var initialize = provider.oauthType === '1.0' ? _this.SatellizerOAuth1.init(provider, userData) : _this.SatellizerOAuth2.init(provider, userData);
-                return initialize.then(function (response) {
-                    if (provider.url) {
-                        _this.SatellizerShared.setToken(response);
-                    }
-                    resolve(response);
-                }).catch(function (error) {
-                    reject(error);
+            angular.extend(this.defaults, options);
+            if (!this.$window['cordova']) {
+                this.SatellizerPopup.open('about:blank', options.name, options.popupOptions);
+            }
+            return this.getRequestToken().then(function (response) {
+                return _this.openPopup(options, response).then(function (popupResponse) {
+                    return _this.exchangeForToken(popupResponse, userData);
                 });
             });
         };
-        OAuth.prototype.unlink = function (provider, httpOptions) {
-            if (httpOptions === void 0) { httpOptions = {}; }
-            httpOptions.url = httpOptions.url ? httpOptions.url : joinUrl(this.SatellizerConfig.baseUrl, this.SatellizerConfig.unlinkUrl);
-            httpOptions.data = { provider: provider } || httpOptions.data;
-            httpOptions.method = httpOptions.method || 'POST';
-            httpOptions.withCredentials = httpOptions.withCredentials || this.SatellizerConfig.withCredentials;
-            return this.$http(httpOptions);
+        OAuth1.prototype.openPopup = function (options, response) {
+            var popupUrl = [options.authorizationEndpoint, this.buildQueryString(response.data)].join('?');
+            if (this.$window['cordova']) {
+                this.SatellizerPopup.open(popupUrl, options.name, options.popupOptions);
+                return this.SatellizerPopup.eventListener(this.defaults.redirectUri);
+            }
+            else {
+                this.SatellizerPopup.popup.location = popupUrl;
+                return this.SatellizerPopup.polling(this.defaults.redirectUri);
+            }
         };
-        OAuth.$inject = ['$http', '$q', 'SatellizerConfig', 'SatellizerShared', 'SatellizerOAuth1', 'SatellizerOAuth2'];
-        return OAuth;
+        OAuth1.prototype.getRequestToken = function () {
+            var url = this.SatellizerConfig.baseUrl ? joinUrl(this.SatellizerConfig.baseUrl, this.defaults.url) : this.defaults.url;
+            return this.$http.post(url, this.defaults);
+        };
+        OAuth1.prototype.exchangeForToken = function (oauthData, userData) {
+            var payload = angular.extend({}, userData, oauthData);
+            var exchangeForTokenUrl = this.SatellizerConfig.baseUrl ? joinUrl(this.SatellizerConfig.baseUrl, this.defaults.url) : this.defaults.url;
+            return this.$http.post(exchangeForTokenUrl, payload, { withCredentials: this.SatellizerConfig.withCredentials });
+        };
+        OAuth1.prototype.buildQueryString = function (obj) {
+            var str = [];
+            angular.forEach(obj, function (value, key) {
+                str.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+            });
+            return str.join('&');
+        };
+        OAuth1.$inject = ['$http', '$window', 'SatellizerConfig', 'SatellizerPopup'];
+        return OAuth1;
     }());
 
     var OAuth2 = (function () {
@@ -761,68 +789,65 @@
         return OAuth2;
     }());
 
-    var OAuth1 = (function () {
-        function OAuth1($http, $window, SatellizerConfig, SatellizerPopup) {
+    var OAuth = (function () {
+        function OAuth($http, $window, $timeout, $q, SatellizerConfig, SatellizerPopup, SatellizerStorage, SatellizerShared, SatellizerOAuth1, SatellizerOAuth2) {
             this.$http = $http;
             this.$window = $window;
+            this.$timeout = $timeout;
+            this.$q = $q;
             this.SatellizerConfig = SatellizerConfig;
             this.SatellizerPopup = SatellizerPopup;
-            this.defaults = {
-                name: null,
-                url: null,
-                authorizationEndpoint: null,
-                scope: null,
-                scopePrefix: null,
-                scopeDelimiter: null,
-                redirectUri: null,
-                requiredUrlParams: null,
-                defaultUrlParams: null,
-                oauthType: '1.0',
-                popupOptions: { width: null, height: null }
-            };
+            this.SatellizerStorage = SatellizerStorage;
+            this.SatellizerShared = SatellizerShared;
+            this.SatellizerOAuth1 = SatellizerOAuth1;
+            this.SatellizerOAuth2 = SatellizerOAuth2;
         }
-        ;
-        OAuth1.prototype.init = function (options, userData) {
+        OAuth.prototype.authenticate = function (name, userData) {
             var _this = this;
-            angular.extend(this.defaults, options);
-            if (!this.$window['cordova']) {
-                this.SatellizerPopup.open('about:blank', options.name, options.popupOptions);
-            }
-            return this.getRequestToken().then(function (response) {
-                return _this.openPopup(options, response).then(function (popupResponse) {
-                    return _this.exchangeForToken(popupResponse, userData);
+            return this.$q(function (resolve, reject) {
+                var provider = _this.SatellizerConfig.providers[name];
+                var oauth = null;
+                switch (provider.oauthType) {
+                    case '1.0':
+                        oauth = new OAuth1(_this.$http, _this.$window, _this.SatellizerConfig, _this.SatellizerPopup);
+                        break;
+                    case '2.0':
+                        oauth = new OAuth2(_this.$http, _this.$window, _this.$timeout, _this.$q, _this.SatellizerConfig, _this.SatellizerPopup, _this.SatellizerStorage);
+                        break;
+                    default:
+                        return reject(new Error('Unknown OAuth Type'));
+                }
+                return oauth.init(provider, userData).then(function (response) {
+                    if (provider.url) {
+                        _this.SatellizerShared.setToken(response);
+                    }
+                    resolve(response);
+                }).catch(function (error) {
+                    reject(error);
                 });
             });
         };
-        OAuth1.prototype.openPopup = function (options, response) {
-            var popupUrl = [options.authorizationEndpoint, this.buildQueryString(response.data)].join('?');
-            if (this.$window['cordova']) {
-                this.SatellizerPopup.open(popupUrl, options.name, options.popupOptions);
-                return this.SatellizerPopup.eventListener(this.defaults.redirectUri);
-            }
-            else {
-                this.SatellizerPopup.popup.location = popupUrl;
-                return this.SatellizerPopup.polling(this.defaults.redirectUri);
-            }
+        OAuth.prototype.unlink = function (provider, httpOptions) {
+            if (httpOptions === void 0) { httpOptions = {}; }
+            httpOptions.url = httpOptions.url ? httpOptions.url : joinUrl(this.SatellizerConfig.baseUrl, this.SatellizerConfig.unlinkUrl);
+            httpOptions.data = { provider: provider } || httpOptions.data;
+            httpOptions.method = httpOptions.method || 'POST';
+            httpOptions.withCredentials = httpOptions.withCredentials || this.SatellizerConfig.withCredentials;
+            return this.$http(httpOptions);
         };
-        OAuth1.prototype.getRequestToken = function () {
-            var url = this.SatellizerConfig.baseUrl ? joinUrl(this.SatellizerConfig.baseUrl, this.defaults.url) : this.defaults.url;
-            return this.$http.post(url, this.defaults);
-        };
-        OAuth1.prototype.exchangeForToken = function (oauthData, userData) {
-            var payload = angular.extend({}, userData, oauthData);
-            var exchangeForTokenUrl = this.SatellizerConfig.baseUrl ? joinUrl(this.SatellizerConfig.baseUrl, this.defaults.url) : this.defaults.url;
-            return this.$http.post(exchangeForTokenUrl, payload, { withCredentials: this.SatellizerConfig.withCredentials });
-        };
-        OAuth1.prototype.buildQueryString = function (obj) {
-            var str = [];
-            angular.forEach(obj, function (value, key) {
-                str.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
-            });
-            return str.join('&');
-        };
-        OAuth1.$inject = ['$http', '$window', 'SatellizerConfig', 'SatellizerPopup'];
-        return OAuth1;
+        OAuth.$inject = [
+            '$http',
+            '$window',
+            '$timeout',
+            '$q',
+            'SatellizerConfig',
+            'SatellizerPopup',
+            'SatellizerStorage',
+            'SatellizerShared',
+            'SatellizerOAuth1',
+            'SatellizerOAuth2'
+        ];
+        return OAuth;
     }());
 
     var Storage = (function () {

@@ -677,7 +677,6 @@
             this.SatellizerConfig = SatellizerConfig;
             this.SatellizerPopup = SatellizerPopup;
             this.SatellizerStorage = SatellizerStorage;
-            console.log('instantiating new oauth 2');
             this.defaults = {
                 name: null,
                 url: null,
