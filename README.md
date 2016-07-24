@@ -139,6 +139,10 @@ angular.module('MyApp', ['satellizer'])
       clientId: 'Bitbucket Client ID'
     });
 
+    $authProvider.spotify({
+      clientId: 'Spotify Client ID'
+    });
+
     // No additional setup required for Twitter
 
     $authProvider.oauth2({
@@ -177,6 +181,7 @@ angular.module('MyApp')
 <button ng-click="authenticate('live')">Sign in with Windows Live</button>
 <button ng-click="authenticate('twitch')">Sign in with Twitch</button>
 <button ng-click="authenticate('bitbucket')">Sign in with Bitbucket</button>
+<button ng-click="authenticate('spotify')">Sign in with Spotify</button>
 ```
 
 **Note:** For server-side usage please refer to the [**examples**](https://github.com/sahat/satellizer/tree/master/examples/server)
@@ -210,7 +215,7 @@ $authProvider.facebook({
   scope: ['email'],
   scopeDelimiter: ',',
   display: 'popup',
-  type: '2.0',
+  oauthType: '2.0',
   popupOptions: { width: 580, height: 400 }
 });
 
@@ -225,7 +230,7 @@ $authProvider.google({
   scopePrefix: 'openid',
   scopeDelimiter: ' ',
   display: 'popup',
-  type: '2.0',
+  oauthType: '2.0',
   popupOptions: { width: 452, height: 633 }
 });
 
@@ -237,7 +242,7 @@ $authProvider.github({
   optionalUrlParams: ['scope'],
   scope: ['user:email'],
   scopeDelimiter: ' ',
-  type: '2.0',
+  oauthType: '2.0',
   popupOptions: { width: 1020, height: 618 }
 });
 
@@ -250,7 +255,7 @@ $authProvider.instagram({
   requiredUrlParams: ['scope'],
   scope: ['basic'],
   scopeDelimiter: '+',
-  type: '2.0'
+  oauthType: '2.0'
 });
 
 // LinkedIn
@@ -262,7 +267,7 @@ $authProvider.linkedin({
   scope: ['r_emailaddress'],
   scopeDelimiter: ' ',
   state: 'STATE',
-  type: '2.0',
+  oauthType: '2.0',
   popupOptions: { width: 527, height: 582 }
 });
 
@@ -271,7 +276,7 @@ $authProvider.twitter({
   url: '/auth/twitter',
   authorizationEndpoint: 'https://api.twitter.com/oauth/authenticate',
   redirectUri: window.location.origin,
-  type: '1.0',
+  oauthType: '1.0',
   popupOptions: { width: 495, height: 645 }
 });
 
@@ -284,7 +289,7 @@ $authProvider.twitch({
   scope: ['user_read'],
   scopeDelimiter: ' ',
   display: 'popup',
-  type: '2.0',
+  oauthType: '2.0',
   popupOptions: { width: 500, height: 560 }
 });
 
@@ -297,7 +302,7 @@ $authProvider.live({
   scope: ['wl.emails'],
   scopeDelimiter: ' ',
   display: 'popup',
-  type: '2.0',
+  oauthType: '2.0',
   popupOptions: { width: 500, height: 560 }
 });
 
@@ -308,7 +313,7 @@ $authProvider.yahoo({
   redirectUri: window.location.origin,
   scope: [],
   scopeDelimiter: ',',
-  type: '2.0',
+  oauthType: '2.0',
   popupOptions: { width: 559, height: 519 }
 });
 
@@ -320,8 +325,22 @@ $authProvider.bitbucket({
   optionalUrlParams: ['scope'],
   scope: ['email'],
   scopeDelimiter: ' ',
-  type: '2.0',
+  oauthType: '2.0',
   popupOptions: { width: 1020, height: 618 }
+});
+
+// Spotify
+$authProvider.spotify({
+  url: '/auth/spotify',
+  authorizationEndpoint: 'https://accounts.spotify.com/authorize',
+  redirectUri: window.location.origin,
+  optionalUrlParams: ['state'],
+  requiredUrlParams: ['scope'],
+  scope: ['user-read-email'],
+  scopePrefix: '',
+  scopeDelimiter: ',',
+  oauthType: '2.0',
+  popupOptions: { width: 500, height: 530 },
 });
 
 // Generic OAuth 2.0
@@ -338,7 +357,7 @@ $authProvider.oauth2({
   scopePrefix: null,
   scopeDelimiter: null,
   state: null,
-  type: null,
+  oauthType: null,
   popupOptions: null,
   responseType: 'code',
   responseParams: {
@@ -354,7 +373,7 @@ $authProvider.oauth1({
   url: null,
   authorizationEndpoint: null,
   redirectUri: null,
-  type: null,
+  oauthType: null,
   popupOptions: null
 });
 ```
