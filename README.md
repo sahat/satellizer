@@ -340,7 +340,7 @@ $authProvider.spotify({
   scopePrefix: '',
   scopeDelimiter: ',',
   oauthType: '2.0',
-  popupOptions: { width: 500, height: 530 },
+  popupOptions: { width: 500, height: 530 }
 });
 
 // Generic OAuth 2.0
