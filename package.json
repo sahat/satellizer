@@ -10,7 +10,7 @@
     "clean": "rimraf build dist",
     "copy": "cp dist/satellizer.js examples/client/vendor && cp -R examples/client/ examples/server/php/public/",
     "bump": "npm version patch",
-    "preversion": "npm test && npm run build && git add -A dist && git commit -m 'Release'"
+    "postversion": "npm test && npm run build && git add -A dist && git commit -m 'Release'"
   },
   "author": {
     "name": "Sahat Yalkabov",
@@ -43,6 +43,7 @@
     "karma-sourcemap-loader": "^0.3.7",
     "karma-typescript-preprocessor": "^0.2.1",
     "karma-webpack": "^1.7.0",
+    "npm-run-all": "^2.3.0",
     "phantomjs-prebuilt": "^2.1.7",
     "rollup": "^0.34.1",
     "rollup-plugin-babel": "^2.4.0",
