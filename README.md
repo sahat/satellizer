@@ -812,6 +812,15 @@ $auth.setStorageType('sessionStorage');
 
 ## FAQ
 
+#### :question: How do I set `offline_access`?
+
+```js
+$authProvider.google({
+  optionalUrlParams: ['access_type'],
+  accessType: 'offline'
+});
+```
+
 #### :question: Can I change `redirectUri` to something other than base URL?
 
 By default, `redirectUri` is set to `window.location.origin` (protocol, hostname, port number of a URL) for all OAuth providers. This `redirectUri` must match *exactly* the URL¹ specified in your OAuth app settings.
