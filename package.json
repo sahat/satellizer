@@ -52,7 +52,7 @@
     "rollup-plugin-uglify": "^1.0.1",
     "ts-loader": "^0.8.2",
     "ts-node": "^1.2.1",
-    "tslint": "~3.13.0",
+    "tslint": "~3.14.0",
     "tslint-loader": "^2.1.4",
     "typescript": "^1.8.10",
     "uglify-js": "^2.7.0",
