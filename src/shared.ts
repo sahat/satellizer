@@ -76,7 +76,7 @@ class Shared {
           const base64Url = token.split('.')[1];
           const base64 = base64Url.replace('-', '+').replace('_', '/');
           const exp = JSON.parse(this.$window.atob(base64)).exp;
-          if (exp) {  // JWT with an optonal expiration claims
+          if (typeof exp === 'number') {  // JWT with an optonal expiration claims
             return (Math.round(new Date().getTime() / 1000) >= exp) ? false : true;
           }
         } catch (e) {
