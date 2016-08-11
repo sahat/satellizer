@@ -36,9 +36,9 @@ export default class OAuth2 {
 
   public defaults: IOAuth2Options;
 
-  constructor(private $http: ng.IHttpService,
-              private $window: ng.IWindowService,
-              private $timeout: ng.ITimeoutService,
+  constructor(private $http: angular.IHttpService,
+              private $window: angular.IWindowService,
+              private $timeout: angular.ITimeoutService,
               private $q: angular.IQService,
               private SatellizerConfig: Config,
               private SatellizerPopup: Popup,

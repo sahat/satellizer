@@ -23,10 +23,10 @@ export default class OAuth {
   private oauth1: OAuth1;
   private oauth2: OAuth2;
 
-  constructor(private $http: ng.IHttpService,
-              private $window: ng.IWindowService,
-              private $timeout: ng.ITimeoutService,
-              private $q: ng.IQService,
+  constructor(private $http: angular.IHttpService,
+              private $window: angular.IWindowService,
+              private $timeout: angular.ITimeoutService,
+              private $q: angular.IQService,
               private SatellizerConfig: Config,
               private SatellizerPopup: Popup,
               private SatellizerStorage: Storage,
