@@ -2,6 +2,19 @@
   "name": "satellizer",
   "main": "dist/satellizer.js",
   "homepage": "https://github.com/sahat/satellizer",
+  "ignore": [
+    "examples",
+    "src",
+    "test",
+    "typings",
+    ".gitignore",
+    ".npmignore",
+    "karma.conf.js",
+    "rollup.config.js",
+    "tsconfig.json",
+    "tslint.json",
+    "typings.json"
+  ],
   "dependencies": {
     "angular": "1.3.0 - 1.5.x"
   }
