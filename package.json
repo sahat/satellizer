@@ -10,7 +10,7 @@
     "clean": "rimraf build dist",
     "copy": "npm-run-all copy:*",
     "copy:angular": "cp dist/satellizer.js examples/client/vendor",
-    "copy:ionic": "cp dist/satellizer.js examples/ionic/www/lib",
+    "copy:ionic": "cp -R dist examples/ionic/www/lib/satellizer",
     "copy:php": "cp -R examples/client/ examples/server/php/public/",
     "bump": "npm version patch",
     "postversion": "npm test && npm run build && git add -A dist && git commit -m 'Release'"
