@@ -1,6 +1,6 @@
 {
   "name": "satellizer-ionic",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "dependencies": {
     "gulp": "^3.9.1",
     "gulp-sass": "^2.2.0",
@@ -13,9 +13,15 @@
     "gulp-util": "^3.0.7",
     "shelljs": "^0.6.0"
   },
+  "cordovaPlugins": [
+    "cordova-plugin-device",
+    "cordova-plugin-console",
+    "cordova-plugin-whitelist",
+    "cordova-plugin-splashscreen",
+    "cordova-plugin-statusbar"
+  ],
   "cordovaPlatforms": [
     "android",
     "ios"
-  ],
-  "cordovaPlugins": []
+  ]
 }
