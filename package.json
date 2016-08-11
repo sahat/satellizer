@@ -53,6 +53,7 @@
     "rollup-plugin-node-resolve": "^2.0.0",
     "rollup-plugin-typescript": "^0.7.6",
     "rollup-plugin-uglify": "^1.0.1",
+    "supervisor": "^0.11.0",
     "ts-loader": "^0.8.2",
     "ts-node": "^1.2.1",
     "tslint": "~3.14.0",
