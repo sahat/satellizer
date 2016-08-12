@@ -52,7 +52,8 @@ export default class OAuth {
       }
 
       return oauth.init(provider, userData).then((response) => {
-        if (provider.url) {
+        const hasToken = response.data && response.data[this.SatellizerConfig.tokenName];
+        if (provider.url && hasToken) {
           this.SatellizerShared.setToken(response);
         }
         resolve(response);

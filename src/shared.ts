@@ -58,11 +58,6 @@ class Shared {
       token = tokenRootData ? tokenRootData[tokenName] : response.data && response.data[tokenName];
     }
 
-    if (!token) {
-      const tokenPath = tokenRoot ? tokenRoot + '.' + tokenName : this.SatellizerConfig.tokenName;
-      return this.$log.warn(`Expecting a token named "${tokenPath}" from the server.`);
-    }
-
     this.SatellizerStorage.set(this.prefixedTokenName, token);
   }
 
