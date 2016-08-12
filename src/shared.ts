@@ -39,8 +39,11 @@ class Shared {
       return this.$log.warn('Can\'t set token without passing a value');
     }
 
-    let token;
+    const tokenRoot = this.SatellizerConfig.tokenRoot;
+    const tokenName = this.SatellizerConfig.tokenName;
     const accessToken = response && response.access_token;
+
+    let token;
 
     if (accessToken) {
       if (angular.isObject(accessToken) && angular.isObject(accessToken.data)) {
@@ -51,13 +54,13 @@ class Shared {
     }
 
     if (!token && response) {
-      const tokenRootData = this.SatellizerConfig.tokenRoot && this.SatellizerConfig.tokenRoot.split('.').reduce(function(o, x) { return o[x]; }, response.data);
-      token = tokenRootData ? tokenRootData[this.SatellizerConfig.tokenName] : response.data && response.data[this.SatellizerConfig.tokenName];
+      const tokenRootData = tokenRoot && tokenRoot.split('.').reduce((o, x) => o[x], response.data);
+      token = tokenRootData ? tokenRootData[tokenName] : response.data && response.data[tokenName];
     }
 
     if (!token) {
-      const tokenPath = this.SatellizerConfig.tokenRoot ? this.SatellizerConfig.tokenRoot + '.' + this.SatellizerConfig.tokenName : this.SatellizerConfig.tokenName;
-      return this.$log.warn('Expecting a token named "' + tokenPath);
+      const tokenPath = tokenRoot ? tokenRoot + '.' + tokenName : this.SatellizerConfig.tokenName;
+      return this.$log.warn(`Expecting a token named "${tokenPath}" from the server.`);
     }
 
     this.SatellizerStorage.set(this.prefixedTokenName, token);
