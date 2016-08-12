@@ -20,9 +20,6 @@ export default class OAuth {
     'SatellizerOAuth2'
   ];
 
-  private oauth1: OAuth1;
-  private oauth2: OAuth2;
-
   constructor(private $http: angular.IHttpService,
               private $window: angular.IWindowService,
               private $timeout: angular.ITimeoutService,
@@ -34,7 +31,7 @@ export default class OAuth {
               private SatellizerOAuth1: OAuth1,
               private SatellizerOAuth2: OAuth2) {}
 
-  authenticate(name: string, userData: any): angular.IPromise<any> {
+  authenticate(name: string, userData?: any): angular.IPromise<any> {
     return this.$q((resolve, reject) => {
       const provider = this.SatellizerConfig.providers[name];
 
@@ -48,12 +45,11 @@ export default class OAuth {
           oauth = new OAuth2(this.$http, this.$window, this.$timeout, this.$q, this.SatellizerConfig, this.SatellizerPopup, this.SatellizerStorage);
           break;
         default:
-          return reject(new Error('Unknown OAuth Type'));
+          return reject(new Error('Invalid OAuth Type'));
       }
 
       return oauth.init(provider, userData).then((response) => {
-        const hasToken = response.data && response.data[this.SatellizerConfig.tokenName];
-        if (provider.url && hasToken) {
+        if (provider.url) {
           this.SatellizerShared.setToken(response);
         }
         resolve(response);

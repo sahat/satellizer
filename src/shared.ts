@@ -3,13 +3,12 @@ import Storage from './storage';
 import { decodeBase64 } from './utils';
 
 class Shared {
-  static $inject = ['$q', '$window', '$log', 'SatellizerConfig', 'SatellizerStorage'];
+  static $inject = ['$q', '$window', 'SatellizerConfig', 'SatellizerStorage'];
   
   private prefixedTokenName: string;
 
   constructor(private $q: angular.IQService,
               private $window: angular.IWindowService,
-              private $log: angular.ILogService,
               private SatellizerConfig: Config,
               private SatellizerStorage: Storage) {
     const { tokenName, tokenPrefix } = this.SatellizerConfig;
@@ -35,10 +34,6 @@ class Shared {
   }
 
   setToken(response): void {
-    if (!response) {
-      return this.$log.warn('Can\'t set token without passing a value');
-    }
-
     const tokenRoot = this.SatellizerConfig.tokenRoot;
     const tokenName = this.SatellizerConfig.tokenName;
     const accessToken = response && response.access_token;
@@ -58,7 +53,9 @@ class Shared {
       token = tokenRootData ? tokenRootData[tokenName] : response.data && response.data[tokenName];
     }
 
-    this.SatellizerStorage.set(this.prefixedTokenName, token);
+    if (token) {
+      this.SatellizerStorage.set(this.prefixedTokenName, token);
+    }
   }
 
   removeToken(): void {
