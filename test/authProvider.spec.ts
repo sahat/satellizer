@@ -30,12 +30,12 @@ describe('AuthProvider', () => {
     authProvider = new AuthProvider(config);
   });
 
-  beforeEach(angular.mock.inject(($q, $http, $window, $interval, $log, $timeout, $httpBackend) => {
+  beforeEach(angular.mock.inject(($q, $http, $window, $interval, $timeout, $httpBackend) => {
     window = $window;
     http = $http;
     httpBackend = $httpBackend;
     storage = new Storage($window, config);
-    shared = new Shared($q, $window, $log, config, storage);
+    shared = new Shared($q, $window, config, storage);
     popup = new Popup($interval, $window, $q);
     oauth1 = new OAuth1($http, $window, config, popup);
     oauth2 = new OAuth2($http, $window, $timeout, $q, config, popup, storage);

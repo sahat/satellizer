@@ -17,9 +17,9 @@ angular.module('MyApp')
           $location.path('/');
         })
         .catch(function(error) {
-          if (error.error) {
-            // Popup error - invalid redirect_uri, pressed cancel button, etc.
-            toastr.error(error.error);
+          if (error.message) {
+            // Satellizer promise reject error.
+            toastr.error(error.message);
           } else if (error.data) {
             // HTTP response error from server
             toastr.error(error.data.message, error.status);

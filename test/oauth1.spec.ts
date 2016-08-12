@@ -13,11 +13,11 @@ let oauth1;
 
 describe('OAuth1', () => {
 
-  beforeEach(angular.mock.inject(($q, $http, $window, $interval, $log, $httpBackend) => {
+  beforeEach(angular.mock.inject(($q, $http, $window, $interval, $httpBackend) => {
     httpBackend = $httpBackend;
     config = new Config();
     storage = new Storage($window, config);
-    shared = new Shared($q, $window, $log, config, storage);
+    shared = new Shared($q, $window, config, storage);
     popup = new Popup($interval, $window, $q);
     oauth1 = new OAuth1($http, $window, config, popup);
   }));

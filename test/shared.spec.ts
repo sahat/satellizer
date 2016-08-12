@@ -9,11 +9,11 @@ let shared;
 
 describe('Shared', () => {
 
-  beforeEach(angular.mock.inject(($q, $window, $log) => {
+  beforeEach(angular.mock.inject(($q, $window) => {
     window = $window;
     config = new Config();
     storage = new Storage($window, config);
-    shared = new Shared($q, $window, $log, config, storage);
+    shared = new Shared($q, $window, config, storage);
   }));
 
   afterEach(() => {

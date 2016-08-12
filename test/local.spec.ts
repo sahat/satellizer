@@ -13,13 +13,13 @@ let local;
 
 describe('Local', () => {
 
-  beforeEach(angular.mock.inject(($q, $http, $window, $log, $httpBackend, $location) => {
+  beforeEach(angular.mock.inject(($q, $http, $window, $httpBackend, $location) => {
     httpBackend = $httpBackend;
     location = $location;
     window = $window;
     config = new Config();
     storage = new Storage($window, config);
-    shared = new Shared($q, $window, $log, config, storage);
+    shared = new Shared($q, $window, config, storage);
     local = new Local($http, config, shared);
   }));
 

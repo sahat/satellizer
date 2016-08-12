@@ -17,7 +17,7 @@ let oauth2;
 
 describe('OAuth2', () => {
 
-  beforeEach(angular.mock.inject(($q, $http, $window, $interval, $log, $timeout, $httpBackend) => {
+  beforeEach(angular.mock.inject(($q, $http, $window, $interval, $timeout, $httpBackend) => {
     q = $q;
     http = $http;
     window = $window;
@@ -25,7 +25,7 @@ describe('OAuth2', () => {
     httpBackend = $httpBackend;
     config = new Config();
     storage = new Storage($window, config);
-    shared = new Shared($q, $window, $log, config, storage);
+    shared = new Shared($q, $window, config, storage);
     popup = new Popup($interval, $window, $q);
     oauth2 = new OAuth2($http, $window, $timeout, $q, config, popup, storage);
   }));

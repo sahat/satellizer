@@ -396,10 +396,9 @@
     }
 
     var Shared = (function () {
-        function Shared($q, $window, $log, SatellizerConfig, SatellizerStorage) {
+        function Shared($q, $window, SatellizerConfig, SatellizerStorage) {
             this.$q = $q;
             this.$window = $window;
-            this.$log = $log;
             this.SatellizerConfig = SatellizerConfig;
             this.SatellizerStorage = SatellizerStorage;
             var _a = this.SatellizerConfig, tokenName = _a.tokenName, tokenPrefix = _a.tokenPrefix;
@@ -421,11 +420,10 @@
             }
         };
         Shared.prototype.setToken = function (response) {
-            if (!response) {
-                return this.$log.warn('Can\'t set token without passing a value');
-            }
-            var token;
+            var tokenRoot = this.SatellizerConfig.tokenRoot;
+            var tokenName = this.SatellizerConfig.tokenName;
             var accessToken = response && response.access_token;
+            var token;
             if (accessToken) {
                 if (angular.isObject(accessToken) && angular.isObject(accessToken.data)) {
                     response = accessToken;
@@ -435,14 +433,12 @@
                 }
             }
             if (!token && response) {
-                var tokenRootData = this.SatellizerConfig.tokenRoot && this.SatellizerConfig.tokenRoot.split('.').reduce(function (o, x) { return o[x]; }, response.data);
-                token = tokenRootData ? tokenRootData[this.SatellizerConfig.tokenName] : response.data && response.data[this.SatellizerConfig.tokenName];
+                var tokenRootData = tokenRoot && tokenRoot.split('.').reduce(function (o, x) { return o[x]; }, response.data);
+                token = tokenRootData ? tokenRootData[tokenName] : response.data && response.data[tokenName];
             }
-            if (!token) {
-                var tokenPath = this.SatellizerConfig.tokenRoot ? this.SatellizerConfig.tokenRoot + '.' + this.SatellizerConfig.tokenName : this.SatellizerConfig.tokenName;
-                return this.$log.warn('Expecting a token named "' + tokenPath);
+            if (token) {
+                this.SatellizerStorage.set(this.prefixedTokenName, token);
             }
-            this.SatellizerStorage.set(this.prefixedTokenName, token);
         };
         Shared.prototype.removeToken = function () {
             this.SatellizerStorage.remove(this.prefixedTokenName);
@@ -455,8 +451,8 @@
                         var base64Url = token.split('.')[1];
                         var base64 = base64Url.replace('-', '+').replace('_', '/');
                         var exp = JSON.parse(this.$window.atob(base64)).exp;
-                        if (exp) {
-                            return (Math.round(new Date().getTime() / 1000) >= exp) ? false : true;
+                        if (typeof exp === 'number') {
+                            return Math.round(new Date().getTime() / 1000) < exp;
                         }
                     }
                     catch (e) {
@@ -474,7 +470,7 @@
         Shared.prototype.setStorageType = function (type) {
             this.SatellizerConfig.storageType = type;
         };
-        Shared.$inject = ['$q', '$window', '$log', 'SatellizerConfig', 'SatellizerStorage'];
+        Shared.$inject = ['$q', '$window', 'SatellizerConfig', 'SatellizerStorage'];
         return Shared;
     }());
 
@@ -832,7 +828,7 @@
                         oauth = new OAuth2(_this.$http, _this.$window, _this.$timeout, _this.$q, _this.SatellizerConfig, _this.SatellizerPopup, _this.SatellizerStorage);
                         break;
                     default:
-                        return reject(new Error('Unknown OAuth Type'));
+                        return reject(new Error('Invalid OAuth Type'));
                 }
                 return oauth.init(provider, userData).then(function (response) {
                     if (provider.url) {
