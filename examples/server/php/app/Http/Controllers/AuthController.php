@@ -225,6 +225,8 @@ class AuthController extends Controller {
             $user = new User;
             $user->google = $profile['sub'];
             $user->displayName = $profile['name'];
+            $user->picture = $profile['picture'];
+            $user->email = $profile['email'];
             $user->save();
 
             return response()->json(['token' => $this->createToken($user)]);
