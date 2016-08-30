@@ -70,37 +70,32 @@ export default class OAuth2 {
   init(options: IOAuth2Options, userData: any): angular.IPromise<any> {
     return this.$q((resolve, reject) => {
       angular.extend(this.defaults, options);
-      this.$timeout(() => {
-        const stateName = this.defaults.name + '_state';
-        const { name, state, popupOptions, redirectUri, responseType } = this.defaults;
 
-        if (typeof state === 'function') {
-          this.SatellizerStorage.set(stateName, state());
-        } else if (typeof state === 'string') {
-          this.SatellizerStorage.set(stateName, state);
+      const stateName = this.defaults.name + '_state';
+      const { name, state, popupOptions, redirectUri, responseType } = this.defaults;
+
+      if (typeof state === 'function') {
+        this.SatellizerStorage.set(stateName, state());
+      } else if (typeof state === 'string') {
+        this.SatellizerStorage.set(stateName, state);
+      }
+
+      const url = [this.defaults.authorizationEndpoint, this.buildQueryString()].join('?');
+
+      this.SatellizerPopup.open(url, name, popupOptions, redirectUri).then((oauth: any): void|angular.IPromise<any>|angular.IHttpPromise<any> => {
+        if (responseType === 'token' || !url) {
+          return resolve(oauth);
         }
-        
-        const url = [this.defaults.authorizationEndpoint, this.buildQueryString()].join('?');
 
-        this.SatellizerPopup.open(url, name, popupOptions);
+        if (oauth.state && oauth.state !== this.SatellizerStorage.get(stateName)) {
+          return reject(new Error(
+            'The value returned in the state parameter does not match the state value from your original ' +
+            'authorization code request.'
+          ));
+        }
 
-        this.SatellizerPopup.polling(redirectUri).then((oauth: any): void|angular.IPromise<any>|angular.IHttpPromise<any> => {
-
-          if (responseType === 'token' || !url) {
-            return resolve(oauth);
-          }
-
-          if (oauth.state && oauth.state !== this.SatellizerStorage.get(stateName)) {
-            return reject(new Error(
-              'The value returned in the state parameter does not match the state value from your original ' +
-              'authorization code request.'
-            ));
-          }
-
-          resolve(this.exchangeForToken(oauth, userData));
-        })
-          .catch(error => reject(error));
-      });
+        resolve(this.exchangeForToken(oauth, userData));
+      }).catch(error => reject(error));
     });
   }
 
