@@ -33,7 +33,7 @@ angular.module('starter', ['ionic', 'satellizer', 'starter.controllers'])
     }
 
     $authProvider.facebook(angular.extend({}, commonConfig, {
-      clientId: '603122136500203',
+      clientId: 'YOUR_FACEBOOK_APP_ID',
       url: 'http://localhost:3000/auth/facebook'
     }));
 
@@ -42,7 +42,7 @@ angular.module('starter', ['ionic', 'satellizer', 'starter.controllers'])
     }));
 
     $authProvider.google(angular.extend({}, commonConfig, {
-      clientId: '631036554609-v5hm2amv4pvico3asfi97f54sc51ji4o.apps.googleusercontent.com',
+      clientId: 'YOUR_GOOGLE_CLIENT_ID',
       url: 'http://localhost:3000/auth/google'
     }));
   })
