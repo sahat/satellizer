@@ -57,7 +57,7 @@ export default class OAuth1 implements IOAuth1 {
 
     // Should open an empty popup and wait until request token is received
     if (!this.$window['cordova']) {
-      this.SatellizerPopup.open('about:blank', name, popupOptions, redirectUri, false);
+      this.SatellizerPopup.open('about:blank', name, popupOptions, redirectUri, true);
     }
 
     return this.getRequestToken().then((response) => {
