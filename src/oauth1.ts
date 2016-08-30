@@ -52,9 +52,12 @@ export default class OAuth1 implements IOAuth1 {
 
   init(options: IOAuth1Options, userData: any): angular.IHttpPromise<any> {
     angular.extend(this.defaults, options);
+    const { name, popupOptions } = options;
+    const { redirectUri } = this.defaults;
 
+    // Should open an empty popup and wait until request token is received
     if (!this.$window['cordova']) {
-      this.SatellizerPopup.open('about:blank', options.name, options.popupOptions);
+      this.SatellizerPopup.open('about:blank', name, popupOptions, redirectUri, false);
     }
 
     return this.getRequestToken().then((response) => {
@@ -65,14 +68,14 @@ export default class OAuth1 implements IOAuth1 {
   }
 
   openPopup(options: IOAuth1Options, response: angular.IHttpPromiseCallbackArg<any>): angular.IPromise<any> {
-    const popupUrl = [options.authorizationEndpoint, this.buildQueryString(response.data)].join('?');
+    const url = [options.authorizationEndpoint, this.buildQueryString(response.data)].join('?');
+    const { redirectUri } = this.defaults;
 
     if (this.$window['cordova']) {
-      this.SatellizerPopup.open(popupUrl, options.name, options.popupOptions);
-      return this.SatellizerPopup.eventListener(this.defaults.redirectUri);
+      return this.SatellizerPopup.eventListener(redirectUri);
     } else {
-      this.SatellizerPopup.popup.location = popupUrl;
-      return this.SatellizerPopup.polling(this.defaults.redirectUri);
+      this.SatellizerPopup.popup.location = url;
+      return this.SatellizerPopup.polling(redirectUri);
     }
   }
 
