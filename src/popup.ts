@@ -35,7 +35,7 @@ export default class Popup implements IPopup {
        name: string,
        popupOptions: { width: number, height: number },
        redirectUri: string,
-       shouldPoll = true): angular.IPromise<any> {
+       dontPoll?: boolean): angular.IPromise<any> {
     const width = popupOptions.width || 500;
     const height = popupOptions.height || 500;
 
@@ -48,20 +48,25 @@ export default class Popup implements IPopup {
 
     const popupName = this.$window['cordova'] || this.$window.navigator.userAgent.indexOf('CriOS') > -1 ? '_blank' : name;
 
-    this.popup = window.open(url, popupName, options);
+    this.popup = this.$window.open(url, popupName, options);
 
     if (this.popup && this.popup.focus) {
       this.popup.focus();
     }
 
-    if (shouldPoll) {
-      if (this.$window['cordova']) {
-        return this.eventListener(redirectUri);
-      } else {
-        this.popup.location = url;
-        return this.polling(redirectUri);
-      }
+    if (dontPoll) {
+      return;
     }
+
+    if (this.$window['cordova']) {
+      return this.eventListener(redirectUri);
+    } else {
+      if (url === 'about:blank') {
+        this.popup.location = url;
+      }
+      return this.polling(redirectUri);
+    }
+
   }
 
   polling(redirectUri: string): angular.IPromise<any> {
