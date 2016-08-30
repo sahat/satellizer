@@ -1,7 +1,7 @@
 import { parseQueryString, getFullUrlPath } from './utils';
 
 export interface IPopup {
-  open(url: string, name: string, popupOptions: { width: number, height: number }): void;
+  open(url: string, name: string, popupOptions: { width: number, height: number }, redirectUri: string): void;
   stringifyOptions (options: any): string;
   polling(redirectUri: string): angular.IPromise<any>;
   eventListener(redirectUri: string): angular.IPromise<any>;
@@ -18,7 +18,6 @@ export default class Popup implements IPopup {
               private $window: angular.IWindowService,
               private $q: angular.IQService) {
     this.popup = null;
-    this.url = 'about:blank'; // TODO remove
     this.defaults = {
       redirectUri: null
     };
@@ -32,9 +31,7 @@ export default class Popup implements IPopup {
     return parts.join(',');
   }
 
-  open(url: string, name: string, popupOptions: { width: number, height: number }): void {
-    this.url = url; // TODO remove
-
+  open(url: string, name: string, popupOptions: { width: number, height: number }, redirectUri: string): angular.IPromise<any> {
     const width = popupOptions.width || 500;
     const height = popupOptions.height || 500;
 
@@ -47,17 +44,17 @@ export default class Popup implements IPopup {
 
     const popupName = this.$window['cordova'] || this.$window.navigator.userAgent.indexOf('CriOS') > -1 ? '_blank' : name;
 
-    this.popup = window.open(this.url, popupName, options);
+    this.popup = window.open(url, popupName, options);
 
     if (this.popup && this.popup.focus) {
       this.popup.focus();
     }
-    //
-    // if (this.$window['cordova']) {
-    //   return this.eventListener(this.defaults.redirectUri); // TODO pass redirect uri
-    // } else {
-    //   return this.polling(redirectUri);
-    // }
+
+    if (this.$window['cordova']) {
+      return this.eventListener(redirectUri);
+    } else {
+      return this.polling(redirectUri);
+    }
   }
 
   polling(redirectUri: string): angular.IPromise<any> {
@@ -108,7 +105,7 @@ export default class Popup implements IPopup {
   eventListener(redirectUri): angular.IPromise<any> {
     return this.$q((resolve, reject) => {
       this.popup.addEventListener('loadstart', (event) => {
-        if (!event.url.includes(redirectUri)) {
+        if (event.url.indexOf(redirectUri) !== 0) {
           return;
         }
 
