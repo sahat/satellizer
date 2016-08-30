@@ -68,7 +68,7 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', 'ui.
      *  Satellizer config
      */
     $authProvider.facebook({
-      clientId: 'YOUR_FACEBOOK_APP_ID'
+      clientId: '603122136500203'
     });
 
     $authProvider.google({
