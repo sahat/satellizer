@@ -11,12 +11,11 @@ angular.module('starter.controllers', [])
             content: 'You have successfully logged in!'
           })
         })
-        .catch(function(response) {
+        .catch(function(error) {
           $ionicPopup.alert({
             title: 'Error',
-            content: response.data ? response.data || response.data.message : response
-          })
-
+            content: error.message || (error.data && error.data.message) || error
+          });
         });
     };
 
