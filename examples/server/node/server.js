@@ -319,6 +319,8 @@ app.post('/auth/github', function(req, res) {
           user.github = profile.id;
           user.picture = profile.avatar_url;
           user.displayName = profile.name;
+          user.email = profile.email;
+
           user.save(function() {
             var token = createJWT(user);
             res.send({ token: token });
