@@ -45,9 +45,6 @@ describe('OAuth2', () => {
       spyOn(window, 'open');
       oauth2.init(config.providers.github);
 
-      timeout.flush();
-      timeout.verifyNoPendingTasks();
-
       expect(window.open).toHaveBeenCalled();
     });
 
@@ -60,9 +57,6 @@ describe('OAuth2', () => {
         result = err.message;
         expect(result).toEqual('The popup window was closed');
       });
-
-      timeout.flush();
-      timeout.verifyNoPendingTasks();
 
       expect(popup.polling).toHaveBeenCalled();
     });

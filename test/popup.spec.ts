@@ -24,8 +24,8 @@ describe('Popup', () => {
 
   it('should open a new popup', () => {
     spyOn(window, 'open');
-    popup.open('about:blank', 'test', { width: 500, height: 500 });
-    interval.flush(300);
+    popup.open('about:blank', 'test', { width: 500, height: 500 }, 'http://localhost/redirect', true);
+    interval.flush(1000);
     expect(window.open).toHaveBeenCalled();
   });
 
