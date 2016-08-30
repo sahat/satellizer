@@ -72,7 +72,7 @@ export default class OAuth1 implements IOAuth1 {
     const { redirectUri } = this.defaults;
 
     if (this.$window['cordova']) {
-      return this.SatellizerPopup.eventListener(redirectUri);
+      return this.SatellizerPopup.open(url, options.name, options.popupOptions, redirectUri);
     } else {
       this.SatellizerPopup.popup.location = url;
       return this.SatellizerPopup.polling(redirectUri);
