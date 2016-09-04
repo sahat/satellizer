@@ -738,7 +738,7 @@ app.post('/auth/twitter', function(req, res) {
               user.twitter = profile.id;
               user.email = profile.email;
               user.displayName = user.displayName || profile.name;
-              user.picture = user.picture || profile.profile_image_url.replace('_normal', '');
+              user.picture = user.picture || profile.profile_image_url_https.replace('_normal', '');
               user.save(function(err) {
                 res.send({ token: createJWT(user) });
               });
@@ -755,7 +755,7 @@ app.post('/auth/twitter', function(req, res) {
             user.twitter = profile.id;
             user.email = profile.email;
             user.displayName = profile.name;
-            user.picture = profile.profile_image_url.replace('_normal', '');
+            user.picture = profile.profile_image_url_https.replace('_normal', '');
             user.save(function() {
               res.send({ token: createJWT(user) });
             });
@@ -1025,7 +1025,7 @@ app.post('/auth/bitbucket', function(req, res) {
              }
              user.spotify = profile.id;
              user.email = user.email || profile.email;
-             user.picture = user.picture || profile.images.length > 0 ? profile.images[0].url : '';
+             user.picture = profile.images.length > 0 ? profile.images[0].url : '';
              user.displayName = user.displayName || profile.displayName || profile.id;
 
              user.save(function() {
@@ -1064,7 +1064,7 @@ app.post('/auth/bitbucket', function(req, res) {
 app.post('/auth/unlink', ensureAuthenticated, function(req, res) {
   var provider = req.body.provider;
   var providers = ['facebook', 'foursquare', 'google', 'github', 'instagram',
-    'linkedin', 'live', 'twitter', 'twitch', 'yahoo'];
+    'linkedin', 'live', 'twitter', 'twitch', 'yahoo', 'bitbucket', 'spotify'];
 
   if (providers.indexOf(provider) === -1) {
     return res.status(400).send({ message: 'Unknown OAuth Provider' });
