@@ -667,12 +667,14 @@ app.post('/auth/yahoo', function(req, res) {
 /*
  |--------------------------------------------------------------------------
  | Login with Twitter
+ | Note: Make sure "Request email addresses from users" is enabled
+ | under Permissions tab in your Twitter app. (https://apps.twitter.com)
  |--------------------------------------------------------------------------
  */
 app.post('/auth/twitter', function(req, res) {
   var requestTokenUrl = 'https://api.twitter.com/oauth/request_token';
   var accessTokenUrl = 'https://api.twitter.com/oauth/access_token';
-  var profileUrl = 'https://api.twitter.com/1.1/users/show.json?screen_name=';
+  var profileUrl = 'https://api.twitter.com/1.1/account/verify_credentials.json';
 
   // Part 1 of 2: Initial request from Satellizer.
   if (!req.body.oauth_token || !req.body.oauth_verifier) {
@@ -706,12 +708,14 @@ app.post('/auth/twitter', function(req, res) {
       var profileOauth = {
         consumer_key: config.TWITTER_KEY,
         consumer_secret: config.TWITTER_SECRET,
-        oauth_token: accessToken.oauth_token
+        token: accessToken.oauth_token,
+        token_secret: accessToken.oauth_token_secret,
       };
 
-      // Step 4. Retrieve profile information about the current user.
+      // Step 4. Retrieve user's profile information and email address.
       request.get({
-        url: profileUrl + accessToken.screen_name,
+        url: profileUrl,
+        qs: { include_email: true },
         oauth: profileOauth,
         json: true
       }, function(err, response, profile) {
@@ -732,6 +736,7 @@ app.post('/auth/twitter', function(req, res) {
               }
 
               user.twitter = profile.id;
+              user.email = profile.email;
               user.displayName = user.displayName || profile.name;
               user.picture = user.picture || profile.profile_image_url.replace('_normal', '');
               user.save(function(err) {
@@ -748,6 +753,7 @@ app.post('/auth/twitter', function(req, res) {
 
             var user = new User();
             user.twitter = profile.id;
+            user.email = profile.email;
             user.displayName = profile.name;
             user.picture = profile.profile_image_url.replace('_normal', '');
             user.save(function() {
