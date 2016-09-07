@@ -113,7 +113,7 @@ export default class AuthProvider {
       authenticate: (name, data) => SatellizerOAuth.authenticate(name, data),
       link: (name, data) => SatellizerOAuth.authenticate(name, data),
       unlink: (name, options) => SatellizerOAuth.unlink(name, options),
-      isAuthenticated: () => SatellizerShared.isAuthenticated(),
+      isAuthenticated: (roleArg) => SatellizerShared.isAuthenticated(roleArg),
       getPayload: () => SatellizerShared.getPayload(),
       getToken: () => SatellizerShared.getToken(),
       setToken: (token) => SatellizerShared.setToken({ access_token: token }),

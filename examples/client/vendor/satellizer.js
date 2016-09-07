@@ -1,7 +1,7 @@
 /**
  * Satellizer 0.15.5
- * (c) 2016 Sahat Yalkabov 
- * License: MIT 
+ * (c) 2016 Sahat Yalkabov
+ * License: MIT
  */
 
 (function (global, factory) {
@@ -299,7 +299,7 @@
                 authenticate: function (name, data) { return SatellizerOAuth.authenticate(name, data); },
                 link: function (name, data) { return SatellizerOAuth.authenticate(name, data); },
                 unlink: function (name, options) { return SatellizerOAuth.unlink(name, options); },
-                isAuthenticated: function () { return SatellizerShared.isAuthenticated(); },
+                isAuthenticated: function (roleArg) { return SatellizerShared.isAuthenticated(roleArg); },
                 getPayload: function () { return SatellizerShared.getPayload(); },
                 getToken: function () { return SatellizerShared.getToken(); },
                 setToken: function (token) { return SatellizerShared.setToken({ access_token: token }); },
@@ -443,7 +443,7 @@
         Shared.prototype.removeToken = function () {
             this.SatellizerStorage.remove(this.prefixedTokenName);
         };
-        Shared.prototype.isAuthenticated = function () {
+        Shared.prototype.isAuthenticated = function (roleArg) {
             var token = this.SatellizerStorage.get(this.prefixedTokenName);
             if (token) {
                 if (token.split('.').length === 3) {
@@ -451,8 +451,14 @@
                         var base64Url = token.split('.')[1];
                         var base64 = base64Url.replace('-', '+').replace('_', '/');
                         var exp = JSON.parse(this.$window.atob(base64)).exp;
+                        var role = JSON.parse(this.$window.atob(base64)).role;
                         if (typeof exp === 'number') {
                             return Math.round(new Date().getTime() / 1000) < exp;
+                        }
+                        if (roleArgument) {
+                          if (roleArgument !== role) {
+                            return false; // Fail: Supplied role doesn't match role defined in token
+                          }
                         }
                     }
                     catch (e) {
