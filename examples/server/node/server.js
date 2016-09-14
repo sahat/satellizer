@@ -227,7 +227,7 @@ app.post('/auth/google', function(req, res) {
       if (req.header('Authorization')) {
         User.findOne({ google: profile.sub }, function(err, existingUser) {
           if (existingUser) {
-            return res.status(409).send({ message: 'There is already a Google account that belongs to you' });
+            return res.send({ token: createJWT(existingUser) });
           }
           var token = req.header('Authorization').split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
@@ -291,7 +291,7 @@ app.post('/auth/github', function(req, res) {
       if (req.header('Authorization')) {
         User.findOne({ github: profile.id }, function(err, existingUser) {
           if (existingUser) {
-            return res.status(409).send({ message: 'There is already a GitHub account that belongs to you' });
+            return res.send({ token: createJWT(existingUser) });
           }
           var token = req.header('Authorization').split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
@@ -354,7 +354,7 @@ app.post('/auth/instagram', function(req, res) {
     if (req.header('Authorization')) {
       User.findOne({ instagram: body.user.id }, function(err, existingUser) {
         if (existingUser) {
-          return res.status(409).send({ message: 'There is already an Instagram account that belongs to you' });
+          return res.send({ token: createJWT(existingUser) });
         }
 
         var token = req.header('Authorization').split(' ')[1];
@@ -428,7 +428,7 @@ app.post('/auth/linkedin', function(req, res) {
       if (req.header('Authorization')) {
         User.findOne({ linkedin: profile.id }, function(err, existingUser) {
           if (existingUser) {
-            return res.status(409).send({ message: 'There is already a LinkedIn account that belongs to you' });
+            return res.send({ token: createJWT(existingUser) });
           }
           var token = req.header('Authorization').split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
@@ -497,9 +497,6 @@ app.post('/auth/live', function(req, res) {
       // Step 3a. Link user accounts.
       if (req.header('Authorization')) {
         User.findOne({ live: profile.id }, function(err, user) {
-          if (user) {
-            return res.status(409).send({ message: 'There is already a Windows Live account that belongs to you' });
-          }
           var token = req.header('Authorization').split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
           User.findById(payload.sub, function(err, existingUser) {
@@ -563,7 +560,7 @@ app.post('/auth/facebook', function(req, res) {
       if (req.header('Authorization')) {
         User.findOne({ facebook: profile.id }, function(err, existingUser) {
           if (existingUser) {
-            return res.status(409).send({ message: 'There is already a Facebook account that belongs to you' });
+            return res.send({ token: createJWT(existingUser) });
           }
           var token = req.header('Authorization').split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
@@ -629,7 +626,7 @@ app.post('/auth/yahoo', function(req, res) {
       if (req.header('Authorization')) {
         User.findOne({ yahoo: body.profile.guid }, function(err, existingUser) {
           if (existingUser) {
-            return res.status(409).send({ message: 'There is already a Yahoo account that belongs to you' });
+            return res.send({ token: createJWT(existingUser) });
           }
           var token = req.header('Authorization').split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
@@ -724,7 +721,7 @@ app.post('/auth/twitter', function(req, res) {
         if (req.header('Authorization')) {
           User.findOne({ twitter: profile.id }, function(err, existingUser) {
             if (existingUser) {
-              return res.status(409).send({ message: 'There is already a Twitter account that belongs to you' });
+              return res.send({ token: createJWT(existingUser) });
             }
 
             var token = req.header('Authorization').split(' ')[1];
@@ -797,7 +794,7 @@ app.post('/auth/foursquare', function(req, res) {
       if (req.header('Authorization')) {
         User.findOne({ foursquare: profile.id }, function(err, existingUser) {
           if (existingUser) {
-            return res.status(409).send({ message: 'There is already a Foursquare account that belongs to you' });
+            return res.send({ token: createJWT(existingUser) });
           }
           var token = req.header('Authorization').split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
@@ -863,7 +860,7 @@ app.post('/auth/twitch', function(req, res) {
       if (req.header('Authorization')) {
         User.findOne({ twitch: profile._id }, function(err, existingUser) {
           if (existingUser) {
-            return res.status(409).send({ message: 'There is already a Twitch account that belongs to you' });
+            return res.send({ token: createJWT(existingUser) });
           }
           var token = req.header('Authorization').split(' ')[1];
           var payload = jwt.decode(token, config.TOKEN_SECRET);
@@ -944,7 +941,7 @@ app.post('/auth/bitbucket', function(req, res) {
         if (req.header('Authorization')) {
           User.findOne({ bitbucket: profile.uuid }, function(err, existingUser) {
             if (existingUser) {
-              return res.status(409).send({ message: 'There is already a Bitbucket account that belongs to you' });
+              return res.send({ token: createJWT(existingUser) });
             }
             var token = req.header('Authorization').split(' ')[1];
             var payload = jwt.decode(token, config.TOKEN_SECRET);
@@ -1015,7 +1012,7 @@ app.post('/auth/bitbucket', function(req, res) {
        if (req.header('Authorization')) {
          User.findOne({ spotify: profile.id }, function(err, existingUser) {
            if (existingUser) {
-             return res.status(409).send({ message: 'There is already a Spotify account that belongs to you' });
+             return res.send({ token: createJWT(existingUser) });
            }
            var token = req.header('Authorization').split(' ')[1];
            var payload = jwt.decode(token, config.TOKEN_SECRET);
