@@ -46,15 +46,14 @@ func HandleModelError(w http.ResponseWriter, r *http.Request, errM *Error) {
 	if errM.Internal {
 		ISR(w, r, errM.Reason)
 		return
-	} else {
-		if errM.Code != 0 {
-			BR(w, r, errM.Reason, errM.Code)
-
-		} else {
-			BR(w, r, errM.Reason, http.StatusBadRequest)
-		}
-		return
 	}
+	if errM.Code != 0 {
+		BR(w, r, errM.Reason, errM.Code)
+
+	} else {
+		BR(w, r, errM.Reason, http.StatusBadRequest)
+	}
+	return
 }
 
 func ISR(w http.ResponseWriter, r *http.Request, msg error) {
@@ -92,7 +91,7 @@ func GetToken(w http.ResponseWriter, r *http.Request) *TokenData {
 		return nil
 	}
 
-	tokenData := token.(*jwt.Token).Claims
+	tokenData := token.(*jwt.Token).Claims.(jwt.MapClaims)
 	return &TokenData{tokenData["ID"].(string), tokenData["iat"].(float64), tokenData["exp"].(float64)}
 }
 

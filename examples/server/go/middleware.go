@@ -9,6 +9,7 @@ import (
 
 	"github.com/codegangsta/negroni"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go/request"
 	"github.com/gorilla/context"
 	"gopkg.in/mgo.v2"
 )
@@ -30,7 +31,7 @@ func init() {
 func JWTMiddleware() negroni.Handler {
 	return negroni.HandlerFunc(func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 		if h := r.Header.Get("Authorization"); h != "" {
-			token, err := jwt.ParseFromRequest(r, func(token *jwt.Token) (interface{}, error) {
+			token, err := request.ParseFromRequest(r, request.OAuth2Extractor, func(token *jwt.Token) (interface{}, error) {
 				return verifyKey, nil
 			})
 
