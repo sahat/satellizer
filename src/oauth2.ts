@@ -15,6 +15,7 @@ export interface IOAuth2Options {
   state?: string|(() => string);
   requiredUrlParams: string[];
   defaultUrlParams: string[];
+  paramsInUrl: boolean;
   responseType: string;
   responseParams: {
     code: string,
@@ -56,6 +57,7 @@ export default class OAuth2 {
       state: null,
       requiredUrlParams: null,
       defaultUrlParams: ['response_type', 'client_id', 'redirect_uri'],
+      paramsInUrl: false,
       responseType: 'code',
       responseParams: {
         code: 'code',
@@ -126,7 +128,15 @@ export default class OAuth2 {
       joinUrl(this.SatellizerConfig.baseUrl, this.defaults.url) :
       this.defaults.url;
 
-    return this.$http.post(exchangeForTokenUrl, payload, { withCredentials: this.SatellizerConfig.withCredentials });
+    let data = payload;
+    let options = { withCredentials: this.SatellizerConfig.withCredentials, params: null };
+
+    if (this.defaults.paramsInUrl) {
+      data = {};
+      options.params = payload;
+    }
+
+    return this.$http.post(exchangeForTokenUrl, data, options);
   }
 
   buildQueryString(): string {
