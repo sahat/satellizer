@@ -103,7 +103,7 @@ describe('OAuth2', () => {
       expect(http.post).toHaveBeenCalledWith(
         '/',
         { code: '1234567890', client_id: 'asdf1234', redirect_uri: 'http://localhost/callback' },
-        { withCredentials: false }
+        { withCredentials: false, params: null }
       );
     });
 
