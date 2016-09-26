@@ -1,7 +1,7 @@
 {
   "name": "satellizer",
   "description": "Token-based AngularJS Authentication",
-  "version": "0.15.5",
+  "version": "0.15.6",
   "main": "dist/satellizer.js",
   "scripts": {
     "start": "supervisor ./examples/server/node/server.js",
@@ -18,11 +18,11 @@
     "prepublish": "publish-please guard"
   },
   "author": {
-    "name": "Sahat Yalkabov",
-    "email": "sahat@me.com",
-    "url": "http://sahatyalkabov.com"
+    "name": "cskiwi Yalkabov",
+    "email": "cskiwi@me.com",
+    "url": "http://cskiwiyalkabov.com"
   },
-  "homepage": "https://github.com/sahat/satellizer",
+  "homepage": "https://github.com/cskiwi/satellizer",
   "repository": {
     "type": "git",
     "url": "https://github.com/cskiwi/satellizer.git"

@@ -4,7 +4,7 @@
 
 You need to clone satellizer's repo by running:
 ```shell
-$ git clone https://github.com/sahat/satellizer
+$ git clone https://github.com/cskiwi/satellizer
 ```
 
 Next, cd into the go server example:

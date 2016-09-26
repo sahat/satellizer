@@ -1,7 +1,7 @@
 {
   "name": "satellizer",
   "main": "dist/satellizer.js",
-  "homepage": "https://github.com/sahat/satellizer",
+  "homepage": "https://github.com/cskiwi/satellizer",
   "ignore": [
     "examples",
     "src",

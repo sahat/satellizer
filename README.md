@@ -1,16 +1,16 @@
 ![Project Logo](http://i.imgur.com/yutNy7x.jpg)
 
-# [Satellizer](https://github.com/sahat/satellizer/)
+# [Satellizer](https://github.com/cskiwi/satellizer/)
 
-[![Donate](https://img.shields.io/badge/paypal-donate-blue.svg)](https://paypal.me/sahat)
-[![Join the chat at https://gitter.im/sahat/satellizer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/sahat/satellizer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Build Status](http://img.shields.io/travis/sahat/satellizer.svg?style=flat)](https://travis-ci.org/sahat/satellizer)
+[![Donate](https://img.shields.io/badge/paypal-donate-blue.svg)](https://paypal.me/cskiwi)
+[![Join the chat at https://gitter.im/cskiwi/satellizer](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/cskiwi/satellizer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](http://img.shields.io/travis/cskiwi/satellizer.svg?style=flat)](https://travis-ci.org/cskiwi/satellizer)
 [![npm version](https://badge.fury.io/js/satellizer.svg)](https://badge.fury.io/js/satellizer)
-[![Book session on Codementor](https://cdn.codementor.io/badges/book_session_github.svg)](https://www.codementor.io/sahatyalkabov?utm_source=github&utm_medium=button&utm_term=sahatyalkabov&utm_campaign=github)
+[![Book session on Codementor](https://cdn.codementor.io/badges/book_session_github.svg)](https://www.codementor.io/cskiwiyalkabov?utm_source=github&utm_medium=button&utm_term=cskiwiyalkabov&utm_campaign=github)
 [![OpenCollective](https://opencollective.com/satellizer/backers/badge.svg)](#backers)
 [![OpenCollective](https://opencollective.com/satellizer/sponsors/badge.svg)](#sponsors)
 
-[**Live Demo**](https://satellizer-sahat.rhcloud.com)
+[**Live Demo**](https://satellizer-cskiwi.rhcloud.com)
 
 ---
 
@@ -122,7 +122,7 @@ Become a sponsor and get your logo on our README on Github with a link to your s
 ```
 ```html
 <!-- Satellizer CDN -->
-<script src="https://cdn.jsdelivr.net/satellizer/0.15.5/satellizer.min.js"></script>
+<script src="https://cdn.jsdelivr.net/satellizer/0.15.6/satellizer.min.js"></script>
 ```
 
 #### <img src="https://upload.wikimedia.org/wikipedia/commons/d/db/Npm-logo.svg" height="22" align="top"> NPM
@@ -252,7 +252,7 @@ angular.module('MyApp')
 <button ng-click="authenticate('spotify')">Sign in with Spotify</button>
 ```
 
-**Note:** For server-side usage please refer to the [**examples**](https://github.com/sahat/satellizer/tree/master/examples/server)
+**Note:** For server-side usage please refer to the [**examples**](https://github.com/cskiwi/satellizer/tree/master/examples/server)
 directory.
 
 ## Configuration
@@ -475,7 +475,7 @@ Satellizer relies on *token-based authentication* using
 [JSON Web Tokens](https://auth0.com/blog/2014/01/07/angularjs-authentication-with-cookies-vs-token/)
 instead of cookies.
 
-Additionally, **authorization** (obtaining user's information with their permission) and **authentication** (application sign-in) requires sever-side implementation. See provided [examples](https://github.com/sahat/satellizer/tree/master/examples/server) implemented in multiple languages for your convenience. In other words, you cannot just launch your AngularJS application and expect everything to work. The only exception is when you use *OAuth 2.0 Implicit Grant* (client-side) authorization by setting `responseType: 'token'` in provider's [configuration](https://github.com/sahat/satellizer#configuration).
+Additionally, **authorization** (obtaining user's information with their permission) and **authentication** (application sign-in) requires sever-side implementation. See provided [examples](https://github.com/cskiwi/satellizer/tree/master/examples/server) implemented in multiple languages for your convenience. In other words, you cannot just launch your AngularJS application and expect everything to work. The only exception is when you use *OAuth 2.0 Implicit Grant* (client-side) authorization by setting `responseType: 'token'` in provider's [configuration](https://github.com/cskiwi/satellizer#configuration).
 
 ### <img height="34" align="top" src="http://tech-lives.com/wp-content/uploads/2012/03/Lock-icon.png"> Login with Email and Password
 
@@ -983,7 +983,7 @@ bugs, submitted pull requests and suggested new features!
 
 The MIT License (MIT)
 
-Copyright (c) 2016 Sahat Yalkabov
+Copyright (c) 2016 cskiwi Yalkabov
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

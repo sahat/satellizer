@@ -1,6 +1,6 @@
 /**
  * Satellizer Node.js Example
- * (c) 2015 Sahat Yalkabov
+ * (c) 2015 cskiwi Yalkabov
  * License: MIT
  */
 
