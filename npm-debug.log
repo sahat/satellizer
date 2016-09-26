@@ -1,0 +1,97 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Program Files (x86)\\nodejs\\node.exe',
+1 verbose cli   'C:\\Users\\SIDGLAT\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'i',
+1 verbose cli   '-g',
+1 verbose cli   'sed' ]
+2 info using npm@3.10.6
+3 info using node@v6.5.0
+4 silly loadCurrentTree Starting
+5 silly install loadCurrentTree
+6 silly install readGlobalPackageData
+7 silly fetchPackageMetaData sed
+8 silly fetchNamedPackageData sed
+9 silly mapToRegistry name sed
+10 silly mapToRegistry using default registry
+11 silly mapToRegistry registry http://packagefeeds.sidmar.be:81/npm/Npm
+12 silly mapToRegistry data Result {
+12 silly mapToRegistry   raw: 'sed',
+12 silly mapToRegistry   scope: null,
+12 silly mapToRegistry   escapedName: 'sed',
+12 silly mapToRegistry   name: 'sed',
+12 silly mapToRegistry   rawSpec: '',
+12 silly mapToRegistry   spec: 'latest',
+12 silly mapToRegistry   type: 'tag' }
+13 silly mapToRegistry uri http://packagefeeds.sidmar.be:81/npm/Npm/sed
+14 verbose request uri http://packagefeeds.sidmar.be:81/npm/Npm/sed
+15 verbose request no auth needed
+16 info attempt registry request try #1 at 11:20:43
+17 verbose request id 3344437009b63d30
+18 http request GET http://packagefeeds.sidmar.be:81/npm/Npm/sed
+19 http 404 http://packagefeeds.sidmar.be:81/npm/Npm/sed
+20 verbose headers { 'cache-control': 'private',
+20 verbose headers   'content-length': '64',
+20 verbose headers   'content-type': 'application/json; charset=utf-8',
+20 verbose headers   server: 'Microsoft-HTTPAPI/2.0',
+20 verbose headers   'x-aspnet-version': '4.0.30319',
+20 verbose headers   date: 'Mon, 26 Sep 2016 09:20:47 GMT' }
+21 silly get cb [ 404,
+21 silly get   { 'cache-control': 'private',
+21 silly get     'content-length': '64',
+21 silly get     'content-type': 'application/json; charset=utf-8',
+21 silly get     server: 'Microsoft-HTTPAPI/2.0',
+21 silly get     'x-aspnet-version': '4.0.30319',
+21 silly get     date: 'Mon, 26 Sep 2016 09:20:47 GMT' } ]
+22 silly fetchPackageMetaData Error: Package not found. Package was not found.: npm
+22 silly fetchPackageMetaData     at makeError (C:\Users\SIDGLAT\AppData\Roaming\npm\node_modules\npm\node_modules\npm-registry-client\lib\request.js:264:12)
+22 silly fetchPackageMetaData     at CachingRegistryClient.<anonymous> (C:\Users\SIDGLAT\AppData\Roaming\npm\node_modules\npm\node_modules\npm-registry-client\lib\request.js:252:14)
+22 silly fetchPackageMetaData     at Request._callback (C:\Users\SIDGLAT\AppData\Roaming\npm\node_modules\npm\node_modules\npm-registry-client\lib\request.js:172:14)
+22 silly fetchPackageMetaData     at Request.self.callback (C:\Users\SIDGLAT\AppData\Roaming\npm\node_modules\npm\node_modules\request\request.js:200:22)
+22 silly fetchPackageMetaData     at emitTwo (events.js:106:13)
+22 silly fetchPackageMetaData     at Request.emit (events.js:191:7)
+22 silly fetchPackageMetaData     at Request.<anonymous> (C:\Users\SIDGLAT\AppData\Roaming\npm\node_modules\npm\node_modules\request\request.js:1067:10)
+22 silly fetchPackageMetaData     at emitOne (events.js:101:20)
+22 silly fetchPackageMetaData     at Request.emit (events.js:188:7)
+22 silly fetchPackageMetaData     at IncomingMessage.<anonymous> (C:\Users\SIDGLAT\AppData\Roaming\npm\node_modules\npm\node_modules\request\request.js:988:12)
+22 silly fetchPackageMetaData  error for sed { Error: Package not found. Package was not found.: npm
+22 silly fetchPackageMetaData     at makeError (C:\Users\SIDGLAT\AppData\Roaming\npm\node_modules\npm\node_modules\npm-registry-client\lib\request.js:264:12)
+22 silly fetchPackageMetaData     at CachingRegistryClient.<anonymous> (C:\Users\SIDGLAT\AppData\Roaming\npm\node_modules\npm\node_modules\npm-registry-client\lib\request.js:252:14)
+22 silly fetchPackageMetaData     at Request._callback (C:\Users\SIDGLAT\AppData\Roaming\npm\node_modules\npm\node_modules\npm-registry-client\lib\request.js:172:14)
+22 silly fetchPackageMetaData     at Request.self.callback (C:\Users\SIDGLAT\AppData\Roaming\npm\node_modules\npm\node_modules\request\request.js:200:22)
+22 silly fetchPackageMetaData     at emitTwo (events.js:106:13)
+22 silly fetchPackageMetaData     at Request.emit (events.js:191:7)
+22 silly fetchPackageMetaData     at Request.<anonymous> (C:\Users\SIDGLAT\AppData\Roaming\npm\node_modules\npm\node_modules\request\request.js:1067:10)
+22 silly fetchPackageMetaData     at emitOne (events.js:101:20)
+22 silly fetchPackageMetaData     at Request.emit (events.js:188:7)
+22 silly fetchPackageMetaData     at IncomingMessage.<anonymous> (C:\Users\SIDGLAT\AppData\Roaming\npm\node_modules\npm\node_modules\request\request.js:988:12) pkgid: 'npm', statusCode: 404, code: 'E404' }
+23 silly rollbackFailedOptional Starting
+24 silly rollbackFailedOptional Finishing
+25 silly runTopLevelLifecycles Starting
+26 silly runTopLevelLifecycles Finishing
+27 silly install printInstalled
+28 verbose stack Error: Package not found. Package was not found.: npm
+28 verbose stack     at makeError (C:\Users\SIDGLAT\AppData\Roaming\npm\node_modules\npm\node_modules\npm-registry-client\lib\request.js:264:12)
+28 verbose stack     at CachingRegistryClient.<anonymous> (C:\Users\SIDGLAT\AppData\Roaming\npm\node_modules\npm\node_modules\npm-registry-client\lib\request.js:252:14)
+28 verbose stack     at Request._callback (C:\Users\SIDGLAT\AppData\Roaming\npm\node_modules\npm\node_modules\npm-registry-client\lib\request.js:172:14)
+28 verbose stack     at Request.self.callback (C:\Users\SIDGLAT\AppData\Roaming\npm\node_modules\npm\node_modules\request\request.js:200:22)
+28 verbose stack     at emitTwo (events.js:106:13)
+28 verbose stack     at Request.emit (events.js:191:7)
+28 verbose stack     at Request.<anonymous> (C:\Users\SIDGLAT\AppData\Roaming\npm\node_modules\npm\node_modules\request\request.js:1067:10)
+28 verbose stack     at emitOne (events.js:101:20)
+28 verbose stack     at Request.emit (events.js:188:7)
+28 verbose stack     at IncomingMessage.<anonymous> (C:\Users\SIDGLAT\AppData\Roaming\npm\node_modules\npm\node_modules\request\request.js:988:12)
+29 verbose statusCode 404
+30 verbose pkgid npm
+31 verbose cwd C:\__DevLocal\satellizer
+32 error Windows_NT 6.1.7601
+33 error argv "C:\\Program Files (x86)\\nodejs\\node.exe" "C:\\Users\\SIDGLAT\\AppData\\Roaming\\npm\\node_modules\\npm\\bin\\npm-cli.js" "i" "-g" "sed"
+34 error node v6.5.0
+35 error npm  v3.10.6
+36 error code E404
+37 error 404 Package not found. Package was not found.: npm
+38 error 404
+39 error 404 'npm' is not in the npm registry.
+40 error 404 You should bug the author to publish it (or use the name yourself!)
+41 error 404 Note that you can also install from a
+42 error 404 tarball, folder, http url, or git url.
+43 verbose exit [ 1, true ]
