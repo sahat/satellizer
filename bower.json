@@ -1,5 +1,5 @@
 {
-  "name": "satellizerRoles",
+  "name": "satellizer-roles",
   "main": "dist/satellizer-roles.js",
   "homepage": "https://github.com/ciscokidxx/satellizer-roles",
   "ignore": [
