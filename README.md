@@ -1,3 +1,15 @@
+<img src="https://hacktoberfest.digitalocean.com/assets/hf_logo-52c2c8901ebacc7c28dc212084389f4d950f89c3599db4e37cd9aa572ed096b3.svg" width="600" height="auto">
+## Hacktoberfest 2016 (Oct 1 — Oct 31)
+
+- Hacktoberfest is open to everyone in our global community!
+- Pull requests can be made in any GitHub-hosted repositories/projects.
+- You can sign up anytime between October 1 and October 31.
+- **To get a shirt, you must make four pull requests between October 1 and October 31.**
+
+:beer: [Learn More](https://hacktoberfest.digitalocean.com/#resources)
+
+---
+
 ![Project Logo](http://i.imgur.com/yutNy7x.jpg)
 
 # [Satellizer](https://github.com/sahat/satellizer/)
