@@ -34,6 +34,16 @@ export default class Interceptor implements angular.IHttpInterceptor {
 
     return config;
   };
+
+  response = (response: angular.IHttpPromiseCallbackArg<String>): angular.IHttpPromiseCallbackArg<String>  => {
+    if(this.SatellizerShared.isAuthenticated() && this.SatellizerConfig.httpInterceptor()) {
+      let token = response.headers(this.SatellizerConfig.tokenHeader);
+      if(token != null) {
+        this.SatellizerShared.setToken({access_token: token});
+      }
+    }
+    return response;
+  };
 }
 
 Interceptor.Factory.$inject = ['SatellizerConfig', 'SatellizerShared', 'SatellizerStorage'];
