@@ -34,7 +34,7 @@
   "devDependencies": {
     "angular-mocks": "^1.5.8",
     "babel-core": "^6.14.0",
-    "babel-eslint": "^6.1.2",
+    "babel-eslint": "^7.0.0",
     "babel-loader": "^6.2.5",
     "babel-polyfill": "^6.13.0",
     "babel-preset-es2015": "^6.14.0",
