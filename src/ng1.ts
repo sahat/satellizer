@@ -10,7 +10,7 @@ import Storage from './storage';
 import Interceptor from './interceptor';
 import HttpProviderConfig from './httpProviderConfig';
 
-angular.module('satellizer', [])
+angular.module('satellizerRoles', [])
   .provider('$auth', ['SatellizerConfig', (SatellizerConfig) => new AuthProvider(SatellizerConfig)])
   .constant('SatellizerConfig', Config.getConstant)
   .service('SatellizerShared', Shared)
@@ -23,5 +23,4 @@ angular.module('satellizer', [])
   .service('SatellizerInterceptor', Interceptor)
   .config(['$httpProvider', ($httpProvider) => new HttpProviderConfig($httpProvider)]);
 
-export default 'satellizer';
-
+export default 'satellizerRoles';

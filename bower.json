@@ -1,7 +1,7 @@
 {
-  "name": "satellizer",
-  "main": "dist/satellizer.js",
-  "homepage": "https://github.com/sahat/satellizer",
+  "name": "satellizer-roles",
+  "main": "dist/satellizer-roles.js",
+  "homepage": "https://github.com/ciscokidxx/satellizer-roles",
   "ignore": [
     "examples",
     "src",

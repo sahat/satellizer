@@ -37,7 +37,8 @@ var userSchema = new mongoose.Schema({
   yahoo: String,
   twitter: String,
   twitch: String,
-  spotify: String
+  spotify: String,
+  role: String
 });
 
 userSchema.pre('save', function(next) {
@@ -119,7 +120,8 @@ function createJWT(user) {
   var payload = {
     sub: user._id,
     iat: moment().unix(),
-    exp: moment().add(14, 'days').unix()
+    exp: moment().add(14, 'days').unix(),
+    role: user.role
   };
   return jwt.encode(payload, config.TOKEN_SECRET);
 }
@@ -183,10 +185,18 @@ app.post('/auth/signup', function(req, res) {
     if (existingUser) {
       return res.status(409).send({ message: 'Email is already taken' });
     }
+
+    if (req.body.isAdmin === true) {
+      role = 'ADMIN';
+    } else {
+      role = 'USER';
+    }
+
     var user = new User({
       displayName: req.body.displayName,
       email: req.body.email,
-      password: req.body.password
+      password: req.body.password,
+      role: role
     });
     user.save(function(err, result) {
       if (err) {

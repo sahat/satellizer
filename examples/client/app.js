@@ -1,4 +1,29 @@
-angular.module('MyApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', 'ui.router', 'satellizer'])
+angular.module('MyApp', ['permission', 'permission.ui', 'ngResource', 'ngMessages', 'ngAnimate', 'toastr', 'ui.router', 'satellizer'])
+
+  .value('appAuth', {
+    isUserAuthorized: false,
+    isAdminAuthorized: false
+  })
+
+  .run(function(PermRoleStore, $auth, appAuth) {
+
+    var checkSession = function (role) {
+      return $auth.isAuthenticated(role);
+    };
+
+    PermRoleStore.defineManyRoles({
+      'USER' : function () { return checkSession('USER'); },
+      'ADMIN' : function () { return checkSession('ADMIN'); }
+    });
+
+    // Rerun authentication on page load
+    if ($auth.isAuthenticated('USER')) {
+      appAuth.isUserAuthorized = true;
+    } else if ($auth.isAuthenticated('ADMIN')) {
+      appAuth.isAdminAuthorized = true;
+    }
+  })
+
   .config(function($stateProvider, $urlRouterProvider, $authProvider) {
 
     /**
@@ -53,15 +78,48 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', 'ui.
         url: '/logout',
         template: null,
         controller: 'LogoutCtrl'
-      })
-      .state('profile', {
+      });
+
+      // User authorized states
+      $stateProvider.state('profile', {
         url: '/profile',
         templateUrl: 'partials/profile.html',
         controller: 'ProfileCtrl',
-        resolve: {
-          loginRequired: loginRequired
+        data: {
+          permissions: {
+            only: ['USER'],
+            redirectTo: function() {
+              return {
+                state: 'signup',
+                options: {
+                  reload: true
+                }
+              };
+            }
+          }
         }
       });
+
+      // Admin authorized state
+      $stateProvider.state('admin', {
+        url: '/admin',
+        templateUrl: 'partials/admin.html',
+        controller: 'Admin',
+        data: {
+          permissions: {
+            only: ['ADMIN'],
+            redirectTo: function() {
+              return {
+                state: 'signup',
+                options: {
+                  reload: true
+                }
+              };
+            }
+          }
+        }
+      });
+
     $urlRouterProvider.otherwise('/');
 
     /**

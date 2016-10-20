@@ -4,7 +4,7 @@ import { decodeBase64 } from './utils';
 
 class Shared {
   static $inject = ['$q', '$window', 'SatellizerConfig', 'SatellizerStorage'];
-  
+
   private prefixedTokenName: string;
 
   constructor(private $q: angular.IQService,
@@ -62,7 +62,7 @@ class Shared {
     this.SatellizerStorage.remove(this.prefixedTokenName);
   }
 
-  isAuthenticated(): boolean {
+  isAuthenticated(roleArgument): boolean {
     const token = this.SatellizerStorage.get(this.prefixedTokenName);
 
     if (token) {  // Token is present
@@ -71,8 +71,14 @@ class Shared {
           const base64Url = token.split('.')[1];
           const base64 = base64Url.replace('-', '+').replace('_', '/');
           const exp = JSON.parse(this.$window.atob(base64)).exp;
+          const role = JSON.parse(this.$window.atob(base64)).role; // JWT with an optional role claim
           if (typeof exp === 'number') {  // JWT with an optonal expiration claims
             return Math.round(new Date().getTime() / 1000) < exp;
+          }
+          if (roleArgument) {
+            if (roleArgument !== role) {
+              return false; // Fail: Supplied role doesn't match role defined in token
+            }
           }
         } catch (e) {
           return true;  // Pass: Non-JWT token that looks like JWT
