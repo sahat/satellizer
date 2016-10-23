@@ -564,7 +564,7 @@
                         if (popupWindowPath === redirectUriPath) {
                             if (_this.popup.location.search || _this.popup.location.hash) {
                                 var query = parseQueryString(_this.popup.location.search.substring(1).replace(/\/$/, ''));
-                                var hash = parseQueryString(_this.popup.location.hash.substring(1).replace(/[\/$]/, ''));
+                                var hash = parseQueryString(_this.popup.location.hash.substring(1);
                                 var params = angular.extend({}, query, hash);
                                 if (params.error) {
                                     reject(new Error(params.error));
