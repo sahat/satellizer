@@ -87,7 +87,7 @@ export default class Popup implements IPopup {
           if (popupWindowPath === redirectUriPath) {
             if (this.popup.location.search || this.popup.location.hash) {
               const query = parseQueryString(this.popup.location.search.substring(1).replace(/\/$/, ''));
-              const hash = parseQueryString(this.popup.location.hash.substring(1).replace(/[\/$]/, ''));
+              const hash = parseQueryString(this.popup.location.hash.substring(1);
               const params = angular.extend({}, query, hash);
 
               if (params.error) {
