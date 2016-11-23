@@ -120,7 +120,7 @@ def index():
     return send_file(os.path.join(client_path, 'index.html'))
 
 
-@app.route('/api/me')
+@app.route('/api/me', methods=['GET', 'PUT'])
 @login_required
 def me():
     user = User.query.filter_by(id=g.user_id).first()
