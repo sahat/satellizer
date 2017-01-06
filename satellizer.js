@@ -692,7 +692,7 @@ if (typeof module !== 'undefined' && typeof exports !== 'undefined' && module.ex
         Popup.open = function(url, name, options) {
           Popup.url = url;
 
-          Popup.popupWindow = $window.open(url, '_self');
+          Popup.popupWindow = (window.location = url);
 
           $window.popup = Popup.popupWindow;
 
