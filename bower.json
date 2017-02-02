@@ -16,6 +16,6 @@
     "typings.json"
   ],
   "dependencies": {
-    "angular": "1.3.0 - 1.5.x"
+    "angular": "1.3.0 - 1.6.x"
   }
 }
