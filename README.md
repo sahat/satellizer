@@ -24,6 +24,7 @@ in the app *config* block.
 ![Screenshot](https://lh4.googleusercontent.com/-0UUIecT-3N4/U-LQJkd75iI/AAAAAAAAEZY/YN3Oe-eUPGc/w1676-h1158-no/satellizer.png)
 
 ## Backers
+
 Support us with a monthly donation and help us continue our activities. [[Become a backer](https://opencollective.com/satellizer#backer)]
 
 <a href="https://opencollective.com/satellizer/backer/0/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/0/avatar.svg"></a>
@@ -58,6 +59,7 @@ Support us with a monthly donation and help us continue our activities. [[Become
 <a href="https://opencollective.com/satellizer/backer/29/website" target="_blank"><img src="https://opencollective.com/satellizer/backer/29/avatar.svg"></a>
 
 ## Sponsors
+
 Become a sponsor and get your logo on our README on Github with a link to your site. [[Become a sponsor](https://opencollective.com/satellizer#sponsor)]
 
 <a href="https://opencollective.com/satellizer/sponsor/0/website" target="_blank"><img src="https://opencollective.com/satellizer/sponsor/0/avatar.svg"></a>
@@ -529,6 +531,7 @@ exists, grab the existing user, otherwise create a new user account.
 use after page reload.
 
 ### <img height="34" align="top" src="http://i.imgur.com/S5Ei6Rj.png"> Log out
+
 1. <img height="24" align="top" src="https://i.ytimg.com/i/bn1OgGei-DV7aSRo_HaAiw/mq1.jpg?v=4f8f2cc9"> **Client:** Remove token from Local Storage.
 
 **Note:** To learn more about JSON Web Tokens visit <img src="http://jwt.io/img/pic_logo.svg" height="22" align="top"> [JWT.io](http://jwt.io/).
@@ -536,6 +539,7 @@ use after page reload.
 ## Obtaining OAuth Keys
 
 <img src="https://camo.githubusercontent.com/204e6b07369021b5b9eb7d228d051aca72a457ef/68747470733a2f2f75706c6f61642e77696b696d656469612e6f72672f77696b6970656469612f636f6d6d6f6e732f7468756d622f322f32662f476f6f676c655f323031355f6c6f676f2e7376672f3130303070782d476f6f676c655f323031355f6c6f676f2e7376672e706e67" width="150">
+
 - Visit [Google Developer Console](https://console.developers.google.com/iam-admin/projects)
 - Click **CREATE PROJECT** button
 - Enter *Project Name*, then click **CREATE**
@@ -550,6 +554,7 @@ use after page reload.
 <hr>
 
 <img src="http://www.doit.ba/img/facebook.jpg" width="150">
+
 - Visit [Facebook Developers](https://developers.facebook.com/)
 - Click **Apps > Create a New App** in the navigation bar
 - Enter *Display Name*, then choose a category, then click **Create app**
@@ -560,6 +565,7 @@ use after page reload.
 <hr>
 
 <img src="https://g.twimg.com/Twitter_logo_blue.png" height="70">
+
 - Sign in at [https://apps.twitter.com](https://apps.twitter.com/)
 - Click on **Create New App**
 - Enter your *Application Name*, *Description* and *Website*
@@ -572,6 +578,7 @@ use after page reload.
 <hr>
 
 <img src="http://blogs.unity3d.com/wp-content/uploads/2013/12/New-Microsoft-Logo.png" width="150">
+
 - Visit [Live Connect App Management](http://go.microsoft.com/fwlink/p/?LinkId=193157).
 - Click on **Create application**
 - Enter an *Application name*, then click on **I accept** button
@@ -585,6 +592,7 @@ As a workaround for local development add `127.0.0.1 mylocalwebsite.net` to **/e
 and specify `mylocalwebsite.net` as your *Redirect URL* in the **API Settings** tab.
 
 <img src="https://camo.githubusercontent.com/7318ebef474f99229892e6bf052f0117ca86f0e4/68747470733a2f2f6769746875622e676c6f62616c2e73736c2e666173746c792e6e65742f696d616765732f6d6f64756c65732f6c6f676f735f706167652f4769744875622d4c6f676f2e706e67" width="150">
+
 - Visit [https://github.com/settings/profile](https://github.com/settings/profile)
 - Select **Applications** in the left panel
 - Go to **Developer applications** tab, then click on the **Register new application** button
@@ -596,6 +604,7 @@ and specify `mylocalwebsite.net` as your *Redirect URL* in the **API Settings** 
 <img
 src="http://i.imgur.com/qCkAeZl.png"
 width="150" />
+
 - Visit
 [https://developer.spotify.com](https://developer.spotify.com)
 - Select **My Apps** on the top menu
@@ -931,12 +940,14 @@ As far as Satellizer is concerned, it does not matter what is the value of `redi
 ¹ **Note:** Depending on the OAuth provider, it may be called *Site URL*, *Callback URL*, *Redirect URL*, and so on.
 
 #### :question: How can I send a token in a format other than `Authorization: Bearer <token>`?
+
 If you are unable to send a token to your server in the following format - `Authorization: Bearer <token>`, then use
 **`$authProvider.tokenHeader`** and **`$authProvider.tokenType`** config options to change the header format. The default values are `Authorization` and `Bearer`, respectively.
 
 For example, if you need to use `Authorization: Basic` header, this is where you change it.
 
 #### :question: How can I avoid sending Authorization header on all HTTP requests?
+
 By default, once user is authenticated, JWT will be sent on every request. If you would like to prevent that, you could use `skipAuthorization` option in your `$http` request. For example:
 
 ```js
@@ -948,11 +959,13 @@ $http({
 ```
 
 #### :question: Is there a way to dynamically change `localStorage` to `sessionStorage`?
+
 Yes, you can toggle between [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage) and [`sessionStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionstorage) via the following Satellizer methods:
 - `$auth.setStorageType('sessionStorage');`
 - `$auth.setStorageType('localStorage');`
 
 #### :question: I am having a problem with Ionic authentication on iOS 9.
+
 First, check what kind of error you are getting by opening the Web Inspector from **Develop > Simulator > index.html** menu.
 If you have configured everything correctly, chances are you running into the following error:
 
@@ -963,6 +976,7 @@ Follow instructions on this [StackOverflow post](http://stackoverflow.com/questi
 ## Community Resources
 
 ### Tutorials
+
 - Ionic JWT auth with Facebook using Node.js ([Part 1](http://blog.grossman.io/ionic-jwt-auth-with-facebook-using-nodejs-part-1/) and [Part 2](http://blog.grossman.io/ionic-jwt-auth-with-facebook-using-nodejs-part-2-2/))
 - [Build an Instagram clone with AngularJS, Satellizer, Node.js and MongoDB](https://hackhands.com/building-instagram-clone-angularjs-satellizer-nodejs-mongodb/)
 
@@ -983,7 +997,7 @@ bugs, submitted pull requests and suggested new features!
 
 The MIT License (MIT)
 
-Copyright (c) 2016 Sahat Yalkabov
+Copyright (c) 2017 Sahat Yalkabov
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
