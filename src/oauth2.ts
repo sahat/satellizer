@@ -87,6 +87,10 @@ export default class OAuth2 {
           return resolve(oauth);
         }
 
+        if (responseType === 'token id_token' || 'id_token token' || !this.defaults.url) {
+          return resolve(oauth);
+        }
+
         if (oauth.state && oauth.state !== this.SatellizerStorage.get(stateName)) {
           return reject(new Error(
             'The value returned in the state parameter does not match the state value from your original ' +

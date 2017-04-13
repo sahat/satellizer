@@ -11,8 +11,10 @@ export default class Config {
   tokenPrefix = 'satellizer';
   tokenHeader = 'Authorization';
   tokenType = 'Bearer';
+  idTokenName = 'id_token';
   storageType = 'localStorage';
   tokenRoot = null;
+  idTokenRoot = null;
   withCredentials = false;
   providers = {
     facebook: {

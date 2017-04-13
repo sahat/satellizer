@@ -34,6 +34,12 @@ export default class AuthProvider {
   get tokenType(): string { return this.SatellizerConfig.tokenType; }
   set tokenType(value) { this.SatellizerConfig.tokenType = value; }
 
+  get idTokenName(): string { return this.SatellizerConfig.idTokenName; }
+  set idTokenName(value) { this.SatellizerConfig.idTokenName = value; }
+
+  get idTokenRoot(): string { return this.SatellizerConfig.idTokenRoot; }
+  set idTokenRoot(value) { this.SatellizerConfig.idTokenRoot = value; }
+
   get withCredentials(): boolean { return this.SatellizerConfig.withCredentials; }
   set withCredentials(value) { this.SatellizerConfig.withCredentials = value; }
 
@@ -115,6 +121,7 @@ export default class AuthProvider {
       unlink: (name, options) => SatellizerOAuth.unlink(name, options),
       isAuthenticated: () => SatellizerShared.isAuthenticated(),
       getPayload: () => SatellizerShared.getPayload(),
+      getIdPayload: () => SatellizerShared.getIdPayload(),
       getToken: () => SatellizerShared.getToken(),
       setToken: (token) => SatellizerShared.setToken({ access_token: token }),
       removeToken: () => SatellizerShared.removeToken(),

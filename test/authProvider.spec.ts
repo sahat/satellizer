@@ -89,6 +89,16 @@ describe('AuthProvider', () => {
     expect(authProvider.tokenType).toEqual('TOKEN');
   });
 
+  it('should set idTokenName', () => {
+    authProvider.idTokenName = 'id_token';
+    expect(authProvider.idTokenName).toEqual('id_token');
+  });
+
+  it('should set idTokenRoot', () => {
+    authProvider.idTokenRoot = 'deep.nested.object';
+    expect(authProvider.idTokenRoot).toEqual('deep.nested.object');
+  });
+
   it('should set withCredentials', () => {
     authProvider.withCredentials = false;
     expect(authProvider.withCredentials).toEqual(false);
@@ -248,6 +258,23 @@ describe('AuthProvider', () => {
 
     });
 
+    describe('getIdPayload()', () => {
+
+      it('should be defined', () => {
+        expect(auth.getIdPayload).toBeDefined();
+      });
+
+      it('should get a id_token JWT payload', () => {
+        const storageType = config.storageType;
+        const idTokenName = [config.tokenPrefix, config.idTokenName].join('_');
+        window[storageType][idTokenName] = token;
+        const payload = auth.getIdPayload();
+        expect(payload).toBeDefined();
+        expect(angular.isObject(payload)).toBe(true);
+      });
+
+    });
+
     describe('link()', () => {
 
       it('should be defined', () => {
@@ -293,8 +320,10 @@ describe('AuthProvider', () => {
       it('should log out a user', () => {
         const storageType = config.storageType;
         const tokenName = [config.tokenPrefix, config.tokenName].join('_');
+        const idTokenName = [config.tokenPrefix, config.idTokenName].join('_');
         auth.logout();
         expect([storageType][tokenName]).toBeUndefined();
+        expect([storageType][idTokenName]).toBeUndefined();
       });
 
     });

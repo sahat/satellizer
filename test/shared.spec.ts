@@ -30,9 +30,12 @@ describe('Shared', () => {
     it('should log out a user', () => {
       const storageType = config.storageType;
       const tokenName = [config.tokenPrefix, config.tokenName].join('_');
+      const idTokenName = [config.tokenPrefix, config.idTokenName].join('_');
       window[storageType][tokenName] = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9';
+      window[storageType][idTokenName] = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjFlOWdkazcifQ.ewogImlzcyI6ICJodHRwOi8vc2VydmVyLmV4YW1wbGUuY29tIiwKICJzdWIiOiAiMjQ4Mjg5NzYxMDAxIiwKICJhdWQiOiAiczZCaGRSa3F0MyIsCiAibm9uY2UiOiAibi0wUzZfV3pBMk1qIiwKICJleHAiOiAxMzExMjgxOTcwLAogImlhdCI6IDEzMTEyODA5NzAKfQ.ggW8hZ1EuVLuxNuuIJKX_V8a_OMXzR0EHR9R6jgdqrOOF4daGU96Sr_P6qJp6IcmD3HP99Obi1PRs-cwh3LO-p146waJ8IhehcwL7F09JdijmBqkvPeB2T9CJNqeGpe-gccMg4vfKjkM8FcGvnzZUN4_KSP0aAp1tOJ1zZwgjxqGByKHiOtX7TpdQyHE5lcMiKPXfEIQILVq0pc_E2DzL7emopWoaoZTF_m0_N0YzFC6g6EJbOEoRoSK5hoDalrcvRYLSrQAZZKflyuVCyixEoV9GfNQC3_osjzw2PAithfubEEBLuVVk4XUVrWOLrLl0nx7RkKU8NXNHq-rvKMzqg';
       shared.logout();
       expect(window[storageType][tokenName]).toBeFalsy();
+      expect(window[storageType][idTokenName]).toBeFalsy();
     });
 
   });
@@ -94,6 +97,47 @@ describe('Shared', () => {
 
   });
 
+  describe('getIdPayload()', () => {
+
+    it('should be defined', () => {
+      expect(shared.getIdPayload).toBeDefined();
+    });
+
+    it('should get a JWT payload', () => {
+      const storageType = config.storageType;
+      const idTokenName = [config.tokenPrefix, config.idTokenName].join('_');
+      window[storageType][idTokenName] = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjFlOWdkazcifQ.ewogImlzcyI6ICJodHRwOi8vc2VydmVyLmV4YW1wbGUuY29tIiwKICJzdWIiOiAiMjQ4Mjg5NzYxMDAxIiwKICJhdWQiOiAiczZCaGRSa3F0MyIsCiAibm9uY2UiOiAibi0wUzZfV3pBMk1qIiwKICJleHAiOiAxMzExMjgxOTcwLAogImlhdCI6IDEzMTEyODA5NzAKfQ.ggW8hZ1EuVLuxNuuIJKX_V8a_OMXzR0EHR9R6jgdqrOOF4daGU96Sr_P6qJp6IcmD3HP99Obi1PRs-cwh3LO-p146waJ8IhehcwL7F09JdijmBqkvPeB2T9CJNqeGpe-gccMg4vfKjkM8FcGvnzZUN4_KSP0aAp1tOJ1zZwgjxqGByKHiOtX7TpdQyHE5lcMiKPXfEIQILVq0pc_E2DzL7emopWoaoZTF_m0_N0YzFC6g6EJbOEoRoSK5hoDalrcvRYLSrQAZZKflyuVCyixEoV9GfNQC3_osjzw2PAithfubEEBLuVVk4XUVrWOLrLl0nx7RkKU8NXNHq-rvKMzqg';
+      const payload = shared.getIdPayload();
+      expect(angular.isObject(payload)).toBe(true);
+      expect(payload).toEqual({
+        iss: "http://server.example.com",
+        sub: "248289761001",
+        aud: "s6BhdRkqt3",
+        nonce: "n-0S6_WzA2Mj",
+        exp: 1311281970,
+        iat: 1311280970
+      });
+    });
+
+    it('should return undefined if not a valid JWT', () => {
+      const storageType = config.storageType;
+      const idTokenName = [config.tokenPrefix, config.idTokenName].join('_');
+      window[storageType][idTokenName] = 'f0af717251950dbd4d73154fdf0a474a5c5119adad999683f5b450c460726aa';
+      const payload = shared.getIdPayload();
+      expect(payload).toBeUndefined();
+    });
+
+    it('should return undefined if token looks like JWT but is not valid', function () {
+      const storageType = config.storageType;
+      const idTokenName = [config.tokenPrefix, config.idTokenName].join('_');
+      window[storageType][idTokenName] = 'f0af717251950dbd4.d73154fdf0a474a5c5119ada.d999683f5b450c460726aa';
+      const payload = shared.getIdPayload();
+      expect(payload).toBeUndefined();
+    });
+
+  });
+
+
   describe('isAuthenticated()', () => {
 
     it('should be defined', () => {
@@ -122,8 +166,10 @@ describe('Shared', () => {
     it('should gracefully return without a response param', () => {
       const storageType = config.storageType;
       const tokenName = [config.tokenPrefix, config.tokenName].join('_');
+      const idTokenName = [config.tokenPrefix, config.idTokenName].join('_');
       shared.setToken();
       expect(window[storageType][tokenName]).toBeUndefined();
+      expect(window[storageType][idTokenName]).toBeUndefined();
     });
 
     it('should set the token when tokenRoot is provided', () => {
@@ -148,6 +194,14 @@ describe('Shared', () => {
       const response = { access_token: 'test' };
       shared.setToken(response);
       expect(window[storageType][tokenName]).toBe('test');
+    });
+
+    it('should set string id_token', () => {
+      const storageType = config.storageType;
+      const idTokenName = [config.tokenPrefix, config.idTokenName].join('_');
+      const response = { id_token: 'test' };
+      shared.setToken(response);
+      expect(window[storageType][idTokenName]).toBe('test');
     });
 
     it('should set object access_token', () => {
@@ -189,8 +243,11 @@ describe('Shared', () => {
       const storageType = config.storageType;
       const tokenName = [config.tokenPrefix, config.tokenName].join('_');
       window[storageType][tokenName] = 'f0af717251950dbd4d73154fdf0a474a5c5119adad999683f5b450c460726aa';
+      const idTokenName = [config.tokenPrefix, config.idTokenName].join('_');
+      window[storageType][idTokenName] = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjFlOWdkazcifQ.ewogImlzcyI6ICJodHRwOi8vc2VydmVyLmV4YW1wbGUuY29tIiwKICJzdWIiOiAiMjQ4Mjg5NzYxMDAxIiwKICJhdWQiOiAiczZCaGRSa3F0MyIsCiAibm9uY2UiOiAibi0wUzZfV3pBMk1qIiwKICJleHAiOiAxMzExMjgxOTcwLAogImlhdCI6IDEzMTEyODA5NzAKfQ.ggW8hZ1EuVLuxNuuIJKX_V8a_OMXzR0EHR9R6jgdqrOOF4daGU96Sr_P6qJp6IcmD3HP99Obi1PRs-cwh3LO-p146waJ8IhehcwL7F09JdijmBqkvPeB2T9CJNqeGpe-gccMg4vfKjkM8FcGvnzZUN4_KSP0aAp1tOJ1zZwgjxqGByKHiOtX7TpdQyHE5lcMiKPXfEIQILVq0pc_E2DzL7emopWoaoZTF_m0_N0YzFC6g6EJbOEoRoSK5hoDalrcvRYLSrQAZZKflyuVCyixEoV9GfNQC3_osjzw2PAithfubEEBLuVVk4XUVrWOLrLl0nx7RkKU8NXNHq-rvKMzqg';
       shared.removeToken();
       expect(window[storageType][tokenName]).toBeUndefined();
+      expect(window[storageType][idTokenName]).toBeUndefined();
     });
 
   });
