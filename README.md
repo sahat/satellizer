@@ -162,7 +162,7 @@ ionic-plugin-keyboard 1.0.8 "Keyboard"
 
 **Step 1. App Module**
 ```js
-angular.module('MyApp', ['satellizer'])
+angular.module('MyApp', ['Satellizer'])
   .config(function($authProvider) {
 
     $authProvider.facebook({
