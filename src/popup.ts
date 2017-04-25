@@ -1,7 +1,13 @@
 import { parseQueryString, getFullUrlPath } from './utils';
 
+export interface IPopupOptions {
+  width: number;
+  height: number;
+  [propName: string]: any;
+}
+
 export interface IPopup {
-  open(url: string, name: string, popupOptions: { width: number, height: number }, redirectUri: string): void;
+  open(url: string, name: string, popupOptions: IPopupOptions, redirectUri: string): void;
   stringifyOptions (options: any): string;
   polling(redirectUri: string): angular.IPromise<any>;
   eventListener(redirectUri: string): angular.IPromise<any>;
@@ -33,18 +39,18 @@ export default class Popup implements IPopup {
 
   open(url: string,
        name: string,
-       popupOptions: { width: number, height: number },
+       popupOptions: IPopupOptions,
        redirectUri: string,
        dontPoll?: boolean): angular.IPromise<any> {
     const width = popupOptions.width || 500;
     const height = popupOptions.height || 500;
 
-    const options = this.stringifyOptions({
+    const options = this.stringifyOptions(Object.assign({}, popupOptions, {
       width: width,
       height: height,
       top: this.$window.screenY + ((this.$window.outerHeight - height) / 2.5),
       left: this.$window.screenX + ((this.$window.outerWidth - width) / 2)
-    });
+    }));
 
     const popupName = this.$window['cordova'] || this.$window.navigator.userAgent.indexOf('CriOS') > -1 ? '_blank' : name;
 
