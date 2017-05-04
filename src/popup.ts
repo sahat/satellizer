@@ -55,11 +55,15 @@ export default class Popup implements IPopup {
       'height': height,
       'type': 'panel'
     }
-    this.popup = chrome.windows.create(chromeWindowCreateOpts, function(win) {
+    chrome.runtime.sendMessage({
+      action: 'createWindow',
+      opts: chromeWindowCreateOpts
+    },
+    function(createdWindow) {
       // created window
       console.log("got window!")
-      console.log(win)
-      this.popup = win
+      console.log(createdWindow)
+      this.popup = createdWindow
       this.polling(redirectUri)
     });
 
