@@ -55,34 +55,37 @@ export default class Popup implements IPopup {
       'height': height,
       'type': 'panel'
     }
-    chrome.runtime.sendMessage({
-      action: 'createWindow',
-      opts: chromeWindowCreateOpts
-    },
-    function(createdWindow) {
-      // created window
-      console.log("got window!")
-      console.log(createdWindow)
-      this.popup = createdWindow
-      this.polling(redirectUri)
-    });
 
-    if (this.popup && this.popup.focus) {
-      this.popup.focus();
-    }
+    return this.$q((resolve, reject) => {
+      chrome.runtime.sendMessage({
+          action: 'createWindow',
+          opts: chromeWindowCreateOpts
+        }, (createdWindow) => {
+          // created window
+          this.popup = createdWindow
+          createdWindow.alwaysOnTop = true
+          console.log(createdWindow)
+          resolve(this.polling(redirectUri))
+        }
+      )
+    })
 
-    if (dontPoll) {
-      return;
-    }
+    // if (this.popup && this.popup.focus) {
+    //   this.popup.focus();
+    // }
 
-    if (this.$window['cordova']) {
-      return this.eventListener(redirectUri);
-    } else {
-      if (url === 'about:blank') {
-        this.popup.location = url;
-      }
-      return this.polling(redirectUri);
-    }
+    // if (dontPoll) {
+    //   return;
+    // }
+
+    // if (this.$window['cordova']) {
+    //   return this.eventListener(redirectUri);
+    // } else {
+    //   if (url === 'about:blank') {
+    //     this.popup.location = url;
+    //   }
+    //   return this.polling(redirectUri);
+    // }
 
   }
 
@@ -93,7 +96,8 @@ export default class Popup implements IPopup {
       const redirectUriPath = getFullUrlPath(redirectUriParser);
 
       const polling = this.$interval(() => {
-        if (!this.popup || this.popup.closed || this.popup.closed === undefined) {
+        // if (!this.popup || this.popup.closed || this.popup.closed === undefined) {
+        if (!this.popup) {
           this.$interval.cancel(polling);
           reject(new Error('The popup window was closed'));
         }

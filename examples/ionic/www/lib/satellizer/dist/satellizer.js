@@ -521,6 +521,7 @@ var Popup = (function () {
         return parts.join(',');
     };
     Popup.prototype.open = function (url, name, popupOptions, redirectUri, dontPoll) {
+        var _this = this;
         var width = popupOptions.width || 500;
         var height = popupOptions.height || 500;
         var options = this.stringifyOptions({
@@ -537,31 +538,32 @@ var Popup = (function () {
             'height': height,
             'type': 'panel'
         };
-        chrome.runtime.sendMessage({
-            action: 'createWindow',
-            opts: chromeWindowCreateOpts
-        }, function (createdWindow) {
-            // created window
-            console.log("got window!");
-            console.log(createdWindow);
-            this.popup = createdWindow;
-            this.polling(redirectUri);
+        return this.$q(function (resolve, reject) {
+            chrome.runtime.sendMessage({
+                action: 'createWindow',
+                opts: chromeWindowCreateOpts
+            }, function (createdWindow) {
+                // created window
+                _this.popup = createdWindow;
+                createdWindow.alwaysOnTop = true;
+                console.log(createdWindow);
+                resolve(_this.polling(redirectUri));
+            });
         });
-        if (this.popup && this.popup.focus) {
-            this.popup.focus();
-        }
-        if (dontPoll) {
-            return;
-        }
-        if (this.$window['cordova']) {
-            return this.eventListener(redirectUri);
-        }
-        else {
-            if (url === 'about:blank') {
-                this.popup.location = url;
-            }
-            return this.polling(redirectUri);
-        }
+        // if (this.popup && this.popup.focus) {
+        //   this.popup.focus();
+        // }
+        // if (dontPoll) {
+        //   return;
+        // }
+        // if (this.$window['cordova']) {
+        //   return this.eventListener(redirectUri);
+        // } else {
+        //   if (url === 'about:blank') {
+        //     this.popup.location = url;
+        //   }
+        //   return this.polling(redirectUri);
+        // }
     };
     Popup.prototype.polling = function (redirectUri) {
         var _this = this;
@@ -570,7 +572,8 @@ var Popup = (function () {
             redirectUriParser.href = redirectUri;
             var redirectUriPath = getFullUrlPath(redirectUriParser);
             var polling = _this.$interval(function () {
-                if (!_this.popup || _this.popup.closed || _this.popup.closed === undefined) {
+                // if (!this.popup || this.popup.closed || this.popup.closed === undefined) {
+                if (!_this.popup) {
                     _this.$interval.cancel(polling);
                     reject(new Error('The popup window was closed'));
                 }
