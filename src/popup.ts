@@ -48,7 +48,20 @@ export default class Popup implements IPopup {
 
     const popupName = this.$window['cordova'] || this.$window.navigator.userAgent.indexOf('CriOS') > -1 ? '_blank' : name;
 
-    this.popup = this.$window.open(url, popupName, options);
+    // this.popup = this.$window.open(url, popupName, options);
+    const chromeWindowCreateOpts = {
+      'url': url,
+      'width': width,
+      'height': height,
+      'type': 'panel'
+    }
+    this.popup = chrome.windows.create(chromeWindowCreateOpts, function(win) {
+      // created window
+      console.log("got window!")
+      console.log(win)
+      this.popup = win
+      this.polling(redirectUri)
+    });
 
     if (this.popup && this.popup.focus) {
       this.popup.focus();
