@@ -253,7 +253,9 @@ public class AuthResource {
 
     @NotBlank
     String code;
-
+    
+    String state;
+	  
     public String getClientId() {
       return clientId;
     }
@@ -265,6 +267,10 @@ public class AuthResource {
     public String getCode() {
       return code;
     }
+	  
+    public String getState() {
+      return state;
+    }	  
   }
 
   /*
