@@ -66,7 +66,7 @@ export default class Config {
     linkedin: {
       name: 'linkedin',
       url: '/auth/linkedin',
-      authorizationEndpoint: 'https://www.linkedin.com/uas/oauth2/authorization',
+      authorizationEndpoint: 'https://www.linkedin.com/oauth/v2/authorization',
       redirectUri: window.location.origin,
       requiredUrlParams: ['state'],
       scope: ['r_emailaddress'],
