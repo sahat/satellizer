@@ -584,14 +584,22 @@ use after page reload.
 As a workaround for local development add `127.0.0.1 mylocalwebsite.net` to **/etc/hosts** file
 and specify `mylocalwebsite.net` as your *Redirect URL* in the **API Settings** tab.
 
+<hr>
+
 <img src="https://camo.githubusercontent.com/7318ebef474f99229892e6bf052f0117ca86f0e4/68747470733a2f2f6769746875622e676c6f62616c2e73736c2e666173746c792e6e65742f696d616765732f6d6f64756c65732f6c6f676f735f706167652f4769744875622d4c6f676f2e706e67" width="150">
-- Visit [https://github.com/settings/profile](https://github.com/settings/profile)
-- Select **Applications** in the left panel
-- Go to **Developer applications** tab, then click on the **Register new application** button
- - **Application name**: Your app name
- - **Homepage URL**: *http://localhost:3000*
- - **Authorization callback URL**: *http://localhost:3000*
-- Click on the **Register application** button
+<ul>
+  <li> Visit <a href="https://github.com/settings/profile">https://github.com/settings/profile</a></li>
+  <li> Select <strong>Applications</strong> in the left panel </li>
+  <li> Go to <strong>Developer applications</strong> tab, then click on the <strong>Register new application</strong> button </li>
+  <ul>
+    <li><strong>Application name</strong>: Your app name </li>
+    <li><strong>Homepage URL</strong>: <a href="http://localhost:3000">http://localhost:3000</a></li>
+    <li><strong>Authorization callback URL</strong>: <a href="http://localhost:3000">http://localhost:3000</a></li>
+  </ul>
+  <li> Click on the <strong>Register application</strong> button </li>
+</ul>
+
+<hr>
 
 <img
 src="http://i.imgur.com/qCkAeZl.png"
