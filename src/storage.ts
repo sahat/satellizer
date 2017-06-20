@@ -11,26 +11,38 @@ export default class Storage {
     this.memoryStore = {};
   }
 
-  get(key: string): string {
+  isStorageAvailable (storageType: string): boolean {
+    var key = Math.random().toString(36)
+
     try {
-      return this.$window[this.SatellizerConfig.storageType].getItem(key);
+      this.$window[storageType].setItem(key, '');
+      this.$window[storageType].removeItem(key);
+      return true;
     } catch (e) {
+      return false;
+    }
+  }
+
+  get(key: string): string {
+    if (this.isStorageAvailable(this.SatellizerConfig.storageType)) {
+      return this.$window[this.SatellizerConfig.storageType].getItem(key);
+    } else {
       return this.memoryStore[key];
     }
   }
 
   set(key: string, value: string): void {
-    try {
+    if (this.isStorageAvailable(this.SatellizerConfig.storageType)) {
       this.$window[this.SatellizerConfig.storageType].setItem(key, value);
-    } catch (e) {
+    } else {
       this.memoryStore[key] = value;
     }
   }
 
   remove(key: string): void {
-    try {
+    if (this.isStorageAvailable(this.SatellizerConfig.storageType)) {
       this.$window[this.SatellizerConfig.storageType].removeItem(key);
-    } catch (e) {
+    } else {
       delete this.memoryStore[key];
     }
   }
