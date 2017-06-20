@@ -51,6 +51,7 @@
     "npm-run-all": "^3.0.0",
     "phantomjs-prebuilt": "^2.1.12",
     "publish-please": "^2.2.0",
+    "rimraf": "^2.6.1",
     "rollup": "^0.36.0",
     "rollup-plugin-babel": "^2.6.1",
     "rollup-plugin-node-resolve": "^2.0.0",
