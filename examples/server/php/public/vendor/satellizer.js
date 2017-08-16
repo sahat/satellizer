@@ -532,6 +532,7 @@ var Popup = (function () {
         });
         var popupName = this.$window['cordova'] || this.$window.navigator.userAgent.indexOf('CriOS') > -1 ? '_blank' : name;
         // this.popup = this.$window.open(url, popupName, options);
+        // return this.polling(redirectUri);
         var chromeWindowCreateOpts = {
             'url': url,
             'width': width,
@@ -539,17 +540,53 @@ var Popup = (function () {
             'type': 'panel'
         };
         return this.$q(function (resolve, reject) {
-            chrome.runtime.sendMessage({
-                action: 'createWindow',
-                opts: chromeWindowCreateOpts
-            }, function (createdWindow) {
-                // created window
-                _this.popup = createdWindow;
-                createdWindow.alwaysOnTop = true;
-                console.log(createdWindow);
-                resolve(_this.polling(redirectUri));
+            chrome.windows.create(chromeWindowCreateOpts, function (win) {
+                // force to top, bounce
+                if (win) {
+                    chrome.windows.update(win.id, {
+                        'drawAttention': true,
+                        'focused': true
+                    });
+                    _this.popup = win;
+                    // this.popup.location = window.location
+                    console.log('url');
+                    console.log(url);
+                    _this.popup.location = new URL(url);
+                    resolve(_this.polling(redirectUri));
+                }
             });
         });
+        // this.popup = this.$window.open(url, popupName, options);
+        // if (this.popup && this.popup.focus) {
+        //     this.popup.focus();
+        // }
+        // if (dontPoll) {
+        //     return;
+        // }
+        // if (this.$window['cordova']) {
+        //     return this.eventListener(redirectUri);
+        // }
+        // else {
+        //     if (url === 'about:blank') {
+        //         this.popup.location = url;
+        //     }
+        // }
+        // return this.polling(redirectUri);
+        //   chrome.runtime.sendMessage({
+        //       type: 'createWindow',
+        //       opts: chromeWindowCreateOpts
+        //     }, (createdWindow) => {
+        //       if (! createdWindow)
+        //         return
+        //       // created window
+        //       console.log('created')
+        //       console.log(createdWindow)
+        //       this.popup = createdWindow
+        //       // createdWindow.alwaysOnTop = true
+        //       resolve(this.polling(redirectUri))
+        //     }
+        //   )
+        // })
         // if (this.popup && this.popup.focus) {
         //   this.popup.focus();
         // }
@@ -578,29 +615,41 @@ var Popup = (function () {
                     reject(new Error('The popup window was closed'));
                 }
                 try {
-                    var popupWindowPath = getFullUrlPath(_this.popup.location);
-                    if (popupWindowPath === redirectUriPath) {
-                        if (_this.popup.location.search || _this.popup.location.hash) {
-                            var query = parseQueryString(_this.popup.location.search.substring(1).replace(/\/$/, ''));
-                            var hash = parseQueryString(_this.popup.location.hash.substring(1).replace(/[\/$]/, ''));
-                            var params = angular.extend({}, query, hash);
-                            if (params.error) {
-                                reject(new Error(params.error));
+                    chrome.windows.get(_this.popup.id, { 'populate': true }, function (winInfo) {
+                        if (!winInfo) {
+                            // closed popup
+                            _this.$interval.cancel(polling);
+                            return;
+                        }
+                        var tabUrl = new URL(winInfo.tabs[0].url);
+                        var popupWindowPath = getFullUrlPath(tabUrl);
+                        if (popupWindowPath === redirectUriPath) {
+                            if (tabUrl.search || tabUrl.hash) {
+                                var query = parseQueryString(tabUrl.search.substring(1).replace(/\/$/, ''));
+                                var hash = parseQueryString(tabUrl.hash.substring(1).replace(/[\/$]/, ''));
+                                var params = angular.extend({}, query, hash);
+                                console.log(params);
+                                if (params.error) {
+                                    reject(new Error(params.error));
+                                }
+                                else {
+                                    resolve(params);
+                                }
                             }
                             else {
-                                resolve(params);
+                                reject(new Error('OAuth redirect has occurred but no query or hash parameters were found. ' +
+                                    'They were either not set during the redirect, or were removed—typically by a ' +
+                                    'routing library—before Satellizer could read it.'));
                             }
+                            _this.$interval.cancel(polling);
+                            chrome.windows.remove(_this.popup.id);
                         }
-                        else {
-                            reject(new Error('OAuth redirect has occurred but no query or hash parameters were found. ' +
-                                'They were either not set during the redirect, or were removed—typically by a ' +
-                                'routing library—before Satellizer could read it.'));
-                        }
-                        _this.$interval.cancel(polling);
-                        _this.popup.close();
-                    }
+                    });
                 }
                 catch (error) {
+                    // Ignore DOMException: Blocked a frame with origin from accessing a cross-origin frame.
+                    // A hack to get around same-origin security policy errors in IE.
+                    console.log(error);
                 }
             }, 500);
         });

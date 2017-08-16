@@ -120,7 +120,7 @@ export default class OAuth2 {
 
     if (oauthData.state) {
       payload.state = oauthData.state;
-    }
+    }    
 
     let exchangeForTokenUrl = this.SatellizerConfig.baseUrl ?
       joinUrl(this.SatellizerConfig.baseUrl, this.defaults.url) :

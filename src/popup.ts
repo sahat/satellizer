@@ -49,26 +49,62 @@ export default class Popup implements IPopup {
     const popupName = this.$window['cordova'] || this.$window.navigator.userAgent.indexOf('CriOS') > -1 ? '_blank' : name;
 
     // this.popup = this.$window.open(url, popupName, options);
+    // return this.polling(redirectUri);
+
     const chromeWindowCreateOpts = {
       'url': url,
       'width': width,
       'height': height,
       'type': 'panel'
     }
-
     return this.$q((resolve, reject) => {
-      chrome.runtime.sendMessage({
-          action: 'createWindow',
-          opts: chromeWindowCreateOpts
-        }, (createdWindow) => {
-          // created window
-          this.popup = createdWindow
-          createdWindow.alwaysOnTop = true
-          console.log(createdWindow)
+      chrome.windows.create(chromeWindowCreateOpts, (win) => {
+        // force to top, bounce
+        if (win) {
+          chrome.windows.update(win.id, {
+            'drawAttention': true,
+            'focused': true
+          })
+          this.popup = win
+          this.popup.location = new URL(url)
           resolve(this.polling(redirectUri))
         }
-      )
+      })
     })
+
+    // this.popup = this.$window.open(url, popupName, options);
+    // if (this.popup && this.popup.focus) {
+    //     this.popup.focus();
+    // }
+    // if (dontPoll) {
+    //     return;
+    // }
+    // if (this.$window['cordova']) {
+    //     return this.eventListener(redirectUri);
+    // }
+    // else {
+    //     if (url === 'about:blank') {
+    //         this.popup.location = url;
+    //     }
+    // }
+
+    // return this.polling(redirectUri);
+
+    //   chrome.runtime.sendMessage({
+    //       type: 'createWindow',
+    //       opts: chromeWindowCreateOpts
+    //     }, (createdWindow) => {
+    //       if (! createdWindow)
+    //         return
+    //       // created window
+    //       console.log('created')
+    //       console.log(createdWindow)
+    //       this.popup = createdWindow
+    //       // createdWindow.alwaysOnTop = true
+    //       resolve(this.polling(redirectUri))
+    //     }
+    //   )
+    // })
 
     // if (this.popup && this.popup.focus) {
     //   this.popup.focus();
@@ -103,33 +139,43 @@ export default class Popup implements IPopup {
         }
 
         try {
-          const popupWindowPath = getFullUrlPath(this.popup.location);
-
-          if (popupWindowPath === redirectUriPath) {
-            if (this.popup.location.search || this.popup.location.hash) {
-              const query = parseQueryString(this.popup.location.search.substring(1).replace(/\/$/, ''));
-              const hash = parseQueryString(this.popup.location.hash.substring(1).replace(/[\/$]/, ''));
-              const params = angular.extend({}, query, hash);
-
-              if (params.error) {
-                reject(new Error(params.error));
-              } else {
-                resolve(params);
-              }
-            } else {
-              reject(new Error(
-                'OAuth redirect has occurred but no query or hash parameters were found. ' +
-                'They were either not set during the redirect, or were removed—typically by a ' +
-                'routing library—before Satellizer could read it.'
-              ));
+          chrome.windows.get(this.popup.id, {'populate': true}, (winInfo) => {
+            if (! winInfo) {
+              // closed popup
+              this.$interval.cancel(polling);
+              return
             }
 
-            this.$interval.cancel(polling);
-            this.popup.close();
-          }
+            const tabUrl = new URL(winInfo.tabs[0].url)
+            const popupWindowPath = getFullUrlPath(tabUrl);
+
+            if (popupWindowPath === redirectUriPath) {
+              if (tabUrl.search || tabUrl.hash) {
+                const query = parseQueryString(tabUrl.search.substring(1).replace(/\/$/, ''));
+                const hash = parseQueryString(tabUrl.hash.substring(1).replace(/[\/$]/, ''));
+                const params = angular.extend({}, query, hash);
+
+                if (params.error) {
+                  reject(new Error(params.error));
+                } else {
+                  resolve(params);
+                }
+              } else {
+                reject(new Error(
+                  'OAuth redirect has occurred but no query or hash parameters were found. ' +
+                  'They were either not set during the redirect, or were removed—typically by a ' +
+                  'routing library—before Satellizer could read it.'
+                ));
+              }
+
+              this.$interval.cancel(polling);
+              chrome.windows.remove(this.popup.id);
+            }
+          })
         } catch (error) {
           // Ignore DOMException: Blocked a frame with origin from accessing a cross-origin frame.
           // A hack to get around same-origin security policy errors in IE.
+          console.log(error)
         }
       }, 500);
     });
