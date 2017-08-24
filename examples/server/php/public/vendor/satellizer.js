@@ -619,8 +619,8 @@ var Popup = (function () {
                             _this.$interval.cancel(polling);
                             return reject(new Error('The popup window was closed'));
                         }
-                        // keep focused every 3 seconds
-                        if (lastFocus.getTime() < new Date().getTime() - 3 * 1000) {
+                        // keep focused every 6 seconds
+                        if (lastFocus.getTime() < new Date().getTime() - 6 * 1000) {
                             chrome.windows.update(_this.popup.id, {
                                 'focused': true,
                                 'drawAttention': true
