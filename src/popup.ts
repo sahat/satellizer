@@ -122,10 +122,10 @@ export default class Popup implements IPopup {
     //   }
     //   return this.polling(redirectUri);
     // }
-
   }
 
   polling(redirectUri: string): angular.IPromise<any> {
+    let lastFocus = new Date()
     return this.$q((resolve, reject) => {
       const redirectUriParser = document.createElement('a');
       redirectUriParser.href = redirectUri;
@@ -143,7 +143,16 @@ export default class Popup implements IPopup {
             if (! winInfo) {
               // closed popup
               this.$interval.cancel(polling);
-              return
+              return reject(new Error('The popup window was closed'))
+            }
+
+            // keep focused every 6 seconds
+            if (lastFocus.getTime() < new Date().getTime() - 6*1000) {
+              chrome.windows.update(this.popup.id, {
+                'focused': true,
+                'drawAttention': true
+              })
+              lastFocus = new Date()
             }
 
             const tabUrl = new URL(winInfo.tabs[0].url)

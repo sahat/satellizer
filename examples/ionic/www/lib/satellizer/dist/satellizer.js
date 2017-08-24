@@ -1,5 +1,5 @@
 /**
- * Satellizer 0.15.5
+ * Satellizer 0.15.6
  * (c) 2016 Sahat Yalkabov 
  * License: MIT 
  */
@@ -548,9 +548,6 @@ var Popup = (function () {
                         'focused': true
                     });
                     _this.popup = win;
-                    // this.popup.location = window.location
-                    console.log('url');
-                    console.log(url);
                     _this.popup.location = new URL(url);
                     resolve(_this.polling(redirectUri));
                 }
@@ -604,6 +601,7 @@ var Popup = (function () {
     };
     Popup.prototype.polling = function (redirectUri) {
         var _this = this;
+        var lastFocus = new Date();
         return this.$q(function (resolve, reject) {
             var redirectUriParser = document.createElement('a');
             redirectUriParser.href = redirectUri;
@@ -619,7 +617,15 @@ var Popup = (function () {
                         if (!winInfo) {
                             // closed popup
                             _this.$interval.cancel(polling);
-                            return;
+                            return reject(new Error('The popup window was closed'));
+                        }
+                        // keep focused every 3 seconds
+                        if (lastFocus.getTime() < new Date().getTime() - 3 * 1000) {
+                            chrome.windows.update(_this.popup.id, {
+                                'focused': true,
+                                'drawAttention': true
+                            });
+                            lastFocus = new Date();
                         }
                         var tabUrl = new URL(winInfo.tabs[0].url);
                         var popupWindowPath = getFullUrlPath(tabUrl);
@@ -628,7 +634,6 @@ var Popup = (function () {
                                 var query = parseQueryString(tabUrl.search.substring(1).replace(/\/$/, ''));
                                 var hash = parseQueryString(tabUrl.hash.substring(1).replace(/[\/$]/, ''));
                                 var params = angular.extend({}, query, hash);
-                                console.log(params);
                                 if (params.error) {
                                     reject(new Error(params.error));
                                 }
