@@ -11,6 +11,7 @@ export default class Popup implements IPopup {
   static $inject = ['$interval', '$window', '$q'];
 
   public popup: any;
+  public chromePopup: any;
   private url: string;
   private defaults: { redirectUri: string };
 
@@ -46,85 +47,96 @@ export default class Popup implements IPopup {
       left: this.$window.screenX + ((this.$window.outerWidth - width) / 2)
     });
 
-    const popupName = this.$window['cordova'] || this.$window.navigator.userAgent.indexOf('CriOS') > -1 ? '_blank' : name;
-
-    // this.popup = this.$window.open(url, popupName, options);
-    // return this.polling(redirectUri);
-
-    const chromeWindowCreateOpts = {
-      'url': url,
-      'width': width,
-      'height': height,
-      'type': 'panel'
-    }
-    return this.$q((resolve, reject) => {
-      chrome.windows.create(chromeWindowCreateOpts, (win) => {
-        // force to top, bounce
-        if (win) {
-          chrome.windows.update(win.id, {
-            'drawAttention': true,
-            'focused': true
-          })
-          this.popup = win
-          this.popup.location = new URL(url)
-          resolve(this.polling(redirectUri))
-        }
+    if (typeof(chrome) != 'undefined' && chrome.windows && chrome.windows.create) {
+      // make a native chrome window
+      const chromeWindowCreateOpts = {
+        'url': url,
+        'width': width,
+        'height': height,
+        'type': 'panel'
+      }
+      return this.$q((resolve, reject) => {
+        chrome.windows.create(chromeWindowCreateOpts, (win) => {
+          // force to top, bounce
+          if (win) {
+            chrome.windows.update(win.id, {
+              'drawAttention': true,
+              'focused': true
+            })
+            this.chromePopup = win
+            this.chromePopup.location = new URL(url)
+            resolve(this.chromePolling(redirectUri))
+          }
+        })
       })
-    })
+    } else {
+      const popupName = this.$window['cordova'] || this.$window.navigator.userAgent.indexOf('CriOS') > -1 ? '_blank' : name;
+      this.popup = this.$window.open(url, popupName, options);
+      if (this.popup && this.popup.focus) {
+          this.popup.focus();
+      }
+      if (dontPoll) {
+          return;
+      }
+      if (this.$window['cordova']) {
+          return this.eventListener(redirectUri);
+      }
+      else {
+          if (url === 'about:blank') {
+              this.popup.location = url;
+          }
+      }
 
-    // this.popup = this.$window.open(url, popupName, options);
-    // if (this.popup && this.popup.focus) {
-    //     this.popup.focus();
-    // }
-    // if (dontPoll) {
-    //     return;
-    // }
-    // if (this.$window['cordova']) {
-    //     return this.eventListener(redirectUri);
-    // }
-    // else {
-    //     if (url === 'about:blank') {
-    //         this.popup.location = url;
-    //     }
-    // }
-
-    // return this.polling(redirectUri);
-
-    //   chrome.runtime.sendMessage({
-    //       type: 'createWindow',
-    //       opts: chromeWindowCreateOpts
-    //     }, (createdWindow) => {
-    //       if (! createdWindow)
-    //         return
-    //       // created window
-    //       console.log('created')
-    //       console.log(createdWindow)
-    //       this.popup = createdWindow
-    //       // createdWindow.alwaysOnTop = true
-    //       resolve(this.polling(redirectUri))
-    //     }
-    //   )
-    // })
-
-    // if (this.popup && this.popup.focus) {
-    //   this.popup.focus();
-    // }
-
-    // if (dontPoll) {
-    //   return;
-    // }
-
-    // if (this.$window['cordova']) {
-    //   return this.eventListener(redirectUri);
-    // } else {
-    //   if (url === 'about:blank') {
-    //     this.popup.location = url;
-    //   }
-    //   return this.polling(redirectUri);
-    // }
+      return this.polling(redirectUri);
+    }
   }
 
   polling(redirectUri: string): angular.IPromise<any> {
+    return this.$q((resolve, reject) => {
+      const redirectUriParser = document.createElement('a');
+      redirectUriParser.href = redirectUri;
+      const redirectUriPath = getFullUrlPath(redirectUriParser);
+
+      const polling = this.$interval(() => {
+        if (!this.popup || this.popup.closed || this.popup.closed === undefined) {
+          this.$interval.cancel(polling);
+          reject(new Error('The popup window was closed'));
+        }
+
+        try {
+          const popupWindowPath = getFullUrlPath(this.popup.location);
+
+          if (popupWindowPath === redirectUriPath) {
+            if (this.popup.location.search || this.popup.location.hash) {
+              const query = parseQueryString(this.popup.location.search.substring(1).replace(/\/$/, ''));
+              const hash = parseQueryString(this.popup.location.hash.substring(1).replace(/[\/$]/, ''));
+              const params = angular.extend({}, query, hash);
+
+              if (params.error) {
+                reject(new Error(params.error));
+              } else {
+                resolve(params);
+              }
+            } else {
+              reject(new Error(
+                'OAuth redirect has occurred but no query or hash parameters were found. ' +
+                'They were either not set during the redirect, or were removed—typically by a ' +
+                'routing library—before Satellizer could read it.'
+              ));
+            }
+
+            this.$interval.cancel(polling);
+            this.popup.close();
+          }
+        } catch (error) {
+          // Ignore DOMException: Blocked a frame with origin from accessing a cross-origin frame.
+          // A hack to get around same-origin security policy errors in IE.
+        }
+      }, 500);
+    });
+  }
+
+  chromePolling(redirectUri: string): angular.IPromise<any> {
     let lastFocus = new Date()
     return this.$q((resolve, reject) => {
       const redirectUriParser = document.createElement('a');
@@ -132,14 +144,13 @@ export default class Popup implements IPopup {
       const redirectUriPath = getFullUrlPath(redirectUriParser);
 
       const polling = this.$interval(() => {
-        // if (!this.popup || this.popup.closed || this.popup.closed === undefined) {
-        if (!this.popup) {
+        if (!this.chromePopup) {
           this.$interval.cancel(polling);
           reject(new Error('The popup window was closed'));
         }
 
         try {
-          chrome.windows.get(this.popup.id, {'populate': true}, (winInfo) => {
+          chrome.windows.get(this.chromePopup.id, {'populate': true}, (winInfo) => {
             if (! winInfo) {
               // closed popup
               this.$interval.cancel(polling);
@@ -148,7 +159,7 @@ export default class Popup implements IPopup {
 
             // keep focused every 6 seconds
             if (lastFocus.getTime() < new Date().getTime() - 6*1000) {
-              chrome.windows.update(this.popup.id, {
+              chrome.windows.update(this.chromePopup.id, {
                 'focused': true,
                 'drawAttention': true
               })
@@ -178,7 +189,7 @@ export default class Popup implements IPopup {
               }
 
               this.$interval.cancel(polling);
-              chrome.windows.remove(this.popup.id);
+              chrome.windows.remove(this.chromePopup.id);
             }
           })
         } catch (error) {
