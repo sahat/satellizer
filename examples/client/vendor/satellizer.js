@@ -1,5 +1,5 @@
 /**
- * Satellizer 0.15.6
+ * Satellizer 0.15.7
  * (c) 2016 Sahat Yalkabov 
  * License: MIT 
  */
@@ -530,76 +530,89 @@ var Popup = (function () {
             top: this.$window.screenY + ((this.$window.outerHeight - height) / 2.5),
             left: this.$window.screenX + ((this.$window.outerWidth - width) / 2)
         });
-        var popupName = this.$window['cordova'] || this.$window.navigator.userAgent.indexOf('CriOS') > -1 ? '_blank' : name;
-        // this.popup = this.$window.open(url, popupName, options);
-        // return this.polling(redirectUri);
-        var chromeWindowCreateOpts = {
-            'url': url,
-            'width': width,
-            'height': height,
-            'type': 'panel'
-        };
-        return this.$q(function (resolve, reject) {
-            chrome.windows.create(chromeWindowCreateOpts, function (win) {
-                // force to top, bounce
-                if (win) {
-                    chrome.windows.update(win.id, {
-                        'drawAttention': true,
-                        'focused': true
-                    });
-                    _this.popup = win;
-                    _this.popup.location = new URL(url);
-                    resolve(_this.polling(redirectUri));
-                }
+        if (typeof (chrome) != 'undefined' && chrome.windows && chrome.windows.create) {
+            // make a native chrome window
+            var chromeWindowCreateOpts_1 = {
+                'url': url,
+                'width': width,
+                'height': height,
+                'type': 'panel'
+            };
+            return this.$q(function (resolve, reject) {
+                chrome.windows.create(chromeWindowCreateOpts_1, function (win) {
+                    // force to top, bounce
+                    if (win) {
+                        chrome.windows.update(win.id, {
+                            'drawAttention': true,
+                            'focused': true
+                        });
+                        _this.chromePopup = win;
+                        _this.chromePopup.location = new URL(url);
+                        resolve(_this.chromePolling(redirectUri));
+                    }
+                });
             });
-        });
-        // this.popup = this.$window.open(url, popupName, options);
-        // if (this.popup && this.popup.focus) {
-        //     this.popup.focus();
-        // }
-        // if (dontPoll) {
-        //     return;
-        // }
-        // if (this.$window['cordova']) {
-        //     return this.eventListener(redirectUri);
-        // }
-        // else {
-        //     if (url === 'about:blank') {
-        //         this.popup.location = url;
-        //     }
-        // }
-        // return this.polling(redirectUri);
-        //   chrome.runtime.sendMessage({
-        //       type: 'createWindow',
-        //       opts: chromeWindowCreateOpts
-        //     }, (createdWindow) => {
-        //       if (! createdWindow)
-        //         return
-        //       // created window
-        //       console.log('created')
-        //       console.log(createdWindow)
-        //       this.popup = createdWindow
-        //       // createdWindow.alwaysOnTop = true
-        //       resolve(this.polling(redirectUri))
-        //     }
-        //   )
-        // })
-        // if (this.popup && this.popup.focus) {
-        //   this.popup.focus();
-        // }
-        // if (dontPoll) {
-        //   return;
-        // }
-        // if (this.$window['cordova']) {
-        //   return this.eventListener(redirectUri);
-        // } else {
-        //   if (url === 'about:blank') {
-        //     this.popup.location = url;
-        //   }
-        //   return this.polling(redirectUri);
-        // }
+        }
+        else {
+            var popupName = this.$window['cordova'] || this.$window.navigator.userAgent.indexOf('CriOS') > -1 ? '_blank' : name;
+            this.popup = this.$window.open(url, popupName, options);
+            if (this.popup && this.popup.focus) {
+                this.popup.focus();
+            }
+            if (dontPoll) {
+                return;
+            }
+            if (this.$window['cordova']) {
+                return this.eventListener(redirectUri);
+            }
+            else {
+                if (url === 'about:blank') {
+                    this.popup.location = url;
+                }
+            }
+            return this.polling(redirectUri);
+        }
     };
     Popup.prototype.polling = function (redirectUri) {
+        var _this = this;
+        return this.$q(function (resolve, reject) {
+            var redirectUriParser = document.createElement('a');
+            redirectUriParser.href = redirectUri;
+            var redirectUriPath = getFullUrlPath(redirectUriParser);
+            var polling = _this.$interval(function () {
+                if (!_this.popup || _this.popup.closed || _this.popup.closed === undefined) {
+                    _this.$interval.cancel(polling);
+                    reject(new Error('The popup window was closed'));
+                }
+                try {
+                    var popupWindowPath = getFullUrlPath(_this.popup.location);
+                    if (popupWindowPath === redirectUriPath) {
+                        if (_this.popup.location.search || _this.popup.location.hash) {
+                            var query = parseQueryString(_this.popup.location.search.substring(1).replace(/\/$/, ''));
+                            var hash = parseQueryString(_this.popup.location.hash.substring(1).replace(/[\/$]/, ''));
+                            var params = angular.extend({}, query, hash);
+                            if (params.error) {
+                                reject(new Error(params.error));
+                            }
+                            else {
+                                resolve(params);
+                            }
+                        }
+                        else {
+                            reject(new Error('OAuth redirect has occurred but no query or hash parameters were found. ' +
+                                'They were either not set during the redirect, or were removed—typically by a ' +
+                                'routing library—before Satellizer could read it.'));
+                        }
+                        _this.$interval.cancel(polling);
+                        _this.popup.close();
+                    }
+                }
+                catch (error) {
+                }
+            }, 500);
+        });
+    };
+    Popup.prototype.chromePolling = function (redirectUri) {
         var _this = this;
         var lastFocus = new Date();
         return this.$q(function (resolve, reject) {
@@ -607,13 +620,12 @@ var Popup = (function () {
             redirectUriParser.href = redirectUri;
             var redirectUriPath = getFullUrlPath(redirectUriParser);
             var polling = _this.$interval(function () {
-                // if (!this.popup || this.popup.closed || this.popup.closed === undefined) {
-                if (!_this.popup) {
+                if (!_this.chromePopup) {
                     _this.$interval.cancel(polling);
                     reject(new Error('The popup window was closed'));
                 }
                 try {
-                    chrome.windows.get(_this.popup.id, { 'populate': true }, function (winInfo) {
+                    chrome.windows.get(_this.chromePopup.id, { 'populate': true }, function (winInfo) {
                         if (!winInfo) {
                             // closed popup
                             _this.$interval.cancel(polling);
@@ -621,7 +633,7 @@ var Popup = (function () {
                         }
                         // keep focused every 6 seconds
                         if (lastFocus.getTime() < new Date().getTime() - 6 * 1000) {
-                            chrome.windows.update(_this.popup.id, {
+                            chrome.windows.update(_this.chromePopup.id, {
                                 'focused': true,
                                 'drawAttention': true
                             });
@@ -647,7 +659,7 @@ var Popup = (function () {
                                     'routing library—before Satellizer could read it.'));
                             }
                             _this.$interval.cancel(polling);
-                            chrome.windows.remove(_this.popup.id);
+                            chrome.windows.remove(_this.chromePopup.id);
                         }
                     });
                 }
