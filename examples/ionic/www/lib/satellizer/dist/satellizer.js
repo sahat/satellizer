@@ -586,6 +586,7 @@ var Popup = (function () {
                 }
                 try {
                     var popupWindowPath = getFullUrlPath(_this.popup.location);
+                    console.log(popupWindowPath);
                     if (popupWindowPath === redirectUriPath) {
                         if (_this.popup.location.search || _this.popup.location.hash) {
                             var query = parseQueryString(_this.popup.location.search.substring(1).replace(/\/$/, ''));

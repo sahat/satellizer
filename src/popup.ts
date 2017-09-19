@@ -4,6 +4,7 @@ export interface IPopup {
   open(url: string, name: string, popupOptions: { width: number, height: number }, redirectUri: string): void;
   stringifyOptions (options: any): string;
   polling(redirectUri: string): angular.IPromise<any>;
+  chromePolling(redirectUri: string): angular.IPromise<any>;
   eventListener(redirectUri: string): angular.IPromise<any>;
 }
 
