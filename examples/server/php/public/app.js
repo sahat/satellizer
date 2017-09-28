@@ -4,7 +4,7 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', 'ui.
     /**
      * Helper auth functions
      */
-    var skipIfLoggedIn = ['$q', '$auth', function($q, $auth) {
+    var skipIfLoggedIn = function($q, $auth) {
       var deferred = $q.defer();
       if ($auth.isAuthenticated()) {
         deferred.reject();
@@ -12,9 +12,9 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', 'ui.
         deferred.resolve();
       }
       return deferred.promise;
-    }];
+    };
 
-    var loginRequired = ['$q', '$location', '$auth', function($q, $location, $auth) {
+    var loginRequired = function($q, $location, $auth) {
       var deferred = $q.defer();
       if ($auth.isAuthenticated()) {
         deferred.resolve();
@@ -22,7 +22,7 @@ angular.module('MyApp', ['ngResource', 'ngMessages', 'ngAnimate', 'toastr', 'ui.
         $location.path('/login');
       }
       return deferred.promise;
-    }];
+    };
 
     /**
      * App routes

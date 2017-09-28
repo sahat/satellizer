@@ -89,27 +89,19 @@
           <i class="ion-social-windows"></i> Link Windows Live Account
         </button>
 
-        <button class="btn btn-sm btn-danger" ng-if="user.twitch" ng-click="unlink('twitch')">
+        <button class="btn btn-sm btn-danger" ng-if="user.twitch" ng-click="link('twitch')">
           <i class="ion-social-twitch"></i> Unlink Twitch Account
         </button>
         <button class="btn btn-sm btn-primary" ng-if="!user.twitch" ng-click="link('twitch')">
           <i class="ion-social-twitch"></i> Link Twitch Account
         </button>
 
-        <button class="btn btn-sm btn-danger" ng-if="user.bitbucket" ng-click="unlink('bitbucket')">
+        <button class="btn btn-sm btn-danger" ng-if="user.twitch" ng-click="link('bitbucket')">
           <i class="fa fa-bitbucket"></i> Unlink Bitbucket Account
         </button>
-        <button class="btn btn-sm btn-primary" ng-if="!user.bitbucket" ng-click="link('bitbucket')">
+        <button class="btn btn-sm btn-primary" ng-if="!user.twitch" ng-click="link('bitbucket')">
           <i class="fa fa-bitbucket"></i> Link Bitbucket Account
         </button>
-
-        <button class="btn btn-sm btn-danger" ng-if="user.spotify" ng-click="unlink('spotify')">
-          <i class="fa fa-spotify"></i> Unlink Spotify Account
-        </button>
-        <button class="btn btn-sm btn-primary" ng-if="!user.spotify" ng-click="link('spotify')">
-          <i class="fa fa-spotify"></i> Link Spotify Account
-        </button>
-
       </div>
     </div>
   </div>
