@@ -3,11 +3,15 @@
   "globalDependencies": {
     "angular": "registry:dt/angular#1.5.0+20160614091201",
     "angular-mocks": "registry:dt/angular-mocks#1.5.0+20160608104721",
+    "chrome": "registry:dt/chrome#0.0.0+20170323135751",
     "es6-shim": "registry:dt/es6-shim#0.31.2+20160602141504",
     "jquery": "registry:dt/jquery#1.10.0+20160417213236",
     "node": "registry:dt/node#6.0.0+20160613154055"
   },
   "globalDevDependencies": {
+    "chrome": "registry:dt/chrome#0.0.0+20160509083626",
+    "filesystem": "registry:dt/filesystem#0.0.0+20160316155526",
+    "filewriter": "registry:dt/filewriter#0.0.0+20160316155526",
     "jasmine": "registry:dt/jasmine#2.2.0+20160621224255"
   }
 }

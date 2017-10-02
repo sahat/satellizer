@@ -20,7 +20,7 @@ export default class Interceptor implements angular.IHttpInterceptor {
       return config;
     }
 
-    if (this.SatellizerShared.isAuthenticated() && this.SatellizerConfig.httpInterceptor()) {
+    if (this.SatellizerShared.isAuthenticated() && this.SatellizerConfig.httpInterceptor(config)) {
       const tokenName = this.SatellizerConfig.tokenPrefix ?
         [this.SatellizerConfig.tokenPrefix, this.SatellizerConfig.tokenName].join('_') : this.SatellizerConfig.tokenName;
       let token = this.SatellizerStorage.get(tokenName);
