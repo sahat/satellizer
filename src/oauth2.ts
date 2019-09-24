@@ -80,7 +80,7 @@ export default class OAuth2 {
         this.SatellizerStorage.set(stateName, state);
       }
 
-      const url = [this.defaults.authorizationEndpoint, this.buildQueryString()].join('?');
+      const url = [this.defaults.authorizationEndpoint, this.buildQueryString()].join(this.defaults.authorizationEndpoint.indexOf('?') === -1 ? '?' : '&');
 
       this.SatellizerPopup.open(url, name, popupOptions, redirectUri).then((oauth: any): void|angular.IPromise<any>|angular.IHttpPromise<any> => {
         if (responseType === 'token' || !this.defaults.url) {
