@@ -3,7 +3,7 @@ Flask-SQLAlchemy==1.0
 Jinja2==2.7.3
 MarkupSafe==0.23
 SQLAlchemy==0.9.7
-Werkzeug==0.9.6
+Werkzeug==0.15.3
 itsdangerous==0.24
 PyJWT==0.2.1
 requests==2.3.0
